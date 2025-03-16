@@ -63,11 +63,6 @@ public abstract class BaseTable
         throw new NotFoundError("A player on the given position is not found at the table");
     }
 
-    public IList<Player> GetPlayersForDealing()
-    {
-        return Players.Where(x => x.IsAvailableForDealing).ToList();
-    }
-
     public Player? GetNextPlayerForTrading(Player? previousPlayer)
     {
         var previousIdx = previousPlayer == null ? -1 : Players.IndexOf(previousPlayer);
@@ -105,11 +100,6 @@ public abstract class BaseTable
     public bool AllPlayersAreConnected()
     {
         return Players.All(x => x.IsConnected);
-    }
-
-    public bool HasEnoughPlayersForTrading()
-    {
-        return Players.Count(x => x.IsAvailableForTrading) > 1;
     }
 
     public void TakeBoardCards(CardSet boardCards)

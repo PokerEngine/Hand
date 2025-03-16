@@ -244,56 +244,6 @@ public class SixMaxTableTest
     }
 
     [Fact]
-    public void TestGetPlayersForDealing()
-    {
-        var playerSb = Player.Create(
-            nickname: new Nickname("SmallBlind"),
-            position: Position.SmallBlind,
-            stake: new Chips(1000)
-        );
-        var playerBb = Player.Create(
-            nickname: new Nickname("BigBlind"),
-            position: Position.BigBlind,
-            stake: new Chips(10)
-        );
-        var playerEp = Player.Create(
-            nickname: new Nickname("Early"),
-            position: Position.Early,
-            stake: new Chips(1000)
-        );
-        var playerMp = Player.Create(
-            nickname: new Nickname("Middle"),
-            position: Position.Middle,
-            stake: new Chips(1000)
-        );
-        var playerCo = Player.Create(
-            nickname: new Nickname("CutOff"),
-            position: Position.CutOff,
-            stake: new Chips(1000)
-        );
-        var playerBu = Player.Create(
-            nickname: new Nickname("Button"),
-            position: Position.Button,
-            stake: new Chips(1000)
-        );
-
-        var table = SixMaxTable.Create([playerSb, playerBb, playerEp, playerMp, playerCo, playerBu]);
-
-        playerSb.Connect();
-        playerBb.Connect();
-        // EP has not connected but must take cards anyway
-        playerMp.Connect();
-        playerCo.Connect();
-        playerBu.Connect();
-
-        // Post blinds
-        playerSb.Post(new Chips(5));
-        playerBb.Post(new Chips(10));  // All in
-
-        Assert.Equal([playerSb, playerBb, playerEp, playerMp, playerCo, playerBu], table.GetPlayersForDealing());
-    }
-
-    [Fact]
     public void TestGetNextPlayerForTrading()
     {
         var playerSb = Player.Create(
@@ -463,50 +413,6 @@ public class SixMaxTableTest
         playerBu.Connect();
 
         Assert.True(table.AllPlayersAreConnected());
-    }
-
-    [Fact]
-    public void TestHasEnoughPlayersForTrading()
-    {
-        var playerSb = Player.Create(
-            nickname: new Nickname("SmallBlind"),
-            position: Position.SmallBlind,
-            stake: new Chips(1000)
-        );
-        var playerBb = Player.Create(
-            nickname: new Nickname("BigBlind"),
-            position: Position.BigBlind,
-            stake: new Chips(1000)
-        );
-        var playerBu = Player.Create(
-            nickname: new Nickname("Button"),
-            position: Position.Button,
-            stake: new Chips(1000)
-        );
-
-        var table = SixMaxTable.Create([playerBu, playerSb, playerBb]);
-
-        playerSb.Connect();
-        playerBb.Connect();
-        playerBu.Connect();
-
-        Assert.True(table.HasEnoughPlayersForTrading());
-
-        playerBu.Post(new Chips(25));  // BU raises
-
-        Assert.True(table.HasEnoughPlayersForTrading());
-
-        playerSb.Fold();  // SB folds
-
-        Assert.True(table.HasEnoughPlayersForTrading());
-
-        playerBb.Post(new Chips(130));  // BB 3bets
-
-        Assert.True(table.HasEnoughPlayersForTrading());
-
-        playerBu.Fold();  // BU folds
-
-        Assert.False(table.HasEnoughPlayersForTrading());
     }
 
     [Fact]

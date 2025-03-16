@@ -27,6 +27,11 @@ public class Player : IEquatable<Player>
         get => !IsFolded && !IsAllIn;
     }
 
+    public bool IsAvailableForShowdown
+    {
+        get => !IsFolded;
+    }
+
     public Player(Nickname nickname, Position position, Chips stake, CardSet holeCards, bool isConnected, bool isFolded)
     {
         Nickname = nickname;

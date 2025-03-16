@@ -559,6 +559,44 @@ public class PlayerTest
         Assert.False(player.IsAvailableForTrading);
     }
 
+    [Theory]
+    [InlineData(true, false, 1000)]
+    [InlineData(true, false, 0)]
+    [InlineData(false, false, 1000)]
+    [InlineData(false, false, 0)]
+    public void TestAvailableForShowdown(bool isConnected, bool isFolded, Chips stake)
+    {
+        var player = new Player(
+            nickname: new Nickname("nickname"),
+            position: Position.Button,
+            stake: stake,
+            holeCards: new CardSet([Card.AceOfSpades, Card.DeuceOfClubs]),
+            isConnected: isConnected,
+            isFolded: isFolded
+        );
+
+        Assert.True(player.IsAvailableForShowdown);
+    }
+
+    [Theory]
+    [InlineData(true, true, 1000)]
+    [InlineData(true, true, 0)]
+    [InlineData(false, true, 1000)]
+    [InlineData(false, true, 0)]
+    public void TestNotAvailableForShowdown(bool isConnected, bool isFolded, Chips stake)
+    {
+        var player = new Player(
+            nickname: new Nickname("nickname"),
+            position: Position.Button,
+            stake: stake,
+            holeCards: new CardSet([Card.AceOfSpades, Card.DeuceOfClubs]),
+            isConnected: isConnected,
+            isFolded: isFolded
+        );
+
+        Assert.False(player.IsAvailableForShowdown);
+    }
+
     [Fact]
     public void TestRepresentation()
     {

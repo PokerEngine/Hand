@@ -2,28 +2,28 @@ namespace Domain.ValueObject;
 
 public readonly struct HandUid
 {
-    private readonly Guid Value;
+    private readonly Guid _guid;
 
-    public HandUid(Guid value)
+    public HandUid(Guid guid)
     {
-        Value = value;
+        _guid = guid;
     }
 
     public static implicit operator Guid(HandUid a)
-        => a.Value;
+        => a._guid;
 
     public static explicit operator HandUid(Guid a)
         => new (a);
 
     public static bool operator ==(HandUid a, HandUid b)
-        => a.Value == b.Value;
+        => a._guid == b._guid;
 
     public static bool operator !=(HandUid a, HandUid b)
-        => a.Value != b.Value;
+        => a._guid != b._guid;
 
     public override string ToString()
-        => Value.ToString();
+        => _guid.ToString();
 
     public override int GetHashCode()
-        => Value.GetHashCode();
+        => _guid.GetHashCode();
 }

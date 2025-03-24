@@ -7,16 +7,16 @@ namespace Domain.ValueObject;
 
 public readonly struct SidePot : IEnumerable<KeyValuePair<Nickname, Chips>>, IEquatable<SidePot>
 {
-    public readonly ImmutableDictionary<Nickname, Chips> Mapping;
-    public readonly Chips DeadAmount;
+    private readonly ImmutableDictionary<Nickname, Chips> _mapping;
+    private readonly Chips _deadAmount;
 
     public Chips Amount
     {
         get
         {
-            var amount = DeadAmount;
+            var amount = _deadAmount;
 
-            foreach (var value in Mapping.Values)
+            foreach (var value in _mapping.Values)
             {
                 amount += value;
             }
@@ -27,38 +27,43 @@ public readonly struct SidePot : IEnumerable<KeyValuePair<Nickname, Chips>>, IEq
 
     public int Count
     {
-        get => Mapping.Count;
+        get => _mapping.Count;
     }
 
     public IEnumerable<Nickname> Nicknames
     {
-        get => Mapping.Keys;
+        get => _mapping.Keys;
     }
 
     public IEnumerable<Chips> Amounts
     {
-        get => Mapping.Values;
+        get => _mapping.Values;
     }
 
     public SidePot()
     {
-        Mapping = ImmutableDictionary<Nickname, Chips>.Empty;
-        DeadAmount = new Chips(0);
+        _mapping = ImmutableDictionary<Nickname, Chips>.Empty;
+        _deadAmount = new Chips(0);
     }
 
-    public SidePot(IDictionary<Nickname, Chips> mapping, Chips deadAmount)
+    private SidePot(IDictionary<Nickname, Chips> mapping, Chips deadAmount)
     {
-        Mapping = mapping.ToImmutableDictionary();
-        DeadAmount = deadAmount;
+        _mapping = mapping.ToImmutableDictionary();
+        _deadAmount = deadAmount;
     }
 
     public Chips Get(Nickname nickname)
     {
-        if (!Mapping.TryGetValue(nickname, out var amount))
+        if (!_mapping.TryGetValue(nickname, out var amount))
         {
             amount = new Chips(0);
         }
         return amount;
+    }
+
+    public Chips GetDead()
+    {
+        return _deadAmount;
     }
 
     public SidePot Add(Nickname nickname, Chips amount)
@@ -67,7 +72,7 @@ public readonly struct SidePot : IEnumerable<KeyValuePair<Nickname, Chips>>, IEq
         {
             throw new NotAvailableError("Cannot add zero amount");
         }
-        return new SidePot(Mapping.SetItem(nickname, Get(nickname) + amount), DeadAmount);
+        return new SidePot(_mapping.SetItem(nickname, Get(nickname) + amount), _deadAmount);
     }
 
     public SidePot AddDead(Chips amount)
@@ -76,7 +81,7 @@ public readonly struct SidePot : IEnumerable<KeyValuePair<Nickname, Chips>>, IEq
         {
             throw new NotAvailableError("Cannot add zero amount");
         }
-        return new SidePot(Mapping, DeadAmount + amount);
+        return new SidePot(_mapping, _deadAmount + amount);
     }
 
     public SidePot Sub(Nickname nickname, Chips amount)
@@ -93,9 +98,9 @@ public readonly struct SidePot : IEnumerable<KeyValuePair<Nickname, Chips>>, IEq
 
         if (amount == Get(nickname))
         {
-            return new SidePot(Mapping.Remove(nickname), DeadAmount);
+            return new SidePot(_mapping.Remove(nickname), _deadAmount);
         }
-        return new SidePot(Mapping.SetItem(nickname, Get(nickname) - amount), DeadAmount);
+        return new SidePot(_mapping.SetItem(nickname, Get(nickname) - amount), _deadAmount);
     }
 
     public SidePot SubDead(Chips amount)
@@ -105,19 +110,19 @@ public readonly struct SidePot : IEnumerable<KeyValuePair<Nickname, Chips>>, IEq
             throw new NotAvailableError("Cannot sub zero amount");
         }
 
-        if (amount > DeadAmount)
+        if (amount > _deadAmount)
         {
             throw new NotAvailableError("Cannot sub more amount than added");
         }
 
-        return new SidePot(Mapping, DeadAmount - amount);
+        return new SidePot(_mapping, _deadAmount - amount);
     }
 
     public SidePot Merge(SidePot other)
     {
-        var mapping = Mapping.ToDictionary();
+        var mapping = _mapping.ToDictionary();
 
-        foreach (var (nickname, amount) in other.Mapping)
+        foreach (var (nickname, amount) in other._mapping)
         {
             if (!mapping.TryAdd(nickname, amount))
             {
@@ -125,12 +130,12 @@ public readonly struct SidePot : IEnumerable<KeyValuePair<Nickname, Chips>>, IEq
             }
         }
 
-        return new SidePot(mapping.ToImmutableDictionary(), other.DeadAmount);
+        return new SidePot(mapping.ToImmutableDictionary(), other._deadAmount);
     }
 
     public IEnumerator<KeyValuePair<Nickname, Chips>> GetEnumerator()
     {
-        foreach(var pair in Mapping.OrderBy(pair => (pair.Value, pair.Key)))
+        foreach(var pair in _mapping.OrderBy(pair => (pair.Value, pair.Key)))
         {
             yield return pair;
         }
@@ -140,13 +145,13 @@ public readonly struct SidePot : IEnumerable<KeyValuePair<Nickname, Chips>>, IEq
         => GetEnumerator();
 
     public static bool operator ==(SidePot a, SidePot b)
-        => a.Mapping == b.Mapping && a.DeadAmount == b.DeadAmount;
+        => a._mapping == b._mapping && a._deadAmount == b._deadAmount;
 
     public static bool operator !=(SidePot a, SidePot b)
-        => a.Mapping != b.Mapping || a.DeadAmount != b.DeadAmount;
+        => a._mapping != b._mapping || a._deadAmount != b._deadAmount;
 
     public bool Equals(SidePot other)
-        => Mapping.Equals(other.Mapping) && DeadAmount.Equals(other.DeadAmount);
+        => _mapping.Equals(other._mapping) && _deadAmount.Equals(other._deadAmount);
 
     public override string ToString()
     {
@@ -162,5 +167,5 @@ public readonly struct SidePot : IEnumerable<KeyValuePair<Nickname, Chips>>, IEq
     }
 
     public override int GetHashCode()
-        => Mapping.GetHashCode();
+        => (_mapping.GetHashCode(), _deadAmount.GetHashCode()).GetHashCode();
 }

@@ -24,7 +24,7 @@ public class EventBusTest
         };
 
         var handUid = new HandUid(Guid.NewGuid());
-        var nickname = new Nickname("Nickname");
+        var nickname = new Nickname("nickname");
 
         var event1 = new PlayerConnectedEvent(
             Nickname: nickname,
@@ -69,7 +69,7 @@ public class EventBusTest
         };
 
         var handUid = new HandUid(Guid.NewGuid());
-        var nickname = new Nickname("Nickname");
+        var nickname = new Nickname("nickname");
 
         var event1 = new PlayerConnectedEvent(
             Nickname: nickname,

@@ -270,7 +270,7 @@ public abstract class BasePot
             var sidePot = new SidePot();
             foreach (var nickname in totalPot.Nicknames)
             {
-                var deadAmount = totalPot.DeadAmount;
+                var deadAmount = totalPot.GetDead();
                 if (deadAmount)
                 {
                     totalPot = totalPot.SubDead(deadAmount);

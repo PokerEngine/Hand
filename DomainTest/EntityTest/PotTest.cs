@@ -1737,6 +1737,11 @@ public class NoLimitPotTest
     [Fact]
     public void TestRepresentation()
     {
+        var currentSidePot = new SidePot();
+        currentSidePot = currentSidePot.Add(new Nickname("BigBlind"), new Chips(10));
+        currentSidePot = currentSidePot.Add(new Nickname("SmallBlind"), new Chips(25));
+        currentSidePot = currentSidePot.AddDead(new Chips(5));
+
         var pot = new NoLimitPot(
             smallBlind: new Chips(5),
             bigBlind: new Chips(10),
@@ -1744,14 +1749,7 @@ public class NoLimitPotTest
             lastRaiseNickname: new Nickname("SmallBlind"),
             lastRaiseStep: new Chips(15),
             currentDecisionNicknames: ImmutableHashSet.Create(new Nickname("SmallBlind")),
-            currentSidePot: new SidePot(
-                new Dictionary<Nickname, Chips>()
-                {
-                    {new Nickname("SmallBlind"), new Chips(25) },
-                    {new Nickname("BigBlind"), new Chips(10) }
-                }.ToImmutableDictionary(),
-                new Chips(5)
-            ),
+            currentSidePot: currentSidePot,
             previousSidePot: new SidePot()
         );
 

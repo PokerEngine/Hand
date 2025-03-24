@@ -8,27 +8,11 @@ public class SidePotTest
     [Fact]
     public void TestInitialization()
     {
-        var nickname1 = new Nickname("Alpha");
-        var nickname2 = new Nickname("Beta");
-        var mapping = new Dictionary<Nickname, Chips>()
-        {
-            {nickname1, new Chips(10)},
-            {nickname2, new Chips(20)}
-        };
-        var sidePot = new SidePot(mapping, new Chips(5));
+        var nickname = new Nickname("Alpha");
 
-        Assert.Equal(mapping, sidePot.Mapping);
-        Assert.Equal(new Chips(10), sidePot.Get(nickname1));
-        Assert.Equal(new Chips(20), sidePot.Get(nickname2));
-        Assert.Equal(new Chips(5), sidePot.DeadAmount);
-        Assert.Equal(new Chips(35), sidePot.Amount);
-        Assert.Equal(2, sidePot.Count);
-
-        sidePot = new SidePot();
-        Assert.Empty(sidePot.Mapping);
-        Assert.Equal(new Chips(0), sidePot.Get(nickname1));
-        Assert.Equal(new Chips(0), sidePot.Get(nickname2));
-        Assert.Equal(new Chips(0), sidePot.DeadAmount);
+        var sidePot = new SidePot();
+        Assert.Equal(new Chips(0), sidePot.Get(nickname));
+        Assert.Equal(new Chips(0), sidePot.GetDead());
         Assert.Equal(new Chips(0), sidePot.Amount);
         Assert.Equal(0, sidePot.Count);
     }

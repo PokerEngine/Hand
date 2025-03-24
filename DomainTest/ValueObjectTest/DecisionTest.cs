@@ -38,4 +38,20 @@ public class DecisionTest
         var exc = Assert.Throws<ArgumentException>(() => decision = new Decision(type, amount));
         Assert.Equal($"Amount must be non-zero for {type}", exc.Message);
     }
+
+    [Fact]
+    public void TestRepresentationWithZeroAmount()
+    {
+        var decision = new Decision(DecisionType.Check, new Chips(0));
+
+        Assert.Equal("Check", $"{decision}");
+    }
+
+    [Fact]
+    public void TestRepresentationWithNonZeroAmount()
+    {
+        var decision = new Decision(DecisionType.RaiseTo, new Chips(10));
+
+        Assert.Equal("RaiseTo [10 chip(s)]", $"{decision}");
+    }
 }

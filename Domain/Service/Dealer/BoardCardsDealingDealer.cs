@@ -43,7 +43,7 @@ public class BoardCardsDealingDealer : IDealer
 
     private bool HasEnoughPlayersForDealing(BaseTable table)
     {
-        return table.Players.Count(x => x.IsAvailableForDealing) > 1;
+        return table.Count(x => x.IsAvailableForDealing) > 1;
     }
 
     private void DealBoardCards(

@@ -57,7 +57,7 @@ public class ShowdownDealer : IDealer
 
     private IList<Player> GetPlayersForShowdown(BaseTable table)
     {
-        return table.Players.Where(x => x.IsAvailableForShowdown).ToList();
+        return table.Where(x => x.IsAvailableForShowdown).ToList();
     }
 
     private bool HasEnoughPlayersForShowdown(IList<Player> players)

@@ -75,7 +75,7 @@ public readonly struct CardSet : IReadOnlySet<Card>, IReadOnlyList<Card>
 
     public IEnumerator<Card> GetEnumerator()
     {
-        foreach(var item in _list)
+        foreach (var item in _list)
         {
             yield return item;
         }

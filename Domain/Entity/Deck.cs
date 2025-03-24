@@ -5,35 +5,37 @@ namespace Domain.Entity;
 
 public abstract class BaseDeck
 {
-    public CardSet Cards { get; private set; }
+    private CardSet _cards;
     private static readonly Random Rand = new ();
+
+    public int Count => _cards.Count;
 
     protected BaseDeck(CardSet cards)
     {
-        Cards = cards;
+        _cards = cards;
     }
 
     public void Shuffle()
     {
-        Cards = new CardSet(Cards.ToList().OrderBy(_ => Rand.Next()));
+        _cards = new CardSet(_cards.ToList().OrderBy(_ => Rand.Next()));
     }
 
     public CardSet Extract(int count)
     {
-        if (count > Cards.Count)
+        if (count > _cards.Count)
         {
             throw new NotAvailableError("The deck does not contain enough cards");
         }
 
-        var index = Cards.Count - count;
-        var extracted = Cards[index..Cards.Count];
-        var remaining = Cards[0..index];
-        Cards = remaining;
+        var index = _cards.Count - count;
+        var extracted = _cards[index.._cards.Count];
+        var remaining = _cards[..index];
+        _cards = remaining;
         return extracted;
     }
 
     public override string ToString()
-        => $"{GetType().Name}: {Cards}";
+        => $"{GetType().Name}: {_cards}";
 }
 
 public class StandardDeck : BaseDeck

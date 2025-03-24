@@ -135,7 +135,7 @@ public readonly struct SidePot : IEnumerable<KeyValuePair<Nickname, Chips>>, IEq
 
     public IEnumerator<KeyValuePair<Nickname, Chips>> GetEnumerator()
     {
-        foreach(var pair in _mapping.OrderBy(pair => (pair.Value, pair.Key)))
+        foreach (var pair in _mapping.OrderBy(pair => (pair.Value, pair.Key)))
         {
             yield return pair;
         }

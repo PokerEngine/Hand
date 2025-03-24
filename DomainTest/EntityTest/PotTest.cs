@@ -29,12 +29,8 @@ public class NoLimitPotTest
         Assert.Equal(new Chips(5), pot.SmallBlind);
         Assert.Equal(new Chips(10), pot.BigBlind);
         Assert.Equal(new Nickname("SmallBlind"), pot.LastDecisionNickname);
-        Assert.Equal(new Nickname("SmallBlind"), pot.LastRaiseNickname);
-        Assert.Equal(new Chips(15), pot.LastRaiseStep);
-        Assert.Equal(ImmutableHashSet.Create(new Nickname("SmallBlind")), pot.CurrentDecisionNicknames);
-        Assert.Equal(currentSidePot, pot.CurrentSidePot);
-        Assert.Empty(pot.PreviousSidePot);
         Assert.Equal(new Chips(35), pot.GetTotalAmount());
+        Assert.Equal(new Chips(35), pot.GetCurrentAmount());
     }
 
     [Fact]
@@ -1196,9 +1192,6 @@ public class NoLimitPotTest
 
         Assert.Equal(new Chips(250), pot.GetTotalAmount());
         Assert.Null(pot.LastDecisionNickname);
-        Assert.Null(pot.LastRaiseNickname);
-        Assert.Equal(pot.BigBlind, pot.LastRaiseStep);
-        Assert.Empty(pot.CurrentDecisionNicknames);
     }
 
     [Fact]

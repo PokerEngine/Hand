@@ -28,10 +28,7 @@ public class SixMaxTableTest
             boardCards: cards
         );
 
-        Assert.Equal(3, table.Players.Count);
-        Assert.Equal(playerSb, table.Players[0]);
-        Assert.Equal(playerBb, table.Players[1]);
-        Assert.Equal(playerBu, table.Players[2]);
+        Assert.Equal(3, table.Count);
         Assert.Equal(cards, table.BoardCards);
     }
 
@@ -215,6 +212,33 @@ public class SixMaxTableTest
         table.TakeBoardCards(new CardSet([Card.AceOfDiamonds]));
 
         Assert.Equal(new CardSet([Card.KingOfHearts, Card.TreyOfDiamonds, Card.DeuceOfClubs, Card.AceOfDiamonds]), table.BoardCards);
+    }
+
+    [Fact]
+    public void TestEnumerator()
+    {
+        var playerSb = CreatePlayer(
+            nickname: "SmallBlind",
+            position: Position.SmallBlind
+        );
+        var playerBb = CreatePlayer(
+            nickname: "BigBlind",
+            position: Position.BigBlind
+        );
+        var playerBu = CreatePlayer(
+            nickname: "Button",
+            position: Position.Button
+        );
+        List<Player> players = [playerSb, playerBb, playerBu];
+
+        var table = CreateTable(players);
+
+        var i = 0;
+        foreach (var player in table)
+        {
+            Assert.Equal(player, players[i]);
+            i++;
+        }
     }
 
     [Fact]

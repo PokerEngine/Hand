@@ -12,18 +12,18 @@ public class StandardDeckTest
         var cards = new CardSet([Card.AceOfSpades, Card.DeuceOfClubs]);
         var deck = new StandardDeck(cards);
 
-        Assert.Equal(cards, deck.Cards);
+        Assert.Equal(2, deck.Count);
     }
 
     [Fact]
     public void TestShuffle()
     {
         var deck = CreateDeck();
-        Assert.Equal(52, deck.Cards.Count);
+        Assert.Equal(52, deck.Count);
 
         deck.Shuffle();
 
-        Assert.Equal(52, deck.Cards.Count);
+        Assert.Equal(52, deck.Count);
     }
 
     [Fact]
@@ -31,16 +31,16 @@ public class StandardDeckTest
     {
         var cards = new CardSet([Card.AceOfSpades, Card.DeuceOfClubs, Card.JackOfDiamonds]);
         var deck = new StandardDeck(cards);
-        Assert.Equal(3, deck.Cards.Count);
+        Assert.Equal(3, deck.Count);
 
         var extractedCards = deck.Extract(1);
 
-        Assert.Equal(2, deck.Cards.Count);
+        Assert.Equal(2, deck.Count);
         Assert.Equal(new CardSet([Card.JackOfDiamonds]), extractedCards);
 
         extractedCards = deck.Extract(2);
 
-        Assert.Equal(0, deck.Cards.Count);
+        Assert.Equal(0, deck.Count);
         Assert.Equal(new CardSet([Card.AceOfSpades, Card.DeuceOfClubs]), extractedCards);
     }
 
@@ -49,7 +49,7 @@ public class StandardDeckTest
     {
         CardSet cards;
         var deck = new StandardDeck(new CardSet([Card.AceOfSpades, Card.DeuceOfClubs]));
-        Assert.Equal(2, deck.Cards.Count);
+        Assert.Equal(2, deck.Count);
 
         var exc = Assert.Throws<NotAvailableError>(() => cards = deck.Extract(3));
 
@@ -79,7 +79,7 @@ public class ShortDeckTest
         var cards = new CardSet([Card.AceOfSpades, Card.SixOfClubs]);
         var deck = new ShortDeck(cards);
 
-        Assert.Equal(cards, deck.Cards);
+        Assert.Equal(2, deck.Count);
     }
 
     [Fact]

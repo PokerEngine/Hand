@@ -47,7 +47,7 @@ public class HoleCardsDealingDealer : IDealer
 
     private IList<Player> GetPlayersForDealing(BaseTable table)
     {
-        return table.Players.Where(x => x.IsAvailableForDealing).ToList();
+        return table.Where(x => x.IsAvailableForDealing).ToList();
     }
 
     private bool HasEnoughPlayersForDealing(IList<Player> players)

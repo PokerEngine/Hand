@@ -109,7 +109,7 @@ public class TradingDealer : IDealer
 
     private IList<Player> GetPlayersForTrading(BaseTable table)
     {
-        return table.Players.Where(x => x.IsAvailableForTrading).ToList();
+        return table.Where(x => x.IsAvailableForTrading).ToList();
     }
 
     private Player? GetPreviousPlayer(BaseTable table, BasePot pot)

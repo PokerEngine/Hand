@@ -1,13 +1,16 @@
+using System.Collections;
 using System.Collections.Immutable;
 using Domain.Error;
 using Domain.ValueObject;
 
 namespace Domain.Entity;
 
-public abstract class BaseTable
+public abstract class BaseTable : IEnumerable<Player>
 {
-    public ImmutableList<Player> Players { get; }
+    private ImmutableList<Player> _players;
     public CardSet BoardCards { get; private set; }
+
+    public int Count => _players.Count;
 
     protected BaseTable(IEnumerable<Player> players, CardSet boardCards)
     {
@@ -35,13 +38,13 @@ public abstract class BaseTable
             throw new NotAvailableError("The table must contain a player on the big blind");
         }
 
-        Players = orderedPlayers;
+        _players = orderedPlayers;
         BoardCards = boardCards;
     }
 
     public Player GetPlayerByNickname(Nickname nickname)
     {
-        foreach (var player in Players)
+        foreach (var player in _players)
         {
             if (player.Nickname == nickname)
             {
@@ -54,7 +57,7 @@ public abstract class BaseTable
 
     public Player GetPlayerByPosition(Position position)
     {
-        foreach (var player in Players)
+        foreach (var player in _players)
         {
             if (player.Position == position)
             {
@@ -70,8 +73,19 @@ public abstract class BaseTable
         BoardCards += boardCards;
     }
 
+    public IEnumerator<Player> GetEnumerator()
+    {
+        foreach (var player in _players)
+        {
+            yield return player;
+        }
+    }
+
+    IEnumerator IEnumerable.GetEnumerator()
+        => GetEnumerator();
+
     public override string ToString()
-        => $"{GetType().Name}: {Players.Count} player(s), {BoardCards}";
+        => $"{GetType().Name}: {_players.Count} player(s), {BoardCards}";
 }
 
 public class SixMaxTable : BaseTable

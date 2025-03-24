@@ -63,45 +63,6 @@ public abstract class BaseTable
         throw new NotFoundError("A player on the given position is not found at the table");
     }
 
-    public Player? GetNextPlayerForTrading(Player? previousPlayer)
-    {
-        var previousIdx = previousPlayer == null ? -1 : Players.IndexOf(previousPlayer);
-        var nextIdx = previousIdx + 1;
-
-        while (true)
-        {
-            if (nextIdx == previousIdx)
-            {
-                break;
-            }
-
-            if (nextIdx == Players.Count)
-            {
-                if (previousIdx == -1)
-                {
-                    break;
-                }
-
-                nextIdx = 0;
-            }
-
-            var nextPlayer = Players[nextIdx];
-            if (nextPlayer.IsAvailableForTrading)
-            {
-                return nextPlayer;
-            }
-
-            nextIdx ++;
-        }
-
-        return null;
-    }
-
-    public bool AllPlayersAreConnected()
-    {
-        return Players.All(x => x.IsConnected);
-    }
-
     public void TakeBoardCards(CardSet boardCards)
     {
         BoardCards += boardCards;

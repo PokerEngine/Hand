@@ -18,8 +18,9 @@ public class NoLimitPotTest
         var pot = new NoLimitPot(
             smallBlind: new Chips(5),
             bigBlind: new Chips(10),
-            currentRaiseNickname: new Nickname("SmallBlind"),
-            currentRaiseStep: new Chips(15),
+            lastActionNickname: new Nickname("SmallBlind"),
+            lastRaiseNickname: new Nickname("SmallBlind"),
+            lastRaiseStep: new Chips(15),
             currentActionNicknames: ImmutableHashSet.Create(new Nickname("SmallBlind")),
             currentSidePot: currentSidePot,
             previousSidePot: new SidePot()
@@ -27,8 +28,9 @@ public class NoLimitPotTest
 
         Assert.Equal(new Chips(5), pot.SmallBlind);
         Assert.Equal(new Chips(10), pot.BigBlind);
-        Assert.Equal(new Nickname("SmallBlind"), pot.CurrentRaiseNickname);
-        Assert.Equal(new Chips(15), pot.CurrentRaiseStep);
+        Assert.Equal(new Nickname("SmallBlind"), pot.LastActionNickname);
+        Assert.Equal(new Nickname("SmallBlind"), pot.LastRaiseNickname);
+        Assert.Equal(new Chips(15), pot.LastRaiseStep);
         Assert.Equal(ImmutableHashSet.Create(new Nickname("SmallBlind")), pot.CurrentActionNicknames);
         Assert.Equal(currentSidePot, pot.CurrentSidePot);
         Assert.Empty(pot.PreviousSidePot);
@@ -45,8 +47,9 @@ public class NoLimitPotTest
 
         Assert.Equal(new Chips(5), pot.SmallBlind);
         Assert.Equal(new Chips(10), pot.BigBlind);
-        Assert.Null(pot.CurrentRaiseNickname);
-        Assert.Equal(pot.BigBlind, pot.CurrentRaiseStep);
+        Assert.Null(pot.LastActionNickname);
+        Assert.Null(pot.LastRaiseNickname);
+        Assert.Equal(pot.BigBlind, pot.LastRaiseStep);
         Assert.Empty(pot.CurrentActionNicknames);
         Assert.Empty(pot.CurrentSidePot);
         Assert.Empty(pot.PreviousSidePot);
@@ -75,6 +78,7 @@ public class NoLimitPotTest
 
         pot.PostSmallBlind(playerSb, new Chips(5));
 
+        Assert.Equal(new Nickname("SmallBlind"), pot.LastActionNickname);
         Assert.Equal(new Chips(5), pot.GetTotalAmount());
         Assert.Equal(new Chips(5), pot.GetCurrentPostedAmount(playerSb));
         Assert.Equal(playerSb.Stake, new Chips(995));
@@ -103,6 +107,7 @@ public class NoLimitPotTest
 
         pot.PostSmallBlind(playerSb, new Chips(2));
 
+        Assert.Equal(new Nickname("SmallBlind"), pot.LastActionNickname);
         Assert.Equal(new Chips(2), pot.GetTotalAmount());
         Assert.Equal(new Chips(2), pot.GetCurrentPostedAmount(playerSb));
         Assert.Equal(playerSb.Stake, new Chips(0));
@@ -134,6 +139,7 @@ public class NoLimitPotTest
         var exc = Assert.Throws<NotAvailableError>(() => pot.PostSmallBlind(playerSb, amount));
 
         Assert.Equal("The player must post 5 chip(s)", exc.Message);
+        Assert.Null(pot.LastActionNickname);
         Assert.Equal(new Chips(0), pot.GetTotalAmount());
         Assert.Equal(new Chips(0), pot.GetCurrentPostedAmount(playerSb));
         Assert.Equal(playerSb.Stake, new Chips(1000));
@@ -163,6 +169,7 @@ public class NoLimitPotTest
 
         pot.PostBigBlind(playerBb, new Chips(10));
 
+        Assert.Equal(new Nickname("BigBlind"), pot.LastActionNickname);
         Assert.Equal(new Chips(15), pot.GetTotalAmount());
         Assert.Equal(new Chips(10), pot.GetCurrentPostedAmount(playerBb));
         Assert.Equal(playerBb.Stake, new Chips(990));
@@ -192,6 +199,7 @@ public class NoLimitPotTest
 
         pot.PostBigBlind(playerBb, new Chips(2));
 
+        Assert.Equal(new Nickname("BigBlind"), pot.LastActionNickname);
         Assert.Equal(new Chips(7), pot.GetTotalAmount());
         Assert.Equal(new Chips(2), pot.GetCurrentPostedAmount(playerBb));
         Assert.Equal(playerBb.Stake, new Chips(0));
@@ -220,6 +228,7 @@ public class NoLimitPotTest
 
         pot.PostBigBlind(playerBb, new Chips(10));
 
+        Assert.Equal(new Nickname("BigBlind"), pot.LastActionNickname);
         Assert.Equal(new Chips(10), pot.GetTotalAmount());
         Assert.Equal(new Chips(10), pot.GetCurrentPostedAmount(playerBb));
         Assert.Equal(playerBb.Stake, new Chips(990));
@@ -252,6 +261,7 @@ public class NoLimitPotTest
         var exc = Assert.Throws<NotAvailableError>(() => pot.PostBigBlind(playerBb, amount));
 
         Assert.Equal("The player must post 10 chip(s)", exc.Message);
+        Assert.Equal(new Nickname("SmallBlind"), pot.LastActionNickname);
         Assert.Equal(new Chips(5), pot.GetTotalAmount());
         Assert.Equal(new Chips(0), pot.GetCurrentPostedAmount(playerBb));
         Assert.Equal(playerBb.Stake, new Chips(1000));
@@ -293,6 +303,7 @@ public class NoLimitPotTest
 
         Assert.False(pot.ActionIsAvailable(playerBb));
 
+        Assert.Equal(new Nickname("SmallBlind"), pot.LastActionNickname);
         Assert.Equal(new Chips(15), pot.GetTotalAmount());
         Assert.Equal(new Chips(0), pot.GetCurrentPostedAmount(playerSb));
         Assert.Equal(playerSb.Stake, new Chips(995));
@@ -327,6 +338,7 @@ public class NoLimitPotTest
         var exc = Assert.Throws<NotAvailableError>(() => pot.Fold(playerBb));
 
         Assert.Equal("The player has posted the most amount into the pot, he cannot fold", exc.Message);
+        Assert.Equal(new Nickname("SmallBlind"), pot.LastActionNickname);
         Assert.Equal(new Chips(15), pot.GetTotalAmount());
         Assert.Equal(new Chips(10), pot.GetCurrentPostedAmount(playerBb));
         Assert.Equal(playerBb.Stake, new Chips(990));
@@ -367,6 +379,7 @@ public class NoLimitPotTest
         var exc = Assert.Throws<NotAvailableError>(() => pot.Fold(playerBb));
 
         Assert.Equal("The player has posted the same amount into the pot, he cannot fold", exc.Message);
+        Assert.Equal(new Nickname("SmallBlind"), pot.LastActionNickname);
         Assert.Equal(new Chips(20), pot.GetTotalAmount());
         Assert.Equal(new Chips(10), pot.GetCurrentPostedAmount(playerBb));
         Assert.Equal(playerBb.Stake, new Chips(990));
@@ -408,6 +421,7 @@ public class NoLimitPotTest
 
         Assert.False(pot.ActionIsAvailable(playerSb));
 
+        Assert.Equal(new Nickname("BigBlind"), pot.LastActionNickname);
         Assert.Equal(new Chips(20), pot.GetTotalAmount());
         Assert.Equal(new Chips(10), pot.GetCurrentPostedAmount(playerBb));
         Assert.Equal(playerBb.Stake, new Chips(990));
@@ -442,6 +456,7 @@ public class NoLimitPotTest
         var exc = Assert.Throws<NotAvailableError>(() => pot.Check(playerBb));
 
         Assert.Equal("The player has posted the most amount into the pot, he cannot check", exc.Message);
+        Assert.Equal(new Nickname("SmallBlind"), pot.LastActionNickname);
         Assert.Equal(new Chips(15), pot.GetTotalAmount());
         Assert.Equal(new Chips(10), pot.GetCurrentPostedAmount(playerBb));
         Assert.Equal(playerBb.Stake, new Chips(990));
@@ -482,6 +497,7 @@ public class NoLimitPotTest
         var exc = Assert.Throws<NotAvailableError>(() => pot.Check(playerSb));
 
         Assert.Equal("The player has posted less amount into the pot, he cannot check", exc.Message);
+        Assert.Equal(new Nickname("BigBlind"), pot.LastActionNickname);
         Assert.Equal(new Chips(15), pot.GetTotalAmount());
         Assert.Equal(new Chips(5), pot.GetCurrentPostedAmount(playerSb));
         Assert.Equal(playerSb.Stake, new Chips(995));
@@ -516,6 +532,7 @@ public class NoLimitPotTest
         var exc = Assert.Throws<NotAvailableError>(() => pot.Check(playerSb));
 
         Assert.Equal("The player has already performed an action, he cannot check", exc.Message);
+        Assert.Equal(new Nickname("SmallBlind"), pot.LastActionNickname);
         Assert.Equal(new Chips(20), pot.GetTotalAmount());
         Assert.Equal(new Chips(10), pot.GetCurrentPostedAmount(playerSb));
         Assert.Equal(playerSb.Stake, new Chips(990));
@@ -563,6 +580,7 @@ public class NoLimitPotTest
         Assert.Equal(new Chips(20), pot.GetMinRaiseToAmount(playerBb));
         Assert.Equal(new Chips(1000), pot.GetMaxRaiseToAmount(playerBb));
 
+        Assert.Equal(new Nickname("SmallBlind"), pot.LastActionNickname);
         Assert.Equal(new Chips(20), pot.GetTotalAmount());
         Assert.Equal(new Chips(10), pot.GetCurrentPostedAmount(playerSb));
         Assert.Equal(playerSb.Stake, new Chips(990));
@@ -603,6 +621,7 @@ public class NoLimitPotTest
 
         Assert.False(pot.ActionIsAvailable(playerSb));
 
+        Assert.Equal(new Nickname("BigBlind"), pot.LastActionNickname);
         Assert.Equal(new Chips(39), pot.GetTotalAmount());
         Assert.Equal(new Chips(19), pot.GetCurrentPostedAmount(playerBb));
         Assert.Equal(playerBb.Stake, new Chips(0));
@@ -637,6 +656,7 @@ public class NoLimitPotTest
         var exc = Assert.Throws<NotAvailableError>(() => pot.CallTo(playerBb, new Chips(10)));
 
         Assert.Equal("The player has posted the most amount into the pot, he cannot call", exc.Message);
+        Assert.Equal(new Nickname("SmallBlind"), pot.LastActionNickname);
         Assert.Equal(new Chips(15), pot.GetTotalAmount());
         Assert.Equal(new Chips(10), pot.GetCurrentPostedAmount(playerBb));
         Assert.Equal(playerBb.Stake, new Chips(990));
@@ -677,6 +697,7 @@ public class NoLimitPotTest
         var exc = Assert.Throws<NotAvailableError>(() => pot.CallTo(playerBb, new Chips(10)));
 
         Assert.Equal("The player has posted the same amount into the pot, he cannot call", exc.Message);
+        Assert.Equal(new Nickname("SmallBlind"), pot.LastActionNickname);
         Assert.Equal(new Chips(20), pot.GetTotalAmount());
         Assert.Equal(new Chips(10), pot.GetCurrentPostedAmount(playerBb));
         Assert.Equal(playerBb.Stake, new Chips(990));
@@ -719,6 +740,7 @@ public class NoLimitPotTest
         var exc = Assert.Throws<NotAvailableError>(() => pot.CallTo(playerSb, amount));
 
         Assert.Equal("The player must call to 10 chip(s)", exc.Message);
+        Assert.Equal(new Nickname("BigBlind"), pot.LastActionNickname);
         Assert.Equal(new Chips(15), pot.GetTotalAmount());
         Assert.Equal(new Chips(5), pot.GetCurrentPostedAmount(playerSb));
         Assert.Equal(playerSb.Stake, new Chips(995));
@@ -757,6 +779,7 @@ public class NoLimitPotTest
         var exc = Assert.Throws<NotAvailableError>(() => pot.CallTo(playerSb, new Chips(8)));
 
         Assert.Equal("The player must call to 9 chip(s)", exc.Message);
+        Assert.Equal(new Nickname("BigBlind"), pot.LastActionNickname);
         Assert.Equal(new Chips(15), pot.GetTotalAmount());
         Assert.Equal(new Chips(5), pot.GetCurrentPostedAmount(playerSb));
         Assert.Equal(playerSb.Stake, new Chips(4));
@@ -805,6 +828,7 @@ public class NoLimitPotTest
         Assert.Equal(new Chips(30), pot.GetMinRaiseToAmount(playerBb));
         Assert.Equal(new Chips(1000), pot.GetMaxRaiseToAmount(playerBb));
 
+        Assert.Equal(new Nickname("SmallBlind"), pot.LastActionNickname);
         Assert.Equal(new Chips(30), pot.GetTotalAmount());
         Assert.Equal(new Chips(20), pot.GetCurrentPostedAmount(playerSb));
         Assert.Equal(playerSb.Stake, new Chips(980));
@@ -853,6 +877,7 @@ public class NoLimitPotTest
         Assert.Equal(new Chips(29), pot.GetMinRaiseToAmount(playerBb));
         Assert.Equal(new Chips(1000), pot.GetMaxRaiseToAmount(playerBb));
 
+        Assert.Equal(new Nickname("SmallBlind"), pot.LastActionNickname);
         Assert.Equal(new Chips(29), pot.GetTotalAmount());
         Assert.Equal(new Chips(19), pot.GetCurrentPostedAmount(playerSb));
         Assert.Equal(playerSb.Stake, new Chips(0));
@@ -887,6 +912,7 @@ public class NoLimitPotTest
         var exc = Assert.Throws<NotAvailableError>(() => pot.RaiseTo(playerBb, new Chips(20)));
 
         Assert.Equal("The player has posted the most amount into the pot, he cannot raise", exc.Message);
+        Assert.Equal(new Nickname("SmallBlind"), pot.LastActionNickname);
         Assert.Equal(new Chips(15), pot.GetTotalAmount());
         Assert.Equal(new Chips(10), pot.GetCurrentPostedAmount(playerBb));
         Assert.Equal(playerBb.Stake, new Chips(990));
@@ -935,6 +961,7 @@ public class NoLimitPotTest
         Assert.Equal(new Chips(30), pot.GetMinRaiseToAmount(playerSb));
         Assert.Equal(new Chips(1000), pot.GetMaxRaiseToAmount(playerSb));
 
+        Assert.Equal(new Nickname("BigBlind"), pot.LastActionNickname);
         Assert.Equal(new Chips(30), pot.GetTotalAmount());
         Assert.Equal(new Chips(20), pot.GetCurrentPostedAmount(playerBb));
         Assert.Equal(playerBb.Stake, new Chips(980));
@@ -975,6 +1002,7 @@ public class NoLimitPotTest
         var exc = Assert.Throws<NotAvailableError>(() => pot.RaiseTo(playerSb, new Chips(19)));
 
         Assert.Equal("The player must raise to minimum 20 chip(s)", exc.Message);
+        Assert.Equal(new Nickname("BigBlind"), pot.LastActionNickname);
         Assert.Equal(new Chips(15), pot.GetTotalAmount());
         Assert.Equal(new Chips(5), pot.GetCurrentPostedAmount(playerSb));
         Assert.Equal(playerSb.Stake, new Chips(995));
@@ -1015,6 +1043,7 @@ public class NoLimitPotTest
         var exc = Assert.Throws<NotAvailableError>(() => pot.RaiseTo(playerSb, new Chips(1001)));
 
         Assert.Equal("The player must raise to maximum 1000 chip(s)", exc.Message);
+        Assert.Equal(new Nickname("BigBlind"), pot.LastActionNickname);
         Assert.Equal(new Chips(15), pot.GetTotalAmount());
         Assert.Equal(new Chips(5), pot.GetCurrentPostedAmount(playerSb));
         Assert.Equal(playerSb.Stake, new Chips(995));
@@ -1054,6 +1083,7 @@ public class NoLimitPotTest
         var exc = Assert.Throws<NotAvailableError>(() => pot.RaiseTo(playerBb, new Chips(19)));
 
         Assert.Equal("The player must call to 19 chip(s)", exc.Message);
+        Assert.Equal(new Nickname("SmallBlind"), pot.LastActionNickname);
         Assert.Equal(new Chips(30), pot.GetTotalAmount());
         Assert.Equal(new Chips(10), pot.GetCurrentPostedAmount(playerBb));
         Assert.Equal(playerBb.Stake, new Chips(9));
@@ -1094,6 +1124,7 @@ public class NoLimitPotTest
         var exc = Assert.Throws<NotAvailableError>(() => pot.RaiseTo(playerSb, new Chips(18)));
 
         Assert.Equal("The player must raise to minimum 19 chip(s)", exc.Message);
+        Assert.Equal(new Nickname("BigBlind"), pot.LastActionNickname);
         Assert.Equal(new Chips(15), pot.GetTotalAmount());
         Assert.Equal(new Chips(5), pot.GetCurrentPostedAmount(playerSb));
         Assert.Equal(playerSb.Stake, new Chips(14));
@@ -1151,6 +1182,7 @@ public class NoLimitPotTest
         Assert.Equal(new Chips(70), pot.GetMinRaiseToAmount(playerBb));
         Assert.Equal(new Chips(1000), pot.GetMaxRaiseToAmount(playerBb));
 
+        Assert.Equal(new Nickname("Button"), pot.LastActionNickname);
         Assert.Equal(new Chips(135), pot.GetTotalAmount());
         Assert.Equal(new Chips(40), pot.GetCurrentPostedAmount(playerSb));
         Assert.Equal(new Chips(40), pot.GetCurrentPostedAmount(playerBb));
@@ -1204,6 +1236,7 @@ public class NoLimitPotTest
         var exc = Assert.Throws<NotAvailableError>(() => pot.RaiseTo(playerBb, new Chips(55)));
 
         Assert.Equal("There was no raise since the player's last action, he cannot raise", exc.Message);
+        Assert.Equal(new Nickname("BigBlind"), pot.LastActionNickname);
         Assert.Equal(new Chips(103), pot.GetTotalAmount());
         Assert.Equal(new Chips(39), pot.GetCurrentPostedAmount(playerSb));
         Assert.Equal(new Chips(39), pot.GetCurrentPostedAmount(playerBb));
@@ -1267,6 +1300,7 @@ public class NoLimitPotTest
         Assert.Equal(new Chips(84), pot.GetMinRaiseToAmount(playerBb));
         Assert.Equal(new Chips(1000), pot.GetMaxRaiseToAmount(playerBb));
 
+        Assert.Equal(new Nickname("Button"), pot.LastActionNickname);
         Assert.Equal(new Chips(162), pot.GetTotalAmount());
         Assert.Equal(new Chips(39), pot.GetCurrentPostedAmount(playerSb));
         Assert.Equal(new Chips(54), pot.GetCurrentPostedAmount(playerBb));
@@ -1334,8 +1368,9 @@ public class NoLimitPotTest
         Assert.Equal(new Chips(120), pot.GetPreviousPostedAmount(playerBu));
 
         Assert.Equal(new Chips(250), pot.GetTotalAmount());
-        Assert.Null(pot.CurrentRaiseNickname);
-        Assert.Equal(pot.BigBlind, pot.CurrentRaiseStep);
+        Assert.Null(pot.LastActionNickname);
+        Assert.Null(pot.LastRaiseNickname);
+        Assert.Equal(pot.BigBlind, pot.LastRaiseStep);
         Assert.Empty(pot.CurrentActionNicknames);
     }
 
@@ -1933,8 +1968,9 @@ public class NoLimitPotTest
         var pot = new NoLimitPot(
             smallBlind: new Chips(5),
             bigBlind: new Chips(10),
-            currentRaiseNickname: new Nickname("SmallBlind"),
-            currentRaiseStep: new Chips(15),
+            lastActionNickname: new Nickname("SmallBlind"),
+            lastRaiseNickname: new Nickname("SmallBlind"),
+            lastRaiseStep: new Chips(15),
             currentActionNicknames: ImmutableHashSet.Create(new Nickname("SmallBlind")),
             currentSidePot: new SidePot(
                 new Dictionary<Nickname, Chips>()

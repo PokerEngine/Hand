@@ -9,8 +9,9 @@ public abstract class BasePot
 {
     public Chips SmallBlind { get; }
     public Chips BigBlind { get; }
-    public Nickname? CurrentRaiseNickname { get; private set; }
-    public Chips CurrentRaiseStep { get; private set; }
+    public Nickname? LastActionNickname { get; private set; }
+    public Nickname? LastRaiseNickname { get; private set; }
+    public Chips LastRaiseStep { get; private set; }
     public ImmutableHashSet<Nickname> CurrentActionNicknames { get; private set; }
     public SidePot CurrentSidePot { get; private set; }
     public SidePot PreviousSidePot { get; private set; }
@@ -18,8 +19,9 @@ public abstract class BasePot
     protected BasePot(
         Chips smallBlind,
         Chips bigBlind,
-        Nickname? currentRaiseNickname,
-        Chips currentRaiseStep,
+        Nickname? lastActionNickname,
+        Nickname? lastRaiseNickname,
+        Chips lastRaiseStep,
         ImmutableHashSet<Nickname> currentActionNicknames,
         SidePot currentSidePot,
         SidePot previousSidePot
@@ -27,8 +29,9 @@ public abstract class BasePot
     {
         SmallBlind = smallBlind;
         BigBlind = bigBlind;
-        CurrentRaiseNickname = currentRaiseNickname;
-        CurrentRaiseStep = currentRaiseStep;
+        LastActionNickname = lastActionNickname;
+        LastRaiseNickname = lastRaiseNickname;
+        LastRaiseStep = lastRaiseStep;
         CurrentActionNicknames = currentActionNicknames;
         CurrentSidePot = currentSidePot;
         PreviousSidePot = previousSidePot;
@@ -39,6 +42,7 @@ public abstract class BasePot
         ValidatePostBlind(player: player, amount: amount, blind: SmallBlind);
 
         PostTo(player, amount);
+        LastActionNickname = player.Nickname;
     }
 
     public void PostBigBlind(Player player, Chips amount)
@@ -46,6 +50,7 @@ public abstract class BasePot
         ValidatePostBlind(player: player, amount: amount, blind: BigBlind);
 
         PostTo(player, amount);
+        LastActionNickname = player.Nickname;
     }
 
     public void Fold(Player player)
@@ -60,6 +65,8 @@ public abstract class BasePot
             CurrentSidePot = CurrentSidePot.Sub(player.Nickname, amount);
             PreviousSidePot = PreviousSidePot.Add(player.Nickname, amount);
         }
+
+        LastActionNickname = player.Nickname;
     }
 
     public void Check(Player player)
@@ -68,6 +75,7 @@ public abstract class BasePot
 
         player.Check();
         PerformCurrentAction(player);
+        LastActionNickname = player.Nickname;
     }
 
     public void CallTo(Player player, Chips amount)
@@ -76,6 +84,7 @@ public abstract class BasePot
 
         PostTo(player, amount);
         PerformCurrentAction(player);
+        LastActionNickname = player.Nickname;
     }
 
     public void RaiseTo(Player player, Chips amount)
@@ -84,19 +93,20 @@ public abstract class BasePot
 
         var raiseStep = new Chips(0);
         var currentMaxAmount = GetCurrentMaxAmount(player);
-        if (amount >= currentMaxAmount + CurrentRaiseStep)
+        if (amount >= currentMaxAmount + LastRaiseStep)
         {
             raiseStep = amount - currentMaxAmount;
         }
 
         PostTo(player, amount);
         PerformCurrentAction(player);
+        LastActionNickname = player.Nickname;
 
         // If a player raises less than the minimum amount, he goes all in, and it is not considered a raise
         if (raiseStep)
         {
-            CurrentRaiseStep = raiseStep;
-            CurrentRaiseNickname = player.Nickname;
+            LastRaiseStep = raiseStep;
+            LastRaiseNickname = player.Nickname;
         }
     }
 
@@ -133,8 +143,9 @@ public abstract class BasePot
 
     public void FinishStage()
     {
-        CurrentRaiseStep = BigBlind;
-        CurrentRaiseNickname = null;
+        LastActionNickname = null;
+        LastRaiseStep = BigBlind;
+        LastRaiseNickname = null;
         CurrentActionNicknames = CurrentActionNicknames.Clear();
 
         foreach (var (nickname, amount) in CurrentSidePot)
@@ -169,7 +180,7 @@ public abstract class BasePot
     public Chips GetMinRaiseToAmount(Player player)
     {
         var playerAmount = GetCurrentPostedAmount(player) + player.Stake;
-        var amount = GetCurrentMaxAmount(player) + CurrentRaiseStep;
+        var amount = GetCurrentMaxAmount(player) + LastRaiseStep;
         return amount < playerAmount ? amount : playerAmount;
     }
 
@@ -576,7 +587,7 @@ public abstract class BasePot
         return (
             IsCurrentActionPerformed(player)
             && GetCurrentPostedAmount(player) < GetCurrentMaxAmount(player)
-            && player.Nickname != CurrentRaiseNickname
+            && player.Nickname != LastRaiseNickname
         );
     }
 }
@@ -586,12 +597,13 @@ public class NoLimitPot : BasePot
     public NoLimitPot(
         Chips smallBlind,
         Chips bigBlind,
-        Nickname? currentRaiseNickname,
-        Chips currentRaiseStep,
+        Nickname? lastActionNickname,
+        Nickname? lastRaiseNickname,
+        Chips lastRaiseStep,
         ImmutableHashSet<Nickname> currentActionNicknames,
         SidePot currentSidePot,
         SidePot previousSidePot
-    ) : base(smallBlind, bigBlind, currentRaiseNickname, currentRaiseStep, currentActionNicknames, currentSidePot, previousSidePot)
+    ) : base(smallBlind, bigBlind, lastActionNickname, lastRaiseNickname, lastRaiseStep, currentActionNicknames, currentSidePot, previousSidePot)
     {
     }
 
@@ -600,8 +612,9 @@ public class NoLimitPot : BasePot
         return new(
             smallBlind: smallBlind,
             bigBlind: bigBlind,
-            currentRaiseNickname: null,
-            currentRaiseStep: bigBlind,
+            lastActionNickname: null,
+            lastRaiseNickname: null,
+            lastRaiseStep: bigBlind,
             currentActionNicknames: ImmutableHashSet<Nickname>.Empty,
             currentSidePot: new SidePot(),
             previousSidePot: new SidePot()
@@ -622,12 +635,13 @@ public class PotLimitPot : BasePot
     public PotLimitPot(
         Chips smallBlind,
         Chips bigBlind,
-        Nickname? currentRaiseNickname,
-        Chips currentRaiseStep,
+        Nickname? lastActionNickname,
+        Nickname? lastRaiseNickname,
+        Chips lastRaiseStep,
         ImmutableHashSet<Nickname> currentActionNicknames,
         SidePot currentSidePot,
         SidePot previousSidePot
-    ) : base(smallBlind, bigBlind, currentRaiseNickname, currentRaiseStep, currentActionNicknames, currentSidePot, previousSidePot)
+    ) : base(smallBlind, bigBlind, lastActionNickname, lastRaiseNickname, lastRaiseStep, currentActionNicknames, currentSidePot, previousSidePot)
     {
     }
 
@@ -636,8 +650,9 @@ public class PotLimitPot : BasePot
         return new(
             smallBlind: smallBlind,
             bigBlind: bigBlind,
-            currentRaiseNickname: null,
-            currentRaiseStep: bigBlind,
+            lastActionNickname: null,
+            lastRaiseNickname: null,
+            lastRaiseStep: bigBlind,
             currentActionNicknames: ImmutableHashSet<Nickname>.Empty,
             currentSidePot: new SidePot(),
             previousSidePot: new SidePot()

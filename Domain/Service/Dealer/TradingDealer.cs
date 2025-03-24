@@ -5,7 +5,7 @@ using Domain.Service.Evaluator;
 
 namespace Domain.Service.Dealer;
 
-public abstract class BaseTradeDealer : IDealer
+public class TradingDealer : IDealer
 {
     public void Start(
         HandUid handUid,
@@ -16,14 +16,12 @@ public abstract class BaseTradeDealer : IDealer
         EventBus eventBus
     )
     {
-        var players = GetPlayersForTrading(table);
-
-        if (HasEnoughPlayersForTrading(players))
+        if (HasEnoughPlayersForTrading(table))
         {
             var startEvent = new StageIsStartedEvent(HandUid: handUid, OccuredAt: DateTime.Now);
             eventBus.Publish(startEvent);
 
-            var previousPlayer = GetPreviousPlayer(table);
+            var previousPlayer = GetPreviousPlayer(table: table, pot: pot);
             RequestActionOrFinish(
                 previousPlayer: previousPlayer,
                 table: table,
@@ -39,17 +37,59 @@ public abstract class BaseTradeDealer : IDealer
         }
     }
 
+    private bool HasEnoughPlayersForTrading(BaseTable table)
+    {
+        return GetPlayersForTrading(table).Count > 1;
+    }
+
     private IList<Player> GetPlayersForTrading(BaseTable table)
     {
         return table.Players.Where(x => x.IsAvailableForTrading).ToList();
     }
 
-    private bool HasEnoughPlayersForTrading(IList<Player> players)
+    private Player? GetPreviousPlayer(BaseTable table, BasePot pot)
     {
-        return players.Count > 1;
+        if (pot.LastActionNickname == null)
+        {
+            return null;
+        }
+        return table.GetPlayerByNickname((Nickname)pot.LastActionNickname);
     }
 
-    protected abstract Player? GetPreviousPlayer(BaseTable table);
+    private Player? GetNextPlayerForTrading(BaseTable table, Player? previousPlayer)
+    {
+        var players = GetPlayersForTrading(table);
+        var previousIdx = previousPlayer == null ? -1 : players.IndexOf(previousPlayer);
+        var nextIdx = previousIdx + 1;
+
+        while (true)
+        {
+            if (nextIdx == previousIdx)
+            {
+                break;
+            }
+
+            if (nextIdx == players.Count)
+            {
+                if (previousIdx == -1)
+                {
+                    break;
+                }
+
+                nextIdx = 0;
+            }
+
+            var nextPlayer = players[nextIdx];
+            if (nextPlayer.IsAvailableForTrading)
+            {
+                return nextPlayer;
+            }
+
+            nextIdx ++;
+        }
+
+        return null;
+    }
 
     private void RequestActionOrFinish(
         Player? previousPlayer,
@@ -59,14 +99,45 @@ public abstract class BaseTradeDealer : IDealer
         EventBus eventBus
     )
     {
-        var nextPlayer = table.GetNextPlayerForTrading(previousPlayer);
+        var nextPlayer = GetNextPlayerForTrading(table: table, previousPlayer: previousPlayer);
         if (nextPlayer == null || !pot.ActionIsAvailable(nextPlayer))
         {
-            var finishEvent = new StageIsFinishedEvent(HandUid: handUid, OccuredAt: DateTime.Now);
-            eventBus.Publish(finishEvent);
-            return;
+            Finish(
+                pot: pot,
+                handUid: handUid,
+                eventBus: eventBus
+            );
         }
+        else
+        {
+            RequestAction(
+                nextPlayer: nextPlayer,
+                pot: pot,
+                handUid: handUid,
+                eventBus: eventBus
+            );
+        }
+    }
 
+    private void Finish(
+        BasePot pot,
+        HandUid handUid,
+        EventBus eventBus
+    )
+    {
+        pot.FinishStage();
+
+        var finishEvent = new StageIsFinishedEvent(HandUid: handUid, OccuredAt: DateTime.Now);
+        eventBus.Publish(finishEvent);
+    }
+
+    private void RequestAction(
+        Player nextPlayer,
+        BasePot pot,
+        HandUid handUid,
+        EventBus eventBus
+    )
+    {
         var foldIsAvailable = pot.FoldIsAvailable(nextPlayer);
 
         var checkIsAvailable = pot.CheckIsAvailable(nextPlayer);
@@ -211,21 +282,5 @@ public abstract class BaseTradeDealer : IDealer
             handUid: handUid,
             eventBus: eventBus
         );
-    }
-}
-
-public class PreflopTradeDealer : BaseTradeDealer
-{
-    protected override Player? GetPreviousPlayer(BaseTable table)
-    {
-        return table.GetPlayerByPosition(Position.BigBlind);
-    }
-}
-
-public class PostflopTradeDealer : BaseTradeDealer
-{
-    protected override Player? GetPreviousPlayer(BaseTable table)
-    {
-        return null;
     }
 }

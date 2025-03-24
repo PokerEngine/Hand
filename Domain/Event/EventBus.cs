@@ -4,38 +4,36 @@ namespace Domain.Event;
 
 public class EventBus
 {
-    private IList<Action<BaseEvent>> _listeners;
+    private List<Delegate> Listeners = [];
 
-    public EventBus()
+    public void Subscribe<T>(Action<T> listener) where T : BaseEvent
     {
-        _listeners = [];
-    }
-
-    public void Subscribe(Action<BaseEvent> listener)
-    {
-        if (_listeners.Contains(listener))
+        if (Listeners.Contains(listener))
         {
             throw new NotAvailableError("The listener has already been subscribed");
         }
 
-        _listeners.Add(listener);
+        Listeners.Add(listener);
     }
 
-    public void Unsubscribe(Action<BaseEvent> listener)
+    public void Unsubscribe<T>(Action<T> listener) where T : BaseEvent
     {
-        if (!_listeners.Contains(listener))
+        if (!Listeners.Contains(listener))
         {
             throw new NotAvailableError("The listener has not been subscribed yet");
         }
 
-        _listeners.Remove(listener);
+        Listeners.Remove(listener);
     }
 
-    public void Publish(BaseEvent @event)
+    public void Publish<T>(T @event) where T : BaseEvent
     {
-        foreach (var listener in _listeners)
+        foreach (var listener in Listeners)
         {
-            listener(@event);
+            if (listener is Action<T> typedListener)
+            {
+                typedListener(@event);
+            }
         }
     }
 }

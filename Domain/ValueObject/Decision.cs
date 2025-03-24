@@ -10,8 +10,8 @@ public enum DecisionType
 
 public readonly struct Decision
 {
-    public DecisionType Type { get; }
-    public Chips Amount { get; }
+    public readonly DecisionType Type;
+    public readonly Chips Amount;
 
     public Decision(DecisionType type, Chips amount)
     {

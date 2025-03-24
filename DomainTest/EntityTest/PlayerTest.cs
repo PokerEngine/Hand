@@ -27,23 +27,6 @@ public class PlayerTest
         Assert.True(player.IsFolded);
     }
 
-    [Fact]
-    public void TestCreate()
-    {
-        var player = Player.Create(
-            nickname: new Nickname("nickname"),
-            position: Position.Button,
-            stake: new Chips(1000)
-        );
-
-        Assert.Equal(new Nickname("nickname"), player.Nickname);
-        Assert.Equal(Position.Button, player.Position);
-        Assert.Equal(new Chips(1000), player.Stake);
-        Assert.Empty(player.HoleCards);
-        Assert.False(player.IsConnected);
-        Assert.False(player.IsFolded);
-    }
-
     [Theory]
     [InlineData(true)]
     [InlineData(false)]

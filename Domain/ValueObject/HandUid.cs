@@ -2,7 +2,7 @@ namespace Domain.ValueObject;
 
 public readonly struct HandUid
 {
-    private Guid Value { get; }
+    private readonly Guid Value;
 
     public HandUid(Guid value)
     {

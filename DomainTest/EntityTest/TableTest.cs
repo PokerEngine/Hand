@@ -9,20 +9,17 @@ public class SixMaxTableTest
     [Fact]
     public void TestInitialization()
     {
-        var playerSb = Player.Create(
-            nickname: new Nickname("SmallBlind"),
-            position: Position.SmallBlind,
-            stake: new Chips(1000)
+        var playerSb = CreatePlayer(
+            nickname: "SmallBlind",
+            position: Position.SmallBlind
         );
-        var playerBb = Player.Create(
-            nickname: new Nickname("BigBlind"),
-            position: Position.BigBlind,
-            stake: new Chips(1000)
+        var playerBb = CreatePlayer(
+            nickname: "BigBlind",
+            position: Position.BigBlind
         );
-        var playerBu = Player.Create(
-            nickname: new Nickname("Button"),
-            position: Position.Button,
-            stake: new Chips(1000)
+        var playerBu = CreatePlayer(
+            nickname: "Button",
+            position: Position.Button
         );
         var cards = new CardSet([Card.AceOfSpades, Card.DeuceOfClubs, Card.AceOfClubs]);
 
@@ -41,15 +38,13 @@ public class SixMaxTableTest
     [Fact]
     public void TestInitializationWithDuplicatedNicknames()
     {
-        var playerA = Player.Create(
-            nickname: new Nickname("Alpha"),
-            position: Position.SmallBlind,
-            stake: new Chips(1000)
+        var playerA = CreatePlayer(
+            nickname: "Alpha",
+            position: Position.SmallBlind
         );
-        var playerB = Player.Create(
-            nickname: new Nickname("Alpha"),
-            position: Position.BigBlind,
-            stake: new Chips(1000)
+        var playerB = CreatePlayer(
+            nickname: "Alpha",
+            position: Position.BigBlind
         );
 
         SixMaxTable table;
@@ -60,15 +55,13 @@ public class SixMaxTableTest
     [Fact]
     public void TestInitializationWithDuplicatedPositions()
     {
-        var playerA = Player.Create(
-            nickname: new Nickname("Alpha"),
-            position: Position.BigBlind,
-            stake: new Chips(1000)
+        var playerA = CreatePlayer(
+            nickname: "Alpha",
+            position: Position.BigBlind
         );
-        var playerB = Player.Create(
-            nickname: new Nickname("Beta"),
-            position: Position.BigBlind,
-            stake: new Chips(1000)
+        var playerB = CreatePlayer(
+            nickname: "Beta",
+            position: Position.BigBlind
         );
 
         SixMaxTable table;
@@ -79,10 +72,9 @@ public class SixMaxTableTest
     [Fact]
     public void TestInitializationWithSinglePlayer()
     {
-        var playerBb = Player.Create(
-            nickname: new Nickname("BigBlind"),
-            position: Position.BigBlind,
-            stake: new Chips(1000)
+        var playerBb = CreatePlayer(
+            nickname: "BigBlind",
+            position: Position.BigBlind
         );
 
         SixMaxTable table;
@@ -93,15 +85,13 @@ public class SixMaxTableTest
     [Fact]
     public void TestInitializationWithoutBigBlind()
     {
-        var playerSb = Player.Create(
-            nickname: new Nickname("SmallBlind"),
-            position: Position.SmallBlind,
-            stake: new Chips(1000)
+        var playerSb = CreatePlayer(
+            nickname: "SmallBlind",
+            position: Position.SmallBlind
         );
-        var playerBu = Player.Create(
-            nickname: new Nickname("Button"),
-            position: Position.Button,
-            stake: new Chips(1000)
+        var playerBu = CreatePlayer(
+            nickname: "Button",
+            position: Position.Button
         );
 
         SixMaxTable table;
@@ -112,20 +102,17 @@ public class SixMaxTableTest
     [Fact]
     public void TestInitializationWithNotAllowedPositions()
     {
-        var playerSb = Player.Create(
-            nickname: new Nickname("SmallBlind"),
-            position: Position.SmallBlind,
-            stake: new Chips(1000)
+        var playerSb = CreatePlayer(
+            nickname: "SmallBlind",
+            position: Position.SmallBlind
         );
-        var playerBb = Player.Create(
-            nickname: new Nickname("BigBlind"),
-            position: Position.BigBlind,
-            stake: new Chips(1000)
+        var playerBb = CreatePlayer(
+            nickname: "BigBlind",
+            position: Position.BigBlind
         );
-        var playerUtg1 = Player.Create(
-            nickname: new Nickname("UnderTheGun1"),
-            position: Position.UnderTheGun1,
-            stake: new Chips(1000)
+        var playerUtg1 = CreatePlayer(
+            nickname: "UnderTheGun1",
+            position: Position.UnderTheGun1
         );
 
         SixMaxTable table;
@@ -134,48 +121,18 @@ public class SixMaxTableTest
     }
 
     [Fact]
-    public void TestCreate()
-    {
-        var playerSb = Player.Create(
-            nickname: new Nickname("SmallBlind"),
-            position: Position.SmallBlind,
-            stake: new Chips(1000)
-        );
-        var playerBb = Player.Create(
-            nickname: new Nickname("BigBlind"),
-            position: Position.BigBlind,
-            stake: new Chips(1000)
-        );
-        var playerBu = Player.Create(
-            nickname: new Nickname("Button"),
-            position: Position.Button,
-            stake: new Chips(1000)
-        );
-
-        var table = SixMaxTable.Create([playerBu, playerSb, playerBb]);
-
-        Assert.Equal(3, table.Players.Count);
-        Assert.Equal(playerSb, table.Players[0]);
-        Assert.Equal(playerBb, table.Players[1]);
-        Assert.Equal(playerBu, table.Players[2]);
-        Assert.Empty(table.BoardCards);
-    }
-
-    [Fact]
     public void TestGetPlayerByNickname()
     {
-        var playerSb = Player.Create(
-            nickname: new Nickname("SmallBlind"),
-            position: Position.SmallBlind,
-            stake: new Chips(1000)
+        var playerSb = CreatePlayer(
+            nickname: "SmallBlind",
+            position: Position.SmallBlind
         );
-        var playerBb = Player.Create(
-            nickname: new Nickname("BigBlind"),
-            position: Position.BigBlind,
-            stake: new Chips(1000)
+        var playerBb = CreatePlayer(
+            nickname: "BigBlind",
+            position: Position.BigBlind
         );
 
-        var table = SixMaxTable.Create([playerSb, playerBb]);
+        var table = CreateTable([playerSb, playerBb]);
 
         Assert.Equal(playerSb, table.GetPlayerByNickname(playerSb.Nickname));
         Assert.Equal(playerBb, table.GetPlayerByNickname(playerBb.Nickname));
@@ -184,18 +141,16 @@ public class SixMaxTableTest
     [Fact]
     public void TestGetPlayerByNicknameWhenNotFound()
     {
-        var playerSb = Player.Create(
-            nickname: new Nickname("SmallBlind"),
-            position: Position.SmallBlind,
-            stake: new Chips(1000)
+        var playerSb = CreatePlayer(
+            nickname: "SmallBlind",
+            position: Position.SmallBlind
         );
-        var playerBb = Player.Create(
-            nickname: new Nickname("BigBlind"),
-            position: Position.BigBlind,
-            stake: new Chips(1000)
+        var playerBb = CreatePlayer(
+            nickname: "BigBlind",
+            position: Position.BigBlind
         );
 
-        var table = SixMaxTable.Create([playerSb, playerBb]);
+        var table = CreateTable([playerSb, playerBb]);
 
         Player player;
         var exc = Assert.Throws<NotFoundError>(() => player = table.GetPlayerByNickname(new Nickname("Button")));
@@ -205,18 +160,16 @@ public class SixMaxTableTest
     [Fact]
     public void TestGetPlayerByPosition()
     {
-        var playerSb = Player.Create(
-            nickname: new Nickname("SmallBlind"),
-            position: Position.SmallBlind,
-            stake: new Chips(1000)
+        var playerSb = CreatePlayer(
+            nickname: "SmallBlind",
+            position: Position.SmallBlind
         );
-        var playerBb = Player.Create(
-            nickname: new Nickname("BigBlind"),
-            position: Position.BigBlind,
-            stake: new Chips(1000)
+        var playerBb = CreatePlayer(
+            nickname: "BigBlind",
+            position: Position.BigBlind
         );
 
-        var table = SixMaxTable.Create([playerSb, playerBb]);
+        var table = CreateTable([playerSb, playerBb]);
 
         Assert.Equal(playerSb, table.GetPlayerByPosition(Position.SmallBlind));
         Assert.Equal(playerBb, table.GetPlayerByPosition(Position.BigBlind));
@@ -225,18 +178,16 @@ public class SixMaxTableTest
     [Fact]
     public void TestGetPlayerByPositionWhenNotFound()
     {
-        var playerSb = Player.Create(
-            nickname: new Nickname("SmallBlind"),
-            position: Position.SmallBlind,
-            stake: new Chips(1000)
+        var playerSb = CreatePlayer(
+            nickname: "SmallBlind",
+            position: Position.SmallBlind
         );
-        var playerBb = Player.Create(
-            nickname: new Nickname("BigBlind"),
-            position: Position.BigBlind,
-            stake: new Chips(1000)
+        var playerBb = CreatePlayer(
+            nickname: "BigBlind",
+            position: Position.BigBlind
         );
 
-        var table = SixMaxTable.Create([playerSb, playerBb]);
+        var table = CreateTable([playerSb, playerBb]);
 
         Player player;
         var exc = Assert.Throws<NotFoundError>(() => player = table.GetPlayerByPosition(Position.Button));
@@ -246,18 +197,16 @@ public class SixMaxTableTest
     [Fact]
     public void TestTakeBoardCards()
     {
-        var playerSb = Player.Create(
-            nickname: new Nickname("SmallBlind"),
-            position: Position.SmallBlind,
-            stake: new Chips(1000)
+        var playerSb = CreatePlayer(
+            nickname: "SmallBlind",
+            position: Position.SmallBlind
         );
-        var playerBb = Player.Create(
-            nickname: new Nickname("BigBlind"),
-            position: Position.BigBlind,
-            stake: new Chips(1000)
+        var playerBb = CreatePlayer(
+            nickname: "BigBlind",
+            position: Position.BigBlind
         );
 
-        var table = SixMaxTable.Create([playerSb, playerBb]);
+        var table = CreateTable([playerSb, playerBb]);
 
         table.TakeBoardCards(new CardSet([Card.KingOfHearts, Card.TreyOfDiamonds, Card.DeuceOfClubs]));
 
@@ -271,20 +220,17 @@ public class SixMaxTableTest
     [Fact]
     public void TestRepresentation()
     {
-        var playerSb = Player.Create(
-            nickname: new Nickname("SmallBlind"),
-            position: Position.SmallBlind,
-            stake: new Chips(1000)
+        var playerSb = CreatePlayer(
+            nickname: "SmallBlind",
+            position: Position.SmallBlind
         );
-        var playerBb = Player.Create(
-            nickname: new Nickname("BigBlind"),
-            position: Position.BigBlind,
-            stake: new Chips(1000)
+        var playerBb = CreatePlayer(
+            nickname: "BigBlind",
+            position: Position.BigBlind
         );
-        var playerBu = Player.Create(
-            nickname: new Nickname("Button"),
-            position: Position.Button,
-            stake: new Chips(1000)
+        var playerBu = CreatePlayer(
+            nickname: "Button",
+            position: Position.Button
         );
         var cards = new CardSet([Card.AceOfSpades, Card.DeuceOfClubs, Card.AceOfClubs]);
 
@@ -294,5 +240,25 @@ public class SixMaxTableTest
         );
 
         Assert.Equal("SixMaxTable: 3 player(s), {AceOfSpades, DeuceOfClubs, AceOfClubs}", $"{table}");
+    }
+
+    private SixMaxTable CreateTable(IEnumerable<Player> players)
+    {
+        return new SixMaxTable(
+            players: players,
+            boardCards: new CardSet()
+        );
+    }
+
+    private Player CreatePlayer(string nickname, Position position, int stake = 1000)
+    {
+        return new Player(
+            nickname: new Nickname(nickname),
+            position: position,
+            stake: new Chips(stake),
+            holeCards: new CardSet(),
+            isConnected: false,
+            isFolded: false
+        );
     }
 }

@@ -14,8 +14,8 @@ public enum ComboType
 
 public readonly struct Combo : IComparable<Combo>, IEquatable<Combo>
 {
-    public ComboType Type { get; }
-    public int Weight { get; }
+    public readonly ComboType Type;
+    public readonly int Weight;
 
     public Combo(ComboType type, int weight)
     {

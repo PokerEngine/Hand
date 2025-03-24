@@ -9,21 +9,23 @@ public abstract class BaseTable
     public ImmutableList<Player> Players { get; }
     public CardSet BoardCards { get; private set; }
 
-    protected BaseTable(IList<Player> players, CardSet boardCards)
+    protected BaseTable(IEnumerable<Player> players, CardSet boardCards)
     {
-        var nicknames = players.Select(x => x.Nickname).ToHashSet();
-        if (players.Count != nicknames.Count)
+        var orderedPlayers = players.OrderBy(x => x.Position).ToImmutableList();
+
+        var nicknames = orderedPlayers.Select(x => x.Nickname).ToHashSet();
+        if (orderedPlayers.Count != nicknames.Count)
         {
             throw new NotAvailableError("The table must contain players with unique nicknames");
         }
 
-        var positions = players.Select(x => x.Position).ToHashSet();
-        if (players.Count != positions.Count)
+        var positions = orderedPlayers.Select(x => x.Position).ToHashSet();
+        if (orderedPlayers.Count != positions.Count)
         {
             throw new NotAvailableError("The table must contain players with unique positions");
         }
 
-        if (players.Count < 2)
+        if (orderedPlayers.Count < 2)
         {
             throw new NotAvailableError("The table must contain at least 2 players");
         }
@@ -33,7 +35,7 @@ public abstract class BaseTable
             throw new NotAvailableError("The table must contain a player on the big blind");
         }
 
-        Players = players.OrderBy(x => x.Position).ToImmutableList();
+        Players = orderedPlayers;
         BoardCards = boardCards;
     }
 
@@ -83,7 +85,7 @@ public class SixMaxTable : BaseTable
         Position.Button,
     ];
 
-    public SixMaxTable(IList<Player> players, CardSet boardCards) : base(players, boardCards)
+    public SixMaxTable(IEnumerable<Player> players, CardSet boardCards) : base(players, boardCards)
     {
         var positions = players.Select(x => x.Position).ToHashSet();
 
@@ -91,11 +93,6 @@ public class SixMaxTable : BaseTable
         {
             throw new NotAvailableError("The table must contain players with allowed positions");
         }
-    }
-
-    public static SixMaxTable Create(IList<Player> players)
-    {
-        return new (players, new CardSet());
     }
 }
 
@@ -113,7 +110,7 @@ public class NineMaxTable : BaseTable
         Position.Button,
     ];
 
-    public NineMaxTable(IList<Player> players, CardSet boardCards) : base(players, boardCards)
+    public NineMaxTable(IEnumerable<Player> players, CardSet boardCards) : base(players, boardCards)
     {
         var positions = players.Select(x => x.Position).ToHashSet();
 
@@ -121,10 +118,5 @@ public class NineMaxTable : BaseTable
         {
             throw new NotAvailableError("The table must contain players with allowed positions");
         }
-    }
-
-    public static NineMaxTable Create(IList<Player> players)
-    {
-        return new (players, new CardSet());
     }
 }

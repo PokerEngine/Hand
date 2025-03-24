@@ -42,18 +42,6 @@ public class Player : IEquatable<Player>
         IsFolded = isFolded;
     }
 
-    public static Player Create(Nickname nickname, Position position, Chips stake)
-    {
-        return new (
-            nickname: nickname,
-            position: position,
-            stake: stake,
-            holeCards: new CardSet(),
-            isConnected: false,
-            isFolded: false
-        );
-    }
-
     public void Connect()
     {
         if (IsConnected)

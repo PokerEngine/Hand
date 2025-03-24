@@ -7,8 +7,8 @@ namespace Domain.ValueObject;
 
 public readonly struct SidePot : IEnumerable<KeyValuePair<Nickname, Chips>>, IEquatable<SidePot>
 {
-    public ImmutableDictionary<Nickname, Chips> Mapping { get; }
-    public Chips DeadAmount { get; }
+    public readonly ImmutableDictionary<Nickname, Chips> Mapping;
+    public readonly Chips DeadAmount;
 
     public Chips Amount
     {

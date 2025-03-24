@@ -38,7 +38,7 @@ public abstract class BaseDeck
 
 public class StandardDeck : BaseDeck
 {
-    private static readonly CardSet AllowedCards = new ([
+    public static readonly CardSet AllowedCards = new ([
         Card.AceOfSpades,
         Card.KingOfSpades,
         Card.QueenOfSpades,
@@ -100,16 +100,11 @@ public class StandardDeck : BaseDeck
             throw new NotAvailableError("The deck must contain allowed cards");
         }
     }
-
-    public static StandardDeck Create()
-    {
-        return new (AllowedCards);
-    }
 }
 
 public class ShortDeck : BaseDeck
 {
-    private static readonly CardSet AllowedCards = new ([
+    public static readonly CardSet AllowedCards = new ([
         Card.AceOfSpades,
         Card.KingOfSpades,
         Card.QueenOfSpades,
@@ -154,10 +149,5 @@ public class ShortDeck : BaseDeck
         {
             throw new NotAvailableError("The deck must contain allowed cards");
         }
-    }
-
-    public static ShortDeck Create()
-    {
-        return new (AllowedCards);
     }
 }

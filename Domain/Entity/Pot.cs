@@ -22,7 +22,7 @@ public abstract class BasePot
         Nickname? lastDecisionNickname,
         Nickname? lastRaiseNickname,
         Chips lastRaiseStep,
-        ImmutableHashSet<Nickname> currentDecisionNicknames,
+        IEnumerable<Nickname> currentDecisionNicknames,
         SidePot currentSidePot,
         SidePot previousSidePot
     )
@@ -32,7 +32,7 @@ public abstract class BasePot
         LastDecisionNickname = lastDecisionNickname;
         LastRaiseNickname = lastRaiseNickname;
         LastRaiseStep = lastRaiseStep;
-        CurrentDecisionNicknames = currentDecisionNicknames;
+        CurrentDecisionNicknames = currentDecisionNicknames.ToImmutableHashSet();
         CurrentSidePot = currentSidePot;
         PreviousSidePot = previousSidePot;
     }
@@ -600,25 +600,11 @@ public class NoLimitPot : BasePot
         Nickname? lastDecisionNickname,
         Nickname? lastRaiseNickname,
         Chips lastRaiseStep,
-        ImmutableHashSet<Nickname> currentDecisionNicknames,
+        IEnumerable<Nickname> currentDecisionNicknames,
         SidePot currentSidePot,
         SidePot previousSidePot
     ) : base(smallBlind, bigBlind, lastDecisionNickname, lastRaiseNickname, lastRaiseStep, currentDecisionNicknames, currentSidePot, previousSidePot)
     {
-    }
-
-    public static NoLimitPot Create(Chips smallBlind, Chips bigBlind)
-    {
-        return new(
-            smallBlind: smallBlind,
-            bigBlind: bigBlind,
-            lastDecisionNickname: null,
-            lastRaiseNickname: null,
-            lastRaiseStep: bigBlind,
-            currentDecisionNicknames: ImmutableHashSet<Nickname>.Empty,
-            currentSidePot: new SidePot(),
-            previousSidePot: new SidePot()
-        );
     }
 
     public override Chips GetMaxRaiseToAmount(Player player)
@@ -638,25 +624,11 @@ public class PotLimitPot : BasePot
         Nickname? lastDecisionNickname,
         Nickname? lastRaiseNickname,
         Chips lastRaiseStep,
-        ImmutableHashSet<Nickname> currentDecisionNicknames,
+        IEnumerable<Nickname> currentDecisionNicknames,
         SidePot currentSidePot,
         SidePot previousSidePot
     ) : base(smallBlind, bigBlind, lastDecisionNickname, lastRaiseNickname, lastRaiseStep, currentDecisionNicknames, currentSidePot, previousSidePot)
     {
-    }
-
-    public static PotLimitPot Create(Chips smallBlind, Chips bigBlind)
-    {
-        return new(
-            smallBlind: smallBlind,
-            bigBlind: bigBlind,
-            lastDecisionNickname: null,
-            lastRaiseNickname: null,
-            lastRaiseStep: bigBlind,
-            currentDecisionNicknames: ImmutableHashSet<Nickname>.Empty,
-            currentSidePot: new SidePot(),
-            previousSidePot: new SidePot()
-        );
     }
 
     public override Chips GetMaxRaiseToAmount(Player player)

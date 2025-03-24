@@ -16,17 +16,9 @@ public class StandardDeckTest
     }
 
     [Fact]
-    public void TestCreate()
-    {
-        var deck = StandardDeck.Create();
-
-        Assert.Equal(52, deck.Cards.Count);
-    }
-
-    [Fact]
     public void TestShuffle()
     {
-        var deck = StandardDeck.Create();
+        var deck = CreateDeck();
         Assert.Equal(52, deck.Cards.Count);
 
         deck.Shuffle();
@@ -37,13 +29,19 @@ public class StandardDeckTest
     [Fact]
     public void TestExtract()
     {
-        var deck = StandardDeck.Create();
-        Assert.Equal(52, deck.Cards.Count);
+        var cards = new CardSet([Card.AceOfSpades, Card.DeuceOfClubs, Card.JackOfDiamonds]);
+        var deck = new StandardDeck(cards);
+        Assert.Equal(3, deck.Cards.Count);
 
-        var cards = deck.Extract(2);
+        var extractedCards = deck.Extract(1);
 
-        Assert.Equal(50, deck.Cards.Count);
-        Assert.Equal(new CardSet([Card.TreyOfClubs, Card.DeuceOfClubs]), cards);
+        Assert.Equal(2, deck.Cards.Count);
+        Assert.Equal(new CardSet([Card.JackOfDiamonds]), extractedCards);
+
+        extractedCards = deck.Extract(2);
+
+        Assert.Equal(0, deck.Cards.Count);
+        Assert.Equal(new CardSet([Card.AceOfSpades, Card.DeuceOfClubs]), extractedCards);
     }
 
     [Fact]
@@ -66,6 +64,11 @@ public class StandardDeckTest
 
         Assert.Equal("StandardDeck: {AceOfSpades, DeuceOfClubs}", $"{deck}");
     }
+
+    private BaseDeck CreateDeck()
+    {
+        return new StandardDeck(StandardDeck.AllowedCards);
+    }
 }
 
 public class ShortDeckTest
@@ -87,14 +90,6 @@ public class ShortDeckTest
         ShortDeck deck;
         var exc = Assert.Throws<NotAvailableError>(() => deck = new ShortDeck(cards));
         Assert.Equal("The deck must contain allowed cards", exc.Message);
-    }
-
-    [Fact]
-    public void TestCreate()
-    {
-        var deck = ShortDeck.Create();
-
-        Assert.Equal(36, deck.Cards.Count);
     }
 
     [Fact]

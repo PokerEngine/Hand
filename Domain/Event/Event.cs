@@ -130,15 +130,15 @@ public record BoardCardsAreDealtEvent(
     DateTime OccuredAt
 ) : BaseEvent(HandUid, OccuredAt);
 
-public record ActionIsRequestedEvent(
+public record DecisionIsRequestedEvent(
     Nickname Nickname,
     bool FoldIsAvailable,
     bool CheckIsAvailable,
     bool CallIsAvailable,
-    Chips? CallToAmount,
+    Chips CallToAmount,
     bool RaiseIsAvailable,
-    Chips? MinRaiseToAmount,
-    Chips? MaxRaiseToAmount,
+    Chips MinRaiseToAmount,
+    Chips MaxRaiseToAmount,
     HandUid HandUid,
     DateTime OccuredAt
 ) : BaseEvent(HandUid, OccuredAt);

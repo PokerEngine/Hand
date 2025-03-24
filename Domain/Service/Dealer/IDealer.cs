@@ -16,40 +16,9 @@ public interface IDealer
         EventBus eventBus
     );
 
-    public void Fold(
+    public void CommitDecision(
         Nickname nickname,
-        HandUid handUid,
-        BaseTable table,
-        BasePot pot,
-        BaseDeck deck,
-        IEvaluator evaluator,
-        EventBus eventBus
-    );
-
-    public void Check(
-        Nickname nickname,
-        HandUid handUid,
-        BaseTable table,
-        BasePot pot,
-        BaseDeck deck,
-        IEvaluator evaluator,
-        EventBus eventBus
-    );
-
-    public void CallTo(
-        Nickname nickname,
-        Chips amount,
-        HandUid handUid,
-        BaseTable table,
-        BasePot pot,
-        BaseDeck deck,
-        IEvaluator evaluator,
-        EventBus eventBus
-    );
-
-    public void RaiseTo(
-        Nickname nickname,
-        Chips amount,
+        Decision decision,
         HandUid handUid,
         BaseTable table,
         BasePot pot,

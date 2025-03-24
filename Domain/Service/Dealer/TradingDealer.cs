@@ -1,4 +1,5 @@
 using Domain.Entity;
+using Domain.Error;
 using Domain.Event;
 using Domain.ValueObject;
 using Domain.Service.Evaluator;
@@ -22,7 +23,7 @@ public class TradingDealer : IDealer
             eventBus.Publish(startEvent);
 
             var previousPlayer = GetPreviousPlayer(table: table, pot: pot);
-            RequestActionOrFinish(
+            RequestDecisionOrFinish(
                 previousPlayer: previousPlayer,
                 table: table,
                 pot: pot,
@@ -34,6 +35,70 @@ public class TradingDealer : IDealer
         {
             var skipEvent = new StageIsSkippedEvent(HandUid: handUid, OccuredAt: DateTime.Now);
             eventBus.Publish(skipEvent);
+        }
+    }
+
+    public void CommitDecision(
+        Nickname nickname,
+        Decision decision,
+        HandUid handUid,
+        BaseTable table,
+        BasePot pot,
+        BaseDeck deck,
+        IEvaluator evaluator,
+        EventBus eventBus
+    )
+    {
+        switch (decision.Type)
+        {
+            case DecisionType.Fold:
+                Fold(
+                    nickname: nickname,
+                    handUid: handUid,
+                    table: table,
+                    pot: pot,
+                    deck: deck,
+                    evaluator: evaluator,
+                    eventBus: eventBus
+                );
+                break;
+            case DecisionType.Check:
+                Check(
+                    nickname: nickname,
+                    handUid: handUid,
+                    table: table,
+                    pot: pot,
+                    deck: deck,
+                    evaluator: evaluator,
+                    eventBus: eventBus
+                );
+                break;
+            case DecisionType.CallTo:
+                CallTo(
+                    nickname: nickname,
+                    amount: decision.Amount,
+                    handUid: handUid,
+                    table: table,
+                    pot: pot,
+                    deck: deck,
+                    evaluator: evaluator,
+                    eventBus: eventBus
+                );
+                break;
+            case DecisionType.RaiseTo:
+                RaiseTo(
+                    nickname: nickname,
+                    amount: decision.Amount,
+                    handUid: handUid,
+                    table: table,
+                    pot: pot,
+                    deck: deck,
+                    evaluator: evaluator,
+                    eventBus: eventBus
+                );
+                break;
+            default:
+                throw new NotValidError("The decision is unknown");
         }
     }
 
@@ -49,11 +114,11 @@ public class TradingDealer : IDealer
 
     private Player? GetPreviousPlayer(BaseTable table, BasePot pot)
     {
-        if (pot.LastActionNickname == null)
+        if (pot.LastDecisionNickname == null)
         {
             return null;
         }
-        return table.GetPlayerByNickname((Nickname)pot.LastActionNickname);
+        return table.GetPlayerByNickname((Nickname)pot.LastDecisionNickname);
     }
 
     private Player? GetNextPlayerForTrading(BaseTable table, Player? previousPlayer)
@@ -91,7 +156,7 @@ public class TradingDealer : IDealer
         return null;
     }
 
-    private void RequestActionOrFinish(
+    private void RequestDecisionOrFinish(
         Player? previousPlayer,
         BaseTable table,
         BasePot pot,
@@ -100,7 +165,7 @@ public class TradingDealer : IDealer
     )
     {
         var nextPlayer = GetNextPlayerForTrading(table: table, previousPlayer: previousPlayer);
-        if (nextPlayer == null || !pot.ActionIsAvailable(nextPlayer))
+        if (nextPlayer == null || !pot.DecisionIsAvailable(nextPlayer))
         {
             Finish(
                 pot: pot,
@@ -110,7 +175,7 @@ public class TradingDealer : IDealer
         }
         else
         {
-            RequestAction(
+            RequestDecision(
                 nextPlayer: nextPlayer,
                 pot: pot,
                 handUid: handUid,
@@ -131,7 +196,7 @@ public class TradingDealer : IDealer
         eventBus.Publish(finishEvent);
     }
 
-    private void RequestAction(
+    private void RequestDecision(
         Player nextPlayer,
         BasePot pot,
         HandUid handUid,
@@ -143,13 +208,13 @@ public class TradingDealer : IDealer
         var checkIsAvailable = pot.CheckIsAvailable(nextPlayer);
 
         var callIsAvailable = pot.CallIsAvailable(nextPlayer);
-        Chips? callToAmount = callIsAvailable ? pot.GetCallToAmount(nextPlayer) : null;
+        Chips callToAmount = callIsAvailable ? pot.GetCallToAmount(nextPlayer) : new Chips(0);
 
         var raiseIsAvailable = pot.RaiseIsAvailable(nextPlayer);
-        Chips? minRaiseToAmount = raiseIsAvailable ? pot.GetMinRaiseToAmount(nextPlayer) : null;
-        Chips? maxRaiseToAmount = raiseIsAvailable ? pot.GetMaxRaiseToAmount(nextPlayer) : null;
+        Chips minRaiseToAmount = raiseIsAvailable ? pot.GetMinRaiseToAmount(nextPlayer) : new Chips(0);
+        Chips maxRaiseToAmount = raiseIsAvailable ? pot.GetMaxRaiseToAmount(nextPlayer) : new Chips(0);
 
-        var @event = new ActionIsRequestedEvent(
+        var @event = new DecisionIsRequestedEvent(
             Nickname: nextPlayer.Nickname,
             FoldIsAvailable: foldIsAvailable,
             CheckIsAvailable: checkIsAvailable,
@@ -164,7 +229,7 @@ public class TradingDealer : IDealer
         eventBus.Publish(@event);
     }
 
-    public void Fold(
+    private void Fold(
         Nickname nickname,
         HandUid handUid,
         BaseTable table,
@@ -184,7 +249,7 @@ public class TradingDealer : IDealer
         );
         eventBus.Publish(@event);
 
-        RequestActionOrFinish(
+        RequestDecisionOrFinish(
             previousPlayer: player,
             table: table,
             pot: pot,
@@ -193,7 +258,7 @@ public class TradingDealer : IDealer
         );
     }
 
-    public void Check(
+    private void Check(
         Nickname nickname,
         HandUid handUid,
         BaseTable table,
@@ -213,7 +278,7 @@ public class TradingDealer : IDealer
         );
         eventBus.Publish(@event);
 
-        RequestActionOrFinish(
+        RequestDecisionOrFinish(
             previousPlayer: player,
             table: table,
             pot: pot,
@@ -222,7 +287,7 @@ public class TradingDealer : IDealer
         );
     }
 
-    public void CallTo(
+    private void CallTo(
         Nickname nickname,
         Chips amount,
         HandUid handUid,
@@ -244,7 +309,7 @@ public class TradingDealer : IDealer
         );
         eventBus.Publish(@event);
 
-        RequestActionOrFinish(
+        RequestDecisionOrFinish(
             previousPlayer: player,
             table: table,
             pot: pot,
@@ -253,7 +318,7 @@ public class TradingDealer : IDealer
         );
     }
 
-    public void RaiseTo(
+    private void RaiseTo(
         Nickname nickname,
         Chips amount,
         HandUid handUid,
@@ -275,7 +340,7 @@ public class TradingDealer : IDealer
         );
         eventBus.Publish(@event);
 
-        RequestActionOrFinish(
+        RequestDecisionOrFinish(
             previousPlayer: player,
             table: table,
             pot: pot,

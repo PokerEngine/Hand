@@ -155,8 +155,9 @@ public class ShowdownDealer : IDealer
         }
     }
 
-    public void Fold(
+    public void CommitDecision(
         Nickname nickname,
+        Decision decision,
         HandUid handUid,
         BaseTable table,
         BasePot pot,
@@ -165,47 +166,6 @@ public class ShowdownDealer : IDealer
         EventBus eventBus
     )
     {
-        throw new NotAvailableError("The player cannot fold during this stage");
-    }
-
-    public void Check(
-        Nickname nickname,
-        HandUid handUid,
-        BaseTable table,
-        BasePot pot,
-        BaseDeck deck,
-        IEvaluator evaluator,
-        EventBus eventBus
-    )
-    {
-        throw new NotAvailableError("The player cannot check during this stage");
-    }
-
-    public void CallTo(
-        Nickname nickname,
-        Chips amount,
-        HandUid handUid,
-        BaseTable table,
-        BasePot pot,
-        BaseDeck deck,
-        IEvaluator evaluator,
-        EventBus eventBus
-    )
-    {
-        throw new NotAvailableError("The player cannot call during this stage");
-    }
-
-    public void RaiseTo(
-        Nickname nickname,
-        Chips amount,
-        HandUid handUid,
-        BaseTable table,
-        BasePot pot,
-        BaseDeck deck,
-        IEvaluator evaluator,
-        EventBus eventBus
-    )
-    {
-        throw new NotAvailableError("The player cannot raise during this stage");
+        throw new NotAvailableError("The player cannot commit a decision during this stage");
     }
 }

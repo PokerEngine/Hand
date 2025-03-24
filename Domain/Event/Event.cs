@@ -32,11 +32,6 @@ public record StageIsFinishedEvent(
     DateTime OccuredAt
 ) : BaseEvent(HandUid, OccuredAt);
 
-public record StageIsSkippedEvent(
-    HandUid HandUid,
-    DateTime OccuredAt
-) : BaseEvent(HandUid, OccuredAt);
-
 public record PlayerConnectedEvent(
     Nickname Nickname,
     HandUid HandUid,

@@ -17,11 +17,11 @@ public class TradingDealer : IDealer
         EventBus eventBus
     )
     {
+        var startEvent = new StageIsStartedEvent(HandUid: handUid, OccuredAt: DateTime.Now);
+        eventBus.Publish(startEvent);
+
         if (HasEnoughPlayersForTrading(table))
         {
-            var startEvent = new StageIsStartedEvent(HandUid: handUid, OccuredAt: DateTime.Now);
-            eventBus.Publish(startEvent);
-
             var previousPlayer = GetPreviousPlayer(table: table, pot: pot);
             RequestDecisionOrFinish(
                 previousPlayer: previousPlayer,
@@ -33,8 +33,8 @@ public class TradingDealer : IDealer
         }
         else
         {
-            var skipEvent = new StageIsSkippedEvent(HandUid: handUid, OccuredAt: DateTime.Now);
-            eventBus.Publish(skipEvent);
+            var finishEvent = new StageIsFinishedEvent(HandUid: handUid, OccuredAt: DateTime.Now);
+            eventBus.Publish(finishEvent);
         }
     }
 

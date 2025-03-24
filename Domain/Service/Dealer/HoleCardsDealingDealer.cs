@@ -24,12 +24,12 @@ public class HoleCardsDealingDealer : IDealer
         EventBus eventBus
     )
     {
+        var startEvent = new StageIsStartedEvent(HandUid: handUid, OccuredAt: DateTime.Now);
+        eventBus.Publish(startEvent);
+
         var players = GetPlayersForDealing(table);
         if (HasEnoughPlayersForDealing(players))
         {
-            var startEvent = new StageIsStartedEvent(HandUid: handUid, OccuredAt: DateTime.Now);
-            eventBus.Publish(startEvent);
-
             foreach (var player in players)
             {
                 DealHoleCards(
@@ -39,15 +39,10 @@ public class HoleCardsDealingDealer : IDealer
                     eventBus: eventBus
                 );
             }
+        }
 
-            var finishEvent = new StageIsFinishedEvent(HandUid: handUid, OccuredAt: DateTime.Now);
-            eventBus.Publish(finishEvent);
-        }
-        else
-        {
-            var skipEvent = new StageIsSkippedEvent(HandUid: handUid, OccuredAt: DateTime.Now);
-            eventBus.Publish(skipEvent);
-        }
+        var finishEvent = new StageIsFinishedEvent(HandUid: handUid, OccuredAt: DateTime.Now);
+        eventBus.Publish(finishEvent);
     }
 
     private IList<Player> GetPlayersForDealing(BaseTable table)

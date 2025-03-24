@@ -24,21 +24,21 @@ public class BoardCardsDealingDealer : IDealer
         EventBus eventBus
     )
     {
+        var startEvent = new StageIsStartedEvent(HandUid: handUid, OccuredAt: DateTime.Now);
+        eventBus.Publish(startEvent);
+
         if (HasEnoughPlayersForDealing(table))
         {
-            var startEvent = new StageIsStartedEvent(HandUid: handUid, OccuredAt: DateTime.Now);
-            eventBus.Publish(startEvent);
-
-            DealBoardCards(table: table, deck: deck, handUid: handUid, eventBus: eventBus);
-
-            var finishEvent = new StageIsFinishedEvent(HandUid: handUid, OccuredAt: DateTime.Now);
-            eventBus.Publish(finishEvent);
+            DealBoardCards(
+                table: table,
+                deck: deck,
+                handUid: handUid,
+                eventBus: eventBus
+            );
         }
-        else
-        {
-            var skipEvent = new StageIsSkippedEvent(HandUid: handUid, OccuredAt: DateTime.Now);
-            eventBus.Publish(skipEvent);
-        }
+
+        var finishEvent = new StageIsFinishedEvent(HandUid: handUid, OccuredAt: DateTime.Now);
+        eventBus.Publish(finishEvent);
     }
 
     private bool HasEnoughPlayersForDealing(BaseTable table)

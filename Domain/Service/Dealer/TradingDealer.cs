@@ -49,57 +49,48 @@ public class TradingDealer : IDealer
         EventBus eventBus
     )
     {
+        var previousPlayer = GetPreviousPlayer(table: table, pot: pot);
+        var expectedPlayer = GetNextPlayerForTrading(table: table, previousPlayer: previousPlayer);
+        if (expectedPlayer == null || expectedPlayer.Nickname != nickname)
+        {
+            throw new NotAvailableError("The player cannot commit a decision for now");
+        }
+
+        var player = table.GetPlayerByNickname(nickname);
+
         switch (decision.Type)
         {
             case DecisionType.Fold:
-                Fold(
-                    nickname: nickname,
-                    handUid: handUid,
-                    table: table,
-                    pot: pot,
-                    deck: deck,
-                    evaluator: evaluator,
-                    eventBus: eventBus
-                );
+                pot.Fold(player);
                 break;
             case DecisionType.Check:
-                Check(
-                    nickname: nickname,
-                    handUid: handUid,
-                    table: table,
-                    pot: pot,
-                    deck: deck,
-                    evaluator: evaluator,
-                    eventBus: eventBus
-                );
+                pot.Check(player);
                 break;
             case DecisionType.CallTo:
-                CallTo(
-                    nickname: nickname,
-                    amount: decision.Amount,
-                    handUid: handUid,
-                    table: table,
-                    pot: pot,
-                    deck: deck,
-                    evaluator: evaluator,
-                    eventBus: eventBus
-                );
+                pot.CallTo(player, decision.Amount);
                 break;
             case DecisionType.RaiseTo:
-                RaiseTo(
-                    nickname: nickname,
-                    amount: decision.Amount,
-                    handUid: handUid,
-                    table: table,
-                    pot: pot,
-                    deck: deck,
-                    evaluator: evaluator,
-                    eventBus: eventBus
-                );
+                pot.RaiseTo(player, decision.Amount);
                 break;
             default:
                 throw new NotValidError("The decision is unknown");
         }
+
+        var @event = new DecisionIsCommittedEvent(
+            Nickname: nickname,
+            Decision: decision,
+            HandUid: handUid,
+            OccuredAt: DateTime.Now
+        );
+        eventBus.Publish(@event);
+
+        RequestDecisionOrFinish(
+            previousPlayer: player,
+            table: table,
+            pot: pot,
+            handUid: handUid,
+            eventBus: eventBus
+        );
     }
 
     private bool HasEnoughPlayersForTrading(BaseTable table)
@@ -227,125 +218,5 @@ public class TradingDealer : IDealer
             OccuredAt: DateTime.Now
         );
         eventBus.Publish(@event);
-    }
-
-    private void Fold(
-        Nickname nickname,
-        HandUid handUid,
-        BaseTable table,
-        BasePot pot,
-        BaseDeck deck,
-        IEvaluator evaluator,
-        EventBus eventBus
-    )
-    {
-        var player = table.GetPlayerByNickname(nickname);
-        pot.Fold(player);
-
-        var @event = new PlayerFoldedEvent(
-            Nickname: nickname,
-            HandUid: handUid,
-            OccuredAt: DateTime.Now
-        );
-        eventBus.Publish(@event);
-
-        RequestDecisionOrFinish(
-            previousPlayer: player,
-            table: table,
-            pot: pot,
-            handUid: handUid,
-            eventBus: eventBus
-        );
-    }
-
-    private void Check(
-        Nickname nickname,
-        HandUid handUid,
-        BaseTable table,
-        BasePot pot,
-        BaseDeck deck,
-        IEvaluator evaluator,
-        EventBus eventBus
-    )
-    {
-        var player = table.GetPlayerByNickname(nickname);
-        pot.Check(player);
-
-        var @event = new PlayerCheckedEvent(
-            Nickname: nickname,
-            HandUid: handUid,
-            OccuredAt: DateTime.Now
-        );
-        eventBus.Publish(@event);
-
-        RequestDecisionOrFinish(
-            previousPlayer: player,
-            table: table,
-            pot: pot,
-            handUid: handUid,
-            eventBus: eventBus
-        );
-    }
-
-    private void CallTo(
-        Nickname nickname,
-        Chips amount,
-        HandUid handUid,
-        BaseTable table,
-        BasePot pot,
-        BaseDeck deck,
-        IEvaluator evaluator,
-        EventBus eventBus
-    )
-    {
-        var player = table.GetPlayerByNickname(nickname);
-        pot.CallTo(player, amount);
-
-        var @event = new PlayerCalledToEvent(
-            Nickname: nickname,
-            Amount: amount,
-            HandUid: handUid,
-            OccuredAt: DateTime.Now
-        );
-        eventBus.Publish(@event);
-
-        RequestDecisionOrFinish(
-            previousPlayer: player,
-            table: table,
-            pot: pot,
-            handUid: handUid,
-            eventBus: eventBus
-        );
-    }
-
-    private void RaiseTo(
-        Nickname nickname,
-        Chips amount,
-        HandUid handUid,
-        BaseTable table,
-        BasePot pot,
-        BaseDeck deck,
-        IEvaluator evaluator,
-        EventBus eventBus
-    )
-    {
-        var player = table.GetPlayerByNickname(nickname);
-        pot.RaiseTo(player, amount);
-
-        var @event = new PlayerRaisedToEvent(
-            Nickname: nickname,
-            Amount: amount,
-            HandUid: handUid,
-            OccuredAt: DateTime.Now
-        );
-        eventBus.Publish(@event);
-
-        RequestDecisionOrFinish(
-            previousPlayer: player,
-            table: table,
-            pot: pot,
-            handUid: handUid,
-            eventBus: eventBus
-        );
     }
 }

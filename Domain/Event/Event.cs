@@ -44,42 +44,23 @@ public record PlayerDisconnectedEvent(
     DateTime OccuredAt
 ) : BaseEvent(HandUid, OccuredAt);
 
-public record PlayerPostedSmallBlindEvent(
+public record SmallBlindIsPostedEvent(
     Nickname Nickname,
     Chips Amount,
     HandUid HandUid,
     DateTime OccuredAt
 ) : BaseEvent(HandUid, OccuredAt);
 
-public record PlayerPostedBigBlindEvent(
+public record BigBlindIsPostedEvent(
     Nickname Nickname,
     Chips Amount,
     HandUid HandUid,
     DateTime OccuredAt
 ) : BaseEvent(HandUid, OccuredAt);
 
-public record PlayerFoldedEvent(
+public record DecisionIsCommittedEvent(
     Nickname Nickname,
-    HandUid HandUid,
-    DateTime OccuredAt
-) : BaseEvent(HandUid, OccuredAt);
-
-public record PlayerCheckedEvent(
-    Nickname Nickname,
-    HandUid HandUid,
-    DateTime OccuredAt
-) : BaseEvent(HandUid, OccuredAt);
-
-public record PlayerCalledToEvent(
-    Nickname Nickname,
-    Chips Amount,
-    HandUid HandUid,
-    DateTime OccuredAt
-) : BaseEvent(HandUid, OccuredAt);
-
-public record PlayerRaisedToEvent(
-    Nickname Nickname,
-    Chips Amount,
+    Decision Decision,
     HandUid HandUid,
     DateTime OccuredAt
 ) : BaseEvent(HandUid, OccuredAt);

@@ -30,6 +30,8 @@ public class HoleCardsDealingDealer : IDealer
         var players = GetPlayersForDealing(table);
         if (HasEnoughPlayersForDealing(players))
         {
+            deck.Shuffle();
+
             foreach (var player in players)
             {
                 DealHoleCards(

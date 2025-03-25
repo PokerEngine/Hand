@@ -14,14 +14,8 @@ public class EventBusTest
         List<BaseEvent> events1 = [];
         List<BaseEvent> events2 = [];
 
-        var listener1 = (BaseEvent @event) =>
-        {
-            events1.Add(@event);
-        };
-        var listener2 = (BaseEvent @event) =>
-        {
-            events2.Add(@event);
-        };
+        var listener1 = (BaseEvent @event) => events1.Add(@event);
+        var listener2 = (BaseEvent @event) => events2.Add(@event);
 
         var handUid = new HandUid(Guid.NewGuid());
         var nickname = new Nickname("nickname");
@@ -59,14 +53,8 @@ public class EventBusTest
         List<PlayerConnectedEvent> events1 = [];
         List<PlayerDisconnectedEvent> events2 = [];
 
-        var listener1 = (PlayerConnectedEvent @event) =>
-        {
-            events1.Add(@event);
-        };
-        var listener2 = (PlayerDisconnectedEvent @event) =>
-        {
-            events2.Add(@event);
-        };
+        var listener1 = (PlayerConnectedEvent @event) => events1.Add(@event);
+        var listener2 = (PlayerDisconnectedEvent @event) => events2.Add(@event);
 
         var handUid = new HandUid(Guid.NewGuid());
         var nickname = new Nickname("nickname");
@@ -101,10 +89,7 @@ public class EventBusTest
     {
         var eventBus = new EventBus();
 
-        var listener = (BaseEvent @event) =>
-        {
-            
-        };
+        var listener = (BaseEvent @event) => { };
 
         eventBus.Subscribe(listener);
 
@@ -118,10 +103,7 @@ public class EventBusTest
     {
         var eventBus = new EventBus();
 
-        var listener = (BaseEvent @event) =>
-        {
-            
-        };
+        var listener = (BaseEvent @event) => { };
 
         var exc = Assert.Throws<NotAvailableError>(() => eventBus.Unsubscribe(listener));
 

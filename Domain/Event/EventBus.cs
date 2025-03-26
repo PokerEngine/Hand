@@ -6,7 +6,7 @@ public class EventBus
 {
     private List<Delegate> Listeners = [];
 
-    public void Subscribe<T>(Action<T> listener) where T : BaseEvent
+    public void Subscribe<T>(Action<T> listener) where T : IEvent
     {
         if (Listeners.Contains(listener))
         {
@@ -16,7 +16,7 @@ public class EventBus
         Listeners.Add(listener);
     }
 
-    public void Unsubscribe<T>(Action<T> listener) where T : BaseEvent
+    public void Unsubscribe<T>(Action<T> listener) where T : IEvent
     {
         if (!Listeners.Contains(listener))
         {
@@ -26,7 +26,7 @@ public class EventBus
         Listeners.Remove(listener);
     }
 
-    public void Publish<T>(T @event) where T : BaseEvent
+    public void Publish<T>(T @event) where T : IEvent
     {
         foreach (var listener in Listeners)
         {

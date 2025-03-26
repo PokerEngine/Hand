@@ -133,9 +133,9 @@ public class HoldemNoLimit6MaxHandTest
         );
         var eventBus = new EventBus();
 
-        var events = new List<BaseEvent>();
+        var events = new List<IEvent>();
         var decisionRequestEvents = new List<DecisionIsRequestedEvent>();
-        var listener = (BaseEvent @event) => events.Add(@event);
+        var listener = (IEvent @event) => events.Add(@event);
         var decisionRequestListener = (DecisionIsRequestedEvent @event) => decisionRequestEvents.Add(@event);
         eventBus.Subscribe(listener);
         eventBus.Subscribe(decisionRequestListener);

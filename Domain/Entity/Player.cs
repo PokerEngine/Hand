@@ -102,12 +102,32 @@ public class Player : IEquatable<Player>
         }
     }
 
-    public void Post(Chips amount)
+    public void Bet(Chips amount)
     {
+        // Bet means that the player puts chips into the pot voluntarily
         if (!IsConnected)
         {
             throw new NotAvailableError("The player has not connected yet");
         }
+        if (IsFolded)
+        {
+            throw new NotAvailableError("The player has already folded");
+        }
+        if (IsAllIn)
+        {
+            throw new NotAvailableError("The player has already been all in");
+        }
+        if (Stake < amount)
+        {
+            throw new NotAvailableError("The player cannot bet more amount than his stake");
+        }
+
+        Stake -= amount;
+    }
+
+    public void Post(Chips amount)
+    {
+        // Post means that the player puts chips into the pot forcibly (blinds, ante)
         if (IsFolded)
         {
             throw new NotAvailableError("The player has already folded");

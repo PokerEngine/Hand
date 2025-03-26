@@ -84,7 +84,7 @@ public abstract class BasePot
     {
         ValidateCallTo(player, amount);
 
-        PostTo(player, amount);
+        BetTo(player, amount);
         CommitCurrentDecision(player);
         LastDecisionNickname = player.Nickname;
     }
@@ -100,7 +100,7 @@ public abstract class BasePot
             raiseStep = amount - currentMaxAmount;
         }
 
-        PostTo(player, amount);
+        BetTo(player, amount);
         CommitCurrentDecision(player);
         LastDecisionNickname = player.Nickname;
 
@@ -575,6 +575,14 @@ public abstract class BasePot
     {
         var remainingAmount = amount - GetCurrentPostedAmount(player);
         player.Post(remainingAmount);
+
+        _currentSidePot = _currentSidePot.Add(player.Nickname, remainingAmount);
+    }
+
+    private void BetTo(Player player, Chips amount)
+    {
+        var remainingAmount = amount - GetCurrentPostedAmount(player);
+        player.Bet(remainingAmount);
 
         _currentSidePot = _currentSidePot.Add(player.Nickname, remainingAmount);
     }

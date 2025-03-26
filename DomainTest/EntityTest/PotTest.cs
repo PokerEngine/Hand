@@ -39,13 +39,7 @@ public class NoLimitPotTest
             nickname: "SmallBlind",
             position: Position.SmallBlind
         );
-        var playerBb = CreatePlayer(
-            nickname: "BigBlind",
-            position: Position.BigBlind
-        );
         var pot = CreatePot();
-        playerSb.Connect();
-        playerBb.Connect();
 
         pot.PostSmallBlind(playerSb, new Chips(5));
 
@@ -64,13 +58,7 @@ public class NoLimitPotTest
             position: Position.SmallBlind,
             stake: 2
         );
-        var playerBb = CreatePlayer(
-            nickname: "BigBlind",
-            position: Position.BigBlind
-        );
         var pot = CreatePot();
-        playerSb.Connect();
-        playerBb.Connect();
 
         pot.PostSmallBlind(playerSb, new Chips(2));
 
@@ -90,13 +78,7 @@ public class NoLimitPotTest
             nickname: "SmallBlind",
             position: Position.SmallBlind
         );
-        var playerBb = CreatePlayer(
-            nickname: "BigBlind",
-            position: Position.BigBlind
-        );
         var pot = CreatePot();
-        playerSb.Connect();
-        playerBb.Connect();
 
         var exc = Assert.Throws<NotAvailableError>(() => pot.PostSmallBlind(playerSb, amount));
 
@@ -120,8 +102,6 @@ public class NoLimitPotTest
             position: Position.BigBlind
         );
         var pot = CreatePot();
-        playerSb.Connect();
-        playerBb.Connect();
         pot.PostSmallBlind(playerSb, new Chips(5));
 
         pot.PostBigBlind(playerBb, new Chips(10));
@@ -146,8 +126,6 @@ public class NoLimitPotTest
             stake: 2
         );
         var pot = CreatePot();
-        playerSb.Connect();
-        playerBb.Connect();
         pot.PostSmallBlind(playerSb, new Chips(5));
 
         pot.PostBigBlind(playerBb, new Chips(2));
@@ -162,17 +140,11 @@ public class NoLimitPotTest
     [Fact]
     public void TestPostBigBlindWithNoSmallBlind()
     {
-        var playerSb = CreatePlayer(
-            nickname: "SmallBlind",
-            position: Position.SmallBlind
-        );
         var playerBb = CreatePlayer(
             nickname: "BigBlind",
             position: Position.BigBlind
         );
         var pot = CreatePot();
-        playerSb.Connect();
-        playerBb.Connect();
 
         pot.PostBigBlind(playerBb, new Chips(10));
 
@@ -197,8 +169,6 @@ public class NoLimitPotTest
             position: Position.BigBlind
         );
         var pot = CreatePot();
-        playerSb.Connect();
-        playerBb.Connect();
         pot.PostSmallBlind(playerSb, new Chips(5));
 
         var exc = Assert.Throws<NotAvailableError>(() => pot.PostBigBlind(playerBb, amount));

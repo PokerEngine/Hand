@@ -9,20 +9,9 @@ public class HoldemNoLimit9MaxFactory : HoldemNoLimit6MaxFactory
         return Game.HoldemNoLimit9Max;
     }
 
-    public new BaseTable BuildTable(IEnumerable<Participant> participants)
+    public new BaseTable GetTable(IEnumerable<Participant> participants)
     {
-        var players = participants
-            .Select(
-                x => new Player(
-                    nickname: x.Nickname,
-                    position: x.Position,
-                    stake: x.Stake,
-                    holeCards: new CardSet(),
-                    isConnected: false,
-                    isFolded: false
-                )
-            )
-            .ToList();
+        var players = participants.Select(x => GetPlayer(x));
         return new NineMaxTable(
             players: players,
             boardCards: new CardSet()

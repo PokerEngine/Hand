@@ -1,4 +1,5 @@
 using Domain.Entity;
+using Domain.Entity.Factory;
 using Domain.Error;
 using Domain.ValueObject;
 
@@ -266,7 +267,7 @@ public class SixMaxTableTest
         Assert.Equal("SixMaxTable: 3 player(s), {AceOfSpades, DeuceOfClubs, AceOfClubs}", $"{table}");
     }
 
-    private SixMaxTable CreateTable(IEnumerable<Player> players)
+    private BaseTable CreateTable(IEnumerable<Player> players)
     {
         return new SixMaxTable(
             players: players,
@@ -276,13 +277,12 @@ public class SixMaxTableTest
 
     private Player CreatePlayer(string nickname, Position position, int stake = 1000)
     {
-        return new Player(
+        var factory = new HoldemNoLimit6MaxFactory();
+        var participant = new Participant(
             nickname: new Nickname(nickname),
             position: position,
-            stake: new Chips(stake),
-            holeCards: new CardSet(),
-            isConnected: false,
-            isFolded: false
+            stake: new Chips(stake)
         );
+        return factory.GetPlayer(participant);
     }
 }

@@ -1,6 +1,5 @@
-using System.Collections.Immutable;
-
 using Domain.Entity;
+using Domain.Entity.Factory;
 using Domain.Error;
 using Domain.ValueObject;
 
@@ -21,7 +20,7 @@ public class NoLimitPotTest
             lastDecisionNickname: new Nickname("SmallBlind"),
             lastRaiseNickname: new Nickname("SmallBlind"),
             lastRaiseStep: new Chips(15),
-            currentDecisionNicknames: ImmutableHashSet.Create(new Nickname("SmallBlind")),
+            currentDecisionNicknames: [new Nickname("SmallBlind")],
             currentSidePot: currentSidePot,
             previousSidePot: new SidePot()
         );
@@ -1741,7 +1740,7 @@ public class NoLimitPotTest
             lastDecisionNickname: new Nickname("SmallBlind"),
             lastRaiseNickname: new Nickname("SmallBlind"),
             lastRaiseStep: new Chips(15),
-            currentDecisionNicknames: ImmutableHashSet.Create(new Nickname("SmallBlind")),
+            currentDecisionNicknames: [new Nickname("SmallBlind")],
             currentSidePot: currentSidePot,
             previousSidePot: new SidePot()
         );
@@ -1749,29 +1748,20 @@ public class NoLimitPotTest
         Assert.Equal("NoLimitPot, 40 chip(s)", $"{pot}");
     }
 
-    private NoLimitPot CreatePot(int smallBlind = 5, int bigBlind = 10)
+    private BasePot CreatePot(int smallBlind = 5, int bigBlind = 10)
     {
-        return new NoLimitPot(
-            smallBlind: new Chips(smallBlind),
-            bigBlind: new Chips(bigBlind),
-            lastDecisionNickname: null,
-            lastRaiseNickname: null,
-            lastRaiseStep: new Chips(bigBlind),
-            currentDecisionNicknames: [],
-            currentSidePot: new SidePot(),
-            previousSidePot: new SidePot()
-        );
+        var factory = new HoldemNoLimit6MaxFactory();
+        return factory.GetPot(new Chips(smallBlind), new Chips(bigBlind));
     }
 
     private Player CreatePlayer(string nickname, Position position, int stake = 1000)
     {
-        return new Player(
+        var factory = new HoldemNoLimit6MaxFactory();
+        var participant = new Participant(
             nickname: new Nickname(nickname),
             position: position,
-            stake: new Chips(stake),
-            holeCards: new CardSet(),
-            isConnected: false,
-            isFolded: false
+            stake: new Chips(stake)
         );
+        return factory.GetPlayer(participant);
     }
 }

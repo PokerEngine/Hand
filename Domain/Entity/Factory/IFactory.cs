@@ -1,4 +1,3 @@
-using Domain.Entity;
 using Domain.ValueObject;
 using Domain.Service.Dealer;
 using Domain.Service.Evaluator;
@@ -7,41 +6,17 @@ namespace Domain.Entity.Factory;
 
 public interface IFactory
 {
-    public Hand Build(
-        HandUid handUid,
-        Chips smallBlind,
-        Chips bigBlind,
-        IEnumerable<Participant> participants
-    );
-
     public Game GetGame();
 
-    public BaseTable BuildTable(IEnumerable<Participant> participants);
+    public BaseTable GetTable(IEnumerable<Participant> participants);
 
-    public BasePot BuildPot(Chips smallBlind, Chips bigBlind);
+    public BasePot GetPot(Chips smallBlind, Chips bigBlind);
 
-    public BaseDeck BuildDeck();
+    public BaseDeck GetDeck();
 
-    public IEvaluator BuildEvaluator();
+    public IEvaluator GetEvaluator();
 
-    public IList<IDealer> BuildDealers();
+    public IList<IDealer> GetDealers();
 
-    private Hand Build1111(
-        HandUid handUid,
-        Chips smallBlind,
-        Chips bigBlind,
-        IEnumerable<Participant> participants
-    )
-    {
-        return new Hand(
-            uid: handUid,
-            game: GetGame(),
-            table: BuildTable(participants),
-            pot: BuildPot(smallBlind, bigBlind),
-            deck: BuildDeck(),
-            evaluator: BuildEvaluator(),
-            dealers: BuildDealers(),
-            dealerIdx: -1
-        );
-    }
+    public Player GetPlayer(Participant participant);
 }

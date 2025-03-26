@@ -28,11 +28,15 @@ public class HoldemNoLimit6MaxHandTest
             stake: new Chips(800)
         );
 
-        var hand = factory.Build(
-            handUid: new HandUid(Guid.NewGuid()),
-            smallBlind: new Chips(5),
-            bigBlind: new Chips(10),
-            participants: [participantSb, participantBb, participantBu]
+        var hand = new Hand(
+            uid: new HandUid(Guid.NewGuid()),
+            game: factory.GetGame(),
+            table: factory.GetTable([participantSb, participantBb, participantBu]),
+            pot: factory.GetPot(new Chips(5), new Chips(5)),
+            deck: factory.GetDeck(),
+            evaluator: factory.GetEvaluator(),
+            dealers: factory.GetDealers(),
+            dealerIdx: 0
         );
 
         Assert.Equal(Game.HoldemNoLimit6Max, hand.Game);
@@ -218,11 +222,15 @@ public class HoldemNoLimit6MaxHandTest
     {
         var factory = new HoldemNoLimit6MaxFactory();
 
-        return factory.Build(
-            handUid: new HandUid(Guid.NewGuid()),
-            smallBlind: new Chips(smallBlind),
-            bigBlind: new Chips(bigBlind),
-            participants: participants
+        return new Hand(
+            uid: new HandUid(Guid.NewGuid()),
+            game: factory.GetGame(),
+            table: factory.GetTable(participants),
+            pot: factory.GetPot(new Chips(smallBlind), new Chips(bigBlind)),
+            deck: factory.GetDeck(),
+            evaluator: factory.GetEvaluator(),
+            dealers: factory.GetDealers(),
+            dealerIdx: 0
         );
     }
 
@@ -233,5 +241,119 @@ public class HoldemNoLimit6MaxHandTest
             position: position,
             stake: new Chips(stake)
         );
+    }
+}
+
+public class HoldemNoLimit9MaxHandTest
+{
+    [Fact]
+    public void TestInitialization()
+    {
+        var factory = new HoldemNoLimit9MaxFactory();
+
+        var participantSb = new Participant(
+            nickname: new Nickname("SmallBlind"),
+            position: Position.SmallBlind,
+            stake: new Chips(1000)
+        );
+        var participantBb = new Participant(
+            nickname: new Nickname("BigBlind"),
+            position: Position.BigBlind,
+            stake: new Chips(900)
+        );
+        var participantBu = new Participant(
+            nickname: new Nickname("Button"),
+            position: Position.Button,
+            stake: new Chips(800)
+        );
+
+        var hand = new Hand(
+            uid: new HandUid(Guid.NewGuid()),
+            game: factory.GetGame(),
+            table: factory.GetTable([participantSb, participantBb, participantBu]),
+            pot: factory.GetPot(new Chips(5), new Chips(10)),
+            deck: factory.GetDeck(),
+            evaluator: factory.GetEvaluator(),
+            dealers: factory.GetDealers(),
+            dealerIdx: 0
+        );
+
+        Assert.Equal(Game.HoldemNoLimit9Max, hand.Game);
+    }
+}
+
+public class OmahaPotLimit6MaxHandTest
+{
+    [Fact]
+    public void TestInitialization()
+    {
+        var factory = new OmahaPotLimit6MaxFactory();
+
+        var participantSb = new Participant(
+            nickname: new Nickname("SmallBlind"),
+            position: Position.SmallBlind,
+            stake: new Chips(1000)
+        );
+        var participantBb = new Participant(
+            nickname: new Nickname("BigBlind"),
+            position: Position.BigBlind,
+            stake: new Chips(900)
+        );
+        var participantBu = new Participant(
+            nickname: new Nickname("Button"),
+            position: Position.Button,
+            stake: new Chips(800)
+        );
+
+        var hand = new Hand(
+            uid: new HandUid(Guid.NewGuid()),
+            game: factory.GetGame(),
+            table: factory.GetTable([participantSb, participantBb, participantBu]),
+            pot: factory.GetPot(new Chips(5), new Chips(10)),
+            deck: factory.GetDeck(),
+            evaluator: factory.GetEvaluator(),
+            dealers: factory.GetDealers(),
+            dealerIdx: 0
+        );
+
+        Assert.Equal(Game.OmahaPotLimit6Max, hand.Game);
+    }
+}
+
+public class OmahaPotLimit9MaxHandTest
+{
+    [Fact]
+    public void TestInitialization()
+    {
+        var factory = new OmahaPotLimit9MaxFactory();
+
+        var participantSb = new Participant(
+            nickname: new Nickname("SmallBlind"),
+            position: Position.SmallBlind,
+            stake: new Chips(1000)
+        );
+        var participantBb = new Participant(
+            nickname: new Nickname("BigBlind"),
+            position: Position.BigBlind,
+            stake: new Chips(900)
+        );
+        var participantBu = new Participant(
+            nickname: new Nickname("Button"),
+            position: Position.Button,
+            stake: new Chips(800)
+        );
+
+        var hand = new Hand(
+            uid: new HandUid(Guid.NewGuid()),
+            game: factory.GetGame(),
+            table: factory.GetTable([participantSb, participantBb, participantBu]),
+            pot: factory.GetPot(new Chips(5), new Chips(10)),
+            deck: factory.GetDeck(),
+            evaluator: factory.GetEvaluator(),
+            dealers: factory.GetDealers(),
+            dealerIdx: 0
+        );
+
+        Assert.Equal(Game.OmahaPotLimit9Max, hand.Game);
     }
 }

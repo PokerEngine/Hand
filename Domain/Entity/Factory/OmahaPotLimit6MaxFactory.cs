@@ -6,51 +6,21 @@ namespace Domain.Entity.Factory;
 
 public class OmahaPotLimit6MaxFactory : IFactory
 {
-    public Hand Build(
-        HandUid handUid,
-        Chips smallBlind,
-        Chips bigBlind,
-        IEnumerable<Participant> participants
-    )
-    {
-        return new Hand(
-            uid: handUid,
-            game: GetGame(),
-            table: BuildTable(participants),
-            pot: BuildPot(smallBlind, bigBlind),
-            deck: BuildDeck(),
-            evaluator: BuildEvaluator(),
-            dealers: BuildDealers(),
-            dealerIdx: 0
-        );
-    }
-
     public Game GetGame()
     {
         return Game.OmahaPotLimit6Max;
     }
 
-    public BaseTable BuildTable(IEnumerable<Participant> participants)
+    public BaseTable GetTable(IEnumerable<Participant> participants)
     {
-        var players = participants
-            .Select(
-                x => new Player(
-                    nickname: x.Nickname,
-                    position: x.Position,
-                    stake: x.Stake,
-                    holeCards: new CardSet(),
-                    isConnected: false,
-                    isFolded: false
-                )
-            )
-            .ToList();
+        var players = participants.Select(x => GetPlayer(x));
         return new SixMaxTable(
             players: players,
             boardCards: new CardSet()
         );
     }
 
-    public BasePot BuildPot(Chips smallBlind, Chips bigBlind)
+    public BasePot GetPot(Chips smallBlind, Chips bigBlind)
     {
         return new PotLimitPot(
             smallBlind: smallBlind,
@@ -64,17 +34,17 @@ public class OmahaPotLimit6MaxFactory : IFactory
         );
     }
 
-    public BaseDeck BuildDeck()
+    public BaseDeck GetDeck()
     {
         return new StandardDeck(StandardDeck.AllowedCards);
     }
 
-    public IEvaluator BuildEvaluator()
+    public IEvaluator GetEvaluator()
     {
         return new OmahaEvaluator();
     }
 
-    public IList<IDealer> BuildDealers()
+    public IList<IDealer> GetDealers()
     {
         return [
             new BlindPostingDealer(),
@@ -88,5 +58,17 @@ public class OmahaPotLimit6MaxFactory : IFactory
             new TradingDealer(),
             new ShowdownDealer(),
         ];
+    }
+
+    public Player GetPlayer(Participant participant)
+    {
+        return new Player(
+            nickname: participant.Nickname,
+            position: participant.Position,
+            stake: participant.Stake,
+            holeCards: new CardSet(),
+            isConnected: false,
+            isFolded: false
+        );
     }
 }

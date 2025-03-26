@@ -1,4 +1,5 @@
 using Domain.Entity;
+using Domain.Entity.Factory;
 using Domain.Error;
 using Domain.ValueObject;
 
@@ -67,7 +68,8 @@ public class StandardDeckTest
 
     private BaseDeck CreateDeck()
     {
-        return new StandardDeck(StandardDeck.AllowedCards);
+        var factory = new HoldemNoLimit6MaxFactory();
+        return factory.GetDeck();
     }
 }
 

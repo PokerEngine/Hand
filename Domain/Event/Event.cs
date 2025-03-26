@@ -9,6 +9,10 @@ public interface IEvent
 }
 
 public record HandIsCreatedEvent(
+    Game Game,
+    Chips SmallBlind,
+    Chips BigBlind,
+    List<Participant> Participants,
     HandUid HandUid,
     DateTime OccuredAt
 ) : IEvent;
@@ -45,14 +49,7 @@ public record PlayerDisconnectedEvent(
     DateTime OccuredAt
 ) : IEvent;
 
-public record SmallBlindIsPostedEvent(
-    Nickname Nickname,
-    Chips Amount,
-    HandUid HandUid,
-    DateTime OccuredAt
-) : IEvent;
-
-public record BigBlindIsPostedEvent(
+public record BlindIsPostedEvent(
     Nickname Nickname,
     Chips Amount,
     HandUid HandUid,

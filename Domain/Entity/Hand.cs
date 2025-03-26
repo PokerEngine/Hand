@@ -25,7 +25,7 @@ public class Hand
         BaseDeck deck,
         IEvaluator evaluator,
         IList<IDealer> dealers,
-        int dealerIdx
+        EventBus eventBus
     )
     {
         Uid = uid;
@@ -35,7 +35,18 @@ public class Hand
         _deck = deck;
         _evaluator = evaluator;
         _dealers = dealers;
-        _dealerIdx = dealerIdx;
+        _dealerIdx = 0;
+
+        var participants = table.Select(x => new Participant(x.Nickname, x.Position, x.Stake)).ToList();
+        var @event = new HandIsCreatedEvent(
+            Game: game,
+            SmallBlind: pot.SmallBlind,
+            BigBlind: pot.BigBlind,
+            Participants: participants,
+            HandUid: uid,
+            OccuredAt: DateTime.Now
+        );
+        eventBus.Publish(@event);
     }
 
     public void Connect(Nickname nickname, EventBus eventBus)

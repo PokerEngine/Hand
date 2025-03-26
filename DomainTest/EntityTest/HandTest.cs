@@ -27,19 +27,33 @@ public class HoldemNoLimit6MaxHandTest
             position: Position.Button,
             stake: new Chips(800)
         );
+        var eventBus = new EventBus();
+
+        var events = new List<HandIsCreatedEvent>();
+        var listener = (HandIsCreatedEvent @event) => events.Add(@event);
+        eventBus.Subscribe(listener);
 
         var hand = new Hand(
             uid: new HandUid(Guid.NewGuid()),
             game: factory.GetGame(),
             table: factory.GetTable([participantSb, participantBb, participantBu]),
-            pot: factory.GetPot(new Chips(5), new Chips(5)),
+            pot: factory.GetPot(new Chips(5), new Chips(10)),
             deck: factory.GetDeck(),
             evaluator: factory.GetEvaluator(),
             dealers: factory.GetDealers(),
-            dealerIdx: 0
+            eventBus: eventBus
         );
 
         Assert.Equal(Game.HoldemNoLimit6Max, hand.Game);
+
+        Assert.Single(events);
+        Assert.Equal(Game.HoldemNoLimit6Max, events[0].Game);
+        Assert.Equal(new Chips(5), events[0].SmallBlind);
+        Assert.Equal(new Chips(10), events[0].BigBlind);
+        Assert.Equal(3, events[0].Participants.Count);
+        Assert.Equal(participantSb, events[0].Participants[0]);
+        Assert.Equal(participantBb, events[0].Participants[1]);
+        Assert.Equal(participantBu, events[0].Participants[2]);
     }
 
     [Fact]
@@ -57,10 +71,11 @@ public class HoldemNoLimit6MaxHandTest
             nickname: "Button",
             position: Position.Button
         );
+        var eventBus = new EventBus();
+
         var hand = CreateHand(
             participants: [participantSb, participantBb, participantBu]
         );
-        var eventBus = new EventBus();
 
         var events = new List<PlayerConnectedEvent>();
         var listener = (PlayerConnectedEvent @event) => events.Add(@event);
@@ -90,10 +105,11 @@ public class HoldemNoLimit6MaxHandTest
             nickname: "Button",
             position: Position.Button
         );
+        var eventBus = new EventBus();
+
         var hand = CreateHand(
             participants: [participantSb, participantBb, participantBu]
         );
-        var eventBus = new EventBus();
 
         var events = new List<PlayerDisconnectedEvent>();
         var listener = (PlayerDisconnectedEvent @event) => events.Add(@event);
@@ -128,10 +144,11 @@ public class HoldemNoLimit6MaxHandTest
             nickname: "Button",
             position: Position.Button
         );
+        var eventBus = new EventBus();
+
         var hand = CreateHand(
             participants: [participantSb, participantBb, participantBu]
         );
-        var eventBus = new EventBus();
 
         var events = new List<IEvent>();
         var decisionRequestEvents = new List<DecisionIsRequestedEvent>();
@@ -230,7 +247,7 @@ public class HoldemNoLimit6MaxHandTest
             deck: factory.GetDeck(),
             evaluator: factory.GetEvaluator(),
             dealers: factory.GetDealers(),
-            dealerIdx: 0
+            eventBus: new EventBus()
         );
     }
 
@@ -266,6 +283,11 @@ public class HoldemNoLimit9MaxHandTest
             position: Position.Button,
             stake: new Chips(800)
         );
+        var eventBus = new EventBus();
+
+        var events = new List<HandIsCreatedEvent>();
+        var listener = (HandIsCreatedEvent @event) => events.Add(@event);
+        eventBus.Subscribe(listener);
 
         var hand = new Hand(
             uid: new HandUid(Guid.NewGuid()),
@@ -275,10 +297,19 @@ public class HoldemNoLimit9MaxHandTest
             deck: factory.GetDeck(),
             evaluator: factory.GetEvaluator(),
             dealers: factory.GetDealers(),
-            dealerIdx: 0
+            eventBus: eventBus
         );
 
         Assert.Equal(Game.HoldemNoLimit9Max, hand.Game);
+
+        Assert.Single(events);
+        Assert.Equal(Game.HoldemNoLimit9Max, events[0].Game);
+        Assert.Equal(new Chips(5), events[0].SmallBlind);
+        Assert.Equal(new Chips(10), events[0].BigBlind);
+        Assert.Equal(3, events[0].Participants.Count);
+        Assert.Equal(participantSb, events[0].Participants[0]);
+        Assert.Equal(participantBb, events[0].Participants[1]);
+        Assert.Equal(participantBu, events[0].Participants[2]);
     }
 }
 
@@ -304,6 +335,11 @@ public class OmahaPotLimit6MaxHandTest
             position: Position.Button,
             stake: new Chips(800)
         );
+        var eventBus = new EventBus();
+
+        var events = new List<HandIsCreatedEvent>();
+        var listener = (HandIsCreatedEvent @event) => events.Add(@event);
+        eventBus.Subscribe(listener);
 
         var hand = new Hand(
             uid: new HandUid(Guid.NewGuid()),
@@ -313,10 +349,19 @@ public class OmahaPotLimit6MaxHandTest
             deck: factory.GetDeck(),
             evaluator: factory.GetEvaluator(),
             dealers: factory.GetDealers(),
-            dealerIdx: 0
+            eventBus: eventBus
         );
 
         Assert.Equal(Game.OmahaPotLimit6Max, hand.Game);
+
+        Assert.Single(events);
+        Assert.Equal(Game.OmahaPotLimit6Max, events[0].Game);
+        Assert.Equal(new Chips(5), events[0].SmallBlind);
+        Assert.Equal(new Chips(10), events[0].BigBlind);
+        Assert.Equal(3, events[0].Participants.Count);
+        Assert.Equal(participantSb, events[0].Participants[0]);
+        Assert.Equal(participantBb, events[0].Participants[1]);
+        Assert.Equal(participantBu, events[0].Participants[2]);
     }
 }
 
@@ -342,6 +387,11 @@ public class OmahaPotLimit9MaxHandTest
             position: Position.Button,
             stake: new Chips(800)
         );
+        var eventBus = new EventBus();
+
+        var events = new List<HandIsCreatedEvent>();
+        var listener = (HandIsCreatedEvent @event) => events.Add(@event);
+        eventBus.Subscribe(listener);
 
         var hand = new Hand(
             uid: new HandUid(Guid.NewGuid()),
@@ -351,9 +401,18 @@ public class OmahaPotLimit9MaxHandTest
             deck: factory.GetDeck(),
             evaluator: factory.GetEvaluator(),
             dealers: factory.GetDealers(),
-            dealerIdx: 0
+            eventBus: eventBus
         );
 
         Assert.Equal(Game.OmahaPotLimit9Max, hand.Game);
+
+        Assert.Single(events);
+        Assert.Equal(Game.OmahaPotLimit9Max, events[0].Game);
+        Assert.Equal(new Chips(5), events[0].SmallBlind);
+        Assert.Equal(new Chips(10), events[0].BigBlind);
+        Assert.Equal(3, events[0].Participants.Count);
+        Assert.Equal(participantSb, events[0].Participants[0]);
+        Assert.Equal(participantBb, events[0].Participants[1]);
+        Assert.Equal(participantBu, events[0].Participants[2]);
     }
 }

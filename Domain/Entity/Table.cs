@@ -12,7 +12,7 @@ public abstract class BaseTable : IEnumerable<Player>
 
     public int Count => _players.Count;
 
-    protected BaseTable(IEnumerable<Player> players, CardSet boardCards)
+    protected BaseTable(IEnumerable<Player> players)
     {
         var orderedPlayers = players.OrderBy(x => x.Position).ToImmutableList();
 
@@ -39,7 +39,7 @@ public abstract class BaseTable : IEnumerable<Player>
         }
 
         _players = orderedPlayers;
-        BoardCards = boardCards;
+        BoardCards = new CardSet();
     }
 
     public Player GetPlayerByNickname(Nickname nickname)
@@ -99,7 +99,7 @@ public class SixMaxTable : BaseTable
         Position.Button,
     ];
 
-    public SixMaxTable(IEnumerable<Player> players, CardSet boardCards) : base(players, boardCards)
+    public SixMaxTable(IEnumerable<Player> players) : base(players)
     {
         var positions = players.Select(x => x.Position).ToHashSet();
 
@@ -124,7 +124,7 @@ public class NineMaxTable : BaseTable
         Position.Button,
     ];
 
-    public NineMaxTable(IEnumerable<Player> players, CardSet boardCards) : base(players, boardCards)
+    public NineMaxTable(IEnumerable<Player> players) : base(players)
     {
         var positions = players.Select(x => x.Position).ToHashSet();
 

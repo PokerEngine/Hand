@@ -9,37 +9,24 @@ public class PlayerTest
     [Fact]
     public void TestInitialization()
     {
-        var cards = new CardSet([Card.AceOfSpades, Card.DeuceOfClubs]);
         var player = new Player(
-            nickname: new Nickname("nickname"),
-            position: Position.Button,
-            stake: new Chips(1000),
-            holeCards: cards,
-            isConnected: true,
-            isFolded: true
+            nickname: new Nickname("BigBlind"),
+            position: Position.BigBlind,
+            stake: new Chips(1000)
         );
 
-        Assert.Equal(new Nickname("nickname"), player.Nickname);
-        Assert.Equal(Position.Button, player.Position);
+        Assert.Equal(new Nickname("BigBlind"), player.Nickname);
+        Assert.Equal(Position.BigBlind, player.Position);
         Assert.Equal(new Chips(1000), player.Stake);
-        Assert.Equal(cards, player.HoleCards);
-        Assert.True(player.IsConnected);
-        Assert.True(player.IsFolded);
+        Assert.Empty(player.HoleCards);
+        Assert.False(player.IsConnected);
+        Assert.False(player.IsFolded);
     }
 
-    [Theory]
-    [InlineData(true)]
-    [InlineData(false)]
-    public void TestConnect(bool isFolded)
+    [Fact]
+    public void TestConnect()
     {
-        var player = new Player(
-            nickname: new Nickname("nickname"),
-            position: Position.Button,
-            stake: new Chips(1000),
-            holeCards: new CardSet([Card.AceOfSpades, Card.DeuceOfClubs]),
-            isConnected: false,
-            isFolded: isFolded
-        );
+        var player = CreatePlayer();
 
         player.Connect();
 
@@ -49,14 +36,8 @@ public class PlayerTest
     [Fact]
     public void TestConnectWhenAlreadyConnected()
     {
-        var player = new Player(
-            nickname: new Nickname("nickname"),
-            position: Position.Button,
-            stake: new Chips(1000),
-            holeCards: new CardSet([Card.AceOfSpades, Card.DeuceOfClubs]),
-            isConnected: true,
-            isFolded: false
-        );
+        var player = CreatePlayer();
+        player.Connect();
 
         var exc = Assert.Throws<NotAvailableError>(() => player.Connect());
 
@@ -64,19 +45,11 @@ public class PlayerTest
         Assert.True(player.IsConnected);
     }
 
-    [Theory]
-    [InlineData(true)]
-    [InlineData(false)]
-    public void TestDisconnect(bool isFolded)
+    [Fact]
+    public void TestDisconnect()
     {
-        var player = new Player(
-            nickname: new Nickname("nickname"),
-            position: Position.Button,
-            stake: new Chips(1000),
-            holeCards: new CardSet([Card.AceOfSpades, Card.DeuceOfClubs]),
-            isConnected: true,
-            isFolded: isFolded
-        );
+        var player = CreatePlayer();
+        player.Connect();
 
         player.Disconnect();
 
@@ -86,14 +59,7 @@ public class PlayerTest
     [Fact]
     public void TestDisconnectWhenNotConnected()
     {
-        var player = new Player(
-            nickname: new Nickname("nickname"),
-            position: Position.Button,
-            stake: new Chips(1000),
-            holeCards: new CardSet([Card.AceOfSpades, Card.DeuceOfClubs]),
-            isConnected: false,
-            isFolded: false
-        );
+        var player = CreatePlayer();
 
         var exc = Assert.Throws<NotAvailableError>(() => player.Disconnect());
 
@@ -101,19 +67,14 @@ public class PlayerTest
         Assert.False(player.IsConnected);
     }
 
-    [Theory]
-    [InlineData(true)]
-    [InlineData(false)]
-    public void TestTakeHoleCards(bool isConnected)
+    [Fact]
+    public void TestTakeHoleCards()
     {
-        var player = new Player(
-            nickname: new Nickname("nickname"),
-            position: Position.Button,
-            stake: new Chips(1000),
-            holeCards: new CardSet([Card.AceOfSpades, Card.DeuceOfClubs]),
-            isConnected: isConnected,
-            isFolded: false
-        );
+        var player = CreatePlayer();
+
+        player.TakeHoleCards(new CardSet([Card.AceOfSpades, Card.DeuceOfClubs]));
+
+        Assert.Equal(new CardSet([Card.AceOfSpades, Card.DeuceOfClubs]), player.HoleCards);
 
         player.TakeHoleCards(new CardSet([Card.KingOfHearts, Card.TreyOfDiamonds]));
 
@@ -123,34 +84,21 @@ public class PlayerTest
     [Fact]
     public void TestTakeHoleCardsWhenFolded()
     {
-        var player = new Player(
-            nickname: new Nickname("nickname"),
-            position: Position.Button,
-            stake: new Chips(1000),
-            holeCards: new CardSet([Card.AceOfSpades, Card.DeuceOfClubs]),
-            isConnected: true,
-            isFolded: true
-        );
+        var player = CreatePlayer();
+        player.Connect();
+        player.Fold();
 
         var exc = Assert.Throws<NotAvailableError>(() => player.TakeHoleCards(new CardSet([Card.KingOfHearts, Card.TreyOfDiamonds])));
 
         Assert.Equal("The player has already folded", exc.Message);
-        Assert.Equal(new CardSet([Card.AceOfSpades, Card.DeuceOfClubs]), player.HoleCards);
+        Assert.Empty(player.HoleCards);
     }
 
-    [Theory]
-    [InlineData(true)]
-    [InlineData(false)]
-    public void TestFold(bool isConnected)
+    [Fact]
+    public void TestFold()
     {
-        var player = new Player(
-            nickname: new Nickname("nickname"),
-            position: Position.Button,
-            stake: new Chips(1000),
-            holeCards: new CardSet([Card.AceOfSpades, Card.DeuceOfClubs]),
-            isConnected: isConnected,
-            isFolded: false
-        );
+        var player = CreatePlayer();
+        player.Connect();
 
         player.Fold();
 
@@ -161,14 +109,9 @@ public class PlayerTest
     [Fact]
     public void TestFoldWhenFolded()
     {
-        var player = new Player(
-            nickname: new Nickname("nickname"),
-            position: Position.Button,
-            stake: new Chips(1000),
-            holeCards: new CardSet([Card.AceOfSpades, Card.DeuceOfClubs]),
-            isConnected: true,
-            isFolded: true
-        );
+        var player = CreatePlayer();
+        player.Connect();
+        player.Fold();
 
         var exc = Assert.Throws<NotAvailableError>(() => player.Fold());
 
@@ -180,14 +123,9 @@ public class PlayerTest
     [Fact]
     public void TestFoldWhenAllIn()
     {
-        var player = new Player(
-            nickname: new Nickname("nickname"),
-            position: Position.Button,
-            stake: new Chips(0),
-            holeCards: new CardSet([Card.AceOfSpades, Card.DeuceOfClubs]),
-            isConnected: true,
-            isFolded: false
-        );
+        var player = CreatePlayer();
+        player.Connect();
+        player.Bet(player.Stake);
 
         var exc = Assert.Throws<NotAvailableError>(() => player.Fold());
 
@@ -199,14 +137,8 @@ public class PlayerTest
     [Fact]
     public void TestCheck()
     {
-        var player = new Player(
-            nickname: new Nickname("nickname"),
-            position: Position.Button,
-            stake: new Chips(1000),
-            holeCards: new CardSet([Card.AceOfSpades, Card.DeuceOfClubs]),
-            isConnected: true,
-            isFolded: false
-        );
+        var player = CreatePlayer();
+        player.Connect();
 
         player.Check();
 
@@ -217,14 +149,9 @@ public class PlayerTest
     [Fact]
     public void TestCheckWhenFolded()
     {
-        var player = new Player(
-            nickname: new Nickname("nickname"),
-            position: Position.Button,
-            stake: new Chips(1000),
-            holeCards: new CardSet([Card.AceOfSpades, Card.DeuceOfClubs]),
-            isConnected: true,
-            isFolded: true
-        );
+        var player = CreatePlayer();
+        player.Connect();
+        player.Fold();
 
         var exc = Assert.Throws<NotAvailableError>(() => player.Check());
 
@@ -236,14 +163,7 @@ public class PlayerTest
     [Fact]
     public void TestCheckWhenNotConnected()
     {
-        var player = new Player(
-            nickname: new Nickname("nickname"),
-            position: Position.Button,
-            stake: new Chips(1000),
-            holeCards: new CardSet([Card.AceOfSpades, Card.DeuceOfClubs]),
-            isConnected: false,
-            isFolded: false
-        );
+        var player = CreatePlayer();
 
         var exc = Assert.Throws<NotAvailableError>(() => player.Check());
 
@@ -255,14 +175,9 @@ public class PlayerTest
     [Fact]
     public void TestCheckWhenAllIn()
     {
-        var player = new Player(
-            nickname: new Nickname("nickname"),
-            position: Position.Button,
-            stake: new Chips(0),
-            holeCards: new CardSet([Card.AceOfSpades, Card.DeuceOfClubs]),
-            isConnected: true,
-            isFolded: false
-        );
+        var player = CreatePlayer();
+        player.Connect();
+        player.Bet(player.Stake);
 
         var exc = Assert.Throws<NotAvailableError>(() => player.Check());
 
@@ -274,14 +189,8 @@ public class PlayerTest
     [Fact]
     public void TestBet()
     {
-        var player = new Player(
-            nickname: new Nickname("nickname"),
-            position: Position.Button,
-            stake: new Chips(1000),
-            holeCards: new CardSet([Card.AceOfSpades, Card.DeuceOfClubs]),
-            isConnected: true,
-            isFolded: false
-        );
+        var player = CreatePlayer();
+        player.Connect();
 
         player.Bet(new Chips(25));
 
@@ -293,16 +202,10 @@ public class PlayerTest
     [Fact]
     public void TestBetAllIn()
     {
-        var player = new Player(
-            nickname: new Nickname("nickname"),
-            position: Position.Button,
-            stake: new Chips(1000),
-            holeCards: new CardSet([Card.AceOfSpades, Card.DeuceOfClubs]),
-            isConnected: true,
-            isFolded: false
-        );
+        var player = CreatePlayer();
+        player.Connect();
 
-        player.Bet(new Chips(1000));
+        player.Bet(player.Stake);
 
         Assert.False(player.IsFolded);
         Assert.Equal(new Chips(0), player.Stake);
@@ -312,14 +215,9 @@ public class PlayerTest
     [Fact]
     public void TestBetWhenFolded()
     {
-        var player = new Player(
-            nickname: new Nickname("nickname"),
-            position: Position.Button,
-            stake: new Chips(1000),
-            holeCards: new CardSet([Card.AceOfSpades, Card.DeuceOfClubs]),
-            isConnected: true,
-            isFolded: true
-        );
+        var player = CreatePlayer();
+        player.Connect();
+        player.Fold();
 
         var exc = Assert.Throws<NotAvailableError>(() => player.Bet(new Chips(25)));
 
@@ -332,14 +230,7 @@ public class PlayerTest
     [Fact]
     public void TestBetWhenNotConnected()
     {
-        var player = new Player(
-            nickname: new Nickname("nickname"),
-            position: Position.Button,
-            stake: new Chips(1000),
-            holeCards: new CardSet([Card.AceOfSpades, Card.DeuceOfClubs]),
-            isConnected: false,
-            isFolded: false
-        );
+        var player = CreatePlayer();
 
         var exc = Assert.Throws<NotAvailableError>(() => player.Bet(new Chips(25)));
 
@@ -352,14 +243,9 @@ public class PlayerTest
     [Fact]
     public void TestBetWhenAllIn()
     {
-        var player = new Player(
-            nickname: new Nickname("nickname"),
-            position: Position.Button,
-            stake: new Chips(0),
-            holeCards: new CardSet([Card.AceOfSpades, Card.DeuceOfClubs]),
-            isConnected: true,
-            isFolded: false
-        );
+        var player = CreatePlayer();
+        player.Connect();
+        player.Bet(player.Stake);
 
         var exc = Assert.Throws<NotAvailableError>(() => player.Bet(new Chips(25)));
 
@@ -371,14 +257,8 @@ public class PlayerTest
     [Fact]
     public void TestBetWhenNotEnoughStake()
     {
-        var player = new Player(
-            nickname: new Nickname("nickname"),
-            position: Position.Button,
-            stake: new Chips(1000),
-            holeCards: new CardSet([Card.AceOfSpades, Card.DeuceOfClubs]),
-            isConnected: true,
-            isFolded: false
-        );
+        var player = CreatePlayer();
+        player.Connect();
 
         var exc = Assert.Throws<NotAvailableError>(() => player.Bet(new Chips(1025)));
 
@@ -388,19 +268,23 @@ public class PlayerTest
         Assert.False(player.IsAllIn);
     }
 
-    [Theory]
-    [InlineData(true)]
-    [InlineData(false)]
-    public void TestPost(bool isConnected)
+    [Fact]
+    public void TestPost()
     {
-        var player = new Player(
-            nickname: new Nickname("nickname"),
-            position: Position.Button,
-            stake: new Chips(1000),
-            holeCards: new CardSet([Card.AceOfSpades, Card.DeuceOfClubs]),
-            isConnected: isConnected,
-            isFolded: false
-        );
+        var player = CreatePlayer();
+        player.Connect();
+
+        player.Post(new Chips(25));
+
+        Assert.False(player.IsFolded);
+        Assert.Equal(new Chips(975), player.Stake);
+        Assert.False(player.IsAllIn);
+    }
+
+    [Fact]
+    public void TestPostWhenNotConnected()
+    {
+        var player = CreatePlayer();
 
         player.Post(new Chips(25));
 
@@ -412,14 +296,8 @@ public class PlayerTest
     [Fact]
     public void TestPostAllIn()
     {
-        var player = new Player(
-            nickname: new Nickname("nickname"),
-            position: Position.Button,
-            stake: new Chips(1000),
-            holeCards: new CardSet([Card.AceOfSpades, Card.DeuceOfClubs]),
-            isConnected: true,
-            isFolded: false
-        );
+        var player = CreatePlayer();
+        player.Connect();
 
         player.Post(new Chips(1000));
 
@@ -431,14 +309,9 @@ public class PlayerTest
     [Fact]
     public void TestPostWhenFolded()
     {
-        var player = new Player(
-            nickname: new Nickname("nickname"),
-            position: Position.Button,
-            stake: new Chips(1000),
-            holeCards: new CardSet([Card.AceOfSpades, Card.DeuceOfClubs]),
-            isConnected: true,
-            isFolded: true
-        );
+        var player = CreatePlayer();
+        player.Connect();
+        player.Fold();
 
         var exc = Assert.Throws<NotAvailableError>(() => player.Post(new Chips(25)));
 
@@ -451,14 +324,9 @@ public class PlayerTest
     [Fact]
     public void TestPostWhenAllIn()
     {
-        var player = new Player(
-            nickname: new Nickname("nickname"),
-            position: Position.Button,
-            stake: new Chips(0),
-            holeCards: new CardSet([Card.AceOfSpades, Card.DeuceOfClubs]),
-            isConnected: true,
-            isFolded: false
-        );
+        var player = CreatePlayer();
+        player.Connect();
+        player.Post(player.Stake);
 
         var exc = Assert.Throws<NotAvailableError>(() => player.Post(new Chips(25)));
 
@@ -470,14 +338,8 @@ public class PlayerTest
     [Fact]
     public void TestPostWhenNotEnoughStake()
     {
-        var player = new Player(
-            nickname: new Nickname("nickname"),
-            position: Position.Button,
-            stake: new Chips(1000),
-            holeCards: new CardSet([Card.AceOfSpades, Card.DeuceOfClubs]),
-            isConnected: true,
-            isFolded: false
-        );
+        var player = CreatePlayer();
+        player.Connect();
 
         var exc = Assert.Throws<NotAvailableError>(() => player.Post(new Chips(1025)));
 
@@ -487,19 +349,22 @@ public class PlayerTest
         Assert.False(player.IsAllIn);
     }
 
-    [Theory]
-    [InlineData(true)]
-    [InlineData(false)]
-    public void TestWin(bool isConnected)
+    [Fact]
+    public void TestWin()
     {
-        var player = new Player(
-            nickname: new Nickname("nickname"),
-            position: Position.Button,
-            stake: new Chips(1000),
-            holeCards: new CardSet([Card.AceOfSpades, Card.DeuceOfClubs]),
-            isConnected: isConnected,
-            isFolded: false
-        );
+        var player = CreatePlayer();
+        player.Connect();
+
+        player.Win(new Chips(25));
+
+        Assert.False(player.IsFolded);
+        Assert.Equal(new Chips(1025), player.Stake);
+    }
+
+    [Fact]
+    public void TestWinWhenNotConnected()
+    {
+        var player = CreatePlayer();
 
         player.Win(new Chips(25));
 
@@ -510,14 +375,9 @@ public class PlayerTest
     [Fact]
     public void TestWinWhenFolded()
     {
-        var player = new Player(
-            nickname: new Nickname("nickname"),
-            position: Position.Button,
-            stake: new Chips(1000),
-            holeCards: new CardSet([Card.AceOfSpades, Card.DeuceOfClubs]),
-            isConnected: true,
-            isFolded: true
-        );
+        var player = CreatePlayer();
+        player.Connect();
+        player.Fold();
 
         var exc = Assert.Throws<NotAvailableError>(() => player.Win(new Chips(25)));
 
@@ -526,19 +386,22 @@ public class PlayerTest
         Assert.Equal(new Chips(1000), player.Stake);
     }
 
-    [Theory]
-    [InlineData(true)]
-    [InlineData(false)]
-    public void TestRefund(bool isConnected)
+    [Fact]
+    public void TestRefund()
     {
-        var player = new Player(
-            nickname: new Nickname("nickname"),
-            position: Position.Button,
-            stake: new Chips(1000),
-            holeCards: new CardSet([Card.AceOfSpades, Card.DeuceOfClubs]),
-            isConnected: isConnected,
-            isFolded: false
-        );
+        var player = CreatePlayer();
+        player.Connect();
+
+        player.Refund(new Chips(25));
+
+        Assert.False(player.IsFolded);
+        Assert.Equal(new Chips(1025), player.Stake);
+    }
+
+    [Fact]
+    public void TestRefundWhenNotConnected()
+    {
+        var player = CreatePlayer();
 
         player.Refund(new Chips(25));
 
@@ -549,14 +412,9 @@ public class PlayerTest
     [Fact]
     public void TestRefundWhenFolded()
     {
-        var player = new Player(
-            nickname: new Nickname("nickname"),
-            position: Position.Button,
-            stake: new Chips(1000),
-            holeCards: new CardSet([Card.AceOfSpades, Card.DeuceOfClubs]),
-            isConnected: true,
-            isFolded: true
-        );
+        var player = CreatePlayer();
+        player.Connect();
+        player.Fold();
 
         var exc = Assert.Throws<NotAvailableError>(() => player.Refund(new Chips(25)));
 
@@ -565,132 +423,25 @@ public class PlayerTest
         Assert.Equal(new Chips(1000), player.Stake);
     }
 
-    [Theory]
-    [InlineData(true, false, 1000)]
-    [InlineData(true, false, 0)]
-    [InlineData(false, false, 1000)]
-    [InlineData(false, false, 0)]
-    public void TestAvailableForDealing(bool isConnected, bool isFolded, Chips stake)
-    {
-        var player = new Player(
-            nickname: new Nickname("nickname"),
-            position: Position.Button,
-            stake: stake,
-            holeCards: new CardSet([Card.AceOfSpades, Card.DeuceOfClubs]),
-            isConnected: isConnected,
-            isFolded: isFolded
-        );
-
-        Assert.True(player.IsAvailableForDealing);
-    }
-
-    [Theory]
-    [InlineData(true, true, 1000)]
-    [InlineData(true, true, 0)]
-    [InlineData(false, true, 1000)]
-    [InlineData(false, true, 0)]
-    public void TestNotAvailableForDealing(bool isConnected, bool isFolded, Chips stake)
-    {
-        var player = new Player(
-            nickname: new Nickname("nickname"),
-            position: Position.Button,
-            stake: stake,
-            holeCards: new CardSet([Card.AceOfSpades, Card.DeuceOfClubs]),
-            isConnected: isConnected,
-            isFolded: isFolded
-        );
-
-        Assert.False(player.IsAvailableForDealing);
-    }
-
-    [Theory]
-    [InlineData(true)]
-    [InlineData(false)]
-    public void TestAvailableForTrading(bool isConnected)
-    {
-        var player = new Player(
-            nickname: new Nickname("nickname"),
-            position: Position.Button,
-            stake: new Chips(1000),
-            holeCards: new CardSet([Card.AceOfSpades, Card.DeuceOfClubs]),
-            isConnected: isConnected,
-            isFolded: false
-        );
-
-        Assert.True(player.IsAvailableForTrading);
-    }
-
-    [Theory]
-    [InlineData(true, false, 0)]
-    [InlineData(true, true, 1000)]
-    [InlineData(true, true, 0)]
-    [InlineData(false, false, 0)]
-    [InlineData(false, true, 1000)]
-    [InlineData(false, true, 0)]
-    public void TestNotAvailableForTrading(bool isConnected, bool isFolded, Chips stake)
-    {
-        var player = new Player(
-            nickname: new Nickname("nickname"),
-            position: Position.Button,
-            stake: stake,
-            holeCards: new CardSet([Card.AceOfSpades, Card.DeuceOfClubs]),
-            isConnected: isConnected,
-            isFolded: isFolded
-        );
-
-        Assert.False(player.IsAvailableForTrading);
-    }
-
-    [Theory]
-    [InlineData(true, false, 1000)]
-    [InlineData(true, false, 0)]
-    [InlineData(false, false, 1000)]
-    [InlineData(false, false, 0)]
-    public void TestAvailableForShowdown(bool isConnected, bool isFolded, Chips stake)
-    {
-        var player = new Player(
-            nickname: new Nickname("nickname"),
-            position: Position.Button,
-            stake: stake,
-            holeCards: new CardSet([Card.AceOfSpades, Card.DeuceOfClubs]),
-            isConnected: isConnected,
-            isFolded: isFolded
-        );
-
-        Assert.True(player.IsAvailableForShowdown);
-    }
-
-    [Theory]
-    [InlineData(true, true, 1000)]
-    [InlineData(true, true, 0)]
-    [InlineData(false, true, 1000)]
-    [InlineData(false, true, 0)]
-    public void TestNotAvailableForShowdown(bool isConnected, bool isFolded, Chips stake)
-    {
-        var player = new Player(
-            nickname: new Nickname("nickname"),
-            position: Position.Button,
-            stake: stake,
-            holeCards: new CardSet([Card.AceOfSpades, Card.DeuceOfClubs]),
-            isConnected: isConnected,
-            isFolded: isFolded
-        );
-
-        Assert.False(player.IsAvailableForShowdown);
-    }
-
     [Fact]
     public void TestRepresentation()
     {
         var player = new Player(
-            nickname: new Nickname("nickname"),
-            position: Position.Button,
-            stake: new Chips(1000),
-            holeCards: new CardSet([Card.AceOfSpades, Card.DeuceOfClubs]),
-            isConnected: true,
-            isFolded: true
+            nickname: new Nickname("BigBlind"),
+            position: Position.BigBlind,
+            stake: new Chips(1000)
         );
+        player.TakeHoleCards(new CardSet([Card.AceOfSpades, Card.DeuceOfClubs]));
 
-        Assert.Equal("nickname, Button, 1000 chip(s), {AceOfSpades, DeuceOfClubs}", $"{player}");
+        Assert.Equal("BigBlind, BigBlind, 1000 chip(s), {AceOfSpades, DeuceOfClubs}", $"{player}");
+    }
+
+    private Player CreatePlayer(string nickname = "BigBlind", Position position = Position.BigBlind, int stake = 1000)
+    {
+        return new Player(
+            nickname: new Nickname(nickname),
+            position: position,
+            stake: new Chips(stake)
+        );
     }
 }

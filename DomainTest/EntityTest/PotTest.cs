@@ -10,26 +10,14 @@ public class NoLimitPotTest
     [Fact]
     public void TestInitialization()
     {
-        var currentSidePot = new SidePot();
-        currentSidePot = currentSidePot.Add(new Nickname("SmallBlind"), new Chips(25));
-        currentSidePot = currentSidePot.Add(new Nickname("BigBlind"), new Chips(10));
-
         var pot = new NoLimitPot(
             smallBlind: new Chips(5),
-            bigBlind: new Chips(10),
-            lastDecisionNickname: new Nickname("SmallBlind"),
-            lastRaiseNickname: new Nickname("SmallBlind"),
-            lastRaiseStep: new Chips(15),
-            currentDecisionNicknames: [new Nickname("SmallBlind")],
-            currentSidePot: currentSidePot,
-            previousSidePot: new SidePot()
+            bigBlind: new Chips(10)
         );
 
         Assert.Equal(new Chips(5), pot.SmallBlind);
         Assert.Equal(new Chips(10), pot.BigBlind);
-        Assert.Equal(new Nickname("SmallBlind"), pot.LastDecisionNickname);
-        Assert.Equal(new Chips(35), pot.GetTotalAmount());
-        Assert.Equal(new Chips(35), pot.GetCurrentAmount());
+        Assert.Equal(new Chips(0), pot.GetTotalAmount());
     }
 
     [Fact]
@@ -1699,21 +1687,21 @@ public class NoLimitPotTest
     [Fact]
     public void TestRepresentation()
     {
-        var currentSidePot = new SidePot();
-        currentSidePot = currentSidePot.Add(new Nickname("BigBlind"), new Chips(10));
-        currentSidePot = currentSidePot.Add(new Nickname("SmallBlind"), new Chips(25));
-        currentSidePot = currentSidePot.AddDead(new Chips(5));
+        var playerSb = CreatePlayer("SmallBlind", Position.SmallBlind);
+        var playerBb = CreatePlayer("BigBlind", Position.BigBlind);
+        var playerBu = CreatePlayer("Button", Position.Button);
+        playerSb.Connect();
+        playerBb.Connect();
+        playerBu.Connect();
 
         var pot = new NoLimitPot(
             smallBlind: new Chips(5),
-            bigBlind: new Chips(10),
-            lastDecisionNickname: new Nickname("SmallBlind"),
-            lastRaiseNickname: new Nickname("SmallBlind"),
-            lastRaiseStep: new Chips(15),
-            currentDecisionNicknames: [new Nickname("SmallBlind")],
-            currentSidePot: currentSidePot,
-            previousSidePot: new SidePot()
+            bigBlind: new Chips(10)
         );
+
+        pot.PostSmallBlind(playerSb, new Chips(5));
+        pot.PostBigBlind(playerBb, new Chips(10));
+        pot.CommitDecision(playerBu, new Decision(DecisionType.RaiseTo, new Chips(25)));
 
         Assert.Equal("NoLimitPot, 40 chip(s)", $"{pot}");
     }

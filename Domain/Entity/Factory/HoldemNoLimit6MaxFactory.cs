@@ -14,29 +14,17 @@ public class HoldemNoLimit6MaxFactory : IFactory
     public BaseTable GetTable(IEnumerable<Participant> participants)
     {
         var players = participants.Select(x => GetPlayer(x));
-        return new SixMaxTable(
-            players: players,
-            boardCards: new CardSet()
-        );
+        return new SixMaxTable(players);
     }
 
     public BasePot GetPot(Chips smallBlind, Chips bigBlind)
     {
-        return new NoLimitPot(
-            smallBlind: smallBlind,
-            bigBlind: bigBlind,
-            lastDecisionNickname: null,
-            lastRaiseNickname: null,
-            lastRaiseStep: bigBlind,
-            currentDecisionNicknames: [],
-            currentSidePot: new SidePot(),
-            previousSidePot: new SidePot()
-        );
+        return new NoLimitPot(smallBlind, bigBlind);
     }
 
     public BaseDeck GetDeck()
     {
-        return new StandardDeck(StandardDeck.AllowedCards);
+        return new StandardDeck();
     }
 
     public IEvaluator GetEvaluator()
@@ -65,10 +53,7 @@ public class HoldemNoLimit6MaxFactory : IFactory
         return new Player(
             nickname: participant.Nickname,
             position: participant.Position,
-            stake: participant.Stake,
-            holeCards: new CardSet(),
-            isConnected: false,
-            isFolded: false
+            stake: participant.Stake
         );
     }
 }

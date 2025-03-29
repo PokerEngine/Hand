@@ -1,5 +1,3 @@
-using System.Collections.Immutable;
-
 using Domain.Error;
 using Domain.ValueObject;
 
@@ -17,26 +15,17 @@ public abstract class BasePot
     private SidePot _currentSidePot;
     private SidePot _previousSidePot;
 
-    protected BasePot(
-        Chips smallBlind,
-        Chips bigBlind,
-        Nickname? lastDecisionNickname,
-        Nickname? lastRaiseNickname,
-        Chips lastRaiseStep,
-        IEnumerable<Nickname> currentDecisionNicknames,
-        SidePot currentSidePot,
-        SidePot previousSidePot
-    )
+    protected BasePot(Chips smallBlind, Chips bigBlind)
     {
         SmallBlind = smallBlind;
         BigBlind = bigBlind;
-        LastDecisionNickname = lastDecisionNickname;
+        LastDecisionNickname = null;
 
-        _lastRaiseNickname = lastRaiseNickname;
-        _lastRaiseStep = lastRaiseStep;
-        _currentDecisionCommittedNicknames = currentDecisionNicknames.ToHashSet();
-        _currentSidePot = currentSidePot;
-        _previousSidePot = previousSidePot;
+        _lastRaiseNickname = null;
+        _lastRaiseStep = bigBlind;
+        _currentDecisionCommittedNicknames = new HashSet<Nickname>();
+        _currentSidePot = new SidePot();
+        _previousSidePot = new SidePot();
     }
 
     public void PostSmallBlind(Player player, Chips amount)
@@ -630,16 +619,7 @@ public abstract class BasePot
 
 public class NoLimitPot : BasePot
 {
-    public NoLimitPot(
-        Chips smallBlind,
-        Chips bigBlind,
-        Nickname? lastDecisionNickname,
-        Nickname? lastRaiseNickname,
-        Chips lastRaiseStep,
-        IEnumerable<Nickname> currentDecisionNicknames,
-        SidePot currentSidePot,
-        SidePot previousSidePot
-    ) : base(smallBlind, bigBlind, lastDecisionNickname, lastRaiseNickname, lastRaiseStep, currentDecisionNicknames, currentSidePot, previousSidePot)
+    public NoLimitPot(Chips smallBlind, Chips bigBlind) : base(smallBlind, bigBlind)
     {
     }
 
@@ -654,16 +634,7 @@ public class NoLimitPot : BasePot
 
 public class PotLimitPot : BasePot
 {
-    public PotLimitPot(
-        Chips smallBlind,
-        Chips bigBlind,
-        Nickname? lastDecisionNickname,
-        Nickname? lastRaiseNickname,
-        Chips lastRaiseStep,
-        IEnumerable<Nickname> currentDecisionNicknames,
-        SidePot currentSidePot,
-        SidePot previousSidePot
-    ) : base(smallBlind, bigBlind, lastDecisionNickname, lastRaiseNickname, lastRaiseStep, currentDecisionNicknames, currentSidePot, previousSidePot)
+    public PotLimitPot(Chips smallBlind, Chips bigBlind) : base(smallBlind, bigBlind)
     {
     }
 

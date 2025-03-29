@@ -10,40 +10,34 @@ public class StandardDeckTest
     [Fact]
     public void TestInitialization()
     {
-        var cards = new CardSet([Card.AceOfSpades, Card.DeuceOfClubs]);
-        var deck = new StandardDeck(cards);
+        var deck = new StandardDeck();
 
-        Assert.Equal(2, deck.Count);
+        Assert.Equal(52, deck.Count);
     }
 
     [Fact]
     public void TestExtractRandomCards()
     {
-        var cards = new CardSet([Card.AceOfSpades, Card.DeuceOfClubs, Card.JackOfDiamonds]);
-        var deck = new StandardDeck(cards);
-        Assert.Equal(3, deck.Count);
+        var deck = new StandardDeck();
 
         var extractedCards = deck.ExtractRandomCards(1);
 
-        Assert.Equal(2, deck.Count);
+        Assert.Equal(51, deck.Count);
         Assert.Equal(1, extractedCards.Count);
-        Assert.True(extractedCards.IsSubsetOf(cards));
 
         extractedCards = deck.ExtractRandomCards(2);
 
-        Assert.Equal(0, deck.Count);
+        Assert.Equal(49, deck.Count);
         Assert.Equal(2, extractedCards.Count);
-        Assert.True(extractedCards.IsSubsetOf(cards));
     }
 
     [Fact]
     public void TestExtractRandomCardsWhenNotEnoughCards()
     {
-        CardSet cards;
-        var deck = new StandardDeck(new CardSet([Card.AceOfSpades, Card.DeuceOfClubs]));
-        Assert.Equal(2, deck.Count);
+        var deck = new StandardDeck();
 
-        var exc = Assert.Throws<NotAvailableError>(() => cards = deck.ExtractRandomCards(3));
+        CardSet cards;
+        var exc = Assert.Throws<NotAvailableError>(() => cards = deck.ExtractRandomCards(53));
 
         Assert.Equal("The deck does not contain enough cards", exc.Message);
     }
@@ -51,8 +45,7 @@ public class StandardDeckTest
     [Fact]
     public void TestExtractCertainCards()
     {
-        var deck = new StandardDeck(StandardDeck.AllowedCards);
-        Assert.Equal(52, deck.Count);
+        var deck = new StandardDeck();
 
         var cards = new CardSet([Card.AceOfSpades]);
         var extractedCards = deck.ExtractCertainCards(cards);
@@ -70,10 +63,10 @@ public class StandardDeckTest
     [Fact]
     public void TestExtractCertainCardsWhenDoesNotContain()
     {
-        CardSet cards;
-        var deck = new StandardDeck(new CardSet([Card.AceOfSpades, Card.DeuceOfClubs]));
-        Assert.Equal(2, deck.Count);
+        var deck = new StandardDeck();
+        deck.ExtractCertainCards(new CardSet([Card.AceOfDiamonds, Card.DeuceOfClubs]));
 
+        CardSet cards;
         var exc = Assert.Throws<NotAvailableError>(() => cards = deck.ExtractCertainCards(new CardSet([Card.AceOfDiamonds])));
 
         Assert.Equal("The deck does not contain the given cards", exc.Message);
@@ -82,10 +75,9 @@ public class StandardDeckTest
     [Fact]
     public void TestRepresentation()
     {
-        var cards = new CardSet([Card.AceOfSpades, Card.DeuceOfClubs]);
-        var deck = new StandardDeck(cards);
+        var deck = new StandardDeck();
 
-        Assert.Equal("StandardDeck: 2 card(s)", $"{deck}");
+        Assert.Equal("StandardDeck: 52 card(s)", $"{deck}");
     }
 }
 
@@ -94,28 +86,16 @@ public class ShortDeckTest
     [Fact]
     public void TestInitialization()
     {
-        var cards = new CardSet([Card.AceOfSpades, Card.SixOfClubs]);
-        var deck = new ShortDeck(cards);
+        var deck = new ShortDeck();
 
-        Assert.Equal(2, deck.Count);
-    }
-
-    [Fact]
-    public void TestInitializationWithNotAllowedCards()
-    {
-        var cards = new CardSet([Card.AceOfSpades, Card.DeuceOfClubs]);
-
-        ShortDeck deck;
-        var exc = Assert.Throws<NotAvailableError>(() => deck = new ShortDeck(cards));
-        Assert.Equal("The deck must contain allowed cards", exc.Message);
+        Assert.Equal(36, deck.Count);
     }
 
     [Fact]
     public void TestRepresentation()
     {
-        var cards = new CardSet([Card.AceOfSpades, Card.SixOfClubs]);
-        var deck = new ShortDeck(cards);
+        var deck = new ShortDeck();
 
-        Assert.Equal("ShortDeck: 2 card(s)", $"{deck}");
+        Assert.Equal("ShortDeck: 36 card(s)", $"{deck}");
     }
 }

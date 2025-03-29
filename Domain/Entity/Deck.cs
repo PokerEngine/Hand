@@ -5,15 +5,10 @@ namespace Domain.Entity;
 
 public abstract class BaseDeck
 {
-    private CardSet _cards;
+    protected CardSet _cards;
     private static readonly Random Rand = new ();
 
     public int Count => _cards.Count;
-
-    protected BaseDeck(CardSet cards)
-    {
-        _cards = cards;
-    }
 
     public CardSet ExtractRandomCards(int count)
     {
@@ -50,7 +45,7 @@ public abstract class BaseDeck
 
 public class StandardDeck : BaseDeck
 {
-    public static readonly CardSet AllowedCards = new ([
+    private static readonly CardSet AllowedCards = new ([
         Card.AceOfSpades,
         Card.KingOfSpades,
         Card.QueenOfSpades,
@@ -105,18 +100,15 @@ public class StandardDeck : BaseDeck
         Card.DeuceOfClubs,
     ]);
 
-    public StandardDeck(CardSet cards) : base(cards)
+    public StandardDeck()
     {
-        if (!cards.IsSubsetOf(AllowedCards))
-        {
-            throw new NotAvailableError("The deck must contain allowed cards");
-        }
+        _cards = AllowedCards;
     }
 }
 
 public class ShortDeck : BaseDeck
 {
-    public static readonly CardSet AllowedCards = new ([
+    private static readonly CardSet AllowedCards = new ([
         Card.AceOfSpades,
         Card.KingOfSpades,
         Card.QueenOfSpades,
@@ -155,11 +147,8 @@ public class ShortDeck : BaseDeck
         Card.SixOfClubs,
     ]);
 
-    public ShortDeck(CardSet cards) : base(cards)
+    public ShortDeck()
     {
-        if (!cards.IsSubsetOf(AllowedCards))
-        {
-            throw new NotAvailableError("The deck must contain allowed cards");
-        }
+        _cards = AllowedCards;
     }
 }

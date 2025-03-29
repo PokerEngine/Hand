@@ -22,15 +22,11 @@ public class SixMaxTableTest
             nickname: "Button",
             position: Position.Button
         );
-        var cards = new CardSet([Card.AceOfSpades, Card.DeuceOfClubs, Card.AceOfClubs]);
 
-        var table = new SixMaxTable(
-            players: [playerBu, playerSb, playerBb],
-            boardCards: cards
-        );
+        var table = new SixMaxTable([playerBu, playerSb, playerBb]);
 
         Assert.Equal(3, table.Count);
-        Assert.Equal(cards, table.BoardCards);
+        Assert.Empty(table.BoardCards);
     }
 
     [Fact]
@@ -46,7 +42,7 @@ public class SixMaxTableTest
         );
 
         SixMaxTable table;
-        var exc = Assert.Throws<NotAvailableError>(() => table = new SixMaxTable([playerA, playerB], boardCards: new CardSet()));
+        var exc = Assert.Throws<NotAvailableError>(() => table = new SixMaxTable([playerA, playerB]));
         Assert.Equal("The table must contain players with unique nicknames", exc.Message);
     }
 
@@ -63,7 +59,7 @@ public class SixMaxTableTest
         );
 
         SixMaxTable table;
-        var exc = Assert.Throws<NotAvailableError>(() => table = new SixMaxTable([playerA, playerB], boardCards: new CardSet()));
+        var exc = Assert.Throws<NotAvailableError>(() => table = new SixMaxTable([playerA, playerB]));
         Assert.Equal("The table must contain players with unique positions", exc.Message);
     }
 
@@ -76,7 +72,7 @@ public class SixMaxTableTest
         );
 
         SixMaxTable table;
-        var exc = Assert.Throws<NotAvailableError>(() => table = new SixMaxTable([playerBb], boardCards: new CardSet()));
+        var exc = Assert.Throws<NotAvailableError>(() => table = new SixMaxTable([playerBb]));
         Assert.Equal("The table must contain at least 2 players", exc.Message);
     }
 
@@ -93,7 +89,7 @@ public class SixMaxTableTest
         );
 
         SixMaxTable table;
-        var exc = Assert.Throws<NotAvailableError>(() => table = new SixMaxTable([playerSb, playerBu], boardCards: new CardSet()));
+        var exc = Assert.Throws<NotAvailableError>(() => table = new SixMaxTable([playerSb, playerBu]));
         Assert.Equal("The table must contain a player on the big blind", exc.Message);
     }
 
@@ -114,7 +110,7 @@ public class SixMaxTableTest
         );
 
         SixMaxTable table;
-        var exc = Assert.Throws<NotAvailableError>(() => table = new SixMaxTable([playerSb, playerBb, playerUtg1], boardCards: new CardSet()));
+        var exc = Assert.Throws<NotAvailableError>(() => table = new SixMaxTable([playerSb, playerBb, playerUtg1]));
         Assert.Equal("The table must contain players with allowed positions", exc.Message);
     }
 
@@ -257,22 +253,16 @@ public class SixMaxTableTest
             nickname: "Button",
             position: Position.Button
         );
-        var cards = new CardSet([Card.AceOfSpades, Card.DeuceOfClubs, Card.AceOfClubs]);
 
-        var table = new SixMaxTable(
-            players: [playerBu, playerSb, playerBb],
-            boardCards: cards
-        );
+        var table = new SixMaxTable([playerBu, playerSb, playerBb]);
+        table.TakeBoardCards(new CardSet([Card.AceOfSpades, Card.DeuceOfClubs, Card.AceOfClubs]));
 
-        Assert.Equal("SixMaxTable: 3 player(s), {AceOfSpades, DeuceOfClubs, AceOfClubs}", $"{table}");
+        Assert.Equal("SixMaxTable: 3 player(s), {AceOfSpades, AceOfClubs, DeuceOfClubs}", $"{table}");
     }
 
     private BaseTable CreateTable(IEnumerable<Player> players)
     {
-        return new SixMaxTable(
-            players: players,
-            boardCards: new CardSet()
-        );
+        return new SixMaxTable(players);
     }
 
     private Player CreatePlayer(string nickname, Position position, int stake = 1000)

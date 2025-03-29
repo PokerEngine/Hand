@@ -32,14 +32,14 @@ public class Player : IEquatable<Player>
         get => !IsFolded;
     }
 
-    public Player(Nickname nickname, Position position, Chips stake, CardSet holeCards, bool isConnected, bool isFolded)
+    public Player(Nickname nickname, Position position, Chips stake)
     {
         Nickname = nickname;
         Position = position;
         Stake = stake;
-        HoleCards = holeCards;
-        IsConnected = isConnected;
-        IsFolded = isFolded;
+        HoleCards = new CardSet();
+        IsConnected = false;
+        IsFolded = false;
     }
 
     public void Connect()
@@ -74,6 +74,10 @@ public class Player : IEquatable<Player>
 
     public void Fold()
     {
+        if (!IsConnected)
+        {
+            throw new NotAvailableError("The player has not connected yet");
+        }
         if (IsFolded)
         {
             throw new NotAvailableError("The player has already folded");

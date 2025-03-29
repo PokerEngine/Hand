@@ -53,7 +53,7 @@ public class BoardCardsDealingDealer : IDealer
         EventBus eventBus
     )
     {
-        var cards = deck.Extract(_count);
+        var cards = deck.ExtractRandomCards(_count);
         table.TakeBoardCards(cards);
 
         var @event = new BoardCardsAreDealtEvent(

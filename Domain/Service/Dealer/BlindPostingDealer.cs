@@ -48,7 +48,7 @@ public class BlindPostingDealer : IDealer
         var amount = player.Stake < pot.SmallBlind ? player.Stake : pot.SmallBlind;
         pot.PostSmallBlind(player, amount);
 
-        var @event = new BlindIsPostedEvent(
+        var @event = new SmallBlindIsPostedEvent(
             Nickname: player.Nickname,
             Amount: amount,
             HandUid: handUid,
@@ -78,7 +78,7 @@ public class BlindPostingDealer : IDealer
         var amount = player.Stake < pot.BigBlind ? player.Stake : pot.BigBlind;
         pot.PostBigBlind(player, amount);
 
-        var @event = new BlindIsPostedEvent(
+        var @event = new BigBlindIsPostedEvent(
             Nickname: player.Nickname,
             Amount: amount,
             HandUid: handUid,

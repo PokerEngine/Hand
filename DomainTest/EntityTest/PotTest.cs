@@ -207,7 +207,7 @@ public class NoLimitPotTest
         Assert.Equal(new Chips(20), pot.GetMinRaiseToAmount(playerSb));
         Assert.Equal(new Chips(1000), pot.GetMaxRaiseToAmount(playerSb));
 
-        pot.Fold(playerSb);
+        pot.CommitDecision(playerSb, new Decision(DecisionType.Fold, new Chips(0)));
 
         Assert.False(pot.DecisionIsAvailable(playerBb));
 
@@ -234,11 +234,11 @@ public class NoLimitPotTest
         playerBb.Connect();
         pot.PostSmallBlind(playerSb, new Chips(5));
         pot.PostBigBlind(playerBb, new Chips(10));
-        pot.Fold(playerSb);
+        pot.CommitDecision(playerSb, new Decision(DecisionType.Fold, new Chips(0)));
 
         Assert.False(pot.DecisionIsAvailable(playerBb));
 
-        var exc = Assert.Throws<NotAvailableError>(() => pot.Fold(playerBb));
+        var exc = Assert.Throws<NotAvailableError>(() => pot.CommitDecision(playerBb, new Decision(DecisionType.Fold, new Chips(0))));
 
         Assert.Equal("The player has posted the most amount into the pot, he cannot fold", exc.Message);
         Assert.Equal(new Nickname("SmallBlind"), pot.LastDecisionNickname);
@@ -264,7 +264,7 @@ public class NoLimitPotTest
         playerBb.Connect();
         pot.PostSmallBlind(playerSb, new Chips(5));
         pot.PostBigBlind(playerBb, new Chips(10));
-        pot.CallTo(playerSb, new Chips(10));
+        pot.CommitDecision(playerSb, new Decision(DecisionType.CallTo, new Chips(10)));
 
         Assert.True(pot.DecisionIsAvailable(playerBb));
         Assert.False(pot.FoldIsAvailable(playerBb));
@@ -274,7 +274,7 @@ public class NoLimitPotTest
         Assert.Equal(new Chips(20), pot.GetMinRaiseToAmount(playerSb));
         Assert.Equal(new Chips(1000), pot.GetMaxRaiseToAmount(playerSb));
 
-        var exc = Assert.Throws<NotAvailableError>(() => pot.Fold(playerBb));
+        var exc = Assert.Throws<NotAvailableError>(() => pot.CommitDecision(playerBb, new Decision(DecisionType.Fold, new Chips(0))));
 
         Assert.Equal("The player has posted the same amount into the pot, he cannot fold", exc.Message);
         Assert.Equal(new Nickname("SmallBlind"), pot.LastDecisionNickname);
@@ -300,7 +300,7 @@ public class NoLimitPotTest
         playerBb.Connect();
         pot.PostSmallBlind(playerSb, new Chips(5));
         pot.PostBigBlind(playerBb, new Chips(10));
-        pot.CallTo(playerSb, new Chips(10));
+        pot.CommitDecision(playerSb, new Decision(DecisionType.CallTo, new Chips(10)));
 
         Assert.True(pot.DecisionIsAvailable(playerBb));
         Assert.False(pot.FoldIsAvailable(playerBb));
@@ -310,7 +310,7 @@ public class NoLimitPotTest
         Assert.Equal(new Chips(20), pot.GetMinRaiseToAmount(playerBb));
         Assert.Equal(new Chips(1000), pot.GetMaxRaiseToAmount(playerBb));
 
-        pot.Check(playerBb);
+        pot.CommitDecision(playerBb, new Decision(DecisionType.Check, new Chips(0)));
 
         Assert.False(pot.DecisionIsAvailable(playerSb));
 
@@ -337,11 +337,11 @@ public class NoLimitPotTest
         playerBb.Connect();
         pot.PostSmallBlind(playerSb, new Chips(5));
         pot.PostBigBlind(playerBb, new Chips(10));
-        pot.Fold(playerSb);
+        pot.CommitDecision(playerSb, new Decision(DecisionType.Fold, new Chips(0)));
 
         Assert.False(pot.DecisionIsAvailable(playerBb));
 
-        var exc = Assert.Throws<NotAvailableError>(() => pot.Check(playerBb));
+        var exc = Assert.Throws<NotAvailableError>(() => pot.CommitDecision(playerBb, new Decision(DecisionType.Check, new Chips(0))));
 
         Assert.Equal("The player has posted the most amount into the pot, he cannot check", exc.Message);
         Assert.Equal(new Nickname("SmallBlind"), pot.LastDecisionNickname);
@@ -377,7 +377,7 @@ public class NoLimitPotTest
         Assert.Equal(new Chips(20), pot.GetMinRaiseToAmount(playerSb));
         Assert.Equal(new Chips(1000), pot.GetMaxRaiseToAmount(playerSb));
 
-        var exc = Assert.Throws<NotAvailableError>(() => pot.Check(playerSb));
+        var exc = Assert.Throws<NotAvailableError>(() => pot.CommitDecision(playerSb, new Decision(DecisionType.Check, new Chips(0))));
 
         Assert.Equal("The player has posted less amount into the pot, he cannot check", exc.Message);
         Assert.Equal(new Nickname("BigBlind"), pot.LastDecisionNickname);
@@ -403,11 +403,11 @@ public class NoLimitPotTest
         playerBb.Connect();
         pot.PostSmallBlind(playerSb, new Chips(5));
         pot.PostBigBlind(playerBb, new Chips(10));
-        pot.CallTo(playerSb, new Chips(10));
+        pot.CommitDecision(playerSb, new Decision(DecisionType.CallTo, new Chips(10)));
 
         Assert.False(pot.DecisionIsAvailable(playerSb));
 
-        var exc = Assert.Throws<NotAvailableError>(() => pot.Check(playerSb));
+        var exc = Assert.Throws<NotAvailableError>(() => pot.CommitDecision(playerSb, new Decision(DecisionType.Check, new Chips(0))));
 
         Assert.Equal("The player has already performed an action, he cannot check", exc.Message);
         Assert.Equal(new Nickname("SmallBlind"), pot.LastDecisionNickname);
@@ -443,7 +443,7 @@ public class NoLimitPotTest
         Assert.Equal(new Chips(20), pot.GetMinRaiseToAmount(playerSb));
         Assert.Equal(new Chips(1000), pot.GetMaxRaiseToAmount(playerSb));
 
-        pot.CallTo(playerSb, new Chips(10));
+        pot.CommitDecision(playerSb, new Decision(DecisionType.CallTo, new Chips(10)));
 
         Assert.True(pot.DecisionIsAvailable(playerBb));
         Assert.False(pot.FoldIsAvailable(playerBb));
@@ -477,7 +477,7 @@ public class NoLimitPotTest
         playerBb.Connect();
         pot.PostSmallBlind(playerSb, new Chips(5));
         pot.PostBigBlind(playerBb, new Chips(10));
-        pot.RaiseTo(playerSb, new Chips(20));
+        pot.CommitDecision(playerSb, new Decision(DecisionType.RaiseTo, new Chips(20)));
 
         Assert.True(pot.DecisionIsAvailable(playerBb));
         Assert.True(pot.FoldIsAvailable(playerBb));
@@ -486,7 +486,7 @@ public class NoLimitPotTest
         Assert.Equal(new Chips(19), pot.GetCallToAmount(playerBb));
         Assert.False(pot.RaiseIsAvailable(playerBb));
 
-        pot.CallTo(playerBb, new Chips(19));
+        pot.CommitDecision(playerBb, new Decision(DecisionType.CallTo, new Chips(19)));
 
         Assert.False(pot.DecisionIsAvailable(playerSb));
 
@@ -513,11 +513,11 @@ public class NoLimitPotTest
         playerBb.Connect();
         pot.PostSmallBlind(playerSb, new Chips(5));
         pot.PostBigBlind(playerBb, new Chips(10));
-        pot.Fold(playerSb);
+        pot.CommitDecision(playerSb, new Decision(DecisionType.Fold, new Chips(0)));
 
         Assert.False(pot.DecisionIsAvailable(playerBb));
 
-        var exc = Assert.Throws<NotAvailableError>(() => pot.CallTo(playerBb, new Chips(10)));
+        var exc = Assert.Throws<NotAvailableError>(() => pot.CommitDecision(playerBb, new Decision(DecisionType.CallTo, new Chips(10))));
 
         Assert.Equal("The player has posted the most amount into the pot, he cannot call", exc.Message);
         Assert.Equal(new Nickname("SmallBlind"), pot.LastDecisionNickname);
@@ -543,7 +543,7 @@ public class NoLimitPotTest
         playerBb.Connect();
         pot.PostSmallBlind(playerSb, new Chips(5));
         pot.PostBigBlind(playerBb, new Chips(10));
-        pot.CallTo(playerSb, new Chips(10));
+        pot.CommitDecision(playerSb, new Decision(DecisionType.CallTo, new Chips(10)));
 
         Assert.True(pot.DecisionIsAvailable(playerBb));
         Assert.False(pot.FoldIsAvailable(playerBb));
@@ -553,7 +553,7 @@ public class NoLimitPotTest
         Assert.Equal(new Chips(20), pot.GetMinRaiseToAmount(playerBb));
         Assert.Equal(new Chips(1000), pot.GetMaxRaiseToAmount(playerBb));
 
-        var exc = Assert.Throws<NotAvailableError>(() => pot.CallTo(playerBb, new Chips(10)));
+        var exc = Assert.Throws<NotAvailableError>(() => pot.CommitDecision(playerBb, new Decision(DecisionType.CallTo, new Chips(10))));
 
         Assert.Equal("The player has posted the same amount into the pot, he cannot call", exc.Message);
         Assert.Equal(new Nickname("SmallBlind"), pot.LastDecisionNickname);
@@ -591,7 +591,7 @@ public class NoLimitPotTest
         Assert.Equal(new Chips(20), pot.GetMinRaiseToAmount(playerSb));
         Assert.Equal(new Chips(1000), pot.GetMaxRaiseToAmount(playerSb));
 
-        var exc = Assert.Throws<NotAvailableError>(() => pot.CallTo(playerSb, amount));
+        var exc = Assert.Throws<NotAvailableError>(() => pot.CommitDecision(playerSb, new Decision(DecisionType.CallTo, amount)));
 
         Assert.Equal("The player must call to 10 chip(s)", exc.Message);
         Assert.Equal(new Nickname("BigBlind"), pot.LastDecisionNickname);
@@ -626,7 +626,7 @@ public class NoLimitPotTest
         Assert.Equal(new Chips(9), pot.GetCallToAmount(playerSb));
         Assert.False(pot.RaiseIsAvailable(playerSb));
 
-        var exc = Assert.Throws<NotAvailableError>(() => pot.CallTo(playerSb, new Chips(8)));
+        var exc = Assert.Throws<NotAvailableError>(() => pot.CommitDecision(playerSb, new Decision(DecisionType.CallTo, new Chips(8))));
 
         Assert.Equal("The player must call to 9 chip(s)", exc.Message);
         Assert.Equal(new Nickname("BigBlind"), pot.LastDecisionNickname);
@@ -662,7 +662,7 @@ public class NoLimitPotTest
         Assert.Equal(new Chips(20), pot.GetMinRaiseToAmount(playerSb));
         Assert.Equal(new Chips(1000), pot.GetMaxRaiseToAmount(playerSb));
 
-        pot.RaiseTo(playerSb, new Chips(20));
+        pot.CommitDecision(playerSb, new Decision(DecisionType.RaiseTo, new Chips(20)));
 
         Assert.True(pot.DecisionIsAvailable(playerBb));
         Assert.True(pot.FoldIsAvailable(playerBb));
@@ -707,7 +707,7 @@ public class NoLimitPotTest
         Assert.Equal(new Chips(19), pot.GetMinRaiseToAmount(playerSb));
         Assert.Equal(new Chips(19), pot.GetMaxRaiseToAmount(playerSb));
 
-        pot.RaiseTo(playerSb, new Chips(19));
+        pot.CommitDecision(playerSb, new Decision(DecisionType.RaiseTo, new Chips(19)));
 
         Assert.True(pot.DecisionIsAvailable(playerBb));
         Assert.True(pot.FoldIsAvailable(playerBb));
@@ -741,11 +741,11 @@ public class NoLimitPotTest
         playerBb.Connect();
         pot.PostSmallBlind(playerSb, new Chips(5));
         pot.PostBigBlind(playerBb, new Chips(10));
-        pot.Fold(playerSb);
+        pot.CommitDecision(playerSb, new Decision(DecisionType.Fold, new Chips(0)));
 
         Assert.False(pot.DecisionIsAvailable(playerBb));
 
-        var exc = Assert.Throws<NotAvailableError>(() => pot.RaiseTo(playerBb, new Chips(20)));
+        var exc = Assert.Throws<NotAvailableError>(() => pot.CommitDecision(playerBb, new Decision(DecisionType.RaiseTo, new Chips(20))));
 
         Assert.Equal("The player has posted the most amount into the pot, he cannot raise", exc.Message);
         Assert.Equal(new Nickname("SmallBlind"), pot.LastDecisionNickname);
@@ -771,7 +771,7 @@ public class NoLimitPotTest
         playerBb.Connect();
         pot.PostSmallBlind(playerSb, new Chips(5));
         pot.PostBigBlind(playerBb, new Chips(10));
-        pot.CallTo(playerSb, new Chips(10));
+        pot.CommitDecision(playerSb, new Decision(DecisionType.CallTo, new Chips(10)));
 
         Assert.True(pot.DecisionIsAvailable(playerBb));
         Assert.False(pot.FoldIsAvailable(playerBb));
@@ -781,7 +781,7 @@ public class NoLimitPotTest
         Assert.Equal(new Chips(20), pot.GetMinRaiseToAmount(playerBb));
         Assert.Equal(new Chips(1000), pot.GetMaxRaiseToAmount(playerBb));
 
-        pot.RaiseTo(playerBb, new Chips(20));
+        pot.CommitDecision(playerBb, new Decision(DecisionType.RaiseTo, new Chips(20)));
 
         Assert.True(pot.DecisionIsAvailable(playerSb));
         Assert.True(pot.FoldIsAvailable(playerSb));
@@ -825,7 +825,7 @@ public class NoLimitPotTest
         Assert.Equal(new Chips(20), pot.GetMinRaiseToAmount(playerSb));
         Assert.Equal(new Chips(1000), pot.GetMaxRaiseToAmount(playerSb));
 
-        var exc = Assert.Throws<NotAvailableError>(() => pot.RaiseTo(playerSb, new Chips(19)));
+        var exc = Assert.Throws<NotAvailableError>(() => pot.CommitDecision(playerSb, new Decision(DecisionType.RaiseTo, new Chips(19))));
 
         Assert.Equal("The player must raise to minimum 20 chip(s)", exc.Message);
         Assert.Equal(new Nickname("BigBlind"), pot.LastDecisionNickname);
@@ -861,7 +861,7 @@ public class NoLimitPotTest
         Assert.Equal(new Chips(20), pot.GetMinRaiseToAmount(playerSb));
         Assert.Equal(new Chips(1000), pot.GetMaxRaiseToAmount(playerSb));
 
-        var exc = Assert.Throws<NotAvailableError>(() => pot.RaiseTo(playerSb, new Chips(1001)));
+        var exc = Assert.Throws<NotAvailableError>(() => pot.CommitDecision(playerSb, new Decision(DecisionType.RaiseTo, new Chips(1001))));
 
         Assert.Equal("The player must raise to maximum 1000 chip(s)", exc.Message);
         Assert.Equal(new Nickname("BigBlind"), pot.LastDecisionNickname);
@@ -888,7 +888,7 @@ public class NoLimitPotTest
         playerBb.Connect();
         pot.PostSmallBlind(playerSb, new Chips(5));
         pot.PostBigBlind(playerBb, new Chips(10));
-        pot.RaiseTo(playerSb, new Chips(20));
+        pot.CommitDecision(playerSb, new Decision(DecisionType.RaiseTo, new Chips(20)));
 
         Assert.True(pot.DecisionIsAvailable(playerBb));
         Assert.True(pot.FoldIsAvailable(playerBb));
@@ -897,7 +897,7 @@ public class NoLimitPotTest
         Assert.Equal(new Chips(19), pot.GetCallToAmount(playerBb));
         Assert.False(pot.RaiseIsAvailable(playerBb));
 
-        var exc = Assert.Throws<NotAvailableError>(() => pot.RaiseTo(playerBb, new Chips(19)));
+        var exc = Assert.Throws<NotAvailableError>(() => pot.CommitDecision(playerBb, new Decision(DecisionType.RaiseTo, new Chips(19))));
 
         Assert.Equal("The player must call to 19 chip(s)", exc.Message);
         Assert.Equal(new Nickname("SmallBlind"), pot.LastDecisionNickname);
@@ -934,7 +934,7 @@ public class NoLimitPotTest
         Assert.Equal(new Chips(19), pot.GetMinRaiseToAmount(playerSb));
         Assert.Equal(new Chips(19), pot.GetMaxRaiseToAmount(playerSb));
 
-        var exc = Assert.Throws<NotAvailableError>(() => pot.RaiseTo(playerSb, new Chips(18)));
+        var exc = Assert.Throws<NotAvailableError>(() => pot.CommitDecision(playerSb, new Decision(DecisionType.RaiseTo, new Chips(18))));
 
         Assert.Equal("The player must raise to minimum 19 chip(s)", exc.Message);
         Assert.Equal(new Nickname("BigBlind"), pot.LastDecisionNickname);
@@ -966,9 +966,9 @@ public class NoLimitPotTest
         playerBu.Connect();
         pot.PostSmallBlind(playerSb, new Chips(5));
         pot.PostBigBlind(playerBb, new Chips(10));
-        pot.RaiseTo(playerBu, new Chips(25));
-        pot.RaiseTo(playerSb, new Chips(40));  // Is considered a raise
-        pot.CallTo(playerBb, new Chips(40));
+        pot.CommitDecision(playerBu, new Decision(DecisionType.RaiseTo, new Chips(25)));
+        pot.CommitDecision(playerSb, new Decision(DecisionType.RaiseTo, new Chips(40)));  // Is considered a raise
+        pot.CommitDecision(playerBb, new Decision(DecisionType.CallTo, new Chips(40)));
 
         Assert.True(pot.DecisionIsAvailable(playerBu));
         Assert.True(pot.FoldIsAvailable(playerBu));
@@ -979,7 +979,7 @@ public class NoLimitPotTest
         Assert.Equal(new Chips(55), pot.GetMinRaiseToAmount(playerBu));
         Assert.Equal(new Chips(1000), pot.GetMaxRaiseToAmount(playerBu));
 
-        pot.RaiseTo(playerBu, new Chips(55));
+        pot.CommitDecision(playerBu, new Decision(DecisionType.RaiseTo, new Chips(55)));
 
         Assert.True(pot.DecisionIsAvailable(playerBb));
         Assert.True(pot.FoldIsAvailable(playerBb));
@@ -1025,9 +1025,9 @@ public class NoLimitPotTest
         playerBu.Connect();
         pot.PostSmallBlind(playerSb, new Chips(5));
         pot.PostBigBlind(playerBb, new Chips(10));
-        pot.RaiseTo(playerBu, new Chips(25));
-        pot.RaiseTo(playerSb, new Chips(39));  // Is not considered a raise because the current step is 15
-        pot.CallTo(playerBb, new Chips(39));
+        pot.CommitDecision(playerBu, new Decision(DecisionType.RaiseTo, new Chips(25)));
+        pot.CommitDecision(playerSb, new Decision(DecisionType.RaiseTo, new Chips(39)));  // Is not considered a raise because the current step is 15
+        pot.CommitDecision(playerBb, new Decision(DecisionType.CallTo, new Chips(39)));
 
         Assert.True(pot.DecisionIsAvailable(playerBu));
         Assert.True(pot.FoldIsAvailable(playerBu));
@@ -1036,7 +1036,7 @@ public class NoLimitPotTest
         Assert.Equal(new Chips(39), pot.GetCallToAmount(playerBu));
         Assert.False(pot.RaiseIsAvailable(playerBu));
 
-        var exc = Assert.Throws<NotAvailableError>(() => pot.RaiseTo(playerBb, new Chips(55)));
+        var exc = Assert.Throws<NotAvailableError>(() => pot.CommitDecision(playerBb, new Decision(DecisionType.RaiseTo, new Chips(55))));
 
         Assert.Equal("There was no raise since the player's last action, he cannot raise", exc.Message);
         Assert.Equal(new Nickname("BigBlind"), pot.LastDecisionNickname);
@@ -1074,9 +1074,9 @@ public class NoLimitPotTest
         playerBu.Connect();
         pot.PostSmallBlind(playerSb, new Chips(5));
         pot.PostBigBlind(playerBb, new Chips(10));
-        pot.RaiseTo(playerBu, new Chips(25));
-        pot.RaiseTo(playerSb, new Chips(39));  // Is not considered a raise because the current step is 15
-        pot.RaiseTo(playerBb, new Chips(54));  // Is considered a raise
+        pot.CommitDecision(playerBu, new Decision(DecisionType.RaiseTo, new Chips(25)));
+        pot.CommitDecision(playerSb, new Decision(DecisionType.RaiseTo, new Chips(39)));  // Is not considered a raise because the current step is 15
+        pot.CommitDecision(playerBb, new Decision(DecisionType.RaiseTo, new Chips(54)));  // Is considered a raise
 
         Assert.True(pot.DecisionIsAvailable(playerBu));
         Assert.True(pot.FoldIsAvailable(playerBu));
@@ -1087,7 +1087,7 @@ public class NoLimitPotTest
         Assert.Equal(new Chips(69), pot.GetMinRaiseToAmount(playerBu));
         Assert.Equal(new Chips(1000), pot.GetMaxRaiseToAmount(playerBu));
 
-        pot.RaiseTo(playerBu, new Chips(69));
+        pot.CommitDecision(playerBu, new Decision(DecisionType.RaiseTo, new Chips(69)));
 
         Assert.True(pot.DecisionIsAvailable(playerBb));
         Assert.True(pot.FoldIsAvailable(playerBb));
@@ -1132,10 +1132,10 @@ public class NoLimitPotTest
         playerBu.Connect();
         pot.PostSmallBlind(playerSb, new Chips(5));
         pot.PostBigBlind(playerBb, new Chips(10));
-        pot.RaiseTo(playerBu, new Chips(25));
-        pot.RaiseTo(playerSb, new Chips(120));
-        pot.Fold(playerBb);
-        pot.CallTo(playerBu, new Chips(120));
+        pot.CommitDecision(playerBu, new Decision(DecisionType.RaiseTo, new Chips(25)));
+        pot.CommitDecision(playerSb, new Decision(DecisionType.RaiseTo, new Chips(120)));
+        pot.CommitDecision(playerBb, new Decision(DecisionType.Fold, new Chips(0)));
+        pot.CommitDecision(playerBu, new Decision(DecisionType.CallTo, new Chips(120)));
 
         Assert.False(pot.DecisionIsAvailable(playerSb));
         Assert.Equal(new Chips(120), pot.GetCurrentPostedAmount(playerSb));
@@ -1184,17 +1184,17 @@ public class NoLimitPotTest
         playerBu.Connect();
         pot.PostSmallBlind(playerSb, new Chips(5));
         pot.PostBigBlind(playerBb, new Chips(10));
-        pot.RaiseTo(playerBu, new Chips(25));
-        pot.RaiseTo(playerSb, new Chips(120));
-        pot.Fold(playerBb);
-        pot.Fold(playerBu);
+        pot.CommitDecision(playerBu, new Decision(DecisionType.RaiseTo, new Chips(25)));
+        pot.CommitDecision(playerSb, new Decision(DecisionType.RaiseTo, new Chips(120)));
+        pot.CommitDecision(playerBb, new Decision(DecisionType.Fold, new Chips(0)));
+        pot.CommitDecision(playerBu, new Decision(DecisionType.Fold, new Chips(0)));
         pot.FinishStage();
 
         Assert.Equal(new Chips(95), pot.GetRefundAmount(playerSb));
         Assert.Equal(new Chips(120), pot.GetPreviousPostedAmount(playerSb));
         Assert.Equal(new Chips(155), pot.GetTotalAmount());
 
-        pot.Refund(playerSb, new Chips(95));
+        pot.CommitRefund(playerSb, new Chips(95));
 
         Assert.Equal(new Chips(0), pot.GetRefundAmount(playerSb));
         Assert.Equal(new Chips(25), pot.GetPreviousPostedAmount(playerSb));
@@ -1226,11 +1226,11 @@ public class NoLimitPotTest
         playerBu.Connect();
         pot.PostSmallBlind(playerSb, new Chips(5));
         pot.PostBigBlind(playerBb, new Chips(10));
-        pot.RaiseTo(playerBu, new Chips(25));
-        pot.RaiseTo(playerSb, new Chips(120));
-        pot.RaiseTo(playerBb, new Chips(250));
-        pot.RaiseTo(playerBu, new Chips(1000));
-        pot.CallTo(playerSb, new Chips(500));
+        pot.CommitDecision(playerBu, new Decision(DecisionType.RaiseTo, new Chips(25)));
+        pot.CommitDecision(playerSb, new Decision(DecisionType.RaiseTo, new Chips(120)));
+        pot.CommitDecision(playerBb, new Decision(DecisionType.RaiseTo, new Chips(250)));
+        pot.CommitDecision(playerBu, new Decision(DecisionType.RaiseTo, new Chips(1000)));
+        pot.CommitDecision(playerSb, new Decision(DecisionType.CallTo, new Chips(500)));
         pot.FinishStage();
 
         Assert.Equal(new Chips(0), pot.GetRefundAmount(playerSb));
@@ -1241,7 +1241,7 @@ public class NoLimitPotTest
         Assert.Equal(new Chips(1000), pot.GetPreviousPostedAmount(playerBu));
         Assert.Equal(new Chips(1750), pot.GetTotalAmount());
 
-        pot.Refund(playerBu, new Chips(500));
+        pot.CommitRefund(playerBu, new Chips(500));
 
         Assert.Equal(new Chips(0), pot.GetRefundAmount(playerBu));
         Assert.Equal(new Chips(500), pot.GetPreviousPostedAmount(playerBu));
@@ -1271,11 +1271,11 @@ public class NoLimitPotTest
         playerBu.Connect();
         pot.PostSmallBlind(playerSb, new Chips(5));
         pot.PostBigBlind(playerBb, new Chips(10));
-        pot.RaiseTo(playerBu, new Chips(25));
-        pot.RaiseTo(playerSb, new Chips(120));
-        pot.RaiseTo(playerBb, new Chips(250));
-        pot.RaiseTo(playerBu, new Chips(1000));
-        pot.CallTo(playerSb, new Chips(500));
+        pot.CommitDecision(playerBu, new Decision(DecisionType.RaiseTo, new Chips(25)));
+        pot.CommitDecision(playerSb, new Decision(DecisionType.RaiseTo, new Chips(120)));
+        pot.CommitDecision(playerBb, new Decision(DecisionType.RaiseTo, new Chips(250)));
+        pot.CommitDecision(playerBu, new Decision(DecisionType.RaiseTo, new Chips(1000)));
+        pot.CommitDecision(playerSb, new Decision(DecisionType.CallTo, new Chips(500)));
         pot.FinishStage();
 
         Assert.Equal(new Chips(0), pot.GetRefundAmount(playerSb));
@@ -1286,7 +1286,7 @@ public class NoLimitPotTest
         Assert.Equal(new Chips(1000), pot.GetPreviousPostedAmount(playerBu));
         Assert.Equal(new Chips(1750), pot.GetTotalAmount());
 
-        var exc = Assert.Throws<NotAvailableError>(() => pot.Refund(playerSb, new Chips(0)));
+        var exc = Assert.Throws<NotAvailableError>(() => pot.CommitRefund(playerSb, new Chips(0)));
 
         Assert.Equal("The player cannot refund", exc.Message);
         Assert.Equal(new Chips(0), pot.GetRefundAmount(playerSb));
@@ -1323,11 +1323,11 @@ public class NoLimitPotTest
         playerBu.Connect();
         pot.PostSmallBlind(playerSb, new Chips(5));
         pot.PostBigBlind(playerBb, new Chips(10));
-        pot.RaiseTo(playerBu, new Chips(25));
-        pot.RaiseTo(playerSb, new Chips(120));
-        pot.RaiseTo(playerBb, new Chips(250));
-        pot.RaiseTo(playerBu, new Chips(1000));
-        pot.CallTo(playerSb, new Chips(500));
+        pot.CommitDecision(playerBu, new Decision(DecisionType.RaiseTo, new Chips(25)));
+        pot.CommitDecision(playerSb, new Decision(DecisionType.RaiseTo, new Chips(120)));
+        pot.CommitDecision(playerBb, new Decision(DecisionType.RaiseTo, new Chips(250)));
+        pot.CommitDecision(playerBu, new Decision(DecisionType.RaiseTo, new Chips(1000)));
+        pot.CommitDecision(playerSb, new Decision(DecisionType.CallTo, new Chips(500)));
         pot.FinishStage();
 
         Assert.Equal(new Chips(0), pot.GetRefundAmount(playerSb));
@@ -1338,7 +1338,7 @@ public class NoLimitPotTest
         Assert.Equal(new Chips(1000), pot.GetPreviousPostedAmount(playerBu));
         Assert.Equal(new Chips(1750), pot.GetTotalAmount());
 
-        var exc = Assert.Throws<NotAvailableError>(() => pot.Refund(playerBu, amount));
+        var exc = Assert.Throws<NotAvailableError>(() => pot.CommitRefund(playerBu, amount));
 
         Assert.Equal("The player must refund 500 chip(s)", exc.Message);
         Assert.Equal(new Chips(0), pot.GetRefundAmount(playerSb));
@@ -1351,7 +1351,7 @@ public class NoLimitPotTest
     }
 
     [Fact]
-    public void TestWinWithoutShowdown()
+    public void TestCommitWinWithoutShowdown()
     {
         var playerSb = CreatePlayer(
             nickname: "SmallBlind",
@@ -1371,14 +1371,14 @@ public class NoLimitPotTest
         playerBu.Connect();
         pot.PostSmallBlind(playerSb, new Chips(5));
         pot.PostBigBlind(playerBb, new Chips(10));
-        pot.RaiseTo(playerBu, new Chips(25));
-        pot.RaiseTo(playerSb, new Chips(120));
-        pot.Fold(playerBb);
-        pot.Fold(playerBu);
+        pot.CommitDecision(playerBu, new Decision(DecisionType.RaiseTo, new Chips(25)));
+        pot.CommitDecision(playerSb, new Decision(DecisionType.RaiseTo, new Chips(120)));
+        pot.CommitDecision(playerBb, new Decision(DecisionType.Fold, new Chips(0)));
+        pot.CommitDecision(playerBu, new Decision(DecisionType.Fold, new Chips(0)));
         pot.FinishStage();
-        pot.Refund(playerSb, new Chips(95));
+        pot.CommitRefund(playerSb, new Chips(95));
 
-        pot.WinWithoutShowdown(playerSb, new Chips(60));
+        pot.CommitWinWithoutShowdown(playerSb, new Chips(60));
 
         Assert.Equal(new Chips(0), pot.GetTotalAmount());
         Assert.Equal(new Chips(1035), playerSb.Stake);
@@ -1387,7 +1387,7 @@ public class NoLimitPotTest
     [Theory]
     [InlineData(59)]
     [InlineData(61)]
-    public void TestWinWithoutShowdownWithWrongAmount(Chips amount)
+    public void TestCommitWinWithoutShowdownWithWrongAmount(Chips amount)
     {
         var playerSb = CreatePlayer(
             nickname: "SmallBlind",
@@ -1407,21 +1407,21 @@ public class NoLimitPotTest
         playerBu.Connect();
         pot.PostSmallBlind(playerSb, new Chips(5));
         pot.PostBigBlind(playerBb, new Chips(10));
-        pot.RaiseTo(playerBu, new Chips(25));
-        pot.RaiseTo(playerSb, new Chips(120));
-        pot.Fold(playerBb);
-        pot.Fold(playerBu);
+        pot.CommitDecision(playerBu, new Decision(DecisionType.RaiseTo, new Chips(25)));
+        pot.CommitDecision(playerSb, new Decision(DecisionType.RaiseTo, new Chips(120)));
+        pot.CommitDecision(playerBb, new Decision(DecisionType.Fold, new Chips(0)));
+        pot.CommitDecision(playerBu, new Decision(DecisionType.Fold, new Chips(0)));
         pot.FinishStage();
-        pot.Refund(playerSb, new Chips(95));
+        pot.CommitRefund(playerSb, new Chips(95));
 
-        var exc = Assert.Throws<NotAvailableError>(() => pot.WinWithoutShowdown(playerSb, amount));
+        var exc = Assert.Throws<NotAvailableError>(() => pot.CommitWinWithoutShowdown(playerSb, amount));
 
         Assert.Equal("The player must win 60 chip(s)", exc.Message);
         Assert.Equal(new Chips(60), pot.GetTotalAmount());
     }
 
     [Fact]
-    public void TestWinAtShowdown()
+    public void TestCommitWinAtShowdown()
     {
         var playerSb = CreatePlayer(
             nickname: "SmallBlind",
@@ -1441,16 +1441,16 @@ public class NoLimitPotTest
         playerBu.Connect();
         pot.PostSmallBlind(playerSb, new Chips(5));
         pot.PostBigBlind(playerBb, new Chips(10));
-        pot.RaiseTo(playerBu, new Chips(25));
-        pot.RaiseTo(playerSb, new Chips(120));
-        pot.Fold(playerBb);
-        pot.CallTo(playerBu, new Chips(120));
+        pot.CommitDecision(playerBu, new Decision(DecisionType.RaiseTo, new Chips(25)));
+        pot.CommitDecision(playerSb, new Decision(DecisionType.RaiseTo, new Chips(120)));
+        pot.CommitDecision(playerBb, new Decision(DecisionType.Fold, new Chips(0)));
+        pot.CommitDecision(playerBu, new Decision(DecisionType.CallTo, new Chips(120)));
         pot.FinishStage();
 
         var comboSb = new Combo(ComboType.OnePair, 100);
         var comboBu = new Combo(ComboType.OnePair, 200);
 
-        pot.WinAtShowdown([
+        pot.CommitWinAtShowdown([
             (playerSb, comboSb, new Chips(0)),
             (playerBu, comboBu, new Chips(250)),
         ]);
@@ -1461,7 +1461,7 @@ public class NoLimitPotTest
     }
 
     [Fact]
-    public void TestWinAtShowdownWithSplit()
+    public void TestCommitWinAtShowdownWithSplit()
     {
         var playerSb = CreatePlayer(
             nickname: "SmallBlind",
@@ -1482,16 +1482,16 @@ public class NoLimitPotTest
         playerBu.Connect();
         pot.PostSmallBlind(playerSb, new Chips(5));
         pot.PostBigBlind(playerBb, new Chips(10));
-        pot.RaiseTo(playerBu, new Chips(25));
-        pot.Fold(playerSb);
-        pot.RaiseTo(playerBb, new Chips(130));
-        pot.CallTo(playerBu, new Chips(130));
+        pot.CommitDecision(playerBu, new Decision(DecisionType.RaiseTo, new Chips(25)));
+        pot.CommitDecision(playerSb, new Decision(DecisionType.Fold, new Chips(0)));
+        pot.CommitDecision(playerBb, new Decision(DecisionType.RaiseTo, new Chips(130)));
+        pot.CommitDecision(playerBu, new Decision(DecisionType.CallTo, new Chips(130)));
         pot.FinishStage();
 
         var comboBb = new Combo(ComboType.HighCard, 100);
         var comboBu = new Combo(ComboType.HighCard, 100);
 
-        pot.WinAtShowdown([
+        pot.CommitWinAtShowdown([
             (playerBb, comboBb, new Chips(132)),
             (playerBu, comboBu, new Chips(133)),
         ]);
@@ -1502,7 +1502,7 @@ public class NoLimitPotTest
     }
 
     [Fact]
-    public void TestWinAtShowdownWithSidePot()
+    public void TestCommitWinAtShowdownWithSidePot()
     {
         var playerSb = CreatePlayer(
             nickname: "SmallBlind",
@@ -1523,17 +1523,17 @@ public class NoLimitPotTest
         playerBu.Connect();
         pot.PostSmallBlind(playerSb, new Chips(5));
         pot.PostBigBlind(playerBb, new Chips(10));
-        pot.RaiseTo(playerBu, new Chips(25));
-        pot.RaiseTo(playerSb, new Chips(100));
-        pot.RaiseTo(playerBb, new Chips(240));
-        pot.CallTo(playerBu, new Chips(240));
+        pot.CommitDecision(playerBu, new Decision(DecisionType.RaiseTo, new Chips(25)));
+        pot.CommitDecision(playerSb, new Decision(DecisionType.RaiseTo, new Chips(100)));
+        pot.CommitDecision(playerBb, new Decision(DecisionType.RaiseTo, new Chips(240)));
+        pot.CommitDecision(playerBu, new Decision(DecisionType.CallTo, new Chips(240)));
         pot.FinishStage();
 
         var comboSb = new Combo(ComboType.TwoPair, 300);
         var comboBb = new Combo(ComboType.OnePair, 200);
         var comboBu = new Combo(ComboType.HighCard, 100);
 
-        pot.WinAtShowdown([
+        pot.CommitWinAtShowdown([
             (playerSb, comboSb, new Chips(300)),
             (playerBb, comboBb, new Chips(280)),
             (playerBu, comboBu, new Chips(0)),
@@ -1546,7 +1546,7 @@ public class NoLimitPotTest
     }
 
     [Fact]
-    public void TestWinAtShowdownWithMultipleSidePotsAndSplits()
+    public void TestCommitWinAtShowdownWithMultipleSidePotsAndSplits()
     {
         var playerSb = CreatePlayer(
             nickname: "SmallBlind",
@@ -1605,17 +1605,17 @@ public class NoLimitPotTest
         playerBu.Connect();
         pot.PostSmallBlind(playerSb, new Chips(5));
         pot.PostBigBlind(playerBb, new Chips(10));
-        pot.RaiseTo(playerUtg1, new Chips(300));
-        pot.RaiseTo(playerUtg2, new Chips(400));
-        pot.RaiseTo(playerUtg3, new Chips(500));
-        pot.RaiseTo(playerEp, new Chips(600));
-        pot.RaiseTo(playerMp, new Chips(700));
-        pot.RaiseTo(playerCo, new Chips(800));
-        pot.RaiseTo(playerBu, new Chips(900));
-        pot.CallTo(playerSb, new Chips(100));
-        pot.CallTo(playerBb, new Chips(200));
+        pot.CommitDecision(playerUtg1, new Decision(DecisionType.RaiseTo, new Chips(300)));
+        pot.CommitDecision(playerUtg2, new Decision(DecisionType.RaiseTo, new Chips(400)));
+        pot.CommitDecision(playerUtg3, new Decision(DecisionType.RaiseTo, new Chips(500)));
+        pot.CommitDecision(playerEp, new Decision(DecisionType.RaiseTo, new Chips(600)));
+        pot.CommitDecision(playerMp, new Decision(DecisionType.RaiseTo, new Chips(700)));
+        pot.CommitDecision(playerCo, new Decision(DecisionType.RaiseTo, new Chips(800)));
+        pot.CommitDecision(playerBu, new Decision(DecisionType.RaiseTo, new Chips(900)));
+        pot.CommitDecision(playerSb, new Decision(DecisionType.CallTo, new Chips(100)));
+        pot.CommitDecision(playerBb, new Decision(DecisionType.CallTo, new Chips(200)));
         pot.FinishStage();
-        pot.Refund(playerBu, new Chips(100));
+        pot.CommitRefund(playerBu, new Chips(100));
 
         var comboSb = new Combo(ComboType.Flush, 600);
         var comboBb = new Combo(ComboType.Straight, 500);
@@ -1627,7 +1627,7 @@ public class NoLimitPotTest
         var comboCo = new Combo(ComboType.OnePair, 200);
         var comboBu = new Combo(ComboType.HighCard, 100);
 
-        pot.WinAtShowdown([
+        pot.CommitWinAtShowdown([
             (playerSb, comboSb, new Chips(900)),
             (playerBb, comboBb, new Chips(268)),
             (playerUtg1, comboUtg1, new Chips(616)),
@@ -1655,7 +1655,7 @@ public class NoLimitPotTest
     [InlineData(0, 249, "Player Button with combo OnePair [200] must win 250 chip(s)")]
     [InlineData(0, 251, "Player Button with combo OnePair [200] must win 250 chip(s)")]
     [InlineData(1, 249, "Player SmallBlind with combo HighCard [100] must win 0 chip(s)")]
-    public void TestWinAtShowdownWithWrongAmounts(Chips amountSb, Chips amountBu, string expectedMessage)
+    public void TestCommitWinAtShowdownWithWrongAmounts(Chips amountSb, Chips amountBu, string expectedMessage)
     {
         var playerSb = CreatePlayer(
             nickname: "SmallBlind",
@@ -1675,10 +1675,10 @@ public class NoLimitPotTest
         playerBu.Connect();
         pot.PostSmallBlind(playerSb, new Chips(5));
         pot.PostBigBlind(playerBb, new Chips(10));
-        pot.RaiseTo(playerBu, new Chips(25));
-        pot.RaiseTo(playerSb, new Chips(120));
-        pot.Fold(playerBb);
-        pot.CallTo(playerBu, new Chips(120));
+        pot.CommitDecision(playerBu, new Decision(DecisionType.RaiseTo, new Chips(25)));
+        pot.CommitDecision(playerSb, new Decision(DecisionType.RaiseTo, new Chips(120)));
+        pot.CommitDecision(playerBb, new Decision(DecisionType.Fold, new Chips(0)));
+        pot.CommitDecision(playerBu, new Decision(DecisionType.CallTo, new Chips(120)));
         pot.FinishStage();
 
         var comboSb = new Combo(ComboType.HighCard, 100);
@@ -1686,7 +1686,7 @@ public class NoLimitPotTest
 
         var exc = Assert.Throws<NotAvailableError>(() =>
         {
-            pot.WinAtShowdown([
+            pot.CommitWinAtShowdown([
                 (playerSb, comboSb, amountSb),
                 (playerBu, comboBu, amountBu),
             ]);

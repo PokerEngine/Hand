@@ -15,27 +15,37 @@ public abstract class BaseDeck
         _cards = cards;
     }
 
-    public void Shuffle()
-    {
-        _cards = new CardSet(_cards.ToList().OrderBy(_ => Rand.Next()));
-    }
-
-    public CardSet Extract(int count)
+    public CardSet ExtractRandomCards(int count)
     {
         if (count > _cards.Count)
         {
             throw new NotAvailableError("The deck does not contain enough cards");
         }
 
-        var index = _cards.Count - count;
-        var extracted = _cards[index.._cards.Count];
-        var remaining = _cards[..index];
-        _cards = remaining;
-        return extracted;
+        var extractedCards = new CardSet();
+        for (var i = 0; i < count; i++)
+        {
+            var idx = Rand.Next(_cards.Count - 1);
+            var card = _cards.ToList()[idx];
+            _cards = _cards.Remove(card);
+            extractedCards = extractedCards.Add(card);
+        }
+        return extractedCards;
+    }
+
+    public CardSet ExtractCertainCards(CardSet cards)
+    {
+        if (!cards.IsSubsetOf(_cards))
+        {
+            throw new NotAvailableError("The deck does not contain the given cards");
+        }
+
+        _cards = _cards.Except(cards);
+        return cards;
     }
 
     public override string ToString()
-        => $"{GetType().Name}: {_cards}";
+        => $"{GetType().Name}: {_cards.Count} card(s)";
 }
 
 public class StandardDeck : BaseDeck

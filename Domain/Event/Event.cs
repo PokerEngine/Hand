@@ -49,7 +49,14 @@ public record PlayerDisconnectedEvent(
     DateTime OccuredAt
 ) : IEvent;
 
-public record BlindIsPostedEvent(
+public record SmallBlindIsPostedEvent(
+    Nickname Nickname,
+    Chips Amount,
+    HandUid HandUid,
+    DateTime OccuredAt
+) : IEvent;
+
+public record BigBlindIsPostedEvent(
     Nickname Nickname,
     Chips Amount,
     HandUid HandUid,

@@ -1,3 +1,4 @@
+using System.Collections.Immutable;
 using Domain.ValueObject;
 
 namespace DomainTest.ValueObjectTest;
@@ -16,16 +17,6 @@ public class CardSetTest
     }
 
     [Fact]
-    public void TestInitializationWithDuplicates()
-    {
-        var items = new List<Card>() {Card.AceOfSpades, Card.AceOfSpades, Card.DeuceOfClubs};
-        CardSet cards;
-
-        var exc = Assert.Throws<ArgumentException>(() => cards = new CardSet(items));
-        Assert.Equal("CardSet cannot contain duplicates", exc.Message);
-    }
-
-    [Fact]
     public void TestCount()
     {
         var cards = new CardSet([Card.AceOfSpades, Card.DeuceOfClubs]);
@@ -36,61 +27,20 @@ public class CardSetTest
     }
 
     [Fact]
-    public void TestIndex()
-    {
-        var cards = new CardSet([Card.AceOfSpades, Card.DeuceOfClubs]);
-        Assert.Equal(Card.AceOfSpades, cards[0]);
-        Assert.Equal(Card.DeuceOfClubs, cards[1]);
-    }
-
-    [Fact]
-    public void TestIndexOutOfRange()
-    {
-        var cards = new CardSet([Card.AceOfSpades, Card.DeuceOfClubs]);
-        Assert.Throws<ArgumentOutOfRangeException>(() => cards[3]);
-        Assert.Throws<ArgumentOutOfRangeException>(() => cards[-1]);
-
-        cards = new CardSet();
-        Assert.Throws<ArgumentOutOfRangeException>(() => cards[0]);
-    }
-
-    [Theory]
-    [InlineData(0, 0)]
-    [InlineData(0, 1)]
-    [InlineData(0, 2)]
-    [InlineData(1, 1)]
-    [InlineData(1, 2)]
-    [InlineData(2, 2)]
-    public void TestSlice(int start, int end)
-    {
-        var items = new List<Card>() {Card.AceOfSpades, Card.DeuceOfClubs};
-        var cards = new CardSet(items);
-
-        Assert.Equal(items[start..end].ToList(), cards[start..end].ToList());
-    }
-
-    [Fact]
-    public void TestSliceOutOfRange()
-    {
-        var cards = new CardSet([Card.AceOfSpades, Card.DeuceOfClubs]);
-
-        Assert.Throws<ArgumentOutOfRangeException>(() => cards[-1..1]);
-        Assert.Throws<ArgumentOutOfRangeException>(() => cards[1..10]);
-        Assert.Throws<OverflowException>(() => cards[2..1]);
-    }
-
-    [Fact]
     public void TestEnumerator()
     {
-        var items = new List<Card>() {Card.AceOfSpades, Card.DeuceOfClubs, Card.QueenOfDiamonds};
+        var items = new HashSet<Card> {Card.AceOfSpades, Card.DeuceOfClubs, Card.QueenOfDiamonds};
         var cards = new CardSet(items);
 
         var i = 0;
         foreach (var card in cards)
         {
-            Assert.Equal(card, items[i]);
+            Assert.Contains(card, items);
+            cards.Remove(card);
             i++;
         }
+
+        Assert.Equal(3, i);
     }
 
     [Fact]
@@ -161,6 +111,30 @@ public class CardSetTest
         Assert.True(cards.SetEquals(new List<Card>() {Card.AceOfSpades, Card.DeuceOfClubs}));
         Assert.False(cards.SetEquals(new List<Card>() {Card.AceOfSpades, Card.DeuceOfClubs, Card.QueenOfDiamonds}));
         Assert.False(cards.SetEquals(new List<Card>() {Card.AceOfSpades, Card.QueenOfDiamonds}));
+    }
+
+    [Fact]
+    public void TestAdd()
+    {
+        var cards = new CardSet([Card.AceOfSpades, Card.DeuceOfClubs]);
+
+        Assert.Equal(new CardSet([Card.AceOfSpades, Card.JackOfHearts, Card.DeuceOfClubs]), cards.Add(Card.JackOfHearts));
+    }
+
+    [Fact]
+    public void TestRemove()
+    {
+        var cards = new CardSet([Card.AceOfSpades, Card.DeuceOfClubs]);
+
+        Assert.Equal(new CardSet([Card.DeuceOfClubs]), cards.Remove(Card.AceOfSpades));
+    }
+
+    [Fact]
+    public void TestExcept()
+    {
+        var cards = new CardSet([Card.AceOfSpades, Card.JackOfClubs, Card.DeuceOfClubs]);
+
+        Assert.Equal(new CardSet([Card.DeuceOfClubs]), cards.Except(new CardSet([Card.AceOfSpades, Card.JackOfClubs])));
     }
 
     [Fact]

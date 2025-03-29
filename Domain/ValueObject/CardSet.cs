@@ -3,81 +3,65 @@ using System.Collections.Immutable;
 
 namespace Domain.ValueObject;
 
-public readonly struct CardSet : IReadOnlySet<Card>, IReadOnlyList<Card>
+public readonly struct CardSet : IReadOnlySet<Card>
 {
-    private readonly ImmutableList<Card> _list;
-    private readonly ImmutableHashSet<Card> _set;
+    private readonly ImmutableSortedSet<Card> _cards;
 
     public CardSet(IEnumerable<Card> cards)
     {
-        _list = cards.ToImmutableList();
-        _set = _list.ToImmutableHashSet();
-
-        if (_list.Count != _set.Count)
-        {
-            throw new ArgumentException("CardSet cannot contain duplicates");
-        }
+        _cards = cards.ToImmutableSortedSet();
     }
 
     public CardSet()
     {
-        _list = ImmutableList<Card>.Empty;
-        _set = _list.ToImmutableHashSet();
+        _cards = ImmutableSortedSet<Card>.Empty;
     }
 
-    public int Count
-    {
-        get  => _set.Count;
-    }
-
-    public Card this[int index]
-    {
-        get => _list[index];
-    }
-
-    public CardSet Slice(int start, int length) {
-        var slice = new Card[length];
-        for (var i = 0; i < length; i++)
-        {
-            slice[i] = _list[start + i];
-        }
-        return new(slice);
-    }
+    public int Count => _cards.Count;
 
     public bool Contains(Card item)
-        => _set.Contains(item);
+        => _cards.Contains(item);
 
     public bool IsSubsetOf(IEnumerable<Card> other)
-        => _set.IsSubsetOf(other);
+        => _cards.IsSubsetOf(other);
 
     public bool IsSupersetOf(IEnumerable<Card> other)
-        => _set.IsSupersetOf(other);
+        => _cards.IsSupersetOf(other);
 
     public bool IsProperSubsetOf(IEnumerable<Card> other)
-        => _set.IsProperSubsetOf(other);
+        => _cards.IsProperSubsetOf(other);
 
     public bool IsProperSupersetOf(IEnumerable<Card> other)
-        => _set.IsProperSupersetOf(other);
+        => _cards.IsProperSupersetOf(other);
 
     public bool Overlaps(IEnumerable<Card> other)
-        => _set.Overlaps(other);
+        => _cards.Overlaps(other);
 
     public bool SetEquals(IEnumerable<Card> other)
-        => _set.SetEquals(other);
+        => _cards.SetEquals(other);
+
+    public CardSet Add(Card item)
+        => new (_cards.Add(item));
+
+    public CardSet Remove(Card item)
+        => new(_cards.Remove(item));
+
+    public CardSet Except(CardSet other)
+        => new(_cards.Except(other));
 
     public override bool Equals(object? o)
     {
         if (o is null || o.GetType() != GetType())
             return false;
         var x = (CardSet)o;
-        return _set == x.ToImmutableHashSet();
+        return _cards == x.ToImmutableSortedSet();
     }
 
     public IEnumerator<Card> GetEnumerator()
     {
-        foreach (var item in _list)
+        foreach (var card in _cards)
         {
-            yield return item;
+            yield return card;
         }
     }
 
@@ -85,19 +69,19 @@ public readonly struct CardSet : IReadOnlySet<Card>, IReadOnlyList<Card>
         => GetEnumerator();
 
     public static CardSet operator +(CardSet a, CardSet b)
-        => new (a.ToImmutableList().Concat(b));
+        => new (a._cards.Concat(b));
 
     public static bool operator ==(CardSet a, CardSet b)
-        => a.ToImmutableHashSet().SetEquals(b.ToImmutableHashSet());
+        => a._cards.SetEquals(b._cards);
 
     public static bool operator !=(CardSet a, CardSet b)
-        => !a.ToImmutableHashSet().SetEquals(b.ToImmutableHashSet());
+        => !a._cards.SetEquals(b._cards);
 
     public override string ToString()
     {
-        return $"{{{String.Join(", ", _list)}}}";
+        return $"{{{String.Join(", ", _cards)}}}";
     }
 
     public override int GetHashCode()
-        => _set.GetHashCode();
+        => _cards.GetHashCode();
 }

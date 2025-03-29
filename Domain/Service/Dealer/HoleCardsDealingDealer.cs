@@ -30,8 +30,6 @@ public class HoleCardsDealingDealer : IDealer
         var players = GetPlayersForDealing(table);
         if (HasEnoughPlayersForDealing(players))
         {
-            deck.Shuffle();
-
             foreach (var player in players)
             {
                 DealHoleCards(
@@ -64,7 +62,7 @@ public class HoleCardsDealingDealer : IDealer
         EventBus eventBus
     )
     {
-        var cards = deck.Extract(_count);
+        var cards = deck.ExtractRandomCards(_count);
         player.TakeHoleCards(cards);
 
         var @event = new HoleCardsAreDealtEvent(

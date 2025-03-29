@@ -77,7 +77,7 @@ public class ShowdownDealer : IDealer
             var amount = pot.GetRefundAmount(player);
             if (amount)
             {
-                pot.Refund(player, amount);
+                pot.CommitRefund(player, amount);
 
                 var @event = new RefundIsCommittedEvent(
                     Nickname: player.Nickname,
@@ -99,7 +99,7 @@ public class ShowdownDealer : IDealer
     {
         var amount = pot.GetTotalAmount();
 
-        pot.WinWithoutShowdown(player, amount);
+        pot.CommitWinWithoutShowdown(player, amount);
 
         var showdownEvent = new HoleCardsAreMuckedEvent(
             Nickname: player.Nickname,
@@ -129,7 +129,7 @@ public class ShowdownDealer : IDealer
         var playerCombos = players.Select(x => (x, evaluator.Evaluate(table.BoardCards, x.HoleCards))).ToList();
         var playerComboAmounts = pot.GetWinAtShowdownAmounts(playerCombos);
 
-        pot.WinAtShowdown(playerComboAmounts);
+        pot.CommitWinAtShowdown(playerComboAmounts);
 
         foreach (var (player, combo, amount) in playerComboAmounts)
         {

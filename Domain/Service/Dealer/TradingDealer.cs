@@ -57,24 +57,7 @@ public class TradingDealer : IDealer
         }
 
         var player = table.GetPlayerByNickname(nickname);
-
-        switch (decision.Type)
-        {
-            case DecisionType.Fold:
-                pot.Fold(player);
-                break;
-            case DecisionType.Check:
-                pot.Check(player);
-                break;
-            case DecisionType.CallTo:
-                pot.CallTo(player, decision.Amount);
-                break;
-            case DecisionType.RaiseTo:
-                pot.RaiseTo(player, decision.Amount);
-                break;
-            default:
-                throw new NotValidError("The decision is unknown");
-        }
+        pot.CommitDecision(player, decision);
 
         var @event = new DecisionIsCommittedEvent(
             Nickname: nickname,

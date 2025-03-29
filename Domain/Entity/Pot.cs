@@ -55,64 +55,28 @@ public abstract class BasePot
         LastDecisionNickname = player.Nickname;
     }
 
-    public void Fold(Player player)
+    public void CommitDecision(Player player, Decision decision)
     {
-        ValidateFold(player);
-
-        player.Fold();
-
-        var amount = GetCurrentPostedAmount(player);
-        if (amount)
+        switch (decision.Type)
         {
-            _currentSidePot = _currentSidePot.Sub(player.Nickname, amount);
-            _previousSidePot = _previousSidePot.Add(player.Nickname, amount);
-        }
-
-        LastDecisionNickname = player.Nickname;
-    }
-
-    public void Check(Player player)
-    {
-        ValidateCheck(player);
-
-        player.Check();
-        CommitCurrentDecision(player);
-        LastDecisionNickname = player.Nickname;
-    }
-
-    public void CallTo(Player player, Chips amount)
-    {
-        ValidateCallTo(player, amount);
-
-        BetTo(player, amount);
-        CommitCurrentDecision(player);
-        LastDecisionNickname = player.Nickname;
-    }
-
-    public void RaiseTo(Player player, Chips amount)
-    {
-        ValidateRaiseTo(player, amount);
-
-        var raiseStep = new Chips(0);
-        var currentMaxAmount = GetCurrentMaxAmount(player);
-        if (amount >= currentMaxAmount + _lastRaiseStep)
-        {
-            raiseStep = amount - currentMaxAmount;
-        }
-
-        BetTo(player, amount);
-        CommitCurrentDecision(player);
-        LastDecisionNickname = player.Nickname;
-
-        // If a player raises less than the minimum amount, he goes all in, and it is not considered a raise
-        if (raiseStep)
-        {
-            _lastRaiseStep = raiseStep;
-            _lastRaiseNickname = player.Nickname;
+            case DecisionType.Fold:
+                Fold(player);
+                break;
+            case DecisionType.Check:
+                Check(player);
+                break;
+            case DecisionType.CallTo:
+                CallTo(player, decision.Amount);
+                break;
+            case DecisionType.RaiseTo:
+                RaiseTo(player, decision.Amount);
+                break;
+            default:
+                throw new NotValidError("The decision is unknown");
         }
     }
 
-    public void Refund(Player player, Chips amount)
+    public void CommitRefund(Player player, Chips amount)
     {
         ValidateRefund(player, amount);
 
@@ -120,7 +84,7 @@ public abstract class BasePot
         player.Refund(amount);
     }
 
-    public void WinWithoutShowdown(Player player, Chips amount)
+    public void CommitWinWithoutShowdown(Player player, Chips amount)
     {
         ValidateWinWithoutShowdown(player, amount);
 
@@ -130,7 +94,7 @@ public abstract class BasePot
         player.Win(amount);
     }
 
-    public void WinAtShowdown(IList<(Player, Combo, Chips)> playerComboAmounts)
+    public void CommitWinAtShowdown(IList<(Player, Combo, Chips)> playerComboAmounts)
     {
         ValidateWinAtShowdown(playerComboAmounts);
 
@@ -412,6 +376,63 @@ public abstract class BasePot
         }
 
         return maxAmount;
+    }
+
+    private void Fold(Player player)
+    {
+        ValidateFold(player);
+
+        player.Fold();
+
+        var amount = GetCurrentPostedAmount(player);
+        if (amount)
+        {
+            _currentSidePot = _currentSidePot.Sub(player.Nickname, amount);
+            _previousSidePot = _previousSidePot.Add(player.Nickname, amount);
+        }
+
+        LastDecisionNickname = player.Nickname;
+    }
+
+    private void Check(Player player)
+    {
+        ValidateCheck(player);
+
+        player.Check();
+        CommitCurrentDecision(player);
+        LastDecisionNickname = player.Nickname;
+    }
+
+    private void CallTo(Player player, Chips amount)
+    {
+        ValidateCallTo(player, amount);
+
+        BetTo(player, amount);
+        CommitCurrentDecision(player);
+        LastDecisionNickname = player.Nickname;
+    }
+
+    private void RaiseTo(Player player, Chips amount)
+    {
+        ValidateRaiseTo(player, amount);
+
+        var raiseStep = new Chips(0);
+        var currentMaxAmount = GetCurrentMaxAmount(player);
+        if (amount >= currentMaxAmount + _lastRaiseStep)
+        {
+            raiseStep = amount - currentMaxAmount;
+        }
+
+        BetTo(player, amount);
+        CommitCurrentDecision(player);
+        LastDecisionNickname = player.Nickname;
+
+        // If a player raises less than the minimum amount, he goes all in, and it is not considered a raise
+        if (raiseStep)
+        {
+            _lastRaiseStep = raiseStep;
+            _lastRaiseNickname = player.Nickname;
+        }
     }
 
     private void ValidatePostBlind(Player player, Chips amount, Chips blind)

@@ -9,7 +9,6 @@ namespace Domain.Service.Dealer;
 public class TradingDealer : IDealer
 {
     public void Start(
-        HandUid handUid,
         BaseTable table,
         BasePot pot,
         BaseDeck deck,
@@ -17,7 +16,7 @@ public class TradingDealer : IDealer
         EventBus eventBus
     )
     {
-        var startEvent = new StageIsStartedEvent(HandUid: handUid, OccuredAt: DateTime.Now);
+        var startEvent = new StageIsStartedEvent(OccuredAt: DateTime.Now);
         eventBus.Publish(startEvent);
 
         if (HasEnoughPlayersForTrading(table))
@@ -27,13 +26,12 @@ public class TradingDealer : IDealer
                 previousPlayer: previousPlayer,
                 table: table,
                 pot: pot,
-                handUid: handUid,
                 eventBus: eventBus
             );
         }
         else
         {
-            var finishEvent = new StageIsFinishedEvent(HandUid: handUid, OccuredAt: DateTime.Now);
+            var finishEvent = new StageIsFinishedEvent(OccuredAt: DateTime.Now);
             eventBus.Publish(finishEvent);
         }
     }
@@ -41,7 +39,6 @@ public class TradingDealer : IDealer
     public void CommitDecision(
         Nickname nickname,
         Decision decision,
-        HandUid handUid,
         BaseTable table,
         BasePot pot,
         BaseDeck deck,
@@ -62,7 +59,6 @@ public class TradingDealer : IDealer
         var @event = new DecisionIsCommittedEvent(
             Nickname: nickname,
             Decision: decision,
-            HandUid: handUid,
             OccuredAt: DateTime.Now
         );
         eventBus.Publish(@event);
@@ -71,7 +67,6 @@ public class TradingDealer : IDealer
             previousPlayer: player,
             table: table,
             pot: pot,
-            handUid: handUid,
             eventBus: eventBus
         );
     }
@@ -134,7 +129,6 @@ public class TradingDealer : IDealer
         Player? previousPlayer,
         BaseTable table,
         BasePot pot,
-        HandUid handUid,
         EventBus eventBus
     )
     {
@@ -143,7 +137,6 @@ public class TradingDealer : IDealer
         {
             Finish(
                 pot: pot,
-                handUid: handUid,
                 eventBus: eventBus
             );
         }
@@ -152,7 +145,6 @@ public class TradingDealer : IDealer
             RequestDecision(
                 nextPlayer: nextPlayer,
                 pot: pot,
-                handUid: handUid,
                 eventBus: eventBus
             );
         }
@@ -160,20 +152,18 @@ public class TradingDealer : IDealer
 
     private void Finish(
         BasePot pot,
-        HandUid handUid,
         EventBus eventBus
     )
     {
         pot.FinishStage();
 
-        var finishEvent = new StageIsFinishedEvent(HandUid: handUid, OccuredAt: DateTime.Now);
+        var finishEvent = new StageIsFinishedEvent(OccuredAt: DateTime.Now);
         eventBus.Publish(finishEvent);
     }
 
     private void RequestDecision(
         Player nextPlayer,
         BasePot pot,
-        HandUid handUid,
         EventBus eventBus
     )
     {
@@ -197,7 +187,6 @@ public class TradingDealer : IDealer
             RaiseIsAvailable: raiseIsAvailable,
             MinRaiseToAmount: minRaiseToAmount,
             MaxRaiseToAmount: maxRaiseToAmount,
-            HandUid: handUid,
             OccuredAt: DateTime.Now
         );
         eventBus.Publish(@event);

@@ -16,7 +16,6 @@ public class BoardCardsDealingDealer : IDealer
     }
 
     public void Start(
-        HandUid handUid,
         BaseTable table,
         BasePot pot,
         BaseDeck deck,
@@ -24,7 +23,7 @@ public class BoardCardsDealingDealer : IDealer
         EventBus eventBus
     )
     {
-        var startEvent = new StageIsStartedEvent(HandUid: handUid, OccuredAt: DateTime.Now);
+        var startEvent = new StageIsStartedEvent(OccuredAt: DateTime.Now);
         eventBus.Publish(startEvent);
 
         if (HasEnoughPlayersForDealing(table))
@@ -32,12 +31,11 @@ public class BoardCardsDealingDealer : IDealer
             DealBoardCards(
                 table: table,
                 deck: deck,
-                handUid: handUid,
                 eventBus: eventBus
             );
         }
 
-        var finishEvent = new StageIsFinishedEvent(HandUid: handUid, OccuredAt: DateTime.Now);
+        var finishEvent = new StageIsFinishedEvent(OccuredAt: DateTime.Now);
         eventBus.Publish(finishEvent);
     }
 
@@ -49,7 +47,6 @@ public class BoardCardsDealingDealer : IDealer
     private void DealBoardCards(
         BaseTable table,
         BaseDeck deck,
-        HandUid handUid,
         EventBus eventBus
     )
     {
@@ -58,7 +55,6 @@ public class BoardCardsDealingDealer : IDealer
 
         var @event = new BoardCardsAreDealtEvent(
             Cards: cards,
-            HandUid: handUid,
             OccuredAt: DateTime.Now
         );
         eventBus.Publish(@event);
@@ -67,7 +63,6 @@ public class BoardCardsDealingDealer : IDealer
     public void CommitDecision(
         Nickname nickname,
         Decision decision,
-        HandUid handUid,
         BaseTable table,
         BasePot pot,
         BaseDeck deck,

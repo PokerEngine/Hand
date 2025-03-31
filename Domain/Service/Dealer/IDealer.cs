@@ -8,7 +8,6 @@ namespace Domain.Service.Dealer;
 public interface IDealer
 {
     public void Start(
-        HandUid handUid,
         BaseTable table,
         BasePot pot,
         BaseDeck deck,
@@ -19,7 +18,6 @@ public interface IDealer
     public void CommitDecision(
         Nickname nickname,
         Decision decision,
-        HandUid handUid,
         BaseTable table,
         BasePot pot,
         BaseDeck deck,

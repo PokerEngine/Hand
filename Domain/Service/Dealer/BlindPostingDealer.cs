@@ -9,7 +9,6 @@ namespace Domain.Service.Dealer;
 public class BlindPostingDealer : IDealer
 {
     public void Start(
-        HandUid handUid,
         BaseTable table,
         BasePot pot,
         BaseDeck deck,
@@ -17,18 +16,17 @@ public class BlindPostingDealer : IDealer
         EventBus eventBus
     )
     {
-        var startEvent = new StageIsStartedEvent(HandUid: handUid, OccuredAt: DateTime.Now);
+        var startEvent = new StageIsStartedEvent(OccuredAt: DateTime.Now);
         eventBus.Publish(startEvent);
 
-        PostSmallBlind(handUid: handUid, table: table, pot: pot, eventBus: eventBus);
-        PostBigBlind(handUid: handUid, table: table, pot: pot, eventBus: eventBus);
+        PostSmallBlind(table: table, pot: pot, eventBus: eventBus);
+        PostBigBlind(table: table, pot: pot, eventBus: eventBus);
 
-        var finishEvent = new StageIsFinishedEvent(HandUid: handUid, OccuredAt: DateTime.Now);
+        var finishEvent = new StageIsFinishedEvent(OccuredAt: DateTime.Now);
         eventBus.Publish(finishEvent);
     }
 
     private void PostSmallBlind(
-        HandUid handUid,
         BaseTable table,
         BasePot pot,
         EventBus eventBus
@@ -51,14 +49,12 @@ public class BlindPostingDealer : IDealer
         var @event = new SmallBlindIsPostedEvent(
             Nickname: player.Nickname,
             Amount: amount,
-            HandUid: handUid,
             OccuredAt: DateTime.Now
         );
         eventBus.Publish(@event);
     }
 
     private void PostBigBlind(
-        HandUid handUid,
         BaseTable table,
         BasePot pot,
         EventBus eventBus
@@ -81,7 +77,6 @@ public class BlindPostingDealer : IDealer
         var @event = new BigBlindIsPostedEvent(
             Nickname: player.Nickname,
             Amount: amount,
-            HandUid: handUid,
             OccuredAt: DateTime.Now
         );
         eventBus.Publish(@event);
@@ -90,7 +85,6 @@ public class BlindPostingDealer : IDealer
     public void CommitDecision(
         Nickname nickname,
         Decision decision,
-        HandUid handUid,
         BaseTable table,
         BasePot pot,
         BaseDeck deck,

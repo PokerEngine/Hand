@@ -22,12 +22,10 @@ public class EventBusTest
 
         var event1 = new PlayerConnectedEvent(
             Nickname: nickname,
-            HandUid: handUid,
             OccuredAt: DateTime.Now
         );
         var event2 = new PlayerDisconnectedEvent(
             Nickname: nickname,
-            HandUid: handUid,
             OccuredAt: DateTime.Now
         );
 
@@ -61,12 +59,10 @@ public class EventBusTest
 
         var event1 = new PlayerConnectedEvent(
             Nickname: nickname,
-            HandUid: handUid,
             OccuredAt: DateTime.Now
         );
         var event2 = new PlayerDisconnectedEvent(
             Nickname: nickname,
-            HandUid: handUid,
             OccuredAt: DateTime.Now
         );
 

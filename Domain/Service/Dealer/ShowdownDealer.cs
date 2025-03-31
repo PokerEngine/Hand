@@ -9,7 +9,6 @@ namespace Domain.Service.Dealer;
 public class ShowdownDealer : IDealer
 {
     public void Start(
-        HandUid handUid,
         BaseTable table,
         BasePot pot,
         BaseDeck deck,
@@ -17,14 +16,13 @@ public class ShowdownDealer : IDealer
         EventBus eventBus
     )
     {
-        var startEvent = new StageIsStartedEvent(HandUid: handUid, OccuredAt: DateTime.Now);
+        var startEvent = new StageIsStartedEvent(OccuredAt: DateTime.Now);
         eventBus.Publish(startEvent);
 
         var players = GetPlayersForShowdown(table);
         
         Refund(
             players: players,
-            handUid: handUid,
             pot: pot,
             eventBus: eventBus
         );
@@ -32,7 +30,6 @@ public class ShowdownDealer : IDealer
         if (HasEnoughPlayersForShowdown(players))
         {
             WinAtShowdown(
-                handUid: handUid,
                 players: players,
                 table: table,
                 pot: pot,
@@ -44,14 +41,13 @@ public class ShowdownDealer : IDealer
         else
         {
             WinWithoutShowdown(
-                handUid: handUid,
                 player: players.First(),
                 pot: pot,
                 eventBus: eventBus
             );
         }
 
-        var finishEvent = new StageIsFinishedEvent(HandUid: handUid, OccuredAt: DateTime.Now);
+        var finishEvent = new StageIsFinishedEvent(OccuredAt: DateTime.Now);
         eventBus.Publish(finishEvent);
     }
 
@@ -67,7 +63,6 @@ public class ShowdownDealer : IDealer
 
     private void Refund(
         IList<Player> players,
-        HandUid handUid,
         BasePot pot,
         EventBus eventBus
     )
@@ -82,7 +77,6 @@ public class ShowdownDealer : IDealer
                 var @event = new RefundIsCommittedEvent(
                     Nickname: player.Nickname,
                     Amount: amount,
-                    HandUid: handUid,
                     OccuredAt: DateTime.Now
                 );
                 eventBus.Publish(@event);
@@ -92,7 +86,6 @@ public class ShowdownDealer : IDealer
 
     private void WinWithoutShowdown(
         Player player,
-        HandUid handUid,
         BasePot pot,
         EventBus eventBus
     )
@@ -103,7 +96,6 @@ public class ShowdownDealer : IDealer
 
         var showdownEvent = new HoleCardsAreMuckedEvent(
             Nickname: player.Nickname,
-            HandUid: handUid,
             OccuredAt: DateTime.Now
         );
         eventBus.Publish(showdownEvent);
@@ -111,7 +103,6 @@ public class ShowdownDealer : IDealer
         var winEvent = new WinIsCommittedEvent(
             Nickname: player.Nickname,
             Amount: amount,
-            HandUid: handUid,
             OccuredAt: DateTime.Now
         );
         eventBus.Publish(winEvent);
@@ -119,7 +110,6 @@ public class ShowdownDealer : IDealer
 
     private void WinAtShowdown(
         IList<Player> players,
-        HandUid handUid,
         BaseTable table,
         BasePot pot,
         IEvaluator evaluator,
@@ -137,7 +127,6 @@ public class ShowdownDealer : IDealer
                 Nickname: player.Nickname,
                 Cards: player.HoleCards,
                 Combo: combo,
-                HandUid: handUid,
                 OccuredAt: DateTime.Now
             );
             eventBus.Publish(showdownEvent);
@@ -147,7 +136,6 @@ public class ShowdownDealer : IDealer
                 var winEvent = new WinIsCommittedEvent(
                     Nickname: player.Nickname,
                     Amount: amount,
-                    HandUid: handUid,
                     OccuredAt: DateTime.Now
                 );
                 eventBus.Publish(winEvent);
@@ -158,7 +146,6 @@ public class ShowdownDealer : IDealer
     public void CommitDecision(
         Nickname nickname,
         Decision decision,
-        HandUid handUid,
         BaseTable table,
         BasePot pot,
         BaseDeck deck,

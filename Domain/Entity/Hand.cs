@@ -63,7 +63,6 @@ public class Hand
             SmallBlind: smallBlind,
             BigBlind: bigBlind,
             Participants: participants,
-            HandUid: uid,
             OccuredAt: DateTime.Now
         );
         eventBus.Publish(@event);
@@ -76,7 +75,7 @@ public class Hand
         var player = _table.GetPlayerByNickname(nickname);
         player.Connect();
 
-        var @event = new PlayerConnectedEvent(Nickname: nickname, HandUid: Uid, OccuredAt: DateTime.Now);
+        var @event = new PlayerConnectedEvent(Nickname: nickname, OccuredAt: DateTime.Now);
         eventBus.Publish(@event);
     }
 
@@ -85,20 +84,19 @@ public class Hand
         var player = _table.GetPlayerByNickname(nickname);
         player.Disconnect();
 
-        var @event = new PlayerDisconnectedEvent(Nickname: nickname, HandUid: Uid, OccuredAt: DateTime.Now);
+        var @event = new PlayerDisconnectedEvent(Nickname: nickname, OccuredAt: DateTime.Now);
         eventBus.Publish(@event);
     }
 
     public void Start(EventBus eventBus)
     {
-        var @event = new HandIsStartedEvent(HandUid: Uid, OccuredAt: DateTime.Now);
+        var @event = new HandIsStartedEvent(OccuredAt: DateTime.Now);
         eventBus.Publish(@event);
 
         var listener = (StageIsFinishedEvent e) => StartNextDealerOrFinish(eventBus);
         eventBus.Subscribe(listener);
 
         _dealer.Start(
-            handUid: Uid,
             table: _table,
             pot: _pot,
             deck: _deck,
@@ -117,7 +115,6 @@ public class Hand
         _dealer.CommitDecision(
             nickname: nickname,
             decision: decision,
-            handUid: Uid,
             table: _table,
             pot: _pot,
             deck: _deck,
@@ -132,14 +129,13 @@ public class Hand
     {
         if (_dealerIdx == _dealers.Count - 1)
         {
-            var @event = new HandIsFinishedEvent(HandUid: Uid, OccuredAt: DateTime.Now);
+            var @event = new HandIsFinishedEvent(OccuredAt: DateTime.Now);
             eventBus.Publish(@event);
         }
         else
         {
             _dealerIdx++;
             _dealer.Start(
-                handUid: Uid,
                 table: _table,
                 pot: _pot,
                 deck: _deck,

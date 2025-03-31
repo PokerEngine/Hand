@@ -16,7 +16,6 @@ public class HoleCardsDealingDealer : IDealer
     }
 
     public void Start(
-        HandUid handUid,
         BaseTable table,
         BasePot pot,
         BaseDeck deck,
@@ -24,7 +23,7 @@ public class HoleCardsDealingDealer : IDealer
         EventBus eventBus
     )
     {
-        var startEvent = new StageIsStartedEvent(HandUid: handUid, OccuredAt: DateTime.Now);
+        var startEvent = new StageIsStartedEvent(OccuredAt: DateTime.Now);
         eventBus.Publish(startEvent);
 
         var players = GetPlayersForDealing(table);
@@ -35,13 +34,12 @@ public class HoleCardsDealingDealer : IDealer
                 DealHoleCards(
                     player: player,
                     deck: deck,
-                    handUid: handUid,
                     eventBus: eventBus
                 );
             }
         }
 
-        var finishEvent = new StageIsFinishedEvent(HandUid: handUid, OccuredAt: DateTime.Now);
+        var finishEvent = new StageIsFinishedEvent(OccuredAt: DateTime.Now);
         eventBus.Publish(finishEvent);
     }
 
@@ -58,7 +56,6 @@ public class HoleCardsDealingDealer : IDealer
     private void DealHoleCards(
         Player player,
         BaseDeck deck,
-        HandUid handUid,
         EventBus eventBus
     )
     {
@@ -68,7 +65,6 @@ public class HoleCardsDealingDealer : IDealer
         var @event = new HoleCardsAreDealtEvent(
             Nickname: player.Nickname,
             Cards: cards,
-            HandUid: handUid,
             OccuredAt: DateTime.Now
         );
         eventBus.Publish(@event);
@@ -77,7 +73,6 @@ public class HoleCardsDealingDealer : IDealer
     public void CommitDecision(
         Nickname nickname,
         Decision decision,
-        HandUid handUid,
         BaseTable table,
         BasePot pot,
         BaseDeck deck,

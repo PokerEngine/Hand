@@ -1,5 +1,4 @@
 using Domain.Entity;
-using Domain.Entity.Factory;
 using Domain.Error;
 using Domain.ValueObject;
 
@@ -267,12 +266,10 @@ public class SixMaxTableTest
 
     private Player CreatePlayer(string nickname, Position position, int stake = 1000)
     {
-        var factory = new HoldemNoLimit6MaxFactory();
-        var participant = new Participant(
+        return new Player(
             nickname: new Nickname(nickname),
             position: position,
             stake: new Chips(stake)
         );
-        return factory.GetPlayer(participant);
     }
 }

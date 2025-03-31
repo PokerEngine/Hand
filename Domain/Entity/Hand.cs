@@ -1,3 +1,4 @@
+using Domain.Entity.Factory;
 using Domain.Event;
 using Domain.Service.Dealer;
 using Domain.Service.Evaluator;
@@ -17,15 +18,14 @@ public class Hand
     private int _dealerIdx;
     private IDealer _dealer => _dealers[_dealerIdx];
 
-    public Hand(
+    private Hand(
         HandUid uid,
         Game game,
         BaseTable table,
         BasePot pot,
         BaseDeck deck,
         IEvaluator evaluator,
-        IList<IDealer> dealers,
-        EventBus eventBus
+        IList<IDealer> dealers
     )
     {
         Uid = uid;
@@ -36,17 +36,39 @@ public class Hand
         _evaluator = evaluator;
         _dealers = dealers;
         _dealerIdx = 0;
+    }
 
-        var participants = table.Select(x => new Participant(x.Nickname, x.Position, x.Stake)).ToList();
+    public static Hand FromScratch(
+        HandUid uid,
+        Game game,
+        Chips smallBlind,
+        Chips bigBlind,
+        List<Participant> participants,
+        EventBus eventBus
+    )
+    {
+        var factory = FactoryRegistry.GetFactory(game);
+        var hand = new Hand(
+            uid: uid,
+            game: game,
+            table: factory.GetTable(participants),
+            pot: factory.GetPot(smallBlind, bigBlind),
+            deck: factory.GetDeck(),
+            evaluator: factory.GetEvaluator(),
+            dealers: factory.GetDealers()
+        );
+
         var @event = new HandIsCreatedEvent(
             Game: game,
-            SmallBlind: pot.SmallBlind,
-            BigBlind: pot.BigBlind,
+            SmallBlind: smallBlind,
+            BigBlind: bigBlind,
             Participants: participants,
             HandUid: uid,
             OccuredAt: DateTime.Now
         );
         eventBus.Publish(@event);
+
+        return hand;
     }
 
     public void Connect(Nickname nickname, EventBus eventBus)

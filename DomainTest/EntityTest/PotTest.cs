@@ -1,5 +1,4 @@
 using Domain.Entity;
-using Domain.Entity.Factory;
 using Domain.Error;
 using Domain.ValueObject;
 
@@ -1708,18 +1707,15 @@ public class NoLimitPotTest
 
     private BasePot CreatePot(int smallBlind = 5, int bigBlind = 10)
     {
-        var factory = new HoldemNoLimit6MaxFactory();
-        return factory.GetPot(new Chips(smallBlind), new Chips(bigBlind));
+        return new NoLimitPot(new Chips(smallBlind), new Chips(bigBlind));
     }
 
     private Player CreatePlayer(string nickname, Position position, int stake = 1000)
     {
-        var factory = new HoldemNoLimit6MaxFactory();
-        var participant = new Participant(
+        return new Player(
             nickname: new Nickname(nickname),
             position: position,
             stake: new Chips(stake)
         );
-        return factory.GetPlayer(participant);
     }
 }

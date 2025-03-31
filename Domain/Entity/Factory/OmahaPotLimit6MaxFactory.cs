@@ -6,12 +6,7 @@ namespace Domain.Entity.Factory;
 
 public class OmahaPotLimit6MaxFactory : IFactory
 {
-    public Game GetGame()
-    {
-        return Game.OmahaPotLimit6Max;
-    }
-
-    public BaseTable GetTable(IEnumerable<Participant> participants)
+    public virtual BaseTable GetTable(IEnumerable<Participant> participants)
     {
         var players = participants.Select(x => GetPlayer(x));
         return new SixMaxTable(players);
@@ -48,7 +43,7 @@ public class OmahaPotLimit6MaxFactory : IFactory
         ];
     }
 
-    public Player GetPlayer(Participant participant)
+    protected Player GetPlayer(Participant participant)
     {
         return new Player(
             nickname: participant.Nickname,

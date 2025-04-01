@@ -12,7 +12,6 @@ public class SidePotTest
 
         var sidePot = new SidePot();
         Assert.Equal(new Chips(0), sidePot.Get(nickname));
-        Assert.Equal(new Chips(0), sidePot.GetDead());
         Assert.Equal(new Chips(0), sidePot.Amount);
         Assert.Equal(0, sidePot.Count);
     }

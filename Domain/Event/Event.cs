@@ -65,9 +65,15 @@ public record RefundIsCommittedEvent(
     DateTime OccuredAt
 ) : IEvent;
 
-public record WinIsCommittedEvent(
+public record WinWithoutShowdownIsCommittedEvent(
     Nickname Nickname,
     Chips Amount,
+    DateTime OccuredAt
+) : IEvent;
+
+public record WinAtShowdownIsCommittedEvent(
+    SidePot SidePot,
+    SidePot WinPot,
     DateTime OccuredAt
 ) : IEvent;
 

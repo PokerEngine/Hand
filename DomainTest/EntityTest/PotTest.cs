@@ -1151,6 +1151,56 @@ public class NoLimitPotTest
     }
 
     [Fact]
+    public void TestGetSidePots()
+    {
+        var playerSb = CreatePlayer(
+            nickname: "SmallBlind",
+            position: Position.SmallBlind,
+            stake: 100
+        );
+        var playerBb = CreatePlayer(
+            nickname: "BigBlind",
+            position: Position.BigBlind,
+            stake: 200
+        );
+        var playerBu = CreatePlayer(
+            nickname: "Button",
+            position: Position.Button,
+            stake: 600
+        );
+        var pot = CreatePot();
+        playerSb.Connect();
+        playerBb.Connect();
+        playerBu.Connect();
+        pot.PostSmallBlind(playerSb, new Chips(5));
+        pot.PostBigBlind(playerBb, new Chips(10));
+        pot.CommitDecision(playerBu, new Decision(DecisionType.RaiseTo, new Chips(300)));
+        pot.CommitDecision(playerSb, new Decision(DecisionType.CallTo, new Chips(100)));
+        pot.CommitDecision(playerBb, new Decision(DecisionType.CallTo, new Chips(200)));
+
+        var sidePots = pot.GetSidePots([playerSb, playerBb, playerBu]);
+
+        Assert.Equal(3, sidePots.Count);
+
+        var expectedSidePot1 = new SidePot([
+            new KeyValuePair<Nickname, Chips>(playerSb.Nickname, new Chips(100)),
+            new KeyValuePair<Nickname, Chips>(playerBb.Nickname, new Chips(100)),
+            new KeyValuePair<Nickname, Chips>(playerBu.Nickname, new Chips(100)),
+        ]);
+        var expectedSidePot2 = new SidePot([
+            new KeyValuePair<Nickname, Chips>(playerBb.Nickname, new Chips(100)),
+            new KeyValuePair<Nickname, Chips>(playerBu.Nickname, new Chips(100)),
+        ]);
+        var expectedSidePot3 = new SidePot([
+            new KeyValuePair<Nickname, Chips>(playerBu.Nickname, new Chips(100)),
+        ]);
+
+        Assert.Equal(expectedSidePot1, sidePots[0]);
+        Assert.Equal(expectedSidePot2, sidePots[1]);
+        Assert.Equal(expectedSidePot3, sidePots[2]);
+    }
+
+    [Fact]
     public void TestRefundWhenAllOpponentsFolded()
     {
         var playerSb = CreatePlayer(
@@ -1434,13 +1484,16 @@ public class NoLimitPotTest
         pot.CommitDecision(playerBu, new Decision(DecisionType.CallTo, new Chips(120)));
         pot.FinishStage();
 
-        var comboSb = new Combo(ComboType.OnePair, 100);
-        var comboBu = new Combo(ComboType.OnePair, 200);
-
-        pot.CommitWinAtShowdown([
-            (playerSb, comboSb, new Chips(0)),
-            (playerBu, comboBu, new Chips(250)),
+        var sidePot = new SidePot([
+            new KeyValuePair<Nickname, Chips>(playerSb.Nickname, new Chips(120)),
+            new KeyValuePair<Nickname, Chips>(playerBb.Nickname, new Chips(10)),
+            new KeyValuePair<Nickname, Chips>(playerBu.Nickname, new Chips(120)),
         ]);
+        var winPot = new SidePot([
+            new KeyValuePair<Nickname, Chips>(playerBu.Nickname, new Chips(250)),
+        ]);
+
+        pot.CommitWinAtShowdown([playerBu], sidePot, winPot);
 
         Assert.Equal(new Chips(0), pot.GetTotalAmount());
         Assert.Equal(new Chips(880), playerSb.Stake);
@@ -1475,13 +1528,17 @@ public class NoLimitPotTest
         pot.CommitDecision(playerBu, new Decision(DecisionType.CallTo, new Chips(130)));
         pot.FinishStage();
 
-        var comboBb = new Combo(ComboType.HighCard, 100);
-        var comboBu = new Combo(ComboType.HighCard, 100);
-
-        pot.CommitWinAtShowdown([
-            (playerBb, comboBb, new Chips(132)),
-            (playerBu, comboBu, new Chips(133)),
+        var sidePot = new SidePot([
+            new KeyValuePair<Nickname, Chips>(playerSb.Nickname, new Chips(5)),
+            new KeyValuePair<Nickname, Chips>(playerBb.Nickname, new Chips(130)),
+            new KeyValuePair<Nickname, Chips>(playerBu.Nickname, new Chips(130)),
         ]);
+        var winPot = new SidePot([
+            new KeyValuePair<Nickname, Chips>(playerBb.Nickname, new Chips(132)),
+            new KeyValuePair<Nickname, Chips>(playerBu.Nickname, new Chips(133)),
+        ]);
+
+        pot.CommitWinAtShowdown([playerBb, playerBu], sidePot, winPot);
 
         Assert.Equal(new Chips(0), pot.GetTotalAmount());
         Assert.Equal(new Chips(1002), playerBb.Stake);
@@ -1516,15 +1573,31 @@ public class NoLimitPotTest
         pot.CommitDecision(playerBu, new Decision(DecisionType.CallTo, new Chips(240)));
         pot.FinishStage();
 
-        var comboSb = new Combo(ComboType.TwoPair, 300);
-        var comboBb = new Combo(ComboType.OnePair, 200);
-        var comboBu = new Combo(ComboType.HighCard, 100);
-
-        pot.CommitWinAtShowdown([
-            (playerSb, comboSb, new Chips(300)),
-            (playerBb, comboBb, new Chips(280)),
-            (playerBu, comboBu, new Chips(0)),
+        var sidePot = new SidePot([
+            new KeyValuePair<Nickname, Chips>(playerSb.Nickname, new Chips(100)),
+            new KeyValuePair<Nickname, Chips>(playerBb.Nickname, new Chips(100)),
+            new KeyValuePair<Nickname, Chips>(playerBu.Nickname, new Chips(100)),
         ]);
+        var winPot = new SidePot([
+            new KeyValuePair<Nickname, Chips>(playerSb.Nickname, new Chips(300)),
+        ]);
+
+        pot.CommitWinAtShowdown([playerSb], sidePot, winPot);
+
+        Assert.Equal(new Chips(280), pot.GetTotalAmount());
+        Assert.Equal(new Chips(300), playerSb.Stake);
+        Assert.Equal(new Chips(760), playerBb.Stake);
+        Assert.Equal(new Chips(760), playerBu.Stake);
+
+        sidePot = new SidePot([
+            new KeyValuePair<Nickname, Chips>(playerBb.Nickname, new Chips(140)),
+            new KeyValuePair<Nickname, Chips>(playerBu.Nickname, new Chips(140)),
+        ]);
+        winPot = new SidePot([
+            new KeyValuePair<Nickname, Chips>(playerBb.Nickname, new Chips(280)),
+        ]);
+
+        pot.CommitWinAtShowdown([playerBb], sidePot, winPot);
 
         Assert.Equal(new Chips(0), pot.GetTotalAmount());
         Assert.Equal(new Chips(300), playerSb.Stake);
@@ -1604,45 +1677,151 @@ public class NoLimitPotTest
         pot.FinishStage();
         pot.CommitRefund(playerBu, new Chips(100));
 
-        var comboSb = new Combo(ComboType.Flush, 600);
-        var comboBb = new Combo(ComboType.Straight, 500);
-        var comboUtg1 = new Combo(ComboType.Straight, 500);
-        var comboUtg2 = new Combo(ComboType.Straight, 500);
-        var comboUtg3 = new Combo(ComboType.Trips, 400);
-        var comboEp = new Combo(ComboType.TwoPair, 300);
-        var comboMp = new Combo(ComboType.OnePair, 200);
-        var comboCo = new Combo(ComboType.OnePair, 200);
-        var comboBu = new Combo(ComboType.HighCard, 100);
-
-        pot.CommitWinAtShowdown([
-            (playerSb, comboSb, new Chips(900)),
-            (playerBb, comboBb, new Chips(268)),
-            (playerUtg1, comboUtg1, new Chips(616)),
-            (playerUtg2, comboUtg2, new Chips(1216)),
-            (playerUtg3, comboUtg3, new Chips(500)),
-            (playerEp, comboEp, new Chips(400)),
-            (playerMp, comboMp, new Chips(150)),
-            (playerCo, comboCo, new Chips(350)),
-            (playerBu, comboBu, new Chips(0)),
+        var sidePot = new SidePot([
+            new KeyValuePair<Nickname, Chips>(playerSb.Nickname, new Chips(100)),
+            new KeyValuePair<Nickname, Chips>(playerBb.Nickname, new Chips(100)),
+            new KeyValuePair<Nickname, Chips>(playerUtg1.Nickname, new Chips(100)),
+            new KeyValuePair<Nickname, Chips>(playerUtg2.Nickname, new Chips(100)),
+            new KeyValuePair<Nickname, Chips>(playerUtg3.Nickname, new Chips(100)),
+            new KeyValuePair<Nickname, Chips>(playerEp.Nickname, new Chips(100)),
+            new KeyValuePair<Nickname, Chips>(playerMp.Nickname, new Chips(100)),
+            new KeyValuePair<Nickname, Chips>(playerCo.Nickname, new Chips(100)),
+            new KeyValuePair<Nickname, Chips>(playerBu.Nickname, new Chips(100)),
+        ]);
+        var winPot = new SidePot([
+            new KeyValuePair<Nickname, Chips>(playerSb.Nickname, new Chips(900)),
         ]);
 
-        Assert.Equal(new Chips(0), pot.GetTotalAmount());
+        pot.CommitWinAtShowdown([playerSb], sidePot, winPot);
+
+        Assert.Equal(new Chips(3500), pot.GetTotalAmount());
         Assert.Equal(new Chips(900), playerSb.Stake);
-        Assert.Equal(new Chips(268), playerBb.Stake);
-        Assert.Equal(new Chips(616), playerUtg1.Stake);
+
+        sidePot = new SidePot([
+            new KeyValuePair<Nickname, Chips>(playerBb.Nickname, new Chips(100)),
+            new KeyValuePair<Nickname, Chips>(playerUtg1.Nickname, new Chips(100)),
+            new KeyValuePair<Nickname, Chips>(playerUtg2.Nickname, new Chips(100)),
+            new KeyValuePair<Nickname, Chips>(playerUtg3.Nickname, new Chips(100)),
+            new KeyValuePair<Nickname, Chips>(playerEp.Nickname, new Chips(100)),
+            new KeyValuePair<Nickname, Chips>(playerMp.Nickname, new Chips(100)),
+            new KeyValuePair<Nickname, Chips>(playerCo.Nickname, new Chips(100)),
+            new KeyValuePair<Nickname, Chips>(playerBu.Nickname, new Chips(100)),
+        ]);
+        winPot = new SidePot([
+            new KeyValuePair<Nickname, Chips>(playerBb.Nickname, new Chips(267)),
+            new KeyValuePair<Nickname, Chips>(playerUtg1.Nickname, new Chips(267)),
+            new KeyValuePair<Nickname, Chips>(playerUtg2.Nickname, new Chips(266)),
+        ]);
+
+        pot.CommitWinAtShowdown([playerBb, playerUtg1, playerUtg2], sidePot, winPot);
+
+        Assert.Equal(new Chips(2700), pot.GetTotalAmount());
+        Assert.Equal(new Chips(267), playerBb.Stake);
+        Assert.Equal(new Chips(267), playerUtg1.Stake);
+        Assert.Equal(new Chips(266), playerUtg2.Stake);
+
+        sidePot = new SidePot([
+            new KeyValuePair<Nickname, Chips>(playerUtg1.Nickname, new Chips(100)),
+            new KeyValuePair<Nickname, Chips>(playerUtg2.Nickname, new Chips(100)),
+            new KeyValuePair<Nickname, Chips>(playerUtg3.Nickname, new Chips(100)),
+            new KeyValuePair<Nickname, Chips>(playerEp.Nickname, new Chips(100)),
+            new KeyValuePair<Nickname, Chips>(playerMp.Nickname, new Chips(100)),
+            new KeyValuePair<Nickname, Chips>(playerCo.Nickname, new Chips(100)),
+            new KeyValuePair<Nickname, Chips>(playerBu.Nickname, new Chips(100)),
+        ]);
+        winPot = new SidePot([
+            new KeyValuePair<Nickname, Chips>(playerUtg1.Nickname, new Chips(350)),
+            new KeyValuePair<Nickname, Chips>(playerUtg2.Nickname, new Chips(350)),
+        ]);
+
+        pot.CommitWinAtShowdown([playerUtg1, playerUtg2], sidePot, winPot);
+
+        Assert.Equal(new Chips(2000), pot.GetTotalAmount());
+        Assert.Equal(new Chips(617), playerUtg1.Stake);
+        Assert.Equal(new Chips(616), playerUtg2.Stake);
+
+        sidePot = new SidePot([
+            new KeyValuePair<Nickname, Chips>(playerUtg2.Nickname, new Chips(100)),
+            new KeyValuePair<Nickname, Chips>(playerUtg3.Nickname, new Chips(100)),
+            new KeyValuePair<Nickname, Chips>(playerEp.Nickname, new Chips(100)),
+            new KeyValuePair<Nickname, Chips>(playerMp.Nickname, new Chips(100)),
+            new KeyValuePair<Nickname, Chips>(playerCo.Nickname, new Chips(100)),
+            new KeyValuePair<Nickname, Chips>(playerBu.Nickname, new Chips(100)),
+        ]);
+        winPot = new SidePot([
+            new KeyValuePair<Nickname, Chips>(playerUtg2.Nickname, new Chips(600)),
+        ]);
+
+        pot.CommitWinAtShowdown([playerUtg2], sidePot, winPot);
+
+        Assert.Equal(new Chips(1400), pot.GetTotalAmount());
         Assert.Equal(new Chips(1216), playerUtg2.Stake);
+
+        sidePot = new SidePot([
+            new KeyValuePair<Nickname, Chips>(playerUtg3.Nickname, new Chips(100)),
+            new KeyValuePair<Nickname, Chips>(playerEp.Nickname, new Chips(100)),
+            new KeyValuePair<Nickname, Chips>(playerMp.Nickname, new Chips(100)),
+            new KeyValuePair<Nickname, Chips>(playerCo.Nickname, new Chips(100)),
+            new KeyValuePair<Nickname, Chips>(playerBu.Nickname, new Chips(100)),
+        ]);
+        winPot = new SidePot([
+            new KeyValuePair<Nickname, Chips>(playerUtg3.Nickname, new Chips(500)),
+        ]);
+
+        pot.CommitWinAtShowdown([playerUtg3], sidePot, winPot);
+
+        Assert.Equal(new Chips(900), pot.GetTotalAmount());
         Assert.Equal(new Chips(500), playerUtg3.Stake);
+
+        sidePot = new SidePot([
+            new KeyValuePair<Nickname, Chips>(playerEp.Nickname, new Chips(100)),
+            new KeyValuePair<Nickname, Chips>(playerMp.Nickname, new Chips(100)),
+            new KeyValuePair<Nickname, Chips>(playerCo.Nickname, new Chips(100)),
+            new KeyValuePair<Nickname, Chips>(playerBu.Nickname, new Chips(100)),
+        ]);
+        winPot = new SidePot([
+            new KeyValuePair<Nickname, Chips>(playerEp.Nickname, new Chips(400)),
+        ]);
+
+        pot.CommitWinAtShowdown([playerEp], sidePot, winPot);
+
+        Assert.Equal(new Chips(500), pot.GetTotalAmount());
         Assert.Equal(new Chips(400), playerEp.Stake);
+
+        sidePot = new SidePot([
+            new KeyValuePair<Nickname, Chips>(playerMp.Nickname, new Chips(100)),
+            new KeyValuePair<Nickname, Chips>(playerCo.Nickname, new Chips(100)),
+            new KeyValuePair<Nickname, Chips>(playerBu.Nickname, new Chips(100)),
+        ]);
+        winPot = new SidePot([
+            new KeyValuePair<Nickname, Chips>(playerMp.Nickname, new Chips(150)),
+            new KeyValuePair<Nickname, Chips>(playerCo.Nickname, new Chips(150)),
+        ]);
+
+        pot.CommitWinAtShowdown([playerMp, playerCo], sidePot, winPot);
+
+        Assert.Equal(new Chips(200), pot.GetTotalAmount());
         Assert.Equal(new Chips(150), playerMp.Stake);
+        Assert.Equal(new Chips(150), playerCo.Stake);
+
+        sidePot = new SidePot([
+            new KeyValuePair<Nickname, Chips>(playerCo.Nickname, new Chips(100)),
+            new KeyValuePair<Nickname, Chips>(playerBu.Nickname, new Chips(100)),
+        ]);
+        winPot = new SidePot([
+            new KeyValuePair<Nickname, Chips>(playerCo.Nickname, new Chips(200)),
+        ]);
+
+        pot.CommitWinAtShowdown([playerCo], sidePot, winPot);
+
+        Assert.Equal(new Chips(0), pot.GetTotalAmount());
         Assert.Equal(new Chips(350), playerCo.Stake);
-        Assert.Equal(new Chips(100), playerBu.Stake);
     }
 
     [Theory]
-    [InlineData(0, 249, "Player Button with combo OnePair [200] must win 250 chip(s)")]
-    [InlineData(0, 251, "Player Button with combo OnePair [200] must win 250 chip(s)")]
-    [InlineData(1, 249, "Player SmallBlind with combo HighCard [100] must win 0 chip(s)")]
-    public void TestCommitWinAtShowdownWithWrongAmounts(Chips amountSb, Chips amountBu, string expectedMessage)
+    [InlineData(249)]
+    [InlineData(251)]
+    public void TestCommitWinAtShowdownWithWrongAmount(Chips amount)
     {
         var playerSb = CreatePlayer(
             nickname: "SmallBlind",
@@ -1668,18 +1847,21 @@ public class NoLimitPotTest
         pot.CommitDecision(playerBu, new Decision(DecisionType.CallTo, new Chips(120)));
         pot.FinishStage();
 
-        var comboSb = new Combo(ComboType.HighCard, 100);
-        var comboBu = new Combo(ComboType.OnePair, 200);
+        var sidePot = new SidePot([
+            new KeyValuePair<Nickname, Chips>(playerSb.Nickname, new Chips(120)),
+            new KeyValuePair<Nickname, Chips>(playerBb.Nickname, new Chips(10)),
+            new KeyValuePair<Nickname, Chips>(playerBu.Nickname, new Chips(120)),
+        ]);
+        var winPot = new SidePot([
+            new KeyValuePair<Nickname, Chips>(playerBu.Nickname, amount),
+        ]);
 
         var exc = Assert.Throws<NotAvailableError>(() =>
         {
-            pot.CommitWinAtShowdown([
-                (playerSb, comboSb, amountSb),
-                (playerBu, comboBu, amountBu),
-            ]);
+            pot.CommitWinAtShowdown([playerBu], sidePot, winPot);
         });
 
-        Assert.Equal(expectedMessage, exc.Message);
+        Assert.Equal("The player(s) must win 250 chip(s)", exc.Message);
         Assert.Equal(new Chips(250), pot.GetTotalAmount());
     }
 

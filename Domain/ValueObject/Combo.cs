@@ -12,7 +12,7 @@ public enum ComboType
     StraightFlush,
 }
 
-public readonly struct Combo : IComparable<Combo>, IEquatable<Combo>
+public readonly struct Combo : IComparable<Combo>
 {
     public readonly ComboType Type;
     public readonly int Weight;
@@ -44,12 +44,6 @@ public readonly struct Combo : IComparable<Combo>, IEquatable<Combo>
     public int CompareTo(Combo other)
         => Weight.CompareTo(other.Weight);
 
-    public bool Equals(Combo other)
-        => Weight.Equals(other.Weight);
-
     public override string ToString()
         => $"{Type} [{Weight}]";
-
-    public override int GetHashCode()
-        => Weight.GetHashCode();
 }

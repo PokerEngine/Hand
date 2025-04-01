@@ -78,20 +78,21 @@ public abstract class BasePot
         ValidateWinWithoutShowdown(player, amount);
 
         _previousSidePot = new SidePot();
-        _currentSidePot = new SidePot();
-
         player.Win(amount);
     }
 
-    public void CommitWinAtShowdown(IList<(Player, Combo, Chips)> playerComboAmounts)
+    public void CommitWinAtShowdown(IList<Player> players, SidePot sidePot, SidePot winPot)
     {
-        ValidateWinAtShowdown(playerComboAmounts);
+        ValidateWinAtShowdown(players, sidePot, winPot);
 
-        _previousSidePot = new SidePot();
-        _currentSidePot = new SidePot();
-
-        foreach (var (player, _, amount) in playerComboAmounts)
+        foreach (var (nickname, amount) in sidePot)
         {
+            _previousSidePot = _previousSidePot.Sub(nickname, amount);
+        }
+
+        foreach (var player in players)
+        {
+            var amount = winPot.Get(player.Nickname);
             player.Win(amount);
         }
     }
@@ -153,116 +154,86 @@ public abstract class BasePot
         return postedAmount > amount ? postedAmount - amount : new Chips(0);
     }
 
-    public IList<(Player, Combo, Chips)> GetWinAtShowdownAmounts(IList<(Player, Combo)> playerCombos)
+    public SidePot GetWinPot(IList<Player> players, SidePot sidePot)
     {
-        var weightMapping = new Dictionary<int, List<(Player, Combo)>>();
-        var players = new List<Player>();
+        // More than 1 players means that they should split the pot
+        var quotient = sidePot.Amount / players.Count;
+        var remainder = sidePot.Amount % players.Count;
 
-        foreach (var (player, combo) in playerCombos)
+        var winPot = new SidePot();
+        var oneChip = new Chips(1);
+
+        foreach (var player in players.OrderBy(x => x.Stake))
         {
-            if (weightMapping.ContainsKey(combo.Weight))
+            winPot = winPot.Add(player.Nickname, quotient);
+
+            if (remainder)
             {
-                weightMapping[combo.Weight].Add((player, combo));
-            }
-            else
-            {
-                weightMapping[combo.Weight] = [(player, combo)];
-            }
-
-            players.Add(player);
-        }
-
-        var sidePots = GetSidePots(players);
-        var winMapping = playerCombos.ToDictionary(x => x, _ => new Chips(0));
-
-        foreach (var weight in weightMapping.Keys.OrderByDescending(x => x))
-        {
-            var groupPlayerCombos = weightMapping[weight].OrderBy(x => (x.Item1.Stake, x.Item1.Nickname)).ToList();
-            var groupNicknames = groupPlayerCombos.Select(x => x.Item1.Nickname).ToHashSet();
-
-            var i = 0;
-            while (i < sidePots.Count)
-            {
-                var commonNicknames = groupNicknames.Intersect(sidePots[i].Nicknames).ToHashSet();
-                if (commonNicknames.Count == 0)
-                {
-                    i++;
-                    continue;
-                }
-
-                var quotient = sidePots[i].Amount / commonNicknames.Count;
-                var remainder = sidePots[i].Amount % commonNicknames.Count;
-
-                foreach (var (player, combo) in groupPlayerCombos)
-                {
-                    if (!commonNicknames.Contains(player.Nickname))
-                    {
-                        continue;
-                    }
-
-                    var key = (player, combo);
-                    winMapping[key] += quotient;
-
-                    if (remainder)
-                    {
-                        // We give the remainder to the poorest player
-                        winMapping[key] += remainder;
-                        remainder = new Chips(0);
-                    }
-                }
-
-                sidePots.RemoveAt(i);
+                // We distribute the remainder among the players starting from the poorest one
+                winPot = winPot.Add(player.Nickname, oneChip);
+                remainder -= oneChip;
             }
         }
 
-        return winMapping.Select(x => (x.Key.Item1, x.Key.Item2, x.Value)).ToList();
+        return winPot;
     }
 
     public IList<SidePot> GetSidePots(IList<Player> players)
     {
-        var nicknames = players.Select(x => x.Nickname).ToHashSet();
+        return GetSidePots(players.Select(x => x.Nickname).ToList());
+    }
+
+    private IList<SidePot> GetSidePots(IEnumerable<Nickname> nicknames)
+    {
+        var remainingPot = _previousSidePot.Merge(_currentSidePot);
+        var sortedNicknames = nicknames.OrderBy(x => remainingPot.Get(x)).ThenBy(x => x).ToList();
+
+        var oneChip = new Chips(1);
         var sidePots = new List<SidePot>();
-        var totalPot = _previousSidePot.Merge(_currentSidePot);
 
-        while (totalPot.Amount)
+        while (sortedNicknames.Count > 0)
         {
-            var minAmount = totalPot.Amounts.Min();
+            var poorestNickname = sortedNicknames.First();
+            var poorestAmount = remainingPot.Get(poorestNickname);
+            if (!poorestAmount)
+            {
+                sortedNicknames.RemoveAt(0);
+                continue;
+            }
+
+            var sidePotAmount = new Chips(0);
+
+            foreach (var (nickname, amount) in remainingPot)
+            {
+                var minAmount = poorestAmount <= amount ? poorestAmount : amount;
+                remainingPot = remainingPot.Sub(nickname, minAmount);
+                sidePotAmount += minAmount;
+            }
+
+            var quotient = sidePotAmount / sortedNicknames.Count;
+            var remainder = sidePotAmount % sortedNicknames.Count;
+
             var sidePot = new SidePot();
-            foreach (var nickname in totalPot.Nicknames)
-            {
-                var deadAmount = totalPot.GetDead();
-                if (deadAmount)
-                {
-                    totalPot = totalPot.SubDead(deadAmount);
-                    sidePot = sidePot.AddDead(deadAmount);
-                }
 
-                totalPot = totalPot.Sub(nickname, minAmount);
-                if (nicknames.Contains(nickname))
+            foreach (var nickname in sortedNicknames)
+            {
+                sidePot = sidePot.Add(nickname, quotient);
+
+                if (remainder)
                 {
-                    sidePot = sidePot.Add(nickname, minAmount);
-                }
-                else
-                {
-                    sidePot = sidePot.AddDead(minAmount);
+                    // We distribute the remainder among the players starting from the poorest one
+                    sidePot = sidePot.Add(nickname, oneChip);
+                    remainder -= oneChip;
                 }
             }
 
-            if (sidePots.Count > 0 && sidePots[^1].Nicknames.ToHashSet() == sidePot.Nicknames.ToHashSet())
-            {
-                // If the previous side pot contains the same nicknames only, we merge it with the current one
-                sidePots[^1] = sidePots[^1].Merge(sidePot);
-            }
-            else
-            {
-                // Otherwise, it will be a new side pot
-                sidePots.Add(sidePot);                
-            }
+            sidePots.Add(sidePot);
+            sortedNicknames.RemoveAt(0);
         }
 
         return sidePots;
     }
-    
+
     public bool FoldIsAvailable(Player player)
     {
         try
@@ -549,35 +520,16 @@ public abstract class BasePot
         }
     }
 
-    private void ValidateWinAtShowdown(IList<(Player, Combo, Chips)> playerComboAmounts)
+    private void ValidateWinAtShowdown(IList<Player> players, SidePot sidePot, SidePot winPot)
     {
-        if (playerComboAmounts.Count <= 1)
+        var expectedWinPot = GetWinPot(players, sidePot);
+        if (expectedWinPot.Amount != winPot.Amount)
         {
-            throw new NotAvailableError("There must be at least two players to win at showdown");
+            throw new NotAvailableError($"The player(s) must win {expectedWinPot.Amount}");
         }
-
-        var playerCombos = playerComboAmounts.Select(x => (x.Item1, x.Item2)).ToList();
-        var expectedPlayerComboAmounts = GetWinAtShowdownAmounts(playerCombos);
-
-        var playerComboAmountSet = playerComboAmounts.ToHashSet();
-        var expectedPlayerComboAmountSet = expectedPlayerComboAmounts.ToHashSet();
-
-        if (playerComboAmountSet == expectedPlayerComboAmountSet)
+        if (!expectedWinPot.Equals(winPot))
         {
-            return;
-        }
-
-        var remainingPlayerComboAmounts = playerComboAmountSet.Except(expectedPlayerComboAmountSet);
-        var expectedRemainingPlayerComboAmounts = expectedPlayerComboAmountSet.Except(playerComboAmountSet);
-
-        foreach (var (player, combo, amount) in expectedRemainingPlayerComboAmounts)
-        {
-            throw new NotAvailableError($"Player {player.Nickname} with combo {combo} must win {amount}");
-        }
-
-        foreach (var (player, combo, _) in remainingPlayerComboAmounts)
-        {
-            throw new NotAvailableError($"Player {player.Nickname} with combo {combo} must not win");
+            throw new NotAvailableError($"The player(s) must win {expectedWinPot}");
         }
     }
 

@@ -36,7 +36,6 @@ public class ShowdownDealer : IDealer
                 evaluator: evaluator,
                 eventBus: eventBus
             );
-            
         }
         else
         {
@@ -53,7 +52,7 @@ public class ShowdownDealer : IDealer
 
     private IList<Player> GetPlayersForShowdown(BaseTable table)
     {
-        return table.Where(x => x.IsAvailableForShowdown).ToList();
+        return table.Where(x => !x.IsFolded).ToList();
     }
 
     private bool HasEnoughPlayersForShowdown(IList<Player> players)
@@ -91,7 +90,6 @@ public class ShowdownDealer : IDealer
     )
     {
         var amount = pot.GetTotalAmount();
-
         pot.CommitWinWithoutShowdown(player, amount);
 
         var showdownEvent = new HoleCardsAreMuckedEvent(
@@ -100,7 +98,7 @@ public class ShowdownDealer : IDealer
         );
         eventBus.Publish(showdownEvent);
 
-        var winEvent = new WinIsCommittedEvent(
+        var winEvent = new WinWithoutShowdownIsCommittedEvent(
             Nickname: player.Nickname,
             Amount: amount,
             OccuredAt: DateTime.Now
@@ -116,30 +114,36 @@ public class ShowdownDealer : IDealer
         EventBus eventBus
     )
     {
-        var playerCombos = players.Select(x => (x, evaluator.Evaluate(table.BoardCards, x.HoleCards))).ToList();
-        var playerComboAmounts = pot.GetWinAtShowdownAmounts(playerCombos);
+        var comboMapping = players.Select(x => (x.Nickname, evaluator.Evaluate(table.BoardCards, x.HoleCards))).ToDictionary();
 
-        pot.CommitWinAtShowdown(playerComboAmounts);
-
-        foreach (var (player, combo, amount) in playerComboAmounts)
+        foreach (var player in players)
         {
-            var showdownEvent = new HoleCardsAreShownEvent(
+            var showEvent = new HoleCardsAreShownEvent(
                 Nickname: player.Nickname,
                 Cards: player.HoleCards,
-                Combo: combo,
+                Combo: comboMapping[player.Nickname],
                 OccuredAt: DateTime.Now
             );
-            eventBus.Publish(showdownEvent);
+            eventBus.Publish(showEvent);
+        }
 
-            if (amount)
-            {
-                var winEvent = new WinIsCommittedEvent(
-                    Nickname: player.Nickname,
-                    Amount: amount,
-                    OccuredAt: DateTime.Now
-                );
-                eventBus.Publish(winEvent);
-            }
+        var sidePots = pot.GetSidePots(players);
+
+        foreach (var sidePot in sidePots)
+        {
+            // We compose a set of nicknames which have the strongest combo for each side pot
+            var winnerNicknames = sidePot.Nicknames.GroupBy(x => comboMapping[x].Weight).OrderByDescending(x => x.Key).First().ToHashSet();
+            var winnerPlayers = players.Where(x => winnerNicknames.Contains(x.Nickname)).ToList();
+
+            var winPot = pot.GetWinPot(winnerPlayers, sidePot);
+            pot.CommitWinAtShowdown(winnerPlayers, sidePot, winPot);
+
+            var winEvent = new WinAtShowdownIsCommittedEvent(
+                SidePot: sidePot,
+                WinPot: winPot,
+                OccuredAt: DateTime.Now
+            );
+            eventBus.Publish(winEvent);
         }
     }
 

@@ -8,13 +8,12 @@ namespace Domain.ValueObject;
 public readonly struct SidePot : IEnumerable<KeyValuePair<Nickname, Chips>>, IEquatable<SidePot>
 {
     private readonly ImmutableDictionary<Nickname, Chips> _mapping;
-    private readonly Chips _deadAmount;
 
     public Chips Amount
     {
         get
         {
-            var amount = _deadAmount;
+            var amount = new Chips(0);
 
             foreach (var value in _mapping.Values)
             {
@@ -43,13 +42,11 @@ public readonly struct SidePot : IEnumerable<KeyValuePair<Nickname, Chips>>, IEq
     public SidePot()
     {
         _mapping = ImmutableDictionary<Nickname, Chips>.Empty;
-        _deadAmount = new Chips(0);
     }
 
-    private SidePot(IDictionary<Nickname, Chips> mapping, Chips deadAmount)
+    public SidePot(IEnumerable<KeyValuePair<Nickname, Chips>> mapping)
     {
         _mapping = mapping.ToImmutableDictionary();
-        _deadAmount = deadAmount;
     }
 
     public Chips Get(Nickname nickname)
@@ -61,27 +58,13 @@ public readonly struct SidePot : IEnumerable<KeyValuePair<Nickname, Chips>>, IEq
         return amount;
     }
 
-    public Chips GetDead()
-    {
-        return _deadAmount;
-    }
-
     public SidePot Add(Nickname nickname, Chips amount)
     {
         if (!amount)
         {
             throw new NotAvailableError("Cannot add zero amount");
         }
-        return new SidePot(_mapping.SetItem(nickname, Get(nickname) + amount), _deadAmount);
-    }
-
-    public SidePot AddDead(Chips amount)
-    {
-        if (!amount)
-        {
-            throw new NotAvailableError("Cannot add zero amount");
-        }
-        return new SidePot(_mapping, _deadAmount + amount);
+        return new SidePot(_mapping.SetItem(nickname, Get(nickname) + amount));
     }
 
     public SidePot Sub(Nickname nickname, Chips amount)
@@ -98,24 +81,9 @@ public readonly struct SidePot : IEnumerable<KeyValuePair<Nickname, Chips>>, IEq
 
         if (amount == Get(nickname))
         {
-            return new SidePot(_mapping.Remove(nickname), _deadAmount);
+            return new SidePot(_mapping.Remove(nickname));
         }
-        return new SidePot(_mapping.SetItem(nickname, Get(nickname) - amount), _deadAmount);
-    }
-
-    public SidePot SubDead(Chips amount)
-    {
-        if (!amount)
-        {
-            throw new NotAvailableError("Cannot sub zero amount");
-        }
-
-        if (amount > _deadAmount)
-        {
-            throw new NotAvailableError("Cannot sub more amount than added");
-        }
-
-        return new SidePot(_mapping, _deadAmount - amount);
+        return new SidePot(_mapping.SetItem(nickname, Get(nickname) - amount));
     }
 
     public SidePot Merge(SidePot other)
@@ -130,7 +98,7 @@ public readonly struct SidePot : IEnumerable<KeyValuePair<Nickname, Chips>>, IEq
             }
         }
 
-        return new SidePot(mapping.ToImmutableDictionary(), other._deadAmount);
+        return new SidePot(mapping.ToImmutableDictionary());
     }
 
     public IEnumerator<KeyValuePair<Nickname, Chips>> GetEnumerator()
@@ -144,14 +112,8 @@ public readonly struct SidePot : IEnumerable<KeyValuePair<Nickname, Chips>>, IEq
     IEnumerator IEnumerable.GetEnumerator()
         => GetEnumerator();
 
-    public static bool operator ==(SidePot a, SidePot b)
-        => a._mapping == b._mapping && a._deadAmount == b._deadAmount;
-
-    public static bool operator !=(SidePot a, SidePot b)
-        => a._mapping != b._mapping || a._deadAmount != b._deadAmount;
-
     public bool Equals(SidePot other)
-        => _mapping.Equals(other._mapping) && _deadAmount.Equals(other._deadAmount);
+        => _mapping.Count == other._mapping.Count && !_mapping.Except(other._mapping).Any();
 
     public override string ToString()
     {
@@ -165,7 +127,4 @@ public readonly struct SidePot : IEnumerable<KeyValuePair<Nickname, Chips>>, IEq
 
         return $"{Amount}, {{{String.Join(", ", items)}}}";
     }
-
-    public override int GetHashCode()
-        => (_mapping.GetHashCode(), _deadAmount.GetHashCode()).GetHashCode();
 }

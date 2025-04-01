@@ -57,6 +57,9 @@ public class HoldemNoLimit6MaxHandTest
 
         Assert.Equal(handUid, hand.Uid);
         Assert.Equal(Game.HoldemNoLimit6Max, hand.Game);
+        Assert.IsType<SixMaxTable>(hand.Table);
+        Assert.IsType<NoLimitPot>(hand.Pot);
+        Assert.IsType<StandardDeck>(hand.Deck);
 
         Assert.Single(events);
         Assert.Equal(Game.HoldemNoLimit6Max, events[0].Game);
@@ -69,6 +72,281 @@ public class HoldemNoLimit6MaxHandTest
         Assert.Equal(participantMp, events[0].Participants[3]);
         Assert.Equal(participantCo, events[0].Participants[4]);
         Assert.Equal(participantBu, events[0].Participants[5]);
+    }
+
+    [Fact]
+    public void TestFromEvents()
+    {
+        var handUid = new HandUid(Guid.NewGuid());
+        var participantSb = new Participant(
+            nickname: new Nickname("SmallBlind"),
+            position: Position.SmallBlind,
+            stake: new Chips(1000)
+        );
+        var participantBb = new Participant(
+            nickname: new Nickname("BigBlind"),
+            position: Position.BigBlind,
+            stake: new Chips(900)
+        );
+        var participantBu = new Participant(
+            nickname: new Nickname("Button"),
+            position: Position.Button,
+            stake: new Chips(800)
+        );
+
+        var events = new List<IEvent>
+        {
+            new HandIsCreatedEvent(
+                Game: Game.HoldemNoLimit6Max,
+                SmallBlind: new Chips(5),
+                BigBlind: new Chips(10),
+                Participants: [participantSb, participantBb, participantBu],
+                OccuredAt: new DateTime(2025, 1, 1)
+            ),
+            new PlayerConnectedEvent(
+                Nickname: participantSb.Nickname,
+                OccuredAt: new DateTime(2025, 1, 1)
+            ),
+            new PlayerConnectedEvent(
+                Nickname: participantBb.Nickname,
+                OccuredAt: new DateTime(2025, 1, 1)
+            ),
+            new PlayerConnectedEvent(
+                Nickname: participantBu.Nickname,
+                OccuredAt: new DateTime(2025, 1, 1)
+            ),
+            new HandIsStartedEvent(
+                OccuredAt: new DateTime(2025, 1, 1)
+            ),
+            new StageIsStartedEvent(
+                OccuredAt: new DateTime(2025, 1, 1)
+            ),
+            new SmallBlindIsPostedEvent(
+                Nickname: participantSb.Nickname,
+                Amount: new Chips(5),
+                OccuredAt: new DateTime(2025, 1, 1)
+            ),
+            new BigBlindIsPostedEvent(
+                Nickname: participantBb.Nickname,
+                Amount: new Chips(10),
+                OccuredAt: new DateTime(2025, 1, 1)
+            ),
+            new StageIsFinishedEvent(
+                OccuredAt: new DateTime(2025, 1, 1)
+            ),
+            new StageIsStartedEvent(
+                OccuredAt: new DateTime(2025, 1, 1)
+            ),
+            new HoleCardsAreDealtEvent(
+                Nickname: participantSb.Nickname,
+                Cards: new CardSet([Card.TreyOfClubs, Card.NineOfClubs]),
+                OccuredAt: new DateTime(2025, 1, 1)
+            ),
+            new HoleCardsAreDealtEvent(
+                Nickname: participantBb.Nickname,
+                Cards: new CardSet([Card.QueenOfClubs, Card.TenOfDiamonds]),
+                OccuredAt: new DateTime(2025, 1, 1)
+            ),
+            new HoleCardsAreDealtEvent(
+                Nickname: participantBu.Nickname,
+                Cards: new CardSet([Card.SevenOfSpades, Card.EightOfSpades]),
+                OccuredAt: new DateTime(2025, 1, 1)
+            ),
+            new StageIsFinishedEvent(
+                OccuredAt: new DateTime(2025, 1, 1)
+            ),
+            new StageIsStartedEvent(
+                OccuredAt: new DateTime(2025, 1, 1)
+            ),
+            new DecisionIsRequestedEvent(
+                Nickname: participantBu.Nickname,
+                FoldIsAvailable: true,
+                CheckIsAvailable: false,
+                CallIsAvailable: true,
+                CallToAmount: new Chips(10),
+                RaiseIsAvailable: true,
+                MinRaiseToAmount: new Chips(20),
+                MaxRaiseToAmount: new Chips(800),
+                OccuredAt: new DateTime(2025, 1, 1)
+            ),
+            new DecisionIsCommittedEvent(
+                Nickname: participantBu.Nickname,
+                Decision: new Decision(DecisionType.RaiseTo, new Chips(25)),
+                OccuredAt: new DateTime(2025, 1, 1)
+            ),
+            new DecisionIsRequestedEvent(
+                Nickname: participantSb.Nickname,
+                FoldIsAvailable: true,
+                CheckIsAvailable: false,
+                CallIsAvailable: true,
+                CallToAmount: new Chips(25),
+                RaiseIsAvailable: true,
+                MinRaiseToAmount: new Chips(40),
+                MaxRaiseToAmount: new Chips(1000),
+                OccuredAt: new DateTime(2025, 1, 1)
+            ),
+            new DecisionIsCommittedEvent(
+                Nickname: participantSb.Nickname,
+                Decision: new Decision(DecisionType.Fold, new Chips(0)),
+                OccuredAt: new DateTime(2025, 1, 1)
+            ),
+            new DecisionIsRequestedEvent(
+                Nickname: participantBb.Nickname,
+                FoldIsAvailable: true,
+                CheckIsAvailable: false,
+                CallIsAvailable: true,
+                CallToAmount: new Chips(25),
+                RaiseIsAvailable: true,
+                MinRaiseToAmount: new Chips(40),
+                MaxRaiseToAmount: new Chips(900),
+                OccuredAt: new DateTime(2025, 1, 1)
+            ),
+            new DecisionIsCommittedEvent(
+                Nickname: participantBb.Nickname,
+                Decision: new Decision(DecisionType.CallTo, new Chips(25)),
+                OccuredAt: new DateTime(2025, 1, 1)
+            ),
+            new StageIsFinishedEvent(
+                OccuredAt: new DateTime(2025, 1, 1)
+            ),
+            new StageIsStartedEvent(
+                OccuredAt: new DateTime(2025, 1, 1)
+            ),
+            new BoardCardsAreDealtEvent(
+                Cards: new CardSet([Card.AceOfSpades, Card.SevenOfClubs, Card.DeuceOfDiamonds]),
+                OccuredAt: new DateTime(2025, 1, 1)
+            ),
+            new StageIsFinishedEvent(
+                OccuredAt: new DateTime(2025, 1, 1)
+            ),
+            new StageIsStartedEvent(
+                OccuredAt: new DateTime(2025, 1, 1)
+            ),
+            new DecisionIsRequestedEvent(
+                Nickname: participantBb.Nickname,
+                FoldIsAvailable: false,
+                CheckIsAvailable: true,
+                CallIsAvailable: false,
+                CallToAmount: new Chips(0),
+                RaiseIsAvailable: true,
+                MinRaiseToAmount: new Chips(10),
+                MaxRaiseToAmount: new Chips(875),
+                OccuredAt: new DateTime(2025, 1, 1)
+            ),
+            new DecisionIsCommittedEvent(
+                Nickname: participantBb.Nickname,
+                Decision: new Decision(DecisionType.Check, new Chips(0)),
+                OccuredAt: new DateTime(2025, 1, 1)
+            ),
+            new DecisionIsRequestedEvent(
+                Nickname: participantBu.Nickname,
+                FoldIsAvailable: false,
+                CheckIsAvailable: true,
+                CallIsAvailable: false,
+                CallToAmount: new Chips(0),
+                RaiseIsAvailable: true,
+                MinRaiseToAmount: new Chips(10),
+                MaxRaiseToAmount: new Chips(775),
+                OccuredAt: new DateTime(2025, 1, 1)
+            ),
+            new DecisionIsCommittedEvent(
+                Nickname: participantBu.Nickname,
+                Decision: new Decision(DecisionType.RaiseTo, new Chips(15)),
+                OccuredAt: new DateTime(2025, 1, 1)
+            ),
+            new DecisionIsRequestedEvent(
+                Nickname: participantBb.Nickname,
+                FoldIsAvailable: true,
+                CheckIsAvailable: false,
+                CallIsAvailable: true,
+                CallToAmount: new Chips(15),
+                RaiseIsAvailable: true,
+                MinRaiseToAmount: new Chips(30),
+                MaxRaiseToAmount: new Chips(875),
+                OccuredAt: new DateTime(2025, 1, 1)
+            ),
+            new DecisionIsCommittedEvent(
+                Nickname: participantBb.Nickname,
+                Decision: new Decision(DecisionType.Fold, new Chips(0)),
+                OccuredAt: new DateTime(2025, 1, 1)
+            ),
+            new StageIsFinishedEvent(
+                OccuredAt: new DateTime(2025, 1, 1)
+            ),
+            new StageIsStartedEvent(
+                OccuredAt: new DateTime(2025, 1, 1)
+            ),
+            new StageIsFinishedEvent(
+                OccuredAt: new DateTime(2025, 1, 1)
+            ),
+            new StageIsStartedEvent(
+                OccuredAt: new DateTime(2025, 1, 1)
+            ),
+            new StageIsFinishedEvent(
+                OccuredAt: new DateTime(2025, 1, 1)
+            ),
+            new StageIsStartedEvent(
+                OccuredAt: new DateTime(2025, 1, 1)
+            ),
+            new StageIsFinishedEvent(
+                OccuredAt: new DateTime(2025, 1, 1)
+            ),
+            new StageIsStartedEvent(
+                OccuredAt: new DateTime(2025, 1, 1)
+            ),
+            new StageIsFinishedEvent(
+                OccuredAt: new DateTime(2025, 1, 1)
+            ),
+            new StageIsStartedEvent(
+                OccuredAt: new DateTime(2025, 1, 1)
+            ),
+            new RefundIsCommittedEvent(
+                Nickname: participantBu.Nickname,
+                Amount: new Chips(15),
+                OccuredAt: new DateTime(2025, 1, 1)
+            ),
+            new HoleCardsAreMuckedEvent(
+                Nickname: participantBu.Nickname,
+                OccuredAt: new DateTime(2025, 1, 1)
+            ),
+            new WinWithoutShowdownIsCommittedEvent(
+                Nickname: participantBu.Nickname,
+                Amount: new Chips(55),
+                OccuredAt: new DateTime(2025, 1, 1)
+            ),
+            new StageIsFinishedEvent(
+                OccuredAt: new DateTime(2025, 1, 1)
+            ),
+            new HandIsFinishedEvent(
+                OccuredAt: new DateTime(2025, 1, 1)
+            ),
+        };
+
+        var hand = Hand.FromEvents(uid: handUid, events: events);
+
+        Assert.Equal(handUid, hand.Uid);
+        Assert.Equal(Game.HoldemNoLimit6Max, hand.Game);
+        Assert.IsType<SixMaxTable>(hand.Table);
+        Assert.IsType<NoLimitPot>(hand.Pot);
+        Assert.IsType<StandardDeck>(hand.Deck);
+
+        Assert.Equal(new CardSet([Card.AceOfSpades, Card.SevenOfClubs, Card.DeuceOfDiamonds]), hand.Table.BoardCards);
+
+        var playerSb = hand.Table.GetPlayerByNickname(participantSb.Nickname);
+        var playerBb = hand.Table.GetPlayerByNickname(participantBb.Nickname);
+        var playerBu = hand.Table.GetPlayerByNickname(participantBu.Nickname);
+
+        Assert.Equal(new CardSet([Card.TreyOfClubs, Card.NineOfClubs]), playerSb.HoleCards);
+        Assert.Equal(new Chips(995), playerSb.Stake);
+        Assert.True(playerSb.IsFolded);
+
+        Assert.Equal(new CardSet([Card.QueenOfClubs, Card.TenOfDiamonds]), playerBb.HoleCards);
+        Assert.Equal(new Chips(875), playerBb.Stake);
+        Assert.True(playerBb.IsFolded);
+
+        Assert.Equal(new CardSet([Card.SevenOfSpades, Card.EightOfSpades]), playerBu.HoleCards);
+        Assert.Equal(new Chips(830), playerBu.Stake);
+        Assert.False(playerBu.IsFolded);
     }
 
     [Fact]
@@ -340,6 +618,9 @@ public class HoldemNoLimit9MaxHandTest
 
         Assert.Equal(handUid, hand.Uid);
         Assert.Equal(Game.HoldemNoLimit9Max, hand.Game);
+        Assert.IsType<NineMaxTable>(hand.Table);
+        Assert.IsType<NoLimitPot>(hand.Pot);
+        Assert.IsType<StandardDeck>(hand.Deck);
 
         Assert.Single(events);
         Assert.Equal(Game.HoldemNoLimit9Max, events[0].Game);
@@ -411,6 +692,9 @@ public class OmahaPotLimit6MaxHandTest
 
         Assert.Equal(handUid, hand.Uid);
         Assert.Equal(Game.OmahaPotLimit6Max, hand.Game);
+        Assert.IsType<SixMaxTable>(hand.Table);
+        Assert.IsType<PotLimitPot>(hand.Pot);
+        Assert.IsType<StandardDeck>(hand.Deck);
 
         Assert.Single(events);
         Assert.Equal(Game.OmahaPotLimit6Max, events[0].Game);
@@ -494,6 +778,9 @@ public class OmahaPotLimit9MaxHandTest
 
         Assert.Equal(handUid, hand.Uid);
         Assert.Equal(Game.OmahaPotLimit9Max, hand.Game);
+        Assert.IsType<NineMaxTable>(hand.Table);
+        Assert.IsType<PotLimitPot>(hand.Pot);
+        Assert.IsType<StandardDeck>(hand.Deck);
 
         Assert.Single(events);
         Assert.Equal(Game.OmahaPotLimit9Max, events[0].Game);

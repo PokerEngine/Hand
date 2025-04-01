@@ -17,21 +17,6 @@ public class Player : IEquatable<Player>
         get => !Stake;
     }
 
-    public bool IsAvailableForDealing
-    {
-        get => !IsFolded;
-    }
-
-    public bool IsAvailableForTrading
-    {
-        get => !IsFolded && !IsAllIn;
-    }
-
-    public bool IsAvailableForShowdown
-    {
-        get => !IsFolded;
-    }
-
     public Player(Nickname nickname, Position position, Chips stake)
     {
         Nickname = nickname;

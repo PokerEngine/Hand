@@ -41,7 +41,7 @@ public class BoardCardsDealingDealer : IDealer
 
     private bool HasEnoughPlayersForDealing(BaseTable table)
     {
-        return table.Count(x => x.IsAvailableForDealing) > 1;
+        return table.Count(x => !x.IsFolded) > 1;
     }
 
     private void DealBoardCards(
@@ -58,6 +58,28 @@ public class BoardCardsDealingDealer : IDealer
             OccuredAt: DateTime.Now
         );
         eventBus.Publish(@event);
+    }
+
+    public void Handle(
+        IEvent @event,
+        BaseTable table,
+        BasePot pot,
+        BaseDeck deck,
+        IEvaluator evaluator
+    )
+    {
+        switch (@event)
+        {
+            case BoardCardsAreDealtEvent e:
+                table.TakeBoardCards(deck.ExtractCertainCards(e.Cards));
+                break;
+            case StageIsStartedEvent:
+                break;
+            case StageIsFinishedEvent:
+                break;
+            default:
+                throw new NotAvailableError($"The event {@event} is not supported");
+        }
     }
 
     public void CommitDecision(

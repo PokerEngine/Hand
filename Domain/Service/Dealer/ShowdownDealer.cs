@@ -147,6 +147,39 @@ public class ShowdownDealer : IDealer
         }
     }
 
+    public void Handle(
+        IEvent @event,
+        BaseTable table,
+        BasePot pot,
+        BaseDeck deck,
+        IEvaluator evaluator
+    )
+    {
+        switch (@event)
+        {
+            case RefundIsCommittedEvent e:
+                pot.CommitRefund(table.GetPlayerByNickname(e.Nickname), e.Amount);
+                break;
+            case HoleCardsAreMuckedEvent:
+                break;
+            case HoleCardsAreShownEvent:
+                break;
+            case WinWithoutShowdownIsCommittedEvent e:
+                pot.CommitWinWithoutShowdown(table.GetPlayerByNickname(e.Nickname), e.Amount);
+                break;
+            case WinAtShowdownIsCommittedEvent e:
+                var players = e.WinPot.Nicknames.Select(x => table.GetPlayerByNickname(x)).ToList();
+                pot.CommitWinAtShowdown(players, e.SidePot, e.WinPot);
+                break;
+            case StageIsStartedEvent:
+                break;
+            case StageIsFinishedEvent:
+                break;
+            default:
+                throw new NotAvailableError($"The event {@event} is not supported");
+        }
+    }
+
     public void CommitDecision(
         Nickname nickname,
         Decision decision,

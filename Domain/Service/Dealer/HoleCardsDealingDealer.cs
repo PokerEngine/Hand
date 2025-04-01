@@ -45,7 +45,7 @@ public class HoleCardsDealingDealer : IDealer
 
     private IList<Player> GetPlayersForDealing(BaseTable table)
     {
-        return table.Where(x => x.IsAvailableForDealing).ToList();
+        return table.Where(x => !x.IsFolded).ToList();
     }
 
     private bool HasEnoughPlayersForDealing(IList<Player> players)
@@ -68,6 +68,28 @@ public class HoleCardsDealingDealer : IDealer
             OccuredAt: DateTime.Now
         );
         eventBus.Publish(@event);
+    }
+
+    public void Handle(
+        IEvent @event,
+        BaseTable table,
+        BasePot pot,
+        BaseDeck deck,
+        IEvaluator evaluator
+    )
+    {
+        switch (@event)
+        {
+            case HoleCardsAreDealtEvent e:
+                table.GetPlayerByNickname(e.Nickname).TakeHoleCards(deck.ExtractCertainCards(e.Cards));
+                break;
+            case StageIsStartedEvent:
+                break;
+            case StageIsFinishedEvent:
+                break;
+            default:
+                throw new NotAvailableError($"The event {@event} is not supported");
+        }
     }
 
     public void CommitDecision(

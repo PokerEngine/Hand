@@ -82,6 +82,31 @@ public class BlindPostingDealer : IDealer
         eventBus.Publish(@event);
     }
 
+    public void Handle(
+        IEvent @event,
+        BaseTable table,
+        BasePot pot,
+        BaseDeck deck,
+        IEvaluator evaluator
+    )
+    {
+        switch (@event)
+        {
+            case SmallBlindIsPostedEvent e:
+                pot.PostSmallBlind(table.GetPlayerByNickname(e.Nickname), e.Amount);
+                break;
+            case BigBlindIsPostedEvent e:
+                pot.PostBigBlind(table.GetPlayerByNickname(e.Nickname), e.Amount);
+                break;
+            case StageIsStartedEvent:
+                break;
+            case StageIsFinishedEvent:
+                break;
+            default:
+                throw new NotAvailableError($"The event {@event} is not supported");
+        }
+    }
+
     public void CommitDecision(
         Nickname nickname,
         Decision decision,

@@ -15,6 +15,14 @@ public interface IDealer
         EventBus eventBus
     );
 
+    public void Handle(
+        IEvent @event,
+        BaseTable table,
+        BasePot pot,
+        BaseDeck deck,
+        IEvaluator evaluator
+    );
+
     public void CommitDecision(
         Nickname nickname,
         Decision decision,

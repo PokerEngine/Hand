@@ -36,6 +36,31 @@ public class TradingDealer : IDealer
         }
     }
 
+    public void Handle(
+        IEvent @event,
+        BaseTable table,
+        BasePot pot,
+        BaseDeck deck,
+        IEvaluator evaluator
+    )
+    {
+        switch (@event)
+        {
+            case DecisionIsRequestedEvent:
+                break;
+            case DecisionIsCommittedEvent e:
+                pot.CommitDecision(table.GetPlayerByNickname(e.Nickname), e.Decision);
+                break;
+            case StageIsStartedEvent:
+                break;
+            case StageIsFinishedEvent:
+                pot.FinishStage();
+                break;
+            default:
+                throw new NotAvailableError($"The event {@event} is not supported");
+        }
+    }
+
     public void CommitDecision(
         Nickname nickname,
         Decision decision,
@@ -78,7 +103,7 @@ public class TradingDealer : IDealer
 
     private IList<Player> GetPlayersForTrading(BaseTable table)
     {
-        return table.Where(x => x.IsAvailableForTrading).ToList();
+        return table.Where(x => !x.IsFolded && !x.IsAllIn).ToList();
     }
 
     private Player? GetPreviousPlayer(BaseTable table, BasePot pot)
@@ -113,13 +138,7 @@ public class TradingDealer : IDealer
                 nextIdx = 0;
             }
 
-            var nextPlayer = players[nextIdx];
-            if (nextPlayer.IsAvailableForTrading)
-            {
-                return nextPlayer;
-            }
-
-            nextIdx ++;
+            return players[nextIdx];
         }
 
         return null;

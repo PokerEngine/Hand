@@ -1,4 +1,6 @@
+using System.Collections.Immutable;
 using Domain.Entity.Factory;
+using Domain.Error;
 using Domain.Event;
 using Domain.Service.Dealer;
 using Domain.Service.Evaluator;
@@ -10,13 +12,14 @@ public class Hand
 {
     public readonly HandUid Uid;
     public readonly Game Game;
-    private BaseTable _table;
-    private BasePot _pot;
-    private BaseDeck _deck;
-    private IEvaluator _evaluator;
-    private IList<IDealer> _dealers;
+    public readonly BaseTable Table;
+    public readonly BasePot Pot;
+    public readonly BaseDeck Deck;
+    private readonly IEvaluator _evaluator;
+    private readonly ImmutableList<IDealer> _dealers;
+
     private int _dealerIdx;
-    private IDealer _dealer => _dealers[_dealerIdx];
+    private IDealer Dealer => _dealers[_dealerIdx];
 
     private Hand(
         HandUid uid,
@@ -25,16 +28,16 @@ public class Hand
         BasePot pot,
         BaseDeck deck,
         IEvaluator evaluator,
-        IList<IDealer> dealers
+        IEnumerable<IDealer> dealers
     )
     {
         Uid = uid;
         Game = game;
-        _table = table;
-        _pot = pot;
-        _deck = deck;
+        Table = table;
+        Pot = pot;
+        Deck = deck;
         _evaluator = evaluator;
-        _dealers = dealers;
+        _dealers = dealers.ToImmutableList();
         _dealerIdx = 0;
     }
 
@@ -70,9 +73,60 @@ public class Hand
         return hand;
     }
 
+    public static Hand FromEvents(HandUid uid, IList<IEvent> events)
+    {
+        if (events.Count == 0 || events[0] is not HandIsCreatedEvent)
+        {
+            throw new NotAvailableError("The first event must be a HandIsCreatedEvent");
+        }
+
+        var eventBus = new EventBus();
+
+        var createdEvent = (HandIsCreatedEvent)events[0];
+        var hand = FromScratch(
+            uid: uid,
+            game: createdEvent.Game,
+            smallBlind: createdEvent.SmallBlind,
+            bigBlind: createdEvent.BigBlind,
+            participants: createdEvent.Participants,
+            eventBus: eventBus
+        );
+
+        foreach (var @event in events)
+        {
+            switch (@event)
+            {
+                case HandIsCreatedEvent:
+                    break;
+                case HandIsStartedEvent:
+                    break;
+                case HandIsFinishedEvent:
+                    break;
+                case PlayerConnectedEvent e:
+                    hand.Connect(e.Nickname, eventBus);
+                    break;
+                case PlayerDisconnectedEvent e:
+                    hand.Disconnect(e.Nickname, eventBus);
+                    break;
+                default:
+                    hand.Dealer.Handle(
+                        @event: @event,
+                        table: hand.Table,
+                        pot: hand.Pot,
+                        deck: hand.Deck,
+                        evaluator: hand._evaluator
+                    );
+                    if (@event is StageIsFinishedEvent && hand._dealerIdx < hand._dealers.Count - 1) hand._dealerIdx++;
+                    break;
+            }
+        }
+
+        return hand;
+    }
+
     public void Connect(Nickname nickname, EventBus eventBus)
     {
-        var player = _table.GetPlayerByNickname(nickname);
+        var player = Table.GetPlayerByNickname(nickname);
         player.Connect();
 
         var @event = new PlayerConnectedEvent(Nickname: nickname, OccuredAt: DateTime.Now);
@@ -81,7 +135,7 @@ public class Hand
 
     public void Disconnect(Nickname nickname, EventBus eventBus)
     {
-        var player = _table.GetPlayerByNickname(nickname);
+        var player = Table.GetPlayerByNickname(nickname);
         player.Disconnect();
 
         var @event = new PlayerDisconnectedEvent(Nickname: nickname, OccuredAt: DateTime.Now);
@@ -96,10 +150,10 @@ public class Hand
         var listener = (StageIsFinishedEvent e) => StartNextDealerOrFinish(eventBus);
         eventBus.Subscribe(listener);
 
-        _dealer.Start(
-            table: _table,
-            pot: _pot,
-            deck: _deck,
+        Dealer.Start(
+            table: Table,
+            pot: Pot,
+            deck: Deck,
             evaluator: _evaluator,
             eventBus: eventBus
         );
@@ -112,12 +166,12 @@ public class Hand
         var listener = (StageIsFinishedEvent e) => StartNextDealerOrFinish(eventBus);
         eventBus.Subscribe(listener);
 
-        _dealer.CommitDecision(
+        Dealer.CommitDecision(
             nickname: nickname,
             decision: decision,
-            table: _table,
-            pot: _pot,
-            deck: _deck,
+            table: Table,
+            pot: Pot,
+            deck: Deck,
             evaluator: _evaluator,
             eventBus: eventBus
         );
@@ -135,10 +189,10 @@ public class Hand
         else
         {
             _dealerIdx++;
-            _dealer.Start(
-                table: _table,
-                pot: _pot,
-                deck: _deck,
+            Dealer.Start(
+                table: Table,
+                pot: Pot,
+                deck: Deck,
                 evaluator: _evaluator,
                 eventBus: eventBus
             );

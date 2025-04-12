@@ -8,7 +8,7 @@ public class HoldemNoLimit6MaxFactory : IFactory
 {
     public virtual BaseTable GetTable(IEnumerable<Participant> participants)
     {
-        var players = participants.Select(x => GetPlayer(x));
+        var players = participants.Select(GetPlayer);
         return new SixMaxTable(players);
     }
 

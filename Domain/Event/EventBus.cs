@@ -2,7 +2,14 @@ using Domain.Error;
 
 namespace Domain.Event;
 
-public class EventBus
+public interface IEventBus
+{
+    public void Subscribe<T>(Action<T> listener) where T : IEvent;
+    public void Unsubscribe<T>(Action<T> listener) where T : IEvent;
+    public void Publish<T>(T @event) where T : IEvent;
+}
+
+public class EventBus : IEventBus
 {
     private List<Delegate> Listeners = [];
 

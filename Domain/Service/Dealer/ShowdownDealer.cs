@@ -13,7 +13,7 @@ public class ShowdownDealer : IDealer
         BasePot pot,
         BaseDeck deck,
         IEvaluator evaluator,
-        EventBus eventBus
+        IEventBus eventBus
     )
     {
         var startEvent = new StageIsStartedEvent(OccuredAt: DateTime.Now);
@@ -63,7 +63,7 @@ public class ShowdownDealer : IDealer
     private void Refund(
         IList<Player> players,
         BasePot pot,
-        EventBus eventBus
+        IEventBus eventBus
     )
     {
         foreach (var player in players)
@@ -86,7 +86,7 @@ public class ShowdownDealer : IDealer
     private void WinWithoutShowdown(
         Player player,
         BasePot pot,
-        EventBus eventBus
+        IEventBus eventBus
     )
     {
         var amount = pot.GetTotalAmount();
@@ -111,7 +111,7 @@ public class ShowdownDealer : IDealer
         BaseTable table,
         BasePot pot,
         IEvaluator evaluator,
-        EventBus eventBus
+        IEventBus eventBus
     )
     {
         var comboMapping = players.Select(x => (x.Nickname, evaluator.Evaluate(table.BoardCards, x.HoleCards))).ToDictionary();
@@ -168,7 +168,7 @@ public class ShowdownDealer : IDealer
                 pot.CommitWinWithoutShowdown(table.GetPlayerByNickname(e.Nickname), e.Amount);
                 break;
             case WinAtShowdownIsCommittedEvent e:
-                var players = e.WinPot.Nicknames.Select(x => table.GetPlayerByNickname(x)).ToList();
+                var players = e.WinPot.Nicknames.Select(table.GetPlayerByNickname).ToList();
                 pot.CommitWinAtShowdown(players, e.SidePot, e.WinPot);
                 break;
             case StageIsStartedEvent:
@@ -187,7 +187,7 @@ public class ShowdownDealer : IDealer
         BasePot pot,
         BaseDeck deck,
         IEvaluator evaluator,
-        EventBus eventBus
+        IEventBus eventBus
     )
     {
         throw new NotAvailableError("The player cannot commit a decision during this stage");

@@ -12,7 +12,7 @@ public interface IDealer
         BasePot pot,
         BaseDeck deck,
         IEvaluator evaluator,
-        EventBus eventBus
+        IEventBus eventBus
     );
 
     public void Handle(
@@ -30,6 +30,6 @@ public interface IDealer
         BasePot pot,
         BaseDeck deck,
         IEvaluator evaluator,
-        EventBus eventBus
+        IEventBus eventBus
     );
 }

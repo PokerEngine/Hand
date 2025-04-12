@@ -20,7 +20,7 @@ public class HoleCardsDealingDealer : IDealer
         BasePot pot,
         BaseDeck deck,
         IEvaluator evaluator,
-        EventBus eventBus
+        IEventBus eventBus
     )
     {
         var startEvent = new StageIsStartedEvent(OccuredAt: DateTime.Now);
@@ -56,7 +56,7 @@ public class HoleCardsDealingDealer : IDealer
     private void DealHoleCards(
         Player player,
         BaseDeck deck,
-        EventBus eventBus
+        IEventBus eventBus
     )
     {
         var cards = deck.ExtractRandomCards(_count);
@@ -99,7 +99,7 @@ public class HoleCardsDealingDealer : IDealer
         BasePot pot,
         BaseDeck deck,
         IEvaluator evaluator,
-        EventBus eventBus
+        IEventBus eventBus
     )
     {
         throw new NotAvailableError("The player cannot commit a decision during this stage");

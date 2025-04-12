@@ -47,7 +47,7 @@ public class Hand
         Chips smallBlind,
         Chips bigBlind,
         List<Participant> participants,
-        EventBus eventBus
+        IEventBus eventBus
     )
     {
         var factory = FactoryRegistry.GetFactory(game);
@@ -124,7 +124,7 @@ public class Hand
         return hand;
     }
 
-    public void Connect(Nickname nickname, EventBus eventBus)
+    public void Connect(Nickname nickname, IEventBus eventBus)
     {
         var player = Table.GetPlayerByNickname(nickname);
         player.Connect();
@@ -133,7 +133,7 @@ public class Hand
         eventBus.Publish(@event);
     }
 
-    public void Disconnect(Nickname nickname, EventBus eventBus)
+    public void Disconnect(Nickname nickname, IEventBus eventBus)
     {
         var player = Table.GetPlayerByNickname(nickname);
         player.Disconnect();
@@ -142,7 +142,7 @@ public class Hand
         eventBus.Publish(@event);
     }
 
-    public void Start(EventBus eventBus)
+    public void Start(IEventBus eventBus)
     {
         var @event = new HandIsStartedEvent(OccuredAt: DateTime.Now);
         eventBus.Publish(@event);
@@ -161,7 +161,7 @@ public class Hand
         eventBus.Unsubscribe(listener);
     }
 
-    public void CommitDecision(Nickname nickname, Decision decision, EventBus eventBus)
+    public void CommitDecision(Nickname nickname, Decision decision, IEventBus eventBus)
     {
         var listener = (StageIsFinishedEvent e) => StartNextDealerOrFinish(eventBus);
         eventBus.Subscribe(listener);
@@ -179,7 +179,7 @@ public class Hand
         eventBus.Unsubscribe(listener);
     }
 
-    private void StartNextDealerOrFinish(EventBus eventBus)
+    private void StartNextDealerOrFinish(IEventBus eventBus)
     {
         if (_dealerIdx == _dealers.Count - 1)
         {

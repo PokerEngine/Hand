@@ -13,7 +13,7 @@ public class TradingDealer : IDealer
         BasePot pot,
         BaseDeck deck,
         IEvaluator evaluator,
-        EventBus eventBus
+        IEventBus eventBus
     )
     {
         var startEvent = new StageIsStartedEvent(OccuredAt: DateTime.Now);
@@ -68,7 +68,7 @@ public class TradingDealer : IDealer
         BasePot pot,
         BaseDeck deck,
         IEvaluator evaluator,
-        EventBus eventBus
+        IEventBus eventBus
     )
     {
         var previousPlayer = GetPreviousPlayer(table: table, pot: pot);
@@ -148,7 +148,7 @@ public class TradingDealer : IDealer
         Player? previousPlayer,
         BaseTable table,
         BasePot pot,
-        EventBus eventBus
+        IEventBus eventBus
     )
     {
         var nextPlayer = GetNextPlayerForTrading(table: table, previousPlayer: previousPlayer);
@@ -171,7 +171,7 @@ public class TradingDealer : IDealer
 
     private void Finish(
         BasePot pot,
-        EventBus eventBus
+        IEventBus eventBus
     )
     {
         pot.FinishStage();
@@ -183,7 +183,7 @@ public class TradingDealer : IDealer
     private void RequestDecision(
         Player nextPlayer,
         BasePot pot,
-        EventBus eventBus
+        IEventBus eventBus
     )
     {
         var foldIsAvailable = pot.FoldIsAvailable(nextPlayer);

@@ -1,0 +1,7 @@
+services:
+    hand:
+        build:
+            context: .
+            dockerfile: Dockerfile
+        environment:
+            - DOTNET_ENVIRONMENT=Development

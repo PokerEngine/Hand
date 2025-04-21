@@ -4,7 +4,7 @@ namespace Infrastructure.IntegrationEvent;
 
 public class InMemoryIntegrationEventBus : IIntegrationEventBus
 {
-    private readonly Dictionary<IntegrationEventQueue, List<Delegate>> _mapping = [];
+    private readonly Dictionary<IntegrationEventQueue, List<Delegate>> _mapping = new ();
 
     public void Connect()
     {

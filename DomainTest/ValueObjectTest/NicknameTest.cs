@@ -67,13 +67,13 @@ public class NicknameTest
 
         var exc = Assert.Throws<ArgumentException>(() => nickname = new Nickname(name));
         Assert.Equal(
-            "Nickname must start with a latin letter and contain only latin letters, numbers and underscore symbols",
+            "Nickname must start with a latin letter and contain only latin letters, digits and underscore symbols",
             exc.Message
         );
 
         exc = Assert.Throws<ArgumentException>(() => nickname = (Nickname)name);
         Assert.Equal(
-            "Nickname must start with a latin letter and contain only latin letters, numbers and underscore symbols",
+            "Nickname must start with a latin letter and contain only latin letters, digits and underscore symbols",
             exc.Message
         );
     }

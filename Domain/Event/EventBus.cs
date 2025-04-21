@@ -11,31 +11,21 @@ public interface IEventBus
 
 public class EventBus : IEventBus
 {
-    private List<Delegate> Listeners = [];
+    private readonly List<Delegate> _listeners = [];
 
     public void Subscribe<T>(Action<T> listener) where T : IEvent
     {
-        if (Listeners.Contains(listener))
-        {
-            throw new NotAvailableError("The listener has already been subscribed");
-        }
-
-        Listeners.Add(listener);
+        _listeners.Add(listener);
     }
 
     public void Unsubscribe<T>(Action<T> listener) where T : IEvent
     {
-        if (!Listeners.Contains(listener))
-        {
-            throw new NotAvailableError("The listener has not been subscribed yet");
-        }
-
-        Listeners.Remove(listener);
+        _listeners.Remove(listener);
     }
 
     public void Publish<T>(T @event) where T : IEvent
     {
-        foreach (var listener in Listeners)
+        foreach (var listener in _listeners)
         {
             if (listener is Action<T> typedListener)
             {

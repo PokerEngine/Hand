@@ -26,7 +26,7 @@ public readonly struct Nickname : IComparable<Nickname>, IEquatable<Nickname>
         if (!Pattern.IsMatch(name))
         {
             throw new ArgumentException(
-                "Nickname must start with a latin letter and contain only latin letters, numbers and underscore symbols"
+                "Nickname must start with a latin letter and contain only latin letters, digits and underscore symbols"
             );
         }
 

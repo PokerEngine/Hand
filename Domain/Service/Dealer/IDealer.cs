@@ -1,7 +1,7 @@
-using Domain.ValueObject;
 using Domain.Entity;
 using Domain.Event;
 using Domain.Service.Evaluator;
+using Domain.ValueObject;
 
 namespace Domain.Service.Dealer;
 

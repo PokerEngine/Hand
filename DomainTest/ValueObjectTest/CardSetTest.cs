@@ -7,7 +7,7 @@ public class CardSetTest
     [Fact]
     public void TestInitialization()
     {
-        var items = new List<Card>() {Card.AceOfSpades, Card.DeuceOfClubs};
+        var items = new List<Card>() { Card.AceOfSpades, Card.DeuceOfClubs };
         var cards = new CardSet(items);
         Assert.Equal(items, cards.ToList());
 
@@ -28,7 +28,7 @@ public class CardSetTest
     [Fact]
     public void TestEnumerator()
     {
-        var items = new HashSet<Card> {Card.AceOfSpades, Card.DeuceOfClubs, Card.QueenOfDiamonds};
+        var items = new HashSet<Card> { Card.AceOfSpades, Card.DeuceOfClubs, Card.QueenOfDiamonds };
         var cards = new CardSet(items);
 
         var i = 0;
@@ -57,9 +57,9 @@ public class CardSetTest
     {
         var cards = new CardSet([Card.AceOfSpades, Card.DeuceOfClubs]);
 
-        Assert.True(cards.IsSubsetOf(new List<Card>() {Card.AceOfSpades, Card.DeuceOfClubs}));
-        Assert.True(cards.IsSubsetOf(new List<Card>() {Card.AceOfSpades, Card.DeuceOfClubs, Card.QueenOfDiamonds}));
-        Assert.False(cards.IsSubsetOf(new List<Card>() {Card.AceOfSpades, Card.QueenOfDiamonds}));
+        Assert.True(cards.IsSubsetOf(new List<Card>() { Card.AceOfSpades, Card.DeuceOfClubs }));
+        Assert.True(cards.IsSubsetOf(new List<Card>() { Card.AceOfSpades, Card.DeuceOfClubs, Card.QueenOfDiamonds }));
+        Assert.False(cards.IsSubsetOf(new List<Card>() { Card.AceOfSpades, Card.QueenOfDiamonds }));
     }
 
     [Fact]
@@ -67,9 +67,9 @@ public class CardSetTest
     {
         var cards = new CardSet([Card.AceOfSpades, Card.DeuceOfClubs]);
 
-        Assert.True(cards.IsSupersetOf(new List<Card>() {Card.AceOfSpades, Card.DeuceOfClubs}));
-        Assert.True(cards.IsSupersetOf(new List<Card>() {Card.AceOfSpades}));
-        Assert.False(cards.IsSupersetOf(new List<Card>() {Card.AceOfSpades, Card.QueenOfDiamonds}));
+        Assert.True(cards.IsSupersetOf(new List<Card>() { Card.AceOfSpades, Card.DeuceOfClubs }));
+        Assert.True(cards.IsSupersetOf(new List<Card>() { Card.AceOfSpades }));
+        Assert.False(cards.IsSupersetOf(new List<Card>() { Card.AceOfSpades, Card.QueenOfDiamonds }));
     }
 
     [Fact]
@@ -77,9 +77,9 @@ public class CardSetTest
     {
         var cards = new CardSet([Card.AceOfSpades, Card.DeuceOfClubs]);
 
-        Assert.True(cards.IsProperSubsetOf(new List<Card>() {Card.AceOfSpades, Card.DeuceOfClubs, Card.QueenOfDiamonds}));
-        Assert.False(cards.IsProperSubsetOf(new List<Card>() {Card.AceOfSpades, Card.DeuceOfClubs}));
-        Assert.False(cards.IsProperSubsetOf(new List<Card>() {Card.AceOfSpades, Card.QueenOfDiamonds}));
+        Assert.True(cards.IsProperSubsetOf(new List<Card>() { Card.AceOfSpades, Card.DeuceOfClubs, Card.QueenOfDiamonds }));
+        Assert.False(cards.IsProperSubsetOf(new List<Card>() { Card.AceOfSpades, Card.DeuceOfClubs }));
+        Assert.False(cards.IsProperSubsetOf(new List<Card>() { Card.AceOfSpades, Card.QueenOfDiamonds }));
     }
 
     [Fact]
@@ -87,9 +87,9 @@ public class CardSetTest
     {
         var cards = new CardSet([Card.AceOfSpades, Card.DeuceOfClubs]);
 
-        Assert.True(cards.IsProperSupersetOf(new List<Card>() {Card.AceOfSpades}));
-        Assert.False(cards.IsProperSupersetOf(new List<Card>() {Card.AceOfSpades, Card.DeuceOfClubs}));
-        Assert.False(cards.IsProperSupersetOf(new List<Card>() {Card.AceOfSpades, Card.QueenOfDiamonds}));
+        Assert.True(cards.IsProperSupersetOf(new List<Card>() { Card.AceOfSpades }));
+        Assert.False(cards.IsProperSupersetOf(new List<Card>() { Card.AceOfSpades, Card.DeuceOfClubs }));
+        Assert.False(cards.IsProperSupersetOf(new List<Card>() { Card.AceOfSpades, Card.QueenOfDiamonds }));
     }
 
     [Fact]
@@ -97,9 +97,9 @@ public class CardSetTest
     {
         var cards = new CardSet([Card.AceOfSpades, Card.DeuceOfClubs]);
 
-        Assert.True(cards.Overlaps(new List<Card>() {Card.AceOfSpades, Card.DeuceOfClubs}));
-        Assert.True(cards.Overlaps(new List<Card>() {Card.AceOfSpades, Card.QueenOfDiamonds}));
-        Assert.False(cards.Overlaps(new List<Card>() {Card.QueenOfDiamonds}));
+        Assert.True(cards.Overlaps(new List<Card>() { Card.AceOfSpades, Card.DeuceOfClubs }));
+        Assert.True(cards.Overlaps(new List<Card>() { Card.AceOfSpades, Card.QueenOfDiamonds }));
+        Assert.False(cards.Overlaps(new List<Card>() { Card.QueenOfDiamonds }));
     }
 
     [Fact]
@@ -107,9 +107,9 @@ public class CardSetTest
     {
         var cards = new CardSet([Card.AceOfSpades, Card.DeuceOfClubs]);
 
-        Assert.True(cards.SetEquals(new List<Card>() {Card.AceOfSpades, Card.DeuceOfClubs}));
-        Assert.False(cards.SetEquals(new List<Card>() {Card.AceOfSpades, Card.DeuceOfClubs, Card.QueenOfDiamonds}));
-        Assert.False(cards.SetEquals(new List<Card>() {Card.AceOfSpades, Card.QueenOfDiamonds}));
+        Assert.True(cards.SetEquals(new List<Card>() { Card.AceOfSpades, Card.DeuceOfClubs }));
+        Assert.False(cards.SetEquals(new List<Card>() { Card.AceOfSpades, Card.DeuceOfClubs, Card.QueenOfDiamonds }));
+        Assert.False(cards.SetEquals(new List<Card>() { Card.AceOfSpades, Card.QueenOfDiamonds }));
     }
 
     [Fact]

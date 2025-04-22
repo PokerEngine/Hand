@@ -1,13 +1,13 @@
+using Application;
 using Domain.Event;
 using Domain.ValueObject;
-using Application;
 
 namespace Infrastructure.Repository;
 
 
 public class InMemoryRepository : IRepository
 {
-    private readonly Dictionary<HandUid, List<IEvent>> _mapping = new ();
+    private readonly Dictionary<HandUid, List<IEvent>> _mapping = new();
 
     public void Connect()
     {

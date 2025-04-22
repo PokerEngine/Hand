@@ -1,6 +1,6 @@
-using Domain.ValueObject;
 using Domain.Service.Dealer;
 using Domain.Service.Evaluator;
+using Domain.ValueObject;
 
 namespace Domain.Entity.Factory;
 

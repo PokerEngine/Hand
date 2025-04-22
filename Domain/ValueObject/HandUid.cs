@@ -13,7 +13,7 @@ public readonly struct HandUid : IEquatable<HandUid>
         => a._guid;
 
     public static explicit operator HandUid(Guid a)
-        => new (a);
+        => new(a);
 
     public static bool operator ==(HandUid a, HandUid b)
         => a._guid == b._guid;

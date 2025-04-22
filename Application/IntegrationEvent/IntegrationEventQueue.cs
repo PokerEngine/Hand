@@ -6,8 +6,8 @@ public readonly struct IntegrationEventQueue : IEquatable<IntegrationEventQueue>
 {
     private readonly string _name;
 
-    private static readonly Regex Pattern = new (
-        "^[a-z][a-z0-9_-]*(\\.[a-z][a-z0-9_-]*)*$", 
+    private static readonly Regex Pattern = new(
+        "^[a-z][a-z0-9_-]*(\\.[a-z][a-z0-9_-]*)*$",
         RegexOptions.Compiled | RegexOptions.IgnoreCase
     );
 
@@ -25,7 +25,7 @@ public readonly struct IntegrationEventQueue : IEquatable<IntegrationEventQueue>
         => a._name;
 
     public static explicit operator IntegrationEventQueue(string a)
-        => new (a);
+        => new(a);
 
     public bool IsSubQueue(IntegrationEventQueue other)
     {

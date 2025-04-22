@@ -1,10 +1,10 @@
-using System.Collections.Immutable;
 using Domain.Entity.Factory;
 using Domain.Error;
 using Domain.Event;
 using Domain.Service.Dealer;
 using Domain.Service.Evaluator;
 using Domain.ValueObject;
+using System.Collections.Immutable;
 
 namespace Domain.Entity;
 

@@ -29,28 +29,28 @@ public readonly struct Chips : IMinMaxValue<Chips>, IComparable<Chips>, IEquatab
         => a._amount;
 
     public static explicit operator Chips(int a)
-        => new (a);
+        => new(a);
 
     public static Chips operator +(Chips a)
         => a;
 
     public static Chips operator -(Chips a)
-        => new (-a._amount);
+        => new(-a._amount);
 
     public static Chips operator +(Chips a, Chips b)
-        => new (a._amount + b._amount);
+        => new(a._amount + b._amount);
 
     public static Chips operator -(Chips a, Chips b)
-        => new (a._amount - b._amount);
+        => new(a._amount - b._amount);
 
     public static Chips operator *(Chips a, int b)
-        => new (a._amount * b);
+        => new(a._amount * b);
 
     public static Chips operator /(Chips a, int b)
         => new Chips(a._amount / b);
 
     public static Chips operator %(Chips a, int b)
-        => new (a._amount % b);
+        => new(a._amount % b);
 
     public static bool operator !(Chips a)
         => a._amount == 0;

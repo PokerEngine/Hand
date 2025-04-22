@@ -1,7 +1,7 @@
-using System.Collections;
-using System.Collections.Immutable;
 using Domain.Error;
 using Domain.ValueObject;
+using System.Collections;
+using System.Collections.Immutable;
 
 namespace Domain.Entity;
 

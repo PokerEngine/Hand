@@ -6,7 +6,7 @@ namespace Domain.Entity;
 public abstract class BaseDeck
 {
     protected CardSet _cards;
-    private static readonly Random Rand = new ();
+    private static readonly Random Rand = new();
 
     public int Count => _cards.Count;
 
@@ -45,7 +45,7 @@ public abstract class BaseDeck
 
 public class StandardDeck : BaseDeck
 {
-    private static readonly CardSet AllowedCards = new ([
+    private static readonly CardSet AllowedCards = new([
         Card.AceOfSpades,
         Card.KingOfSpades,
         Card.QueenOfSpades,
@@ -108,7 +108,7 @@ public class StandardDeck : BaseDeck
 
 public class ShortDeck : BaseDeck
 {
-    private static readonly CardSet AllowedCards = new ([
+    private static readonly CardSet AllowedCards = new([
         Card.AceOfSpades,
         Card.KingOfSpades,
         Card.QueenOfSpades,

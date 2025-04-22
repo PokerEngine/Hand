@@ -1,7 +1,6 @@
+using Domain.Error;
 using System.Collections;
 using System.Collections.Immutable;
-
-using Domain.Error;
 
 namespace Domain.ValueObject;
 

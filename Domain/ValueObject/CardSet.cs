@@ -41,7 +41,7 @@ public readonly struct CardSet : IReadOnlySet<Card>
         => _cards.SetEquals(other);
 
     public CardSet Add(Card item)
-        => new (_cards.Add(item));
+        => new(_cards.Add(item));
 
     public CardSet Remove(Card item)
         => new(_cards.Remove(item));
@@ -69,7 +69,7 @@ public readonly struct CardSet : IReadOnlySet<Card>
         => GetEnumerator();
 
     public static CardSet operator +(CardSet a, CardSet b)
-        => new (a._cards.Concat(b));
+        => new(a._cards.Concat(b));
 
     public static bool operator ==(CardSet a, CardSet b)
         => a._cards.SetEquals(b._cards);

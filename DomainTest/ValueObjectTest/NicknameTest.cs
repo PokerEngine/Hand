@@ -25,13 +25,13 @@ public class NicknameTest
 
         var exc = Assert.Throws<ArgumentException>(() => nickname = new Nickname(name));
         Assert.Equal(
-            "Nickname must contain at least 4 symbol(s)", 
+            "Nickname must contain at least 4 symbol(s)",
             exc.Message
         );
 
         exc = Assert.Throws<ArgumentException>(() => nickname = (Nickname)name);
         Assert.Equal(
-            "Nickname must contain at least 4 symbol(s)", 
+            "Nickname must contain at least 4 symbol(s)",
             exc.Message
         );
     }
@@ -44,13 +44,13 @@ public class NicknameTest
 
         var exc = Assert.Throws<ArgumentException>(() => nickname = new Nickname(name));
         Assert.Equal(
-            "Nickname must not contain more than 32 symbol(s)", 
+            "Nickname must not contain more than 32 symbol(s)",
             exc.Message
         );
 
         exc = Assert.Throws<ArgumentException>(() => nickname = (Nickname)name);
         Assert.Equal(
-            "Nickname must not contain more than 32 symbol(s)", 
+            "Nickname must not contain more than 32 symbol(s)",
             exc.Message
         );
     }

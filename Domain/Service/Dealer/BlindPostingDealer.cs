@@ -1,8 +1,8 @@
 using Domain.Entity;
 using Domain.Error;
 using Domain.Event;
-using Domain.ValueObject;
 using Domain.Service.Evaluator;
+using Domain.ValueObject;
 
 namespace Domain.Service.Dealer;
 

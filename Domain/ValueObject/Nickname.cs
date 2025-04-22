@@ -6,8 +6,8 @@ public readonly struct Nickname : IComparable<Nickname>, IEquatable<Nickname>
 {
     private readonly string _name;
 
-    private static readonly Regex Pattern = new (
-        "^[a-z][a-z0-9_]*$", 
+    private static readonly Regex Pattern = new(
+        "^[a-z][a-z0-9_]*$",
         RegexOptions.Compiled | RegexOptions.IgnoreCase
     );
     private const int MinLength = 4;
@@ -37,7 +37,7 @@ public readonly struct Nickname : IComparable<Nickname>, IEquatable<Nickname>
         => a._name;
 
     public static explicit operator Nickname(string a)
-        => new (a);
+        => new(a);
 
     public static bool operator ==(Nickname a, Nickname b)
         => a._name == b._name;

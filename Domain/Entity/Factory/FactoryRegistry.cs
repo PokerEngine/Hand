@@ -5,7 +5,7 @@ namespace Domain.Entity.Factory;
 
 public static class FactoryRegistry
 {
-    private static readonly Dictionary<Game, IFactory> Mapping = new ()
+    private static readonly Dictionary<Game, IFactory> Mapping = new()
     {
         { Game.HoldemNoLimit6Max, new HoldemNoLimit6MaxFactory() },
         { Game.HoldemNoLimit9Max, new HoldemNoLimit9MaxFactory() },

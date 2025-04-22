@@ -3,14 +3,7 @@ services:
         build:
             context: .
             dockerfile: Dockerfile
+        volumes:
+            - ./:/usr/local/project/src
         environment:
             - DOTNET_ENVIRONMENT=Development
-
-    hand-test:
-        build:
-            context: .
-            dockerfile: Dockerfile.test
-        environment:
-            - DOTNET_ENVIRONMENT=Development
-        profiles:
-            - test

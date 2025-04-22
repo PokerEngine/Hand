@@ -1,4 +1,3 @@
-using Domain.Error;
 using Domain.ValueObject;
 
 namespace DomainTest.ValueObjectTest;
@@ -10,32 +9,28 @@ public class DecisionTest
     [InlineData(DecisionType.Check, 0)]
     [InlineData(DecisionType.CallTo, 10)]
     [InlineData(DecisionType.RaiseTo, 10)]
-    public void TestInitialization(DecisionType type, Chips amount)
+    public void TestInitialization(DecisionType type, int amount)
     {
-        var decision = new Decision(type, amount);
+        var decision = new Decision(type, new Chips(amount));
         Assert.Equal(type, decision.Type);
-        Assert.Equal(amount, decision.Amount);
+        Assert.Equal(new Chips(amount), decision.Amount);
     }
 
     [Theory]
     [InlineData(DecisionType.Fold, 10)]
     [InlineData(DecisionType.Check, 10)]
-    public void TestInitializationWithNonZeroAmount(DecisionType type, Chips amount)
+    public void TestInitializationWithNonZeroAmount(DecisionType type, int amount)
     {
-        Decision decision;
-
-        var exc = Assert.Throws<ArgumentException>(() => decision = new Decision(type, amount));
+        var exc = Assert.Throws<ArgumentException>(() => new Decision(type, new Chips(amount)));
         Assert.Equal($"Amount must be zero for {type}", exc.Message);
     }
 
     [Theory]
     [InlineData(DecisionType.CallTo, 0)]
     [InlineData(DecisionType.RaiseTo, 0)]
-    public void TestInitializationWithZeroAmount(DecisionType type, Chips amount)
+    public void TestInitializationWithZeroAmount(DecisionType type, int amount)
     {
-        Decision decision;
-
-        var exc = Assert.Throws<ArgumentException>(() => decision = new Decision(type, amount));
+        var exc = Assert.Throws<ArgumentException>(() => new Decision(type, new Chips(amount)));
         Assert.Equal($"Amount must be non-zero for {type}", exc.Message);
     }
 

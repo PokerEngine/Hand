@@ -13,15 +13,11 @@ public class ComboTest
     }
 
     [Fact]
-    public void TestComparison()
+    public void TestCompareTo()
     {
-        Assert.True(new Combo(ComboType.Straight, 100500) == new Combo(ComboType.Straight, 100500));
-        Assert.False(new Combo(ComboType.Straight, 100500) == new Combo(ComboType.Straight, 500100));
-        Assert.True(new Combo(ComboType.Straight, 100500) == new Combo(ComboType.Flush, 100500));
-
-        Assert.False(new Combo(ComboType.Straight, 100500) != new Combo(ComboType.Straight, 100500));
-        Assert.True(new Combo(ComboType.Straight, 100500) != new Combo(ComboType.Straight, 500100));
-        Assert.False(new Combo(ComboType.Straight, 100500) != new Combo(ComboType.Flush, 100500));
+        Assert.Equal(0, new Combo(ComboType.Straight, 100500).CompareTo(new Combo(ComboType.Flush, 100500)));
+        Assert.Equal(1, new Combo(ComboType.Straight, 100501).CompareTo(new Combo(ComboType.Flush, 100500)));
+        Assert.Equal(-1, new Combo(ComboType.Straight, 100500).CompareTo(new Combo(ComboType.Flush, 100501)));
     }
 
     [Fact]

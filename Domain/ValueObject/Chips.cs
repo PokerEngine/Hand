@@ -85,6 +85,9 @@ public readonly struct Chips : IMinMaxValue<Chips>, IComparable<Chips>, IEquatab
     public bool Equals(Chips other)
         => _amount.Equals(other._amount);
 
+    public override bool Equals(object? o)
+        => o is not null && o.GetType() == GetType() && _amount.Equals(((Chips)o)._amount);
+
     public override int GetHashCode()
         => _amount.GetHashCode();
 

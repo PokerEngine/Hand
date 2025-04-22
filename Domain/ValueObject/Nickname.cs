@@ -51,6 +51,9 @@ public readonly struct Nickname : IComparable<Nickname>, IEquatable<Nickname>
     public bool Equals(Nickname other)
         => _name.Equals(other._name);
 
+    public override bool Equals(object? o)
+        => o is not null && o.GetType() == GetType() && _name.Equals(((Nickname)o)._name);
+
     public override int GetHashCode()
         => _name.GetHashCode();
 

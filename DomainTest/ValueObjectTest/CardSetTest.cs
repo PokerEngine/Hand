@@ -1,4 +1,3 @@
-using System.Collections.Immutable;
 using Domain.ValueObject;
 
 namespace DomainTest.ValueObjectTest;
@@ -23,7 +22,7 @@ public class CardSetTest
         Assert.Equal(2, cards.Count);
 
         cards = new CardSet();
-        Assert.Equal(0, cards.Count);
+        Assert.Empty(cards);
     }
 
     [Fact]

@@ -1,6 +1,6 @@
 namespace Domain.ValueObject;
 
-public readonly struct HandUid
+public readonly struct HandUid : IEquatable<HandUid>
 {
     private readonly Guid _guid;
 
@@ -20,6 +20,12 @@ public readonly struct HandUid
 
     public static bool operator !=(HandUid a, HandUid b)
         => a._guid != b._guid;
+
+    public bool Equals(HandUid other)
+        => _guid.Equals(other._guid);
+
+    public override bool Equals(object? o)
+        => o is not null && o.GetType() == GetType() && _guid.Equals(((HandUid)o)._guid);
 
     public override string ToString()
         => _guid.ToString();

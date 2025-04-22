@@ -5,3 +5,12 @@ services:
             dockerfile: Dockerfile
         environment:
             - DOTNET_ENVIRONMENT=Development
+
+    hand-test:
+        build:
+            context: .
+            dockerfile: Dockerfile.test
+        environment:
+            - DOTNET_ENVIRONMENT=Development
+        profiles:
+            - test

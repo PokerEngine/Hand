@@ -23,7 +23,7 @@ public class StandardDeckTest
         var extractedCards = deck.ExtractRandomCards(1);
 
         Assert.Equal(51, deck.Count);
-        Assert.Equal(1, extractedCards.Count);
+        Assert.Single(extractedCards);
 
         extractedCards = deck.ExtractRandomCards(2);
 

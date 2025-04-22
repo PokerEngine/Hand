@@ -23,24 +23,6 @@ public readonly struct Combo : IComparable<Combo>
         Weight = weight;
     }
 
-    public static bool operator >(Combo a, Combo b)
-        => a.Weight > b.Weight;
-
-    public static bool operator <(Combo a, Combo b)
-        => a.Weight < b.Weight;
-
-    public static bool operator >=(Combo a, Combo b)
-        => a.Weight >= b.Weight;
-
-    public static bool operator <=(Combo a, Combo b)
-        => a.Weight <= b.Weight;
-
-    public static bool operator ==(Combo a, Combo b)
-        => a.Weight == b.Weight;
-
-    public static bool operator !=(Combo a, Combo b)
-        => a.Weight != b.Weight;
-
     public int CompareTo(Combo other)
         => Weight.CompareTo(other.Weight);
 

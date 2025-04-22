@@ -466,7 +466,7 @@ public class HoldemNoLimit6MaxHandTest
         hand.Start(eventBus);
 
         Assert.Equal(15, events.Count);
-        Assert.Equal(1, decisionRequestEvents.Count);
+        Assert.Single(decisionRequestEvents);
         Assert.Equal(new Nickname("Button"), decisionRequestEvents[0].Nickname);
 
         hand.CommitDecision(

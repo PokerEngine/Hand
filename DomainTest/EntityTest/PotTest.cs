@@ -59,7 +59,7 @@ public class NoLimitPotTest
     [Theory]
     [InlineData(4)]
     [InlineData(6)]
-    public void TestPostSmallBlindWithWrongAmount(Chips amount)
+    public void TestPostSmallBlindWithWrongAmount(int amount)
     {
         var playerSb = CreatePlayer(
             nickname: "SmallBlind",
@@ -67,7 +67,7 @@ public class NoLimitPotTest
         );
         var pot = CreatePot();
 
-        var exc = Assert.Throws<NotAvailableError>(() => pot.PostSmallBlind(playerSb, amount));
+        var exc = Assert.Throws<NotAvailableError>(() => pot.PostSmallBlind(playerSb, new Chips(amount)));
 
         Assert.Equal("The player must post 5 chip(s)", exc.Message);
         Assert.Null(pot.LastDecisionNickname);
@@ -145,7 +145,7 @@ public class NoLimitPotTest
     [Theory]
     [InlineData(9)]
     [InlineData(11)]
-    public void TestPostBigBlindWithWrongAmount(Chips amount)
+    public void TestPostBigBlindWithWrongAmount(int amount)
     {
         var playerSb = CreatePlayer(
             nickname: "SmallBlind",
@@ -158,7 +158,7 @@ public class NoLimitPotTest
         var pot = CreatePot();
         pot.PostSmallBlind(playerSb, new Chips(5));
 
-        var exc = Assert.Throws<NotAvailableError>(() => pot.PostBigBlind(playerBb, amount));
+        var exc = Assert.Throws<NotAvailableError>(() => pot.PostBigBlind(playerBb, new Chips(amount)));
 
         Assert.Equal("The player must post 10 chip(s)", exc.Message);
         Assert.Equal(new Nickname("SmallBlind"), pot.LastDecisionNickname);
@@ -553,7 +553,7 @@ public class NoLimitPotTest
     [Theory]
     [InlineData(9)]
     [InlineData(11)]
-    public void TestCallToWrongAmount(Chips amount)
+    public void TestCallToWrongAmount(int amount)
     {
         var playerSb = CreatePlayer(
             nickname: "SmallBlind",
@@ -578,7 +578,7 @@ public class NoLimitPotTest
         Assert.Equal(new Chips(20), pot.GetMinRaiseToAmount(playerSb));
         Assert.Equal(new Chips(1000), pot.GetMaxRaiseToAmount(playerSb));
 
-        var exc = Assert.Throws<NotAvailableError>(() => pot.CommitDecision(playerSb, new Decision(DecisionType.CallTo, amount)));
+        var exc = Assert.Throws<NotAvailableError>(() => pot.CommitDecision(playerSb, new Decision(DecisionType.CallTo, new Chips(amount))));
 
         Assert.Equal("The player must call to 10 chip(s)", exc.Message);
         Assert.Equal(new Nickname("BigBlind"), pot.LastDecisionNickname);
@@ -1338,7 +1338,7 @@ public class NoLimitPotTest
     [Theory]
     [InlineData(499)]
     [InlineData(501)]
-    public void TestRefundWithWrongAmount(Chips amount)
+    public void TestRefundWithWrongAmount(int amount)
     {
         var playerSb = CreatePlayer(
             nickname: "SmallBlind",
@@ -1375,7 +1375,7 @@ public class NoLimitPotTest
         Assert.Equal(new Chips(1000), pot.GetPreviousPostedAmount(playerBu));
         Assert.Equal(new Chips(1750), pot.GetTotalAmount());
 
-        var exc = Assert.Throws<NotAvailableError>(() => pot.CommitRefund(playerBu, amount));
+        var exc = Assert.Throws<NotAvailableError>(() => pot.CommitRefund(playerBu, new Chips(amount)));
 
         Assert.Equal("The player must refund 500 chip(s)", exc.Message);
         Assert.Equal(new Chips(0), pot.GetRefundAmount(playerSb));
@@ -1424,7 +1424,7 @@ public class NoLimitPotTest
     [Theory]
     [InlineData(59)]
     [InlineData(61)]
-    public void TestCommitWinWithoutShowdownWithWrongAmount(Chips amount)
+    public void TestCommitWinWithoutShowdownWithWrongAmount(int amount)
     {
         var playerSb = CreatePlayer(
             nickname: "SmallBlind",
@@ -1451,7 +1451,7 @@ public class NoLimitPotTest
         pot.FinishStage();
         pot.CommitRefund(playerSb, new Chips(95));
 
-        var exc = Assert.Throws<NotAvailableError>(() => pot.CommitWinWithoutShowdown(playerSb, amount));
+        var exc = Assert.Throws<NotAvailableError>(() => pot.CommitWinWithoutShowdown(playerSb, new Chips(amount)));
 
         Assert.Equal("The player must win 60 chip(s)", exc.Message);
         Assert.Equal(new Chips(60), pot.GetTotalAmount());
@@ -1821,7 +1821,7 @@ public class NoLimitPotTest
     [Theory]
     [InlineData(249)]
     [InlineData(251)]
-    public void TestCommitWinAtShowdownWithWrongAmount(Chips amount)
+    public void TestCommitWinAtShowdownWithWrongAmount(int amount)
     {
         var playerSb = CreatePlayer(
             nickname: "SmallBlind",
@@ -1853,7 +1853,7 @@ public class NoLimitPotTest
             new KeyValuePair<Nickname, Chips>(playerBu.Nickname, new Chips(120)),
         ]);
         var winPot = new SidePot([
-            new KeyValuePair<Nickname, Chips>(playerBu.Nickname, amount),
+            new KeyValuePair<Nickname, Chips>(playerBu.Nickname, new Chips(amount)),
         ]);
 
         var exc = Assert.Throws<NotAvailableError>(() =>

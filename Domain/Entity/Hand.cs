@@ -103,10 +103,10 @@ public class Hand
                 case HandIsFinishedEvent:
                     break;
                 case PlayerConnectedEvent e:
-                    hand.Connect(e.Nickname, eventBus);
+                    hand.ConnectPlayer(e.Nickname, eventBus);
                     break;
                 case PlayerDisconnectedEvent e:
-                    hand.Disconnect(e.Nickname, eventBus);
+                    hand.DisconnectPlayer(e.Nickname, eventBus);
                     break;
                 default:
                     hand.Dealer.Handle(
@@ -122,24 +122,6 @@ public class Hand
         }
 
         return hand;
-    }
-
-    public void Connect(Nickname nickname, IEventBus eventBus)
-    {
-        var player = Table.GetPlayerByNickname(nickname);
-        player.Connect();
-
-        var @event = new PlayerConnectedEvent(Nickname: nickname, OccuredAt: DateTime.Now);
-        eventBus.Publish(@event);
-    }
-
-    public void Disconnect(Nickname nickname, IEventBus eventBus)
-    {
-        var player = Table.GetPlayerByNickname(nickname);
-        player.Disconnect();
-
-        var @event = new PlayerDisconnectedEvent(Nickname: nickname, OccuredAt: DateTime.Now);
-        eventBus.Publish(@event);
     }
 
     public void Start(IEventBus eventBus)
@@ -159,6 +141,24 @@ public class Hand
         );
 
         eventBus.Unsubscribe(listener);
+    }
+
+    public void ConnectPlayer(Nickname nickname, IEventBus eventBus)
+    {
+        var player = Table.GetPlayerByNickname(nickname);
+        player.Connect();
+
+        var @event = new PlayerConnectedEvent(Nickname: nickname, OccuredAt: DateTime.Now);
+        eventBus.Publish(@event);
+    }
+
+    public void DisconnectPlayer(Nickname nickname, IEventBus eventBus)
+    {
+        var player = Table.GetPlayerByNickname(nickname);
+        player.Disconnect();
+
+        var @event = new PlayerDisconnectedEvent(Nickname: nickname, OccuredAt: DateTime.Now);
+        eventBus.Publish(@event);
     }
 
     public void CommitDecision(Nickname nickname, Decision decision, IEventBus eventBus)

@@ -1,3 +1,4 @@
+using Application.Repository;
 using Domain.Entity;
 using Domain.Error;
 using Domain.Event;
@@ -5,12 +6,12 @@ using Domain.ValueObject;
 
 namespace Application.IntegrationEvent;
 
-public class HandCreationRequestedIntegrationEventHandler : IIntegrationEventHandler<HandCreationRequestedIntegrationEvent>
+public class HandCreateIntegrationEventHandler : IIntegrationEventHandler<HandCreateIntegrationEvent>
 {
     private readonly IIntegrationEventBus _integrationEventBus;
     private readonly IRepository _repository;
 
-    public HandCreationRequestedIntegrationEventHandler(
+    public HandCreateIntegrationEventHandler(
         IIntegrationEventBus integrationEventBus,
         IRepository repository
     )
@@ -19,7 +20,7 @@ public class HandCreationRequestedIntegrationEventHandler : IIntegrationEventHan
         _repository = repository;
     }
 
-    public void Handle(HandCreationRequestedIntegrationEvent integrationEvent)
+    public void Handle(HandCreateIntegrationEvent integrationEvent)
     {
         var game = ParseGame(integrationEvent.Game);
         var handUid = new HandUid(integrationEvent.HandUid);

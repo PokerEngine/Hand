@@ -1,5 +1,5 @@
-using Application;
 using Application.IntegrationEvent;
+using Application.Repository;
 using Infrastructure.IntegrationEvent;
 using Infrastructure.Repository;
 
@@ -11,7 +11,11 @@ public class Worker : BackgroundService
     private readonly IRepository _repository;
     private readonly IIntegrationEventBus _integrationEventBus;
     private readonly IntegrationEventQueue _integrationEventQueue;
-    private readonly HandCreationRequestedIntegrationEventHandler _handCreationRequestedHandler;
+    private readonly HandCreateIntegrationEventHandler _handCreateHandler;
+    private readonly HandStartIntegrationEventHandler _handStartHandler;
+    private readonly PlayerConnectIntegrationEventHandler _playerConnectHandler;
+    private readonly PlayerDisconnectIntegrationEventHandler _playerDisconnectHandler;
+    private readonly DecisionCommitIntegrationEventHandler _decisionCommitHandler;
 
     public Worker(ILogger<Worker> logger)
     {
@@ -20,7 +24,23 @@ public class Worker : BackgroundService
         _repository = new InMemoryRepository();
         _integrationEventBus = new InMemoryIntegrationEventBus();
         _integrationEventQueue = new IntegrationEventQueue("hand");
-        _handCreationRequestedHandler = new HandCreationRequestedIntegrationEventHandler(
+        _handCreateHandler = new HandCreateIntegrationEventHandler(
+            integrationEventBus: _integrationEventBus,
+            repository: _repository
+        );
+        _handStartHandler = new HandStartIntegrationEventHandler(
+            integrationEventBus: _integrationEventBus,
+            repository: _repository
+        );
+        _playerConnectHandler = new PlayerConnectIntegrationEventHandler(
+            integrationEventBus: _integrationEventBus,
+            repository: _repository
+        );
+        _playerDisconnectHandler = new PlayerDisconnectIntegrationEventHandler(
+            integrationEventBus: _integrationEventBus,
+            repository: _repository
+        );
+        _decisionCommitHandler = new DecisionCommitIntegrationEventHandler(
             integrationEventBus: _integrationEventBus,
             repository: _repository
         );
@@ -30,7 +50,11 @@ public class Worker : BackgroundService
     {
         await base.StartAsync(cancellationToken);
 
-        _integrationEventBus.Subscribe(_handCreationRequestedHandler, _integrationEventQueue);
+        _integrationEventBus.Subscribe(_handCreateHandler, _integrationEventQueue);
+        _integrationEventBus.Subscribe(_handStartHandler, _integrationEventQueue);
+        _integrationEventBus.Subscribe(_playerConnectHandler, _integrationEventQueue);
+        _integrationEventBus.Subscribe(_playerDisconnectHandler, _integrationEventQueue);
+        _integrationEventBus.Subscribe(_decisionCommitHandler, _integrationEventQueue);
         _repository.Connect();
         _integrationEventBus.Connect();
     }
@@ -39,7 +63,11 @@ public class Worker : BackgroundService
     {
         _integrationEventBus.Disconnect();
         _repository.Disconnect();
-        _integrationEventBus.Unsubscribe(_handCreationRequestedHandler, _integrationEventQueue);
+        _integrationEventBus.Unsubscribe(_handCreateHandler, _integrationEventQueue);
+        _integrationEventBus.Unsubscribe(_handStartHandler, _integrationEventQueue);
+        _integrationEventBus.Unsubscribe(_playerConnectHandler, _integrationEventQueue);
+        _integrationEventBus.Unsubscribe(_playerDisconnectHandler, _integrationEventQueue);
+        _integrationEventBus.Unsubscribe(_decisionCommitHandler, _integrationEventQueue);
 
         await base.StopAsync(cancellationToken);
     }

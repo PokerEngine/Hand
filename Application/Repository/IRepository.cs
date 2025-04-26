@@ -1,7 +1,7 @@
 using Domain.Event;
 using Domain.ValueObject;
 
-namespace Application;
+namespace Application.Repository;
 
 public interface IRepository
 {

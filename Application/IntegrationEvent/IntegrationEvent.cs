@@ -13,7 +13,8 @@ public interface IIntegrationEvent
     public DateTime OccuredAt { init; get; }
 }
 
-public record HandCreationRequestedIntegrationEvent(
+/* Incoming events aka commands */
+public record HandCreateIntegrationEvent(
     string Game,
     int SmallBlind,
     int BigBlind,
@@ -23,6 +24,36 @@ public record HandCreationRequestedIntegrationEvent(
     DateTime OccuredAt
 ) : IIntegrationEvent;
 
+public record HandStartIntegrationEvent(
+    Guid TableUid,
+    Guid HandUid,
+    DateTime OccuredAt
+) : IIntegrationEvent;
+
+public record PlayerConnectIntegrationEvent(
+    string Nickname,
+    Guid TableUid,
+    Guid HandUid,
+    DateTime OccuredAt
+) : IIntegrationEvent;
+
+public record PlayerDisconnectIntegrationEvent(
+    string Nickname,
+    Guid TableUid,
+    Guid HandUid,
+    DateTime OccuredAt
+) : IIntegrationEvent;
+
+public record DecisionCommitIntegrationEvent(
+    string Nickname,
+    string DecisionType,
+    int DecisionAmount,
+    Guid TableUid,
+    Guid HandUid,
+    DateTime OccuredAt
+) : IIntegrationEvent;
+
+/* Outcoming events */
 public record HandIsCreatedIntegrationEvent(
     List<IntegrationEventParticipant> Participants,
     Guid TableUid,
@@ -64,48 +95,6 @@ public record BlindIsPostedIntegrationEvent(
     DateTime OccuredAt
 ) : IIntegrationEvent;
 
-public record DecisionIsCommittedIntegrationEvent(
-    string Nickname,
-    string DecisionType,
-    int DecisionAmount,
-    Guid TableUid,
-    Guid HandUid,
-    DateTime OccuredAt
-) : IIntegrationEvent;
-
-public record RefundIsCommittedIntegrationEvent(
-    string Nickname,
-    int Amount,
-    Guid TableUid,
-    Guid HandUid,
-    DateTime OccuredAt
-) : IIntegrationEvent;
-
-public record WinIsCommittedIntegrationEvent(
-    string Nickname,
-    int Amount,
-    Guid TableUid,
-    Guid HandUid,
-    DateTime OccuredAt
-) : IIntegrationEvent;
-
-public record HoleCardsAreShownIntegrationEvent(
-    string Nickname,
-    List<string> Cards,
-    string ComboType,
-    int ComboWeight,
-    Guid TableUid,
-    Guid HandUid,
-    DateTime OccuredAt
-) : IIntegrationEvent;
-
-public record HoleCardsAreMuckedIntegrationEvent(
-    string Nickname,
-    Guid TableUid,
-    Guid HandUid,
-    DateTime OccuredAt
-) : IIntegrationEvent;
-
 public record HoleCardsAreDealtIntegrationEvent(
     string Nickname,
     List<string> Cards,
@@ -130,6 +119,56 @@ public record DecisionIsRequestedIntegrationEvent(
     bool RaiseIsAvailable,
     int MinRaiseToAmount,
     int MaxRaiseToAmount,
+    Guid TableUid,
+    Guid HandUid,
+    DateTime OccuredAt
+) : IIntegrationEvent;
+
+public record DecisionIsCommittedIntegrationEvent(
+    string Nickname,
+    string DecisionType,
+    int DecisionAmount,
+    Guid TableUid,
+    Guid HandUid,
+    DateTime OccuredAt
+) : IIntegrationEvent;
+
+public record RefundIsCommittedIntegrationEvent(
+    string Nickname,
+    int Amount,
+    Guid TableUid,
+    Guid HandUid,
+    DateTime OccuredAt
+) : IIntegrationEvent;
+
+public record WinWithoutShowdownIsCommittedIntegrationEvent(
+    string Nickname,
+    int Amount,
+    Guid TableUid,
+    Guid HandUid,
+    DateTime OccuredAt
+) : IIntegrationEvent;
+
+public record WinAtShowdownIsCommittedIntegrationEvent(
+    string Nickname,
+    int Amount,
+    Guid TableUid,
+    Guid HandUid,
+    DateTime OccuredAt
+) : IIntegrationEvent;
+
+public record HoleCardsAreShownIntegrationEvent(
+    string Nickname,
+    List<string> Cards,
+    string ComboType,
+    int ComboWeight,
+    Guid TableUid,
+    Guid HandUid,
+    DateTime OccuredAt
+) : IIntegrationEvent;
+
+public record HoleCardsAreMuckedIntegrationEvent(
+    string Nickname,
     Guid TableUid,
     Guid HandUid,
     DateTime OccuredAt

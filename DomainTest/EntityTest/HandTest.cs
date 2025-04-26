@@ -374,7 +374,7 @@ public class HoldemNoLimit6MaxHandTest
         var listener = (PlayerConnectedEvent @event) => events.Add(@event);
         eventBus.Subscribe(listener);
 
-        hand.Connect(
+        hand.ConnectPlayer(
             nickname: new Nickname("SmallBlind"),
             eventBus: eventBus
         );
@@ -408,12 +408,12 @@ public class HoldemNoLimit6MaxHandTest
         var listener = (PlayerDisconnectedEvent @event) => events.Add(@event);
         eventBus.Subscribe(listener);
 
-        hand.Connect(
+        hand.ConnectPlayer(
             nickname: new Nickname("SmallBlind"),
             eventBus: eventBus
         );
 
-        hand.Disconnect(
+        hand.DisconnectPlayer(
             nickname: new Nickname("SmallBlind"),
             eventBus: eventBus
         );
@@ -450,15 +450,15 @@ public class HoldemNoLimit6MaxHandTest
         eventBus.Subscribe(listener);
         eventBus.Subscribe(decisionRequestListener);
 
-        hand.Connect(
+        hand.ConnectPlayer(
             nickname: new Nickname("SmallBlind"),
             eventBus: eventBus
         );
-        hand.Connect(
+        hand.ConnectPlayer(
             nickname: new Nickname("BigBlind"),
             eventBus: eventBus
         );
-        hand.Connect(
+        hand.ConnectPlayer(
             nickname: new Nickname("Button"),
             eventBus: eventBus
         );

@@ -53,6 +53,29 @@ public record BigBlindIsPostedEvent(
     DateTime OccuredAt
 ) : IEvent;
 
+public record HoleCardsAreDealtEvent(
+    Nickname Nickname,
+    CardSet Cards,
+    DateTime OccuredAt
+) : IEvent;
+
+public record BoardCardsAreDealtEvent(
+    CardSet Cards,
+    DateTime OccuredAt
+) : IEvent;
+
+public record DecisionIsRequestedEvent(
+    Nickname Nickname,
+    bool FoldIsAvailable,
+    bool CheckIsAvailable,
+    bool CallIsAvailable,
+    Chips CallToAmount,
+    bool RaiseIsAvailable,
+    Chips MinRaiseToAmount,
+    Chips MaxRaiseToAmount,
+    DateTime OccuredAt
+) : IEvent;
+
 public record DecisionIsCommittedEvent(
     Nickname Nickname,
     Decision Decision,
@@ -86,28 +109,5 @@ public record HoleCardsAreShownEvent(
 
 public record HoleCardsAreMuckedEvent(
     Nickname Nickname,
-    DateTime OccuredAt
-) : IEvent;
-
-public record HoleCardsAreDealtEvent(
-    Nickname Nickname,
-    CardSet Cards,
-    DateTime OccuredAt
-) : IEvent;
-
-public record BoardCardsAreDealtEvent(
-    CardSet Cards,
-    DateTime OccuredAt
-) : IEvent;
-
-public record DecisionIsRequestedEvent(
-    Nickname Nickname,
-    bool FoldIsAvailable,
-    bool CheckIsAvailable,
-    bool CallIsAvailable,
-    Chips CallToAmount,
-    bool RaiseIsAvailable,
-    Chips MinRaiseToAmount,
-    Chips MaxRaiseToAmount,
     DateTime OccuredAt
 ) : IEvent;

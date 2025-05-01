@@ -4,6 +4,6 @@ services:
             context: .
             dockerfile: Dockerfile
         volumes:
-            - ./:/usr/local/project/src
+            - ./src:/usr/local/project/src
         environment:
             - DOTNET_ENVIRONMENT=Development

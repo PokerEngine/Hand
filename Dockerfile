@@ -15,4 +15,4 @@ RUN set -x && \
 
 WORKDIR /usr/local/project/src
 
-CMD dotnet watch --project Infrastructure run
+CMD ["dotnet", "watch", "--project", "Infrastructure", "run"]

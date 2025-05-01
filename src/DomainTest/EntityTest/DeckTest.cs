@@ -1,5 +1,4 @@
 using Domain.Entity;
-using Domain.Entity.Factory;
 using Domain.Error;
 using Domain.ValueObject;
 

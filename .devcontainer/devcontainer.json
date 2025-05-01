@@ -1,0 +1,14 @@
+{
+    "name": "Hand",
+    "build": {
+        "dockerfile": "../Dockerfile",
+        "context": ".."
+    },
+    "workspaceFolder": "/usr/local/project",
+    "features": {},
+    "customizations": {
+        "jetbrains": {
+            "projector": true
+        }
+    }
+}

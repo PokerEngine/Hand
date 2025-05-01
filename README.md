@@ -3,10 +3,11 @@ A microservice which is responsible for playing a separate hand independently on
 
 ## Cookbook
 
-### How to run the project?
+### How to prepare the environment
 - Install Docker: https://docs.docker.com/engine/install/
 - Install Docker Compose Plugin: https://docs.docker.com/compose/install/linux/
 
+### How to run the project?
 ```shell
 docker compose up
 ```

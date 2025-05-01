@@ -5,6 +5,7 @@ COPY ./lib/pokerstove /usr/local/lib/pokerstove
 RUN set -x && \
     apt-get update && \
     apt-get install -y \
+        git \
         build-essential \
         libboost-all-dev \
         cmake && \
@@ -13,6 +14,6 @@ RUN set -x && \
     cmake -DCMAKE_BUILD_TYPE=Release -S \. -B build && \
     cmake --build build --target all test -j 4
 
-WORKDIR /usr/local/project/src
+WORKDIR /usr/local/project
 
-CMD ["dotnet", "watch", "--project", "Infrastructure", "run"]
+CMD ["dotnet", "watch", "--project", "src/Infrastructure", "run"]

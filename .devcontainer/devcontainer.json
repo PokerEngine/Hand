@@ -5,6 +5,7 @@
         "context": ".."
     },
     "workspaceFolder": "/usr/local/project",
+    "runArgs": ["--name=hand-dev-container"],
     "features": {},
     "customizations": {
         "jetbrains": {

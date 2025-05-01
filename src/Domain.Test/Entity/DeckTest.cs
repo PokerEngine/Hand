@@ -2,7 +2,7 @@ using Domain.Entity;
 using Domain.Error;
 using Domain.ValueObject;
 
-namespace DomainTest.EntityTest;
+namespace Domain.Test.Entity;
 
 public class StandardDeckTest
 {

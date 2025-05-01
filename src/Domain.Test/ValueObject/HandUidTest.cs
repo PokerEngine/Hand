@@ -1,6 +1,6 @@
 using Domain.ValueObject;
 
-namespace DomainTest.ValueObjectTest;
+namespace Domain.Test.ValueObject;
 
 public class HandUidTest
 {

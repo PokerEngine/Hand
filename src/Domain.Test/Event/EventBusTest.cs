@@ -1,7 +1,7 @@
 using Domain.Event;
 using Domain.ValueObject;
 
-namespace DomainTest.EventTest;
+namespace Domain.Test.Event;
 
 public class EventBusTest
 {

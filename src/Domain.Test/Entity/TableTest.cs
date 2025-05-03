@@ -256,7 +256,7 @@ public class SixMaxTableTest
         var table = new SixMaxTable([playerBu, playerSb, playerBb]);
         table.TakeBoardCards(new CardSet([Card.AceOfSpades, Card.DeuceOfClubs, Card.AceOfClubs]));
 
-        Assert.Equal("SixMaxTable: 3 player(s), {AceOfSpades, AceOfClubs, DeuceOfClubs}", $"{table}");
+        Assert.Equal("SixMaxTable: 3 player(s), {As, Ac, 2c}", $"{table}");
     }
 
     private BaseTable CreateTable(IEnumerable<Player> players)

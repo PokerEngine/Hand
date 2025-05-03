@@ -163,6 +163,6 @@ public class CardSetTest
     public void TestRepresentation()
     {
         var cards = new CardSet([Card.AceOfSpades, Card.DeuceOfClubs]);
-        Assert.Equal("{AceOfSpades, DeuceOfClubs}", $"{cards}");
+        Assert.Equal("{As, 2c}", $"{cards}");
     }
 }

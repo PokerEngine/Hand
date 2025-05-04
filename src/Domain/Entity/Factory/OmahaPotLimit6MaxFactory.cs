@@ -1,5 +1,4 @@
 using Domain.Service.Dealer;
-using Domain.Service.Evaluator;
 using Domain.ValueObject;
 
 namespace Domain.Entity.Factory;
@@ -20,11 +19,6 @@ public class OmahaPotLimit6MaxFactory : IFactory
     public BaseDeck GetDeck()
     {
         return new StandardDeck();
-    }
-
-    public IEvaluator GetEvaluator()
-    {
-        return new OmahaEvaluator();
     }
 
     public IList<IDealer> GetDealers()

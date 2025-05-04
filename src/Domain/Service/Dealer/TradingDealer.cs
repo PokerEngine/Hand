@@ -1,5 +1,4 @@
 using Domain.Entity;
-using Domain.Error;
 using Domain.Event;
 using Domain.Service.Evaluator;
 using Domain.ValueObject;
@@ -9,6 +8,7 @@ namespace Domain.Service.Dealer;
 public class TradingDealer : IDealer
 {
     public void Start(
+        Game game,
         BaseTable table,
         BasePot pot,
         BaseDeck deck,
@@ -38,6 +38,7 @@ public class TradingDealer : IDealer
 
     public void Handle(
         IEvent @event,
+        Game game,
         BaseTable table,
         BasePot pot,
         BaseDeck deck,
@@ -64,6 +65,7 @@ public class TradingDealer : IDealer
     public void CommitDecision(
         Nickname nickname,
         Decision decision,
+        Game game,
         BaseTable table,
         BasePot pot,
         BaseDeck deck,

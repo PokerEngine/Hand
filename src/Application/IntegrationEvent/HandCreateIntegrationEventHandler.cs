@@ -1,7 +1,8 @@
 using Application.Repository;
+using Domain;
 using Domain.Entity;
-using Domain.Error;
 using Domain.Event;
+using Domain.Service.Evaluator;
 using Domain.ValueObject;
 
 namespace Application.IntegrationEvent;
@@ -10,14 +11,17 @@ public class HandCreateIntegrationEventHandler : IIntegrationEventHandler<HandCr
 {
     private readonly IIntegrationEventBus _integrationEventBus;
     private readonly IRepository _repository;
+    private readonly IEvaluator _evaluator;
 
     public HandCreateIntegrationEventHandler(
         IIntegrationEventBus integrationEventBus,
-        IRepository repository
+        IRepository repository,
+        IEvaluator evaluator
     )
     {
         _integrationEventBus = integrationEventBus;
         _repository = repository;
+        _evaluator = evaluator;
     }
 
     public void Handle(HandCreateIntegrationEvent integrationEvent)
@@ -39,6 +43,7 @@ public class HandCreateIntegrationEventHandler : IIntegrationEventHandler<HandCr
             smallBlind: smallBlind,
             bigBlind: bigBlind,
             participants: participants,
+            evaluator: _evaluator,
             eventBus: eventBus
         );
 

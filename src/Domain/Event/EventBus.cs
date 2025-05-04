@@ -1,4 +1,3 @@
-using Domain.Error;
 
 namespace Domain.Event;
 

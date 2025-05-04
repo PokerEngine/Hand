@@ -1,5 +1,4 @@
 using Domain.Entity;
-using Domain.Error;
 using Domain.Event;
 using Domain.Service.Evaluator;
 using Domain.ValueObject;
@@ -9,6 +8,7 @@ namespace Domain.Service.Dealer;
 public class ShowdownDealer : IDealer
 {
     public void Start(
+        Game game,
         BaseTable table,
         BasePot pot,
         BaseDeck deck,
@@ -30,6 +30,7 @@ public class ShowdownDealer : IDealer
         if (HasEnoughPlayersForShowdown(players))
         {
             WinAtShowdown(
+                game: game,
                 players: players,
                 table: table,
                 pot: pot,
@@ -107,6 +108,7 @@ public class ShowdownDealer : IDealer
     }
 
     private void WinAtShowdown(
+        Game game,
         IList<Player> players,
         BaseTable table,
         BasePot pot,
@@ -114,7 +116,7 @@ public class ShowdownDealer : IDealer
         IEventBus eventBus
     )
     {
-        var comboMapping = players.Select(x => (x.Nickname, evaluator.Evaluate(table.BoardCards, x.HoleCards))).ToDictionary();
+        var comboMapping = players.Select(x => (x.Nickname, evaluator.Evaluate(game, table.BoardCards, x.HoleCards))).ToDictionary();
 
         foreach (var player in players)
         {
@@ -149,6 +151,7 @@ public class ShowdownDealer : IDealer
 
     public void Handle(
         IEvent @event,
+        Game game,
         BaseTable table,
         BasePot pot,
         BaseDeck deck,
@@ -183,6 +186,7 @@ public class ShowdownDealer : IDealer
     public void CommitDecision(
         Nickname nickname,
         Decision decision,
+        Game game,
         BaseTable table,
         BasePot pot,
         BaseDeck deck,

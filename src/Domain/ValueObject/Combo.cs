@@ -9,6 +9,7 @@ public enum ComboType
     Straight,
     Flush,
     FullHouse,
+    Quads,
     StraightFlush,
 }
 

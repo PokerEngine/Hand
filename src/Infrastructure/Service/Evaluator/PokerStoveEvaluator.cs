@@ -1,0 +1,124 @@
+using Domain;
+using Domain.Service.Evaluator;
+using Domain.ValueObject;
+using System.Diagnostics;
+
+namespace Infrastructure.Service.Evaluator;
+
+public static class PokerStoveClient
+{
+    private static readonly Dictionary<string, ComboType> ComboTypeMapping = new()
+    {
+        {"high card", ComboType.HighCard},
+        {"one pair", ComboType.OnePair},
+        {"two pair", ComboType.TwoPair},
+        {"trips", ComboType.Trips},
+        {"straight", ComboType.Straight},
+        {"flush", ComboType.Flush},
+        {"full house", ComboType.FullHouse},
+        {"quads", ComboType.Quads},
+        {"str8 flush", ComboType.StraightFlush},
+    };
+
+    public static Combo Evaluate(string type, CardSet holeCards, CardSet boardCards)
+    {
+        var process = PrepareProcess(type, boardCards, holeCards);
+        var (output, error) = RunProcess(process);
+        return ParseResponse(output, error);
+    }
+
+    private static Process PrepareProcess(string type, CardSet holeCards, CardSet boardCards)
+    {
+        var arguments = $"--game {type}";
+        if (holeCards.Count > 0)
+        {
+            arguments += $" --hand {GetCardSetRepresentation(holeCards)}";
+        }
+        if (boardCards.Count > 0)
+        {
+            arguments += $" --board {GetCardSetRepresentation(boardCards)}";
+        }
+
+        return new Process
+        {
+            StartInfo =
+            {
+                FileName = "/usr/local/lib/pokerstove/build/bin/ps-recognize",
+                Arguments = arguments,
+                RedirectStandardOutput = true,
+                RedirectStandardError = true,
+                UseShellExecute = false,
+                CreateNoWindow = true
+            }
+        };
+    }
+
+    private static (string, string) RunProcess(Process process)
+    {
+        process.Start();
+
+        var output = process.StandardOutput.ReadToEnd();
+        var error = process.StandardError.ReadToEnd();
+
+        process.WaitForExit();
+
+        return (output, error);
+    }
+
+    private static string GetCardSetRepresentation(CardSet cards)
+    {
+        return String.Join("", cards.Select(x => x.ToString()));
+    }
+
+    private static Combo ParseResponse(string output, string error)
+    {
+        if (error != "")
+        {
+            throw new NotPerformedError(error);
+        }
+
+        var parts = output.Split(':').Select(x => x.Trim()).ToArray();
+        if (parts.Length != 3)
+        {
+            throw new NotPerformedError($"Invalid response: {output}");
+        }
+
+        if (!ComboTypeMapping.TryGetValue(parts[0], out var comboType))
+        {
+            throw new NotPerformedError($"Invalid combo: {output}");
+        }
+
+        if (!Int32.TryParse(parts[2], out var comboWeight))
+        {
+            throw new NotPerformedError($"Invalid weight: {output}");
+        }
+
+        return new Combo(type: comboType, weight: comboWeight);
+    }
+}
+
+public class PokerStoveEvaluator : IEvaluator
+{
+    private readonly Dictionary<Game, string> GameMapping = new()
+    {
+        { Game.HoldemNoLimit6Max, "h" },
+        { Game.HoldemNoLimit9Max, "h" },
+        { Game.OmahaPotLimit6Max, "O" },
+        { Game.OmahaPotLimit9Max, "O" },
+    };
+
+    public Combo Evaluate(Game game, CardSet holeCards, CardSet boardCards)
+    {
+        return PokerStoveClient.Evaluate(GetGameType(game), holeCards, boardCards);
+    }
+
+    private string GetGameType(Game game)
+    {
+        if (!GameMapping.TryGetValue(game, out var gameType))
+        {
+            throw new NotPerformedError($"Game {game} is not supported");
+        }
+
+        return gameType;
+    }
+}

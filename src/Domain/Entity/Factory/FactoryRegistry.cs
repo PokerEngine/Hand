@@ -1,4 +1,3 @@
-using Domain.Error;
 using Domain.ValueObject;
 
 namespace Domain.Entity.Factory;
@@ -15,11 +14,11 @@ public static class FactoryRegistry
 
     public static IFactory GetFactory(Game game)
     {
-        if (!Mapping.ContainsKey(game))
+        if (!Mapping.TryGetValue(game, out var factory))
         {
             throw new NotFoundError("The game is not found");
         }
 
-        return Mapping[game];
+        return factory;
     }
 }

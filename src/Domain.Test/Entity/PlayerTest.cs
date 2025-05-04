@@ -1,5 +1,4 @@
 using Domain.Entity;
-using Domain.Error;
 using Domain.ValueObject;
 
 namespace Domain.Test.Entity;

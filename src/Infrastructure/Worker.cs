@@ -1,7 +1,9 @@
 using Application.IntegrationEvent;
 using Application.Repository;
+using Domain.Service.Evaluator;
 using Infrastructure.IntegrationEvent;
 using Infrastructure.Repository;
+using Infrastructure.Service.Evaluator;
 
 namespace Infrastructure;
 
@@ -9,6 +11,7 @@ public class Worker : BackgroundService
 {
     private readonly ILogger<Worker> _logger;
     private readonly IRepository _repository;
+    private readonly IEvaluator _evaluator;
     private readonly IIntegrationEventBus _integrationEventBus;
     private readonly IntegrationEventQueue _integrationEventQueue;
     private readonly HandCreateIntegrationEventHandler _handCreateHandler;
@@ -22,27 +25,33 @@ public class Worker : BackgroundService
         _logger = logger;
 
         _repository = new InMemoryRepository();
+        _evaluator = new PokerStoveEvaluator();
         _integrationEventBus = new InMemoryIntegrationEventBus();
         _integrationEventQueue = new IntegrationEventQueue("hand");
         _handCreateHandler = new HandCreateIntegrationEventHandler(
             integrationEventBus: _integrationEventBus,
-            repository: _repository
+            repository: _repository,
+            evaluator: _evaluator
         );
         _handStartHandler = new HandStartIntegrationEventHandler(
             integrationEventBus: _integrationEventBus,
-            repository: _repository
+            repository: _repository,
+            evaluator: _evaluator
         );
         _playerConnectHandler = new PlayerConnectIntegrationEventHandler(
             integrationEventBus: _integrationEventBus,
-            repository: _repository
+            repository: _repository,
+            evaluator: _evaluator
         );
         _playerDisconnectHandler = new PlayerDisconnectIntegrationEventHandler(
             integrationEventBus: _integrationEventBus,
-            repository: _repository
+            repository: _repository,
+            evaluator: _evaluator
         );
         _decisionCommitHandler = new DecisionCommitIntegrationEventHandler(
             integrationEventBus: _integrationEventBus,
-            repository: _repository
+            repository: _repository,
+            evaluator: _evaluator
         );
     }
 

@@ -1,6 +1,7 @@
 using Application.Repository;
 using Domain.Entity;
 using Domain.Event;
+using Domain.Service.Evaluator;
 using Domain.ValueObject;
 
 namespace Application.IntegrationEvent;
@@ -9,14 +10,17 @@ public class PlayerDisconnectIntegrationEventHandler : IIntegrationEventHandler<
 {
     private readonly IIntegrationEventBus _integrationEventBus;
     private readonly IRepository _repository;
+    private readonly IEvaluator _evaluator;
 
     public PlayerDisconnectIntegrationEventHandler(
         IIntegrationEventBus integrationEventBus,
-        IRepository repository
+        IRepository repository,
+        IEvaluator evaluator
     )
     {
         _integrationEventBus = integrationEventBus;
         _repository = repository;
+        _evaluator = evaluator;
     }
 
     public void Handle(PlayerDisconnectIntegrationEvent integrationEvent)
@@ -26,6 +30,7 @@ public class PlayerDisconnectIntegrationEventHandler : IIntegrationEventHandler<
 
         var hand = Hand.FromEvents(
             uid: handUid,
+            evaluator: _evaluator,
             events: _repository.GetEvents(handUid)
         );
 

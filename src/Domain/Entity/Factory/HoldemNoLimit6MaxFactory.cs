@@ -1,5 +1,4 @@
 using Domain.Service.Dealer;
-using Domain.Service.Evaluator;
 using Domain.ValueObject;
 
 namespace Domain.Entity.Factory;
@@ -20,11 +19,6 @@ public class HoldemNoLimit6MaxFactory : IFactory
     public BaseDeck GetDeck()
     {
         return new StandardDeck();
-    }
-
-    public IEvaluator GetEvaluator()
-    {
-        return new HoldemEvaluator();
     }
 
     public IList<IDealer> GetDealers()

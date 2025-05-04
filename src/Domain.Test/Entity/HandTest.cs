@@ -1,11 +1,22 @@
 using Domain.Entity;
 using Domain.Event;
+using Domain.Service.Evaluator;
 using Domain.ValueObject;
 
 namespace Domain.Test.Entity;
 
+public class TestEvaluator : IEvaluator
+{
+    public Combo Evaluate(Game game, CardSet boardCards, CardSet holeCards)
+    {
+        return new Combo(type: ComboType.HighCard, weight: 1);
+    }
+}
+
 public class HoldemNoLimit6MaxHandTest
 {
+    private readonly IEvaluator _evaluator = new TestEvaluator();
+
     [Fact]
     public void TestFromScratch()
     {
@@ -52,6 +63,7 @@ public class HoldemNoLimit6MaxHandTest
             smallBlind: new Chips(5),
             bigBlind: new Chips(10),
             participants: [participantSb, participantBb, participantEp, participantMp, participantCo, participantBu],
+            evaluator: _evaluator,
             eventBus: eventBus
         );
 
@@ -322,7 +334,7 @@ public class HoldemNoLimit6MaxHandTest
             ),
         };
 
-        var hand = Hand.FromEvents(uid: handUid, events: events);
+        var hand = Hand.FromEvents(uid: handUid, evaluator: _evaluator, events: events);
 
         Assert.Equal(handUid, hand.Uid);
         Assert.Equal(Game.HoldemNoLimit6Max, hand.Game);
@@ -536,6 +548,7 @@ public class HoldemNoLimit6MaxHandTest
             smallBlind: new Chips(smallBlind),
             bigBlind: new Chips(bigBlind),
             participants: participants,
+            evaluator: _evaluator,
             eventBus: new EventBus()
         );
     }
@@ -552,6 +565,8 @@ public class HoldemNoLimit6MaxHandTest
 
 public class HoldemNoLimit9MaxHandTest
 {
+    private readonly IEvaluator _evaluator = new TestEvaluator();
+
     [Fact]
     public void TestFromScratch()
     {
@@ -613,6 +628,7 @@ public class HoldemNoLimit9MaxHandTest
             smallBlind: new Chips(5),
             bigBlind: new Chips(10),
             participants: [participantSb, participantBb, participantUtg1, participantUtg2, participantUtg3, participantEp, participantMp, participantCo, participantBu],
+            evaluator: _evaluator,
             eventBus: eventBus
         );
 
@@ -641,6 +657,8 @@ public class HoldemNoLimit9MaxHandTest
 
 public class OmahaPotLimit6MaxHandTest
 {
+    private readonly IEvaluator _evaluator = new TestEvaluator();
+
     [Fact]
     public void TestFromScratch()
     {
@@ -687,6 +705,7 @@ public class OmahaPotLimit6MaxHandTest
             smallBlind: new Chips(5),
             bigBlind: new Chips(10),
             participants: [participantSb, participantBb, participantEp, participantMp, participantCo, participantBu],
+            evaluator: _evaluator,
             eventBus: eventBus
         );
 
@@ -712,6 +731,8 @@ public class OmahaPotLimit6MaxHandTest
 
 public class OmahaPotLimit9MaxHandTest
 {
+    private readonly IEvaluator _evaluator = new TestEvaluator();
+
     [Fact]
     public void TestFromScratch()
     {
@@ -773,6 +794,7 @@ public class OmahaPotLimit9MaxHandTest
             smallBlind: new Chips(5),
             bigBlind: new Chips(10),
             participants: [participantSb, participantBb, participantUtg1, participantUtg2, participantUtg3, participantEp, participantMp, participantCo, participantBu],
+            evaluator: _evaluator,
             eventBus: eventBus
         );
 

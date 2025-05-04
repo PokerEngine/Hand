@@ -1,5 +1,4 @@
 using Domain.Entity.Factory;
-using Domain.Error;
 using Domain.Event;
 using Domain.Service.Dealer;
 using Domain.Service.Evaluator;
@@ -47,6 +46,7 @@ public class Hand
         Chips smallBlind,
         Chips bigBlind,
         List<Participant> participants,
+        IEvaluator evaluator,
         IEventBus eventBus
     )
     {
@@ -57,7 +57,7 @@ public class Hand
             table: factory.GetTable(participants),
             pot: factory.GetPot(smallBlind, bigBlind),
             deck: factory.GetDeck(),
-            evaluator: factory.GetEvaluator(),
+            evaluator: evaluator,
             dealers: factory.GetDealers()
         );
 
@@ -73,7 +73,7 @@ public class Hand
         return hand;
     }
 
-    public static Hand FromEvents(HandUid uid, IList<IEvent> events)
+    public static Hand FromEvents(HandUid uid, IEvaluator evaluator, IList<IEvent> events)
     {
         if (events.Count == 0 || events[0] is not HandIsCreatedEvent)
         {
@@ -89,6 +89,7 @@ public class Hand
             smallBlind: createdEvent.SmallBlind,
             bigBlind: createdEvent.BigBlind,
             participants: createdEvent.Participants,
+            evaluator: evaluator,
             eventBus: eventBus
         );
 
@@ -111,6 +112,7 @@ public class Hand
                 default:
                     hand.Dealer.Handle(
                         @event: @event,
+                        game: hand.Game,
                         table: hand.Table,
                         pot: hand.Pot,
                         deck: hand.Deck,
@@ -133,6 +135,7 @@ public class Hand
         eventBus.Subscribe(listener);
 
         Dealer.Start(
+            game: Game,
             table: Table,
             pot: Pot,
             deck: Deck,
@@ -169,6 +172,7 @@ public class Hand
         Dealer.CommitDecision(
             nickname: nickname,
             decision: decision,
+            game: Game,
             table: Table,
             pot: Pot,
             deck: Deck,
@@ -190,6 +194,7 @@ public class Hand
         {
             _dealerIdx++;
             Dealer.Start(
+                game: Game,
                 table: Table,
                 pot: Pot,
                 deck: Deck,

@@ -4,5 +4,5 @@ namespace Domain.Service.Evaluator;
 
 public interface IEvaluator
 {
-    public Combo Evaluate(CardSet boardCards, CardSet holeCards);
+    public Combo Evaluate(Game game, CardSet boardCards, CardSet holeCards);
 }

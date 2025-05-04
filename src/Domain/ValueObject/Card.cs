@@ -83,7 +83,7 @@ public readonly struct Card : IEquatable<Card>, IComparable<Card>
     public static readonly Card TreyOfClubs = new(Rank.Trey, Suit.Clubs);
     public static readonly Card DeuceOfClubs = new(Rank.Deuce, Suit.Clubs);
 
-    private static readonly Dictionary<Rank, char> RankMapping = new Dictionary<Rank, char>
+    private static readonly Dictionary<Rank, char> RankMapping = new()
     {
         { Rank.Ace, 'A' },
         { Rank.King, 'K' },
@@ -99,7 +99,7 @@ public readonly struct Card : IEquatable<Card>, IComparable<Card>
         { Rank.Trey, '3' },
         { Rank.Deuce, '2' }
     };
-    private static readonly Dictionary<Suit, char> SuitMapping = new Dictionary<Suit, char>
+    private static readonly Dictionary<Suit, char> SuitMapping = new()
     {
         { Suit.Spades, 's' },
         { Suit.Hearts, 'h' },

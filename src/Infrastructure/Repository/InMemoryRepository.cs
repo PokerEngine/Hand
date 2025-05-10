@@ -27,22 +27,22 @@ public class InMemoryRepository : IRepository
 
     public IList<IEvent> GetEvents(HandUid handUid)
     {
-        if (_mapping.TryGetValue(handUid, out var events))
+        if (!_mapping.TryGetValue(handUid, out var events))
         {
-            _logger.LogInformation($"{events.Count} events are got for {handUid}");
-            return events;
+            events = [];
         }
 
-        _logger.LogInformation($"No events are got for {handUid}");
-        return [];
+        _logger.LogInformation("{eventCount} events are got for {handUid}", events.Count, handUid);
+        return events;
     }
 
     public void AddEvents(HandUid handUid, IList<IEvent> events)
     {
+        _logger.LogInformation("{eventCount} events are added for {handUid}", events.Count, handUid);
+
         if (!_mapping.TryAdd(handUid, events.ToList()))
         {
             _mapping[handUid].AddRange(events);
         }
-        _logger.LogInformation($"{events.Count} events are added for {handUid}");
     }
 }

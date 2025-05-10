@@ -24,24 +24,28 @@ public class InMemoryIntegrationEventBus : IIntegrationEventBus
 
     public void Subscribe<T>(IIntegrationEventHandler<T> handler, IntegrationEventQueue queue) where T : IIntegrationEvent
     {
+        _logger.LogInformation("{handler} subscribed to {queue}", handler.GetType().Name, queue);
+
         if (!_mapping.TryAdd(queue, [handler.Handle]))
         {
             _mapping[queue].Add(handler.Handle);
-            _logger.LogInformation($"{handler.GetType()} subscribed to {queue}");
         }
     }
 
     public void Unsubscribe<T>(IIntegrationEventHandler<T> handler, IntegrationEventQueue queue) where T : IIntegrationEvent
     {
+        _logger.LogInformation("{handler} unsubscribed from {queue}", handler.GetType().Name, queue);
+
         if (_mapping.TryGetValue(queue, out var listeners))
         {
             listeners.Remove(handler.Handle);
-            _logger.LogInformation($"{handler.GetType()} unsubscribed from {queue}");
         }
     }
 
     public void Publish<T>(T integrationEvent, IntegrationEventQueue queue) where T : IIntegrationEvent
     {
+        _logger.LogInformation("{integrationEvent} is published to {queue}", integrationEvent, queue);
+
         foreach (var (q, listeners) in _mapping)
         {
             if (!q.IsSubQueue(queue))
@@ -53,11 +57,11 @@ public class InMemoryIntegrationEventBus : IIntegrationEventBus
             {
                 if (listener is Action<T> typedListener)
                 {
+                    _logger.LogInformation("    {typedListener} is called", typedListener);
+
                     typedListener(integrationEvent);
                 }
             }
         }
-
-        _logger.LogInformation($"{integrationEvent} is published to {queue}");
     }
 }

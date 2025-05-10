@@ -60,4 +60,7 @@ public readonly struct IntegrationEventQueue : IEquatable<IntegrationEventQueue>
 
     public bool Equals(IntegrationEventQueue other)
         => _name.Equals(other._name);
+
+    public override string ToString()
+        => _name;
 }

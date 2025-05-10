@@ -66,7 +66,7 @@ public class DomainEventPublisher
 
     private void HandleHandIsCreated(HandIsCreatedEvent @event)
     {
-        var queue = new IntegrationEventQueue($"table.{_tableUid}.{_handUid}");
+        var queue = new IntegrationEventQueue("hand.hand-created");
         var integrationEvent = new HandIsCreatedIntegrationEvent(
             Participants: @event.Participants.Select(ProcessParticipant).ToList(),
             HandUid: _handUid,
@@ -78,7 +78,7 @@ public class DomainEventPublisher
 
     private void HandleHandIsStarted(HandIsStartedEvent @event)
     {
-        var queue = new IntegrationEventQueue($"table.{_tableUid}.{_handUid}");
+        var queue = new IntegrationEventQueue("hand.hand-started");
         var integrationEvent = new HandIsStartedIntegrationEvent(
             HandUid: _handUid,
             TableUid: _tableUid,
@@ -89,7 +89,7 @@ public class DomainEventPublisher
 
     private void HandleHandIsFinished(HandIsFinishedEvent @event)
     {
-        var queue = new IntegrationEventQueue($"table.{_tableUid}.{_handUid}");
+        var queue = new IntegrationEventQueue("hand.hand-finished");
         var integrationEvent = new HandIsFinishedIntegrationEvent(
             HandUid: _handUid,
             TableUid: _tableUid,
@@ -100,7 +100,7 @@ public class DomainEventPublisher
 
     private void HandlePlayerConnected(PlayerConnectedEvent @event)
     {
-        var queue = new IntegrationEventQueue($"table.{_tableUid}.{_handUid}");
+        var queue = new IntegrationEventQueue("hand.player-connected");
         var integrationEvent = new PlayerConnectedIntegrationEvent(
             Nickname: (string)@event.Nickname,
             HandUid: _handUid,
@@ -112,7 +112,7 @@ public class DomainEventPublisher
 
     private void HandlePlayerDisconnected(PlayerDisconnectedEvent @event)
     {
-        var queue = new IntegrationEventQueue($"table.{_tableUid}.{_handUid}");
+        var queue = new IntegrationEventQueue("hand.player-disconnected");
         var integrationEvent = new PlayerDisconnectedIntegrationEvent(
             Nickname: (string)@event.Nickname,
             HandUid: _handUid,
@@ -124,7 +124,7 @@ public class DomainEventPublisher
 
     private void HandleSmallBlindIsPosted(SmallBlindIsPostedEvent @event)
     {
-        var queue = new IntegrationEventQueue($"table.{_tableUid}.{_handUid}");
+        var queue = new IntegrationEventQueue("hand.blind-posted");
         var integrationEvent = new BlindIsPostedIntegrationEvent(
             Nickname: (string)@event.Nickname,
             Amount: (int)@event.Amount,
@@ -137,7 +137,7 @@ public class DomainEventPublisher
 
     private void HandleBigBlindIsPosted(BigBlindIsPostedEvent @event)
     {
-        var queue = new IntegrationEventQueue($"table.{_tableUid}.{_handUid}");
+        var queue = new IntegrationEventQueue("hand.blind-posted");
         var integrationEvent = new BlindIsPostedIntegrationEvent(
             Nickname: (string)@event.Nickname,
             Amount: (int)@event.Amount,
@@ -150,8 +150,7 @@ public class DomainEventPublisher
 
     private void HandleHoleCardsAreDealt(HoleCardsAreDealtEvent @event)
     {
-        // Publish the event to the player's private queue
-        var queue = new IntegrationEventQueue($"table.{_tableUid}.{_handUid}.{@event.Nickname}");
+        var queue = new IntegrationEventQueue("hand.hole-cards-dealt");
         var integrationEvent = new HoleCardsAreDealtIntegrationEvent(
             Nickname: (string)@event.Nickname,
             Cards: ProcessCards(@event.Cards),
@@ -164,7 +163,7 @@ public class DomainEventPublisher
 
     private void HandleBoardCardsAreDealt(BoardCardsAreDealtEvent @event)
     {
-        var queue = new IntegrationEventQueue($"table.{_tableUid}.{_handUid}");
+        var queue = new IntegrationEventQueue("hand.board-cards-dealt");
         var integrationEvent = new BoardCardsAreDealtIntegrationEvent(
             Cards: ProcessCards(@event.Cards),
             HandUid: _handUid,
@@ -176,7 +175,7 @@ public class DomainEventPublisher
 
     private void HandleDecisionIsRequested(DecisionIsRequestedEvent @event)
     {
-        var queue = new IntegrationEventQueue($"table.{_tableUid}.{_handUid}");
+        var queue = new IntegrationEventQueue("hand.decision-requested");
         var integrationEvent = new DecisionIsRequestedIntegrationEvent(
             Nickname: (string)@event.Nickname,
             FoldIsAvailable: @event.FoldIsAvailable,
@@ -195,7 +194,7 @@ public class DomainEventPublisher
 
     private void HandleDecisionIsCommitted(DecisionIsCommittedEvent @event)
     {
-        var queue = new IntegrationEventQueue($"table.{_tableUid}.{_handUid}");
+        var queue = new IntegrationEventQueue("hand.decision-committed");
         var integrationEvent = new DecisionIsCommittedIntegrationEvent(
             Nickname: (string)@event.Nickname,
             DecisionType: @event.Decision.Type.ToString(),
@@ -209,7 +208,7 @@ public class DomainEventPublisher
 
     private void HandleRefundIsCommitted(RefundIsCommittedEvent @event)
     {
-        var queue = new IntegrationEventQueue($"table.{_tableUid}.{_handUid}");
+        var queue = new IntegrationEventQueue("hand.refund-committed");
         var integrationEvent = new RefundIsCommittedIntegrationEvent(
             Nickname: (string)@event.Nickname,
             Amount: (int)@event.Amount,
@@ -222,7 +221,7 @@ public class DomainEventPublisher
 
     private void HandleWinWithoutShowdownIsCommitted(WinWithoutShowdownIsCommittedEvent @event)
     {
-        var queue = new IntegrationEventQueue($"table.{_tableUid}.{_handUid}");
+        var queue = new IntegrationEventQueue("hand.win-without-showdown-committed");
         var integrationEvent = new WinWithoutShowdownIsCommittedIntegrationEvent(
             Nickname: (string)@event.Nickname,
             Amount: (int)@event.Amount,
@@ -235,7 +234,7 @@ public class DomainEventPublisher
 
     private void HandleWinAtShowdownIsCommitted(WinAtShowdownIsCommittedEvent @event)
     {
-        var queue = new IntegrationEventQueue($"table.{_tableUid}.{_handUid}");
+        var queue = new IntegrationEventQueue("hand.win-at-showdown-committed");
         foreach (var (nickname, amount) in @event.WinPot)
         {
             var integrationEvent = new WinAtShowdownIsCommittedIntegrationEvent(
@@ -251,7 +250,7 @@ public class DomainEventPublisher
 
     private void HandleHoleCardsAreShown(HoleCardsAreShownEvent @event)
     {
-        var queue = new IntegrationEventQueue($"table.{_tableUid}.{_handUid}");
+        var queue = new IntegrationEventQueue("hand.hole-cards-shown");
         var integrationEvent = new HoleCardsAreShownIntegrationEvent(
             Nickname: (string)@event.Nickname,
             Cards: ProcessCards(@event.Cards),
@@ -266,7 +265,7 @@ public class DomainEventPublisher
 
     private void HandleHoleCardsAreMucked(HoleCardsAreMuckedEvent @event)
     {
-        var queue = new IntegrationEventQueue($"table.{_tableUid}.{_handUid}");
+        var queue = new IntegrationEventQueue("hand.hole-cards-mucked");
         var integrationEvent = new HoleCardsAreMuckedIntegrationEvent(
             Nickname: (string)@event.Nickname,
             HandUid: _handUid,

@@ -1,6 +1,4 @@
 using Application.IntegrationEvent;
-using Application.Repository;
-using Domain.Service.Evaluator;
 using Infrastructure.IntegrationEvent;
 using Infrastructure.Repository;
 using Infrastructure.Service.Evaluator;
@@ -9,74 +7,65 @@ namespace Infrastructure;
 
 public class Worker : BackgroundService
 {
+    private static readonly InMemoryRepository Repository = new();
+    private static readonly PokerStoveEvaluator Evaluator = new();
+    private static readonly InMemoryIntegrationEventBus IntegrationEventBus = new();
+    private static readonly IntegrationEventQueue IntegrationEventQueue = new("hand");
+    private static readonly HandCreateIntegrationEventHandler HandCreateHandler = new(
+        integrationEventBus: IntegrationEventBus,
+        repository: Repository,
+        evaluator: Evaluator
+    );
+    private static readonly HandStartIntegrationEventHandler HandStartHandler = new(
+        integrationEventBus: IntegrationEventBus,
+        repository: Repository,
+        evaluator: Evaluator
+    );
+    private static readonly PlayerConnectIntegrationEventHandler PlayerConnectHandler = new(
+        integrationEventBus: IntegrationEventBus,
+        repository: Repository,
+        evaluator: Evaluator
+    );
+    private static readonly PlayerDisconnectIntegrationEventHandler PlayerDisconnectHandler = new(
+        integrationEventBus: IntegrationEventBus,
+        repository: Repository,
+        evaluator: Evaluator
+    );
+    private static readonly DecisionCommitIntegrationEventHandler DecisionCommitHandler = new(
+        integrationEventBus: IntegrationEventBus,
+        repository: Repository,
+        evaluator: Evaluator
+    );
+
     private readonly ILogger<Worker> _logger;
-    private readonly IRepository _repository;
-    private readonly IEvaluator _evaluator;
-    private readonly IIntegrationEventBus _integrationEventBus;
-    private readonly IntegrationEventQueue _integrationEventQueue;
-    private readonly HandCreateIntegrationEventHandler _handCreateHandler;
-    private readonly HandStartIntegrationEventHandler _handStartHandler;
-    private readonly PlayerConnectIntegrationEventHandler _playerConnectHandler;
-    private readonly PlayerDisconnectIntegrationEventHandler _playerDisconnectHandler;
-    private readonly DecisionCommitIntegrationEventHandler _decisionCommitHandler;
 
     public Worker(ILogger<Worker> logger)
     {
         _logger = logger;
-
-        _repository = new InMemoryRepository();
-        _evaluator = new PokerStoveEvaluator();
-        _integrationEventBus = new InMemoryIntegrationEventBus();
-        _integrationEventQueue = new IntegrationEventQueue("hand");
-        _handCreateHandler = new HandCreateIntegrationEventHandler(
-            integrationEventBus: _integrationEventBus,
-            repository: _repository,
-            evaluator: _evaluator
-        );
-        _handStartHandler = new HandStartIntegrationEventHandler(
-            integrationEventBus: _integrationEventBus,
-            repository: _repository,
-            evaluator: _evaluator
-        );
-        _playerConnectHandler = new PlayerConnectIntegrationEventHandler(
-            integrationEventBus: _integrationEventBus,
-            repository: _repository,
-            evaluator: _evaluator
-        );
-        _playerDisconnectHandler = new PlayerDisconnectIntegrationEventHandler(
-            integrationEventBus: _integrationEventBus,
-            repository: _repository,
-            evaluator: _evaluator
-        );
-        _decisionCommitHandler = new DecisionCommitIntegrationEventHandler(
-            integrationEventBus: _integrationEventBus,
-            repository: _repository,
-            evaluator: _evaluator
-        );
     }
 
     public override async Task StartAsync(CancellationToken cancellationToken)
     {
         await base.StartAsync(cancellationToken);
 
-        _integrationEventBus.Subscribe(_handCreateHandler, _integrationEventQueue);
-        _integrationEventBus.Subscribe(_handStartHandler, _integrationEventQueue);
-        _integrationEventBus.Subscribe(_playerConnectHandler, _integrationEventQueue);
-        _integrationEventBus.Subscribe(_playerDisconnectHandler, _integrationEventQueue);
-        _integrationEventBus.Subscribe(_decisionCommitHandler, _integrationEventQueue);
-        _repository.Connect();
-        _integrationEventBus.Connect();
+        IntegrationEventBus.Subscribe(HandCreateHandler, IntegrationEventQueue);
+        IntegrationEventBus.Subscribe(HandStartHandler, IntegrationEventQueue);
+        IntegrationEventBus.Subscribe(PlayerConnectHandler, IntegrationEventQueue);
+        IntegrationEventBus.Subscribe(PlayerDisconnectHandler, IntegrationEventQueue);
+        IntegrationEventBus.Subscribe(DecisionCommitHandler, IntegrationEventQueue);
+        Repository.Connect();
+        IntegrationEventBus.Connect();
     }
 
     public override async Task StopAsync(CancellationToken cancellationToken)
     {
-        _integrationEventBus.Disconnect();
-        _repository.Disconnect();
-        _integrationEventBus.Unsubscribe(_handCreateHandler, _integrationEventQueue);
-        _integrationEventBus.Unsubscribe(_handStartHandler, _integrationEventQueue);
-        _integrationEventBus.Unsubscribe(_playerConnectHandler, _integrationEventQueue);
-        _integrationEventBus.Unsubscribe(_playerDisconnectHandler, _integrationEventQueue);
-        _integrationEventBus.Unsubscribe(_decisionCommitHandler, _integrationEventQueue);
+        IntegrationEventBus.Disconnect();
+        Repository.Disconnect();
+        IntegrationEventBus.Unsubscribe(HandCreateHandler, IntegrationEventQueue);
+        IntegrationEventBus.Unsubscribe(HandStartHandler, IntegrationEventQueue);
+        IntegrationEventBus.Unsubscribe(PlayerConnectHandler, IntegrationEventQueue);
+        IntegrationEventBus.Unsubscribe(PlayerDisconnectHandler, IntegrationEventQueue);
+        IntegrationEventBus.Unsubscribe(DecisionCommitHandler, IntegrationEventQueue);
 
         await base.StopAsync(cancellationToken);
     }

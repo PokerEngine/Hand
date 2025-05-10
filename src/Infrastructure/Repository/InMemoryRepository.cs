@@ -21,7 +21,7 @@ public class InMemoryRepository : IRepository
     {
         if (_mapping.TryGetValue(handUid, out var events))
         {
-            return events.ToList();
+            return events;
         }
 
         return [];

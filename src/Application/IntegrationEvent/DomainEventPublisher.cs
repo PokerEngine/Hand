@@ -22,49 +22,13 @@ public class DomainEventPublisher
 
     public void Publish(IEnumerable<IEvent> events)
     {
-        var eventBus = new EventBus();
-
-        eventBus.Subscribe<HandIsCreatedEvent>(HandleHandIsCreated);
-        eventBus.Subscribe<HandIsStartedEvent>(HandleHandIsStarted);
-        eventBus.Subscribe<HandIsFinishedEvent>(HandleHandIsFinished);
-        eventBus.Subscribe<PlayerConnectedEvent>(HandlePlayerConnected);
-        eventBus.Subscribe<PlayerDisconnectedEvent>(HandlePlayerDisconnected);
-        eventBus.Subscribe<SmallBlindIsPostedEvent>(HandleSmallBlindIsPosted);
-        eventBus.Subscribe<BigBlindIsPostedEvent>(HandleBigBlindIsPosted);
-        eventBus.Subscribe<HoleCardsAreDealtEvent>(HandleHoleCardsAreDealt);
-        eventBus.Subscribe<BoardCardsAreDealtEvent>(HandleBoardCardsAreDealt);
-        eventBus.Subscribe<DecisionIsRequestedEvent>(HandleDecisionIsRequested);
-        eventBus.Subscribe<DecisionIsCommittedEvent>(HandleDecisionIsCommitted);
-        eventBus.Subscribe<RefundIsCommittedEvent>(HandleRefundIsCommitted);
-        eventBus.Subscribe<WinWithoutShowdownIsCommittedEvent>(HandleWinWithoutShowdownIsCommitted);
-        eventBus.Subscribe<WinAtShowdownIsCommittedEvent>(HandleWinAtShowdownIsCommitted);
-        eventBus.Subscribe<HoleCardsAreShownEvent>(HandleHoleCardsAreShown);
-        eventBus.Subscribe<HoleCardsAreMuckedEvent>(HandleHoleCardsAreMucked);
-
         foreach (var @event in events)
         {
-            eventBus.Publish(@event);
+            PublishEvent((dynamic)@event);
         }
-
-        eventBus.Unsubscribe<HandIsCreatedEvent>(HandleHandIsCreated);
-        eventBus.Unsubscribe<HandIsStartedEvent>(HandleHandIsStarted);
-        eventBus.Unsubscribe<HandIsFinishedEvent>(HandleHandIsFinished);
-        eventBus.Unsubscribe<PlayerConnectedEvent>(HandlePlayerConnected);
-        eventBus.Unsubscribe<PlayerDisconnectedEvent>(HandlePlayerDisconnected);
-        eventBus.Unsubscribe<SmallBlindIsPostedEvent>(HandleSmallBlindIsPosted);
-        eventBus.Unsubscribe<BigBlindIsPostedEvent>(HandleBigBlindIsPosted);
-        eventBus.Unsubscribe<HoleCardsAreDealtEvent>(HandleHoleCardsAreDealt);
-        eventBus.Unsubscribe<BoardCardsAreDealtEvent>(HandleBoardCardsAreDealt);
-        eventBus.Unsubscribe<DecisionIsRequestedEvent>(HandleDecisionIsRequested);
-        eventBus.Unsubscribe<DecisionIsCommittedEvent>(HandleDecisionIsCommitted);
-        eventBus.Unsubscribe<RefundIsCommittedEvent>(HandleRefundIsCommitted);
-        eventBus.Unsubscribe<WinWithoutShowdownIsCommittedEvent>(HandleWinWithoutShowdownIsCommitted);
-        eventBus.Unsubscribe<WinAtShowdownIsCommittedEvent>(HandleWinAtShowdownIsCommitted);
-        eventBus.Unsubscribe<HoleCardsAreShownEvent>(HandleHoleCardsAreShown);
-        eventBus.Unsubscribe<HoleCardsAreMuckedEvent>(HandleHoleCardsAreMucked);
     }
 
-    private void HandleHandIsCreated(HandIsCreatedEvent @event)
+    private void PublishEvent(HandIsCreatedEvent @event)
     {
         var queue = new IntegrationEventQueue("hand.hand-created");
         var integrationEvent = new HandIsCreatedIntegrationEvent(
@@ -76,7 +40,7 @@ public class DomainEventPublisher
         _integrationEventBus.Publish(integrationEvent, queue);
     }
 
-    private void HandleHandIsStarted(HandIsStartedEvent @event)
+    private void PublishEvent(HandIsStartedEvent @event)
     {
         var queue = new IntegrationEventQueue("hand.hand-started");
         var integrationEvent = new HandIsStartedIntegrationEvent(
@@ -87,7 +51,7 @@ public class DomainEventPublisher
         _integrationEventBus.Publish(integrationEvent, queue);
     }
 
-    private void HandleHandIsFinished(HandIsFinishedEvent @event)
+    private void PublishEvent(HandIsFinishedEvent @event)
     {
         var queue = new IntegrationEventQueue("hand.hand-finished");
         var integrationEvent = new HandIsFinishedIntegrationEvent(
@@ -98,7 +62,7 @@ public class DomainEventPublisher
         _integrationEventBus.Publish(integrationEvent, queue);
     }
 
-    private void HandlePlayerConnected(PlayerConnectedEvent @event)
+    private void PublishEvent(PlayerConnectedEvent @event)
     {
         var queue = new IntegrationEventQueue("hand.player-connected");
         var integrationEvent = new PlayerConnectedIntegrationEvent(
@@ -110,7 +74,7 @@ public class DomainEventPublisher
         _integrationEventBus.Publish(integrationEvent, queue);
     }
 
-    private void HandlePlayerDisconnected(PlayerDisconnectedEvent @event)
+    private void PublishEvent(PlayerDisconnectedEvent @event)
     {
         var queue = new IntegrationEventQueue("hand.player-disconnected");
         var integrationEvent = new PlayerDisconnectedIntegrationEvent(
@@ -122,7 +86,7 @@ public class DomainEventPublisher
         _integrationEventBus.Publish(integrationEvent, queue);
     }
 
-    private void HandleSmallBlindIsPosted(SmallBlindIsPostedEvent @event)
+    private void PublishEvent(SmallBlindIsPostedEvent @event)
     {
         var queue = new IntegrationEventQueue("hand.blind-posted");
         var integrationEvent = new BlindIsPostedIntegrationEvent(
@@ -135,7 +99,7 @@ public class DomainEventPublisher
         _integrationEventBus.Publish(integrationEvent, queue);
     }
 
-    private void HandleBigBlindIsPosted(BigBlindIsPostedEvent @event)
+    private void PublishEvent(BigBlindIsPostedEvent @event)
     {
         var queue = new IntegrationEventQueue("hand.blind-posted");
         var integrationEvent = new BlindIsPostedIntegrationEvent(
@@ -148,7 +112,7 @@ public class DomainEventPublisher
         _integrationEventBus.Publish(integrationEvent, queue);
     }
 
-    private void HandleHoleCardsAreDealt(HoleCardsAreDealtEvent @event)
+    private void PublishEvent(HoleCardsAreDealtEvent @event)
     {
         var queue = new IntegrationEventQueue("hand.hole-cards-dealt");
         var integrationEvent = new HoleCardsAreDealtIntegrationEvent(
@@ -161,7 +125,7 @@ public class DomainEventPublisher
         _integrationEventBus.Publish(integrationEvent, queue);
     }
 
-    private void HandleBoardCardsAreDealt(BoardCardsAreDealtEvent @event)
+    private void PublishEvent(BoardCardsAreDealtEvent @event)
     {
         var queue = new IntegrationEventQueue("hand.board-cards-dealt");
         var integrationEvent = new BoardCardsAreDealtIntegrationEvent(
@@ -173,7 +137,7 @@ public class DomainEventPublisher
         _integrationEventBus.Publish(integrationEvent, queue);
     }
 
-    private void HandleDecisionIsRequested(DecisionIsRequestedEvent @event)
+    private void PublishEvent(DecisionIsRequestedEvent @event)
     {
         var queue = new IntegrationEventQueue("hand.decision-requested");
         var integrationEvent = new DecisionIsRequestedIntegrationEvent(
@@ -192,7 +156,7 @@ public class DomainEventPublisher
         _integrationEventBus.Publish(integrationEvent, queue);
     }
 
-    private void HandleDecisionIsCommitted(DecisionIsCommittedEvent @event)
+    private void PublishEvent(DecisionIsCommittedEvent @event)
     {
         var queue = new IntegrationEventQueue("hand.decision-committed");
         var integrationEvent = new DecisionIsCommittedIntegrationEvent(
@@ -206,7 +170,7 @@ public class DomainEventPublisher
         _integrationEventBus.Publish(integrationEvent, queue);
     }
 
-    private void HandleRefundIsCommitted(RefundIsCommittedEvent @event)
+    private void PublishEvent(RefundIsCommittedEvent @event)
     {
         var queue = new IntegrationEventQueue("hand.refund-committed");
         var integrationEvent = new RefundIsCommittedIntegrationEvent(
@@ -219,7 +183,7 @@ public class DomainEventPublisher
         _integrationEventBus.Publish(integrationEvent, queue);
     }
 
-    private void HandleWinWithoutShowdownIsCommitted(WinWithoutShowdownIsCommittedEvent @event)
+    private void PublishEvent(WinWithoutShowdownIsCommittedEvent @event)
     {
         var queue = new IntegrationEventQueue("hand.win-without-showdown-committed");
         var integrationEvent = new WinWithoutShowdownIsCommittedIntegrationEvent(
@@ -232,7 +196,7 @@ public class DomainEventPublisher
         _integrationEventBus.Publish(integrationEvent, queue);
     }
 
-    private void HandleWinAtShowdownIsCommitted(WinAtShowdownIsCommittedEvent @event)
+    private void PublishEvent(WinAtShowdownIsCommittedEvent @event)
     {
         var queue = new IntegrationEventQueue("hand.win-at-showdown-committed");
         foreach (var (nickname, amount) in @event.WinPot)
@@ -248,7 +212,7 @@ public class DomainEventPublisher
         }
     }
 
-    private void HandleHoleCardsAreShown(HoleCardsAreShownEvent @event)
+    private void PublishEvent(HoleCardsAreShownEvent @event)
     {
         var queue = new IntegrationEventQueue("hand.hole-cards-shown");
         var integrationEvent = new HoleCardsAreShownIntegrationEvent(
@@ -263,7 +227,7 @@ public class DomainEventPublisher
         _integrationEventBus.Publish(integrationEvent, queue);
     }
 
-    private void HandleHoleCardsAreMucked(HoleCardsAreMuckedEvent @event)
+    private void PublishEvent(HoleCardsAreMuckedEvent @event)
     {
         var queue = new IntegrationEventQueue("hand.hole-cards-mucked");
         var integrationEvent = new HoleCardsAreMuckedIntegrationEvent(
@@ -273,6 +237,11 @@ public class DomainEventPublisher
             OccuredAt: @event.OccuredAt
         );
         _integrationEventBus.Publish(integrationEvent, queue);
+    }
+
+    private void PublishEvent(object @event)
+    {
+        // No handler for the given event
     }
 
     private IntegrationEventParticipant ProcessParticipant(Participant participant)

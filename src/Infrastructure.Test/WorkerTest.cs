@@ -46,6 +46,6 @@ public class WorkerTest
         );
         integrationEventBus.Publish(handCreateEvent, new IntegrationEventQueue("hand.hand-create"));
 
-        await host.StopAsync();
+        await host.StopAsync(cts.Token);
     }
 }

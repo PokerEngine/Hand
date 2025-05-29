@@ -32,6 +32,9 @@ public class DomainEventPublisher
     {
         var queue = new IntegrationEventQueue("hand.hand-created");
         var integrationEvent = new HandIsCreatedIntegrationEvent(
+            Game: @event.Game.ToString(),
+            SmallBlind: (int)@event.SmallBlind,
+            BigBlind: (int)@event.BigBlind,
             Participants: @event.Participants.Select(ProcessParticipant).ToList(),
             HandUid: _handUid,
             TableUid: _tableUid,

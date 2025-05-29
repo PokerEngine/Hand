@@ -55,6 +55,9 @@ public record DecisionCommitIntegrationEvent(
 
 /* Outcoming events */
 public record HandIsCreatedIntegrationEvent(
+    string Game,
+    int SmallBlind,
+    int BigBlind,
     List<IntegrationEventParticipant> Participants,
     Guid TableUid,
     Guid HandUid,

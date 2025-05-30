@@ -1,6 +1,7 @@
 using Application.IntegrationEvent;
 using Application.Repository;
 using Domain.Service.Evaluator;
+using Domain.Service.Randomizer;
 
 namespace Infrastructure;
 
@@ -20,6 +21,7 @@ public class Worker : BackgroundService
         ILogger<Worker> logger,
         IRepository repository,
         IIntegrationEventBus integrationEventBus,
+        IRandomizer randomizer,
         IEvaluator evaluator
     )
     {
@@ -30,26 +32,31 @@ public class Worker : BackgroundService
         _handCreateHandler = new HandCreateIntegrationEventHandler(
             integrationEventBus: _integrationEventBus,
             repository: _repository,
+            randomizer: randomizer,
             evaluator: evaluator
         );
         _handStartHandler = new HandStartIntegrationEventHandler(
             integrationEventBus: _integrationEventBus,
             repository: _repository,
+            randomizer: randomizer,
             evaluator: evaluator
         );
         _playerConnectHandler = new PlayerConnectIntegrationEventHandler(
             integrationEventBus: _integrationEventBus,
             repository: _repository,
+            randomizer: randomizer,
             evaluator: evaluator
         );
         _playerDisconnectHandler = new PlayerDisconnectIntegrationEventHandler(
             integrationEventBus: _integrationEventBus,
             repository: _repository,
+            randomizer: randomizer,
             evaluator: evaluator
         );
         _decisionCommitHandler = new DecisionCommitIntegrationEventHandler(
             integrationEventBus: _integrationEventBus,
             repository: _repository,
+            randomizer: randomizer,
             evaluator: evaluator
         );
     }

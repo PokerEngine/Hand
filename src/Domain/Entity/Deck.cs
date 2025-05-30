@@ -1,17 +1,17 @@
+using Domain.Service.Randomizer;
 using Domain.ValueObject;
 
 namespace Domain.Entity;
 
 public abstract class BaseDeck
 {
-    protected CardSet _cards;
-    private static readonly Random Rand = new();
+    protected CardSet Cards;
 
-    public int Count => _cards.Count;
+    public int Count => Cards.Count;
 
-    public CardSet ExtractRandomCards(int count)
+    public CardSet ExtractRandomCards(int count, IRandomizer randomizer)
     {
-        if (count > _cards.Count)
+        if (count > Cards.Count)
         {
             throw new NotAvailableError("The deck does not contain enough cards");
         }
@@ -19,9 +19,9 @@ public abstract class BaseDeck
         var extractedCards = new CardSet();
         for (var i = 0; i < count; i++)
         {
-            var idx = Rand.Next(_cards.Count - 1);
-            var card = _cards.ToList()[idx];
-            _cards = _cards.Remove(card);
+            var idx = randomizer.GetRandomNumber(Cards.Count - 1);
+            var card = Cards.ToList()[idx];
+            Cards = Cards.Remove(card);
             extractedCards = extractedCards.Add(card);
         }
         return extractedCards;
@@ -29,17 +29,17 @@ public abstract class BaseDeck
 
     public CardSet ExtractCertainCards(CardSet cards)
     {
-        if (!cards.IsSubsetOf(_cards))
+        if (!cards.IsSubsetOf(Cards))
         {
             throw new NotAvailableError("The deck does not contain the given cards");
         }
 
-        _cards = _cards.Except(cards);
+        Cards = Cards.Except(cards);
         return cards;
     }
 
     public override string ToString()
-        => $"{GetType().Name}: {_cards.Count} card(s)";
+        => $"{GetType().Name}: {Cards.Count} card(s)";
 }
 
 public class StandardDeck : BaseDeck
@@ -101,7 +101,7 @@ public class StandardDeck : BaseDeck
 
     public StandardDeck()
     {
-        _cards = AllowedCards;
+        Cards = AllowedCards;
     }
 }
 
@@ -148,6 +148,6 @@ public class ShortDeck : BaseDeck
 
     public ShortDeck()
     {
-        _cards = AllowedCards;
+        Cards = AllowedCards;
     }
 }

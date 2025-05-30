@@ -1,6 +1,7 @@
 using Domain.Entity;
 using Domain.Event;
 using Domain.Service.Evaluator;
+using Domain.Service.Randomizer;
 using Domain.ValueObject;
 
 namespace Domain.Service.Dealer;
@@ -12,6 +13,7 @@ public class BlindPostingDealer : IDealer
         BaseTable table,
         BasePot pot,
         BaseDeck deck,
+        IRandomizer randomizer,
         IEvaluator evaluator,
         IEventBus eventBus
     )
@@ -88,6 +90,7 @@ public class BlindPostingDealer : IDealer
         BaseTable table,
         BasePot pot,
         BaseDeck deck,
+        IRandomizer randomizer,
         IEvaluator evaluator
     )
     {
@@ -115,6 +118,7 @@ public class BlindPostingDealer : IDealer
         BaseTable table,
         BasePot pot,
         BaseDeck deck,
+        IRandomizer randomizer,
         IEvaluator evaluator,
         IEventBus eventBus
     )

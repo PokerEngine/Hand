@@ -1,6 +1,7 @@
 using Domain.Entity;
 using Domain.Event;
 using Domain.Service.Evaluator;
+using Domain.Service.Randomizer;
 using Domain.ValueObject;
 
 namespace Domain.Service.Dealer;
@@ -19,6 +20,7 @@ public class HoleCardsDealingDealer : IDealer
         BaseTable table,
         BasePot pot,
         BaseDeck deck,
+        IRandomizer randomizer,
         IEvaluator evaluator,
         IEventBus eventBus
     )
@@ -34,6 +36,7 @@ public class HoleCardsDealingDealer : IDealer
                 DealHoleCards(
                     player: player,
                     deck: deck,
+                    randomizer: randomizer,
                     eventBus: eventBus
                 );
             }
@@ -56,10 +59,11 @@ public class HoleCardsDealingDealer : IDealer
     private void DealHoleCards(
         Player player,
         BaseDeck deck,
+        IRandomizer randomizer,
         IEventBus eventBus
     )
     {
-        var cards = deck.ExtractRandomCards(_count);
+        var cards = deck.ExtractRandomCards(_count, randomizer);
         player.TakeHoleCards(cards);
 
         var @event = new HoleCardsAreDealtEvent(
@@ -76,6 +80,7 @@ public class HoleCardsDealingDealer : IDealer
         BaseTable table,
         BasePot pot,
         BaseDeck deck,
+        IRandomizer randomizer,
         IEvaluator evaluator
     )
     {
@@ -100,6 +105,7 @@ public class HoleCardsDealingDealer : IDealer
         BaseTable table,
         BasePot pot,
         BaseDeck deck,
+        IRandomizer randomizer,
         IEvaluator evaluator,
         IEventBus eventBus
     )

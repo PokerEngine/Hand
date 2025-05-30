@@ -1,9 +1,11 @@
 using Application.IntegrationEvent;
 using Application.Repository;
 using Domain.Service.Evaluator;
+using Domain.Service.Randomizer;
 using Infrastructure.IntegrationEvent;
 using Infrastructure.Repository;
 using Infrastructure.Service.Evaluator;
+using Infrastructure.Service.Randomizer;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 
@@ -72,6 +74,7 @@ public class WorkerTest
                 services.AddHostedService<Worker>();
                 services.AddSingleton<IRepository, InMemoryRepository>();
                 services.AddSingleton<IIntegrationEventBus, InMemoryIntegrationEventBus>();
+                services.AddSingleton<IRandomizer, BuiltInRandomizer>();
                 services.AddSingleton<IEvaluator, PokerStoveEvaluator>();
             }).Build();
     }

@@ -3,6 +3,7 @@ using Domain;
 using Domain.Entity;
 using Domain.Event;
 using Domain.Service.Evaluator;
+using Domain.Service.Randomizer;
 using Domain.ValueObject;
 
 namespace Application.IntegrationEvent;
@@ -11,16 +12,19 @@ public class HandCreateIntegrationEventHandler : IIntegrationEventHandler<HandCr
 {
     private readonly IIntegrationEventBus _integrationEventBus;
     private readonly IRepository _repository;
+    private readonly IRandomizer _randomizer;
     private readonly IEvaluator _evaluator;
 
     public HandCreateIntegrationEventHandler(
         IIntegrationEventBus integrationEventBus,
         IRepository repository,
+        IRandomizer randomizer,
         IEvaluator evaluator
     )
     {
         _integrationEventBus = integrationEventBus;
         _repository = repository;
+        _randomizer = randomizer;
         _evaluator = evaluator;
     }
 
@@ -43,6 +47,7 @@ public class HandCreateIntegrationEventHandler : IIntegrationEventHandler<HandCr
             smallBlind: smallBlind,
             bigBlind: bigBlind,
             participants: participants,
+            randomizer: _randomizer,
             evaluator: _evaluator,
             eventBus: eventBus
         );

@@ -2,6 +2,7 @@ using Application.Repository;
 using Domain.Entity;
 using Domain.Event;
 using Domain.Service.Evaluator;
+using Domain.Service.Randomizer;
 using Domain.ValueObject;
 
 namespace Application.IntegrationEvent;
@@ -10,15 +11,18 @@ public class PlayerDisconnectIntegrationEventHandler : IIntegrationEventHandler<
 {
     private readonly IIntegrationEventBus _integrationEventBus;
     private readonly IRepository _repository;
+    private readonly IRandomizer _randomizer;
     private readonly IEvaluator _evaluator;
 
     public PlayerDisconnectIntegrationEventHandler(
         IIntegrationEventBus integrationEventBus,
         IRepository repository,
+        IRandomizer randomizer,
         IEvaluator evaluator
     )
     {
         _integrationEventBus = integrationEventBus;
+        _randomizer = randomizer;
         _repository = repository;
         _evaluator = evaluator;
     }
@@ -30,6 +34,7 @@ public class PlayerDisconnectIntegrationEventHandler : IIntegrationEventHandler<
 
         var hand = Hand.FromEvents(
             uid: handUid,
+            randomizer: _randomizer,
             evaluator: _evaluator,
             events: _repository.GetEvents(handUid)
         );

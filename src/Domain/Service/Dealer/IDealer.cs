@@ -1,6 +1,7 @@
 using Domain.Entity;
 using Domain.Event;
 using Domain.Service.Evaluator;
+using Domain.Service.Randomizer;
 using Domain.ValueObject;
 
 namespace Domain.Service.Dealer;
@@ -12,6 +13,7 @@ public interface IDealer
         BaseTable table,
         BasePot pot,
         BaseDeck deck,
+        IRandomizer randomizer,
         IEvaluator evaluator,
         IEventBus eventBus
     );
@@ -22,6 +24,7 @@ public interface IDealer
         BaseTable table,
         BasePot pot,
         BaseDeck deck,
+        IRandomizer randomizer,
         IEvaluator evaluator
     );
 
@@ -32,6 +35,7 @@ public interface IDealer
         BaseTable table,
         BasePot pot,
         BaseDeck deck,
+        IRandomizer randomizer,
         IEvaluator evaluator,
         IEventBus eventBus
     );

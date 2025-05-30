@@ -2,6 +2,7 @@ using Domain.Entity.Factory;
 using Domain.Event;
 using Domain.Service.Dealer;
 using Domain.Service.Evaluator;
+using Domain.Service.Randomizer;
 using Domain.ValueObject;
 using System.Collections.Immutable;
 
@@ -14,6 +15,7 @@ public class Hand
     public readonly BaseTable Table;
     public readonly BasePot Pot;
     public readonly BaseDeck Deck;
+    private readonly IRandomizer _randomizer;
     private readonly IEvaluator _evaluator;
     private readonly ImmutableList<IDealer> _dealers;
 
@@ -26,6 +28,7 @@ public class Hand
         BaseTable table,
         BasePot pot,
         BaseDeck deck,
+        IRandomizer randomizer,
         IEvaluator evaluator,
         IEnumerable<IDealer> dealers
     )
@@ -35,6 +38,7 @@ public class Hand
         Table = table;
         Pot = pot;
         Deck = deck;
+        _randomizer = randomizer;
         _evaluator = evaluator;
         _dealers = dealers.ToImmutableList();
         _dealerIdx = 0;
@@ -46,6 +50,7 @@ public class Hand
         Chips smallBlind,
         Chips bigBlind,
         List<Participant> participants,
+        IRandomizer randomizer,
         IEvaluator evaluator,
         IEventBus eventBus
     )
@@ -57,6 +62,7 @@ public class Hand
             table: factory.GetTable(participants),
             pot: factory.GetPot(smallBlind, bigBlind),
             deck: factory.GetDeck(),
+            randomizer: randomizer,
             evaluator: evaluator,
             dealers: factory.GetDealers()
         );
@@ -73,7 +79,12 @@ public class Hand
         return hand;
     }
 
-    public static Hand FromEvents(HandUid uid, IEvaluator evaluator, IList<IEvent> events)
+    public static Hand FromEvents(
+        HandUid uid,
+        IRandomizer randomizer,
+        IEvaluator evaluator,
+        IList<IEvent> events
+    )
     {
         if (events.Count == 0 || events[0] is not HandIsCreatedEvent)
         {
@@ -89,6 +100,7 @@ public class Hand
             smallBlind: createdEvent.SmallBlind,
             bigBlind: createdEvent.BigBlind,
             participants: createdEvent.Participants,
+            randomizer: randomizer,
             evaluator: evaluator,
             eventBus: eventBus
         );
@@ -116,6 +128,7 @@ public class Hand
                         table: hand.Table,
                         pot: hand.Pot,
                         deck: hand.Deck,
+                        randomizer: hand._randomizer,
                         evaluator: hand._evaluator
                     );
                     if (@event is StageIsFinishedEvent && hand._dealerIdx < hand._dealers.Count - 1) hand._dealerIdx++;
@@ -139,6 +152,7 @@ public class Hand
             table: Table,
             pot: Pot,
             deck: Deck,
+            randomizer: _randomizer,
             evaluator: _evaluator,
             eventBus: eventBus
         );
@@ -176,6 +190,7 @@ public class Hand
             table: Table,
             pot: Pot,
             deck: Deck,
+            randomizer: _randomizer,
             evaluator: _evaluator,
             eventBus: eventBus
         );
@@ -198,6 +213,7 @@ public class Hand
                 table: Table,
                 pot: Pot,
                 deck: Deck,
+                randomizer: _randomizer,
                 evaluator: _evaluator,
                 eventBus: eventBus
             );

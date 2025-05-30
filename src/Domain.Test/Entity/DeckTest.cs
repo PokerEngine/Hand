@@ -1,10 +1,13 @@
 using Domain.Entity;
+using Domain.Test.Service.Randomizer;
 using Domain.ValueObject;
 
 namespace Domain.Test.Entity;
 
 public class StandardDeckTest
 {
+    private readonly FakeRandomizer _randomizer = new();
+
     [Fact]
     public void TestInitialization()
     {
@@ -18,15 +21,15 @@ public class StandardDeckTest
     {
         var deck = new StandardDeck();
 
-        var extractedCards = deck.ExtractRandomCards(1);
+        var extractedCards = deck.ExtractRandomCards(1, _randomizer);
 
         Assert.Equal(51, deck.Count);
-        Assert.Single(extractedCards);
+        Assert.Equal(new CardSet([Card.AceOfSpades]), extractedCards);
 
-        extractedCards = deck.ExtractRandomCards(2);
+        extractedCards = deck.ExtractRandomCards(2, _randomizer);
 
         Assert.Equal(49, deck.Count);
-        Assert.Equal(2, extractedCards.Count);
+        Assert.Equal(new CardSet([Card.AceOfHearts, Card.AceOfDiamonds]), extractedCards);
     }
 
     [Fact]
@@ -35,7 +38,7 @@ public class StandardDeckTest
         var deck = new StandardDeck();
 
         CardSet cards;
-        var exc = Assert.Throws<NotAvailableError>(() => cards = deck.ExtractRandomCards(53));
+        var exc = Assert.Throws<NotAvailableError>(() => cards = deck.ExtractRandomCards(53, _randomizer));
 
         Assert.Equal("The deck does not contain enough cards", exc.Message);
     }

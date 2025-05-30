@@ -7,6 +7,14 @@ namespace Infrastructure.Service.Evaluator;
 
 public static class PokerStoveClient
 {
+    private static readonly Dictionary<Game, string> GameMapping = new()
+    {
+        { Game.HoldemNoLimit6Max, "h" },
+        { Game.HoldemNoLimit9Max, "h" },
+        { Game.OmahaPotLimit6Max, "O" },
+        { Game.OmahaPotLimit9Max, "O" },
+    };
+
     private static readonly Dictionary<string, ComboType> ComboTypeMapping = new()
     {
         {"high card", ComboType.HighCard},
@@ -20,16 +28,16 @@ public static class PokerStoveClient
         {"str8 flush", ComboType.StraightFlush},
     };
 
-    public static Combo Evaluate(string type, CardSet holeCards, CardSet boardCards)
+    public static Combo Evaluate(Game game, CardSet holeCards, CardSet boardCards)
     {
-        var process = PrepareProcess(type, boardCards, holeCards);
+        var process = PrepareProcess(game, boardCards, holeCards);
         var (output, error) = RunProcess(process);
         return ParseResponse(output, error);
     }
 
-    private static Process PrepareProcess(string type, CardSet holeCards, CardSet boardCards)
+    private static Process PrepareProcess(Game game, CardSet holeCards, CardSet boardCards)
     {
-        var arguments = $"--game {type}";
+        var arguments = $"--game {GetGameRepresentation(game)}";
         if (holeCards.Count > 0)
         {
             arguments += $" --hand {GetCardSetRepresentation(holeCards)}";
@@ -63,6 +71,16 @@ public static class PokerStoveClient
         process.WaitForExit();
 
         return (output, error);
+    }
+
+    private static string GetGameRepresentation(Game game)
+    {
+        if (!GameMapping.TryGetValue(game, out var gameType))
+        {
+            throw new NotPerformedError($"Game {game} is not supported");
+        }
+
+        return gameType;
     }
 
     private static string GetCardSetRepresentation(CardSet cards)
@@ -99,26 +117,8 @@ public static class PokerStoveClient
 
 public class PokerStoveEvaluator : IEvaluator
 {
-    private readonly Dictionary<Game, string> GameMapping = new()
-    {
-        { Game.HoldemNoLimit6Max, "h" },
-        { Game.HoldemNoLimit9Max, "h" },
-        { Game.OmahaPotLimit6Max, "O" },
-        { Game.OmahaPotLimit9Max, "O" },
-    };
-
     public Combo Evaluate(Game game, CardSet holeCards, CardSet boardCards)
     {
-        return PokerStoveClient.Evaluate(GetGameType(game), holeCards, boardCards);
-    }
-
-    private string GetGameType(Game game)
-    {
-        if (!GameMapping.TryGetValue(game, out var gameType))
-        {
-            throw new NotPerformedError($"Game {game} is not supported");
-        }
-
-        return gameType;
+        return PokerStoveClient.Evaluate(game, holeCards, boardCards);
     }
 }

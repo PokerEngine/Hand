@@ -37,8 +37,8 @@ public class HandCreateIntegrationEventHandler : IIntegrationEventHandler<HandCr
         var participants = integrationEvent.Participants.Select(ParseParticipant).ToList();
 
         var eventBus = new EventBus();
-        var events = new List<IEvent>();
-        var listener = (IEvent @event) => events.Add(@event);
+        var events = new List<BaseEvent>();
+        var listener = (BaseEvent @event) => events.Add(@event);
         eventBus.Subscribe(listener);
 
         Hand.FromScratch(

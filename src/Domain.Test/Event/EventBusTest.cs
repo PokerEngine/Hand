@@ -10,11 +10,11 @@ public class EventBusTest
     {
         var eventBus = new EventBus();
 
-        List<IEvent> events1 = [];
-        List<IEvent> events2 = [];
+        List<BaseEvent> events1 = [];
+        List<BaseEvent> events2 = [];
 
-        var listener1 = (IEvent @event) => events1.Add(@event);
-        var listener2 = (IEvent @event) => events2.Add(@event);
+        var listener1 = (BaseEvent @event) => events1.Add(@event);
+        var listener2 = (BaseEvent @event) => events2.Add(@event);
 
         var nickname = new Nickname("nickname");
 

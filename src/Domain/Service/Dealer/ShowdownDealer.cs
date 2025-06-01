@@ -152,7 +152,7 @@ public class ShowdownDealer : IDealer
     }
 
     public void Handle(
-        IEvent @event,
+        BaseEvent @event,
         Game game,
         BaseTable table,
         BasePot pot,

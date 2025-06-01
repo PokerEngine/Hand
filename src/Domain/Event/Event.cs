@@ -2,10 +2,9 @@ using Domain.ValueObject;
 
 namespace Domain.Event;
 
-public interface IEvent
-{
-    public DateTime OccuredAt { init; get; }
-}
+public abstract record BaseEvent(
+    DateTime OccuredAt
+);
 
 public record HandIsCreatedEvent(
     Game Game,
@@ -13,56 +12,56 @@ public record HandIsCreatedEvent(
     Chips BigBlind,
     List<Participant> Participants,
     DateTime OccuredAt
-) : IEvent;
+) : BaseEvent(OccuredAt);
 
 public record HandIsStartedEvent(
     DateTime OccuredAt
-) : IEvent;
+) : BaseEvent(OccuredAt);
 
 public record HandIsFinishedEvent(
     DateTime OccuredAt
-) : IEvent;
+) : BaseEvent(OccuredAt);
 
 public record StageIsStartedEvent(
     DateTime OccuredAt
-) : IEvent;
+) : BaseEvent(OccuredAt);
 
 public record StageIsFinishedEvent(
     DateTime OccuredAt
-) : IEvent;
+) : BaseEvent(OccuredAt);
 
 public record PlayerConnectedEvent(
     Nickname Nickname,
     DateTime OccuredAt
-) : IEvent;
+) : BaseEvent(OccuredAt);
 
 public record PlayerDisconnectedEvent(
     Nickname Nickname,
     DateTime OccuredAt
-) : IEvent;
+) : BaseEvent(OccuredAt);
 
 public record SmallBlindIsPostedEvent(
     Nickname Nickname,
     Chips Amount,
     DateTime OccuredAt
-) : IEvent;
+) : BaseEvent(OccuredAt);
 
 public record BigBlindIsPostedEvent(
     Nickname Nickname,
     Chips Amount,
     DateTime OccuredAt
-) : IEvent;
+) : BaseEvent(OccuredAt);
 
 public record HoleCardsAreDealtEvent(
     Nickname Nickname,
     CardSet Cards,
     DateTime OccuredAt
-) : IEvent;
+) : BaseEvent(OccuredAt);
 
 public record BoardCardsAreDealtEvent(
     CardSet Cards,
     DateTime OccuredAt
-) : IEvent;
+) : BaseEvent(OccuredAt);
 
 public record DecisionIsRequestedEvent(
     Nickname Nickname,
@@ -74,40 +73,40 @@ public record DecisionIsRequestedEvent(
     Chips MinRaiseToAmount,
     Chips MaxRaiseToAmount,
     DateTime OccuredAt
-) : IEvent;
+) : BaseEvent(OccuredAt);
 
 public record DecisionIsCommittedEvent(
     Nickname Nickname,
     Decision Decision,
     DateTime OccuredAt
-) : IEvent;
+) : BaseEvent(OccuredAt);
 
 public record RefundIsCommittedEvent(
     Nickname Nickname,
     Chips Amount,
     DateTime OccuredAt
-) : IEvent;
+) : BaseEvent(OccuredAt);
 
 public record WinWithoutShowdownIsCommittedEvent(
     Nickname Nickname,
     Chips Amount,
     DateTime OccuredAt
-) : IEvent;
+) : BaseEvent(OccuredAt);
 
 public record WinAtShowdownIsCommittedEvent(
     SidePot SidePot,
     SidePot WinPot,
     DateTime OccuredAt
-) : IEvent;
+) : BaseEvent(OccuredAt);
 
 public record HoleCardsAreShownEvent(
     Nickname Nickname,
     CardSet Cards,
     Combo Combo,
     DateTime OccuredAt
-) : IEvent;
+) : BaseEvent(OccuredAt);
 
 public record HoleCardsAreMuckedEvent(
     Nickname Nickname,
     DateTime OccuredAt
-) : IEvent;
+) : BaseEvent(OccuredAt);

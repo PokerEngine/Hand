@@ -83,7 +83,7 @@ public class Hand
         HandUid uid,
         IRandomizer randomizer,
         IEvaluator evaluator,
-        IList<IEvent> events
+        IList<BaseEvent> events
     )
     {
         if (events.Count == 0 || events[0] is not HandIsCreatedEvent)

@@ -45,8 +45,8 @@ public class DecisionCommitIntegrationEventHandler : IIntegrationEventHandler<De
         );
 
         var eventBus = new EventBus();
-        var events = new List<IEvent>();
-        var listener = (IEvent @event) => events.Add(@event);
+        var events = new List<BaseEvent>();
+        var listener = (BaseEvent @event) => events.Add(@event);
         eventBus.Subscribe(listener);
 
         hand.CommitDecision(

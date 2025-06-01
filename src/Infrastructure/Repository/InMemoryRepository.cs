@@ -4,11 +4,10 @@ using Domain.ValueObject;
 
 namespace Infrastructure.Repository;
 
-
 public class InMemoryRepository : IRepository
 {
     private readonly ILogger<InMemoryRepository> _logger;
-    private readonly Dictionary<HandUid, List<IEvent>> _mapping = new();
+    private readonly Dictionary<HandUid, List<BaseEvent>> _mapping = new();
 
     public InMemoryRepository(ILogger<InMemoryRepository> logger)
     {
@@ -25,7 +24,7 @@ public class InMemoryRepository : IRepository
         _logger.LogInformation("Disconnected");
     }
 
-    public IList<IEvent> GetEvents(HandUid handUid)
+    public IList<BaseEvent> GetEvents(HandUid handUid)
     {
         if (!_mapping.TryGetValue(handUid, out var events))
         {
@@ -36,13 +35,13 @@ public class InMemoryRepository : IRepository
         return events;
     }
 
-    public void AddEvents(HandUid handUid, IList<IEvent> events)
+    public void AddEvents(HandUid handUid, IList<BaseEvent> events)
     {
-        _logger.LogInformation("{eventCount} events are added for {handUid}", events.Count, handUid);
-
         if (!_mapping.TryAdd(handUid, events.ToList()))
         {
             _mapping[handUid].AddRange(events);
         }
+
+        _logger.LogInformation("{eventCount} events are added for {handUid}", events.Count, handUid);
     }
 }

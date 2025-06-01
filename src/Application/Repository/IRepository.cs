@@ -7,6 +7,6 @@ public interface IRepository
 {
     public void Connect();
     public void Disconnect();
-    public IList<IEvent> GetEvents(HandUid handUid);
-    public void AddEvents(HandUid handUid, IList<IEvent> events);
+    public IList<BaseEvent> GetEvents(HandUid handUid);
+    public void AddEvents(HandUid handUid, IList<BaseEvent> events);
 }

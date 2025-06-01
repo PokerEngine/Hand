@@ -20,7 +20,7 @@ public class DomainEventPublisher
         _handUid = handUid;
     }
 
-    public void Publish(IEnumerable<IEvent> events)
+    public void Publish(IEnumerable<BaseEvent> events)
     {
         foreach (var @event in events)
         {

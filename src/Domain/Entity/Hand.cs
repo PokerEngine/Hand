@@ -49,7 +49,7 @@ public class Hand
         Game game,
         Chips smallBlind,
         Chips bigBlind,
-        List<Participant> participants,
+        ImmutableList<Participant> participants,
         IRandomizer randomizer,
         IEvaluator evaluator,
         IEventBus eventBus

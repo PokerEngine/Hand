@@ -83,34 +83,84 @@ public readonly struct Card : IEquatable<Card>, IComparable<Card>
     public static readonly Card TreyOfClubs = new(Rank.Trey, Suit.Clubs);
     public static readonly Card DeuceOfClubs = new(Rank.Deuce, Suit.Clubs);
 
-    private static readonly Dictionary<Rank, char> RankMapping = new()
+    private static readonly Dictionary<string, Card> Mapping = new()
     {
-        { Rank.Ace, 'A' },
-        { Rank.King, 'K' },
-        { Rank.Queen, 'Q' },
-        { Rank.Jack, 'J' },
-        { Rank.Ten, 'T' },
-        { Rank.Nine, '9' },
-        { Rank.Eight, '8' },
-        { Rank.Seven, '7' },
-        { Rank.Six, '6' },
-        { Rank.Five, '5' },
-        { Rank.Four, '4' },
-        { Rank.Trey, '3' },
-        { Rank.Deuce, '2' }
+        // Spades
+        { "As", AceOfSpades },
+        { "Ks", KingOfSpades },
+        { "Qs", QueenOfSpades },
+        { "Js", JackOfSpades },
+        { "Ts", TenOfSpades },
+        { "9s", NineOfSpades },
+        { "8s", EightOfSpades },
+        { "7s", SevenOfSpades },
+        { "6s", SixOfSpades },
+        { "5s", FiveOfSpades },
+        { "4s", FourOfSpades },
+        { "3s", TreyOfSpades },
+        { "2s", DeuceOfSpades },
+
+        // Hearts
+        { "Ah", AceOfHearts },
+        { "Kh", KingOfHearts },
+        { "Qh", QueenOfHearts },
+        { "Jh", JackOfHearts },
+        { "Th", TenOfHearts },
+        { "9h", NineOfHearts },
+        { "8h", EightOfHearts },
+        { "7h", SevenOfHearts },
+        { "6h", SixOfHearts },
+        { "5h", FiveOfHearts },
+        { "4h", FourOfHearts },
+        { "3h", TreyOfHearts },
+        { "2h", DeuceOfHearts },
+
+        // Diamonds
+        { "Ad", AceOfDiamonds },
+        { "Kd", KingOfDiamonds },
+        { "Qd", QueenOfDiamonds },
+        { "Jd", JackOfDiamonds },
+        { "Td", TenOfDiamonds },
+        { "9d", NineOfDiamonds },
+        { "8d", EightOfDiamonds },
+        { "7d", SevenOfDiamonds },
+        { "6d", SixOfDiamonds },
+        { "5d", FiveOfDiamonds },
+        { "4d", FourOfDiamonds },
+        { "3d", TreyOfDiamonds },
+        { "2d", DeuceOfDiamonds },
+
+        // Clubs
+        { "Ac", AceOfClubs },
+        { "Kc", KingOfClubs },
+        { "Qc", QueenOfClubs },
+        { "Jc", JackOfClubs },
+        { "Tc", TenOfClubs },
+        { "9c", NineOfClubs },
+        { "8c", EightOfClubs },
+        { "7c", SevenOfClubs },
+        { "6c", SixOfClubs },
+        { "5c", FiveOfClubs },
+        { "4c", FourOfClubs },
+        { "3c", TreyOfClubs },
+        { "2c", DeuceOfClubs },
     };
-    private static readonly Dictionary<Suit, char> SuitMapping = new()
-    {
-        { Suit.Spades, 's' },
-        { Suit.Hearts, 'h' },
-        { Suit.Diamonds, 'd' },
-        { Suit.Clubs, 'c' },
-    };
+    private static readonly Dictionary<Card, string> ReverseMapping = Mapping.ToDictionary(x => x.Value, x => x.Key);
 
     private Card(Rank rank, Suit suit)
     {
         Rank = rank;
         Suit = suit;
+    }
+
+    public static Card FromString(string value)
+    {
+        if (!Mapping.TryGetValue(value, out var card))
+        {
+            throw new NotPerformedError($"Card {value} does not exist");
+        }
+
+        return card;
     }
 
     public int CompareTo(Card other)
@@ -143,8 +193,6 @@ public readonly struct Card : IEquatable<Card>, IComparable<Card>
 
     public override string ToString()
     {
-        var rank = RankMapping[Rank];
-        var suit = SuitMapping[Suit];
-        return $"{rank}{suit}";
+        return ReverseMapping[this];
     }
 }

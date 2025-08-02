@@ -1,3 +1,6 @@
+volumes:
+    mongo-data:
+
 services:
     hand:
         build:
@@ -6,4 +9,20 @@ services:
         volumes:
             - .:/usr/local/project
         environment:
-            - DOTNET_ENVIRONMENT=Development
+            DOTNET_ENVIRONMENT: Development
+            MONGO_HOST: mongo
+            MONGO_USERNAME: ${MONGO_USERNAME}
+            MONGO_PASSWORD: ${MONGO_PASSWORD}
+            MONGO_DATABASE: ${MONGO_DATABASE}
+            MONGO_COLLECTION: ${MONGO_COLLECTION}
+        depends_on:
+            - mongo
+
+    mongo:
+        image: mongo:8.0.9
+        volumes:
+            - mongo-data:/data/db
+        environment:
+            MONGO_INITDB_DATABASE: ${MONGO_DATABASE}
+            MONGO_INITDB_ROOT_USERNAME: ${MONGO_USERNAME}
+            MONGO_INITDB_ROOT_PASSWORD: ${MONGO_PASSWORD}

@@ -29,3 +29,6 @@ docker compose run --rm hand dotnet test
 ```shell
 docker compose run --rm hand dotnet format
 ```
+
+### How to set up dev container in Rider?
+TODO

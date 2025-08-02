@@ -13,8 +13,6 @@ public readonly struct Participant
         Stake = stake;
     }
 
-    public override string ToString()
-    {
-        return $"{Nickname}, {Position}, {Stake}";
-    }
+    public override string ToString() =>
+        $"{Nickname}, {Position}, {Stake}";
 }

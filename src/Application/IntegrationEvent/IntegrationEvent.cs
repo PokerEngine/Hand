@@ -1,3 +1,5 @@
+using System.Collections.Immutable;
+
 namespace Application.IntegrationEvent;
 
 public record IntegrationEventParticipant(
@@ -58,7 +60,7 @@ public record HandIsCreatedIntegrationEvent(
     string Game,
     int SmallBlind,
     int BigBlind,
-    List<IntegrationEventParticipant> Participants,
+    ImmutableList<IntegrationEventParticipant> Participants,
     Guid TableUid,
     Guid HandUid,
     DateTime OccuredAt

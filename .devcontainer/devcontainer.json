@@ -1,11 +1,9 @@
 {
     "name": "Hand",
-    "build": {
-        "dockerfile": "../Dockerfile",
-        "context": ".."
-    },
+    "dockerComposeFile": "docker-compose.devcontainer.yml",
+    "service": "hand",
     "workspaceFolder": "/usr/local/project",
-    "runArgs": ["--name=hand-dev-container"],
+    "forwardPorts": [27017],
     "features": {},
     "customizations": {
         "jetbrains": {

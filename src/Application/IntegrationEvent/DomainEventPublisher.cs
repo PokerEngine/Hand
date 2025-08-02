@@ -1,5 +1,6 @@
 using Domain.Event;
 using Domain.ValueObject;
+using System.Collections.Immutable;
 
 namespace Application.IntegrationEvent;
 
@@ -35,7 +36,7 @@ public class DomainEventPublisher
             Game: @event.Game.ToString(),
             SmallBlind: (int)@event.SmallBlind,
             BigBlind: (int)@event.BigBlind,
-            Participants: @event.Participants.Select(ProcessParticipant).ToList(),
+            Participants: @event.Participants.Select(ProcessParticipant).ToImmutableList(),
             HandUid: _handUid,
             TableUid: _tableUid,
             OccuredAt: @event.OccuredAt

@@ -5,6 +5,7 @@ using Domain.Event;
 using Domain.Service.Evaluator;
 using Domain.Service.Randomizer;
 using Domain.ValueObject;
+using System.Collections.Immutable;
 
 namespace Application.IntegrationEvent;
 
@@ -34,7 +35,7 @@ public class HandCreateIntegrationEventHandler : IIntegrationEventHandler<HandCr
         var handUid = new HandUid(integrationEvent.HandUid);
         var smallBlind = new Chips(integrationEvent.SmallBlind);
         var bigBlind = new Chips(integrationEvent.BigBlind);
-        var participants = integrationEvent.Participants.Select(ParseParticipant).ToList();
+        var participants = integrationEvent.Participants.Select(ParseParticipant).ToImmutableList();
 
         var eventBus = new EventBus();
         var events = new List<BaseEvent>();

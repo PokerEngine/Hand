@@ -1,4 +1,5 @@
 using Domain.ValueObject;
+using System.Collections.Immutable;
 
 namespace Domain.Event;
 
@@ -10,9 +11,33 @@ public record HandIsCreatedEvent(
     Game Game,
     Chips SmallBlind,
     Chips BigBlind,
-    List<Participant> Participants,
+    ImmutableList<Participant> Participants,
     DateTime OccuredAt
-) : BaseEvent(OccuredAt);
+) : BaseEvent(OccuredAt)
+{
+    public virtual bool Equals(HandIsCreatedEvent? other)
+    {
+        // We override it to check participants equality by value
+        return other is not null
+               && Game == other.Game
+               && SmallBlind == other.SmallBlind
+               && BigBlind == other.BigBlind
+               && OccuredAt == other.OccuredAt
+               && Participants.SequenceEqual(other.Participants);
+    }
+
+    public override int GetHashCode()
+    {
+        var hash = new HashCode();
+        hash.Add(Game);
+        hash.Add(SmallBlind);
+        hash.Add(BigBlind);
+        foreach (var p in Participants)
+            hash.Add(p);
+        hash.Add(OccuredAt);
+        return hash.ToHashCode();
+    }
+}
 
 public record HandIsStartedEvent(
     DateTime OccuredAt
@@ -99,14 +124,14 @@ public record WinAtShowdownIsCommittedEvent(
     DateTime OccuredAt
 ) : BaseEvent(OccuredAt);
 
+public record HoleCardsAreMuckedEvent(
+    Nickname Nickname,
+    DateTime OccuredAt
+) : BaseEvent(OccuredAt);
+
 public record HoleCardsAreShownEvent(
     Nickname Nickname,
     CardSet Cards,
     Combo Combo,
-    DateTime OccuredAt
-) : BaseEvent(OccuredAt);
-
-public record HoleCardsAreMuckedEvent(
-    Nickname Nickname,
     DateTime OccuredAt
 ) : BaseEvent(OccuredAt);

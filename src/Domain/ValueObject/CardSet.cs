@@ -54,7 +54,7 @@ public readonly struct CardSet : IReadOnlySet<Card>
         if (o is null || o.GetType() != GetType())
             return false;
         var x = (CardSet)o;
-        return _cards == x.ToImmutableSortedSet();
+        return _cards.SequenceEqual(x);
     }
 
     public IEnumerator<Card> GetEnumerator()

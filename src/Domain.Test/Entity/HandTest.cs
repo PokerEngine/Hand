@@ -3,6 +3,7 @@ using Domain.Event;
 using Domain.Test.Service.Evaluator;
 using Domain.Test.Service.Randomizer;
 using Domain.ValueObject;
+using System.Collections.Immutable;
 
 namespace Domain.Test.Entity;
 
@@ -540,7 +541,7 @@ public class HoldemNoLimit6MaxHandTest
         Assert.Equal(46, events.Count);
     }
 
-    private Hand CreateHand(List<Participant> participants, int smallBlind = 5, int bigBlind = 10)
+    private Hand CreateHand(ImmutableList<Participant> participants, int smallBlind = 5, int bigBlind = 10)
     {
         return Hand.FromScratch(
             uid: new HandUid(Guid.NewGuid()),

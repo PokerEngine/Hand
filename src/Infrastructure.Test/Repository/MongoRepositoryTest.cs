@@ -1,7 +1,7 @@
 using Domain.Event;
 using Domain.ValueObject;
-using Infrastructure.Test.Fixture;
 using Infrastructure.Repository;
+using Infrastructure.Test.Fixture;
 using Microsoft.Extensions.Logging;
 
 namespace Infrastructure.Test.Repository;
@@ -33,7 +33,7 @@ public class MongoRepositoryTest : BaseMongoTest
     public void TestHandIsCreatedEvent()
     {
         var now = GetNow();
-        var handUid =  new HandUid(Guid.NewGuid());
+        var handUid = new HandUid(Guid.NewGuid());
 
         var @event = new HandIsCreatedEvent(
             Game: Game.HoldemNoLimit6Max,
@@ -58,7 +58,7 @@ public class MongoRepositoryTest : BaseMongoTest
     public void TestHandIsStartedEvent()
     {
         var now = GetNow();
-        var handUid =  new HandUid(Guid.NewGuid());
+        var handUid = new HandUid(Guid.NewGuid());
 
         var @event = new HandIsStartedEvent(
             OccuredAt: now
@@ -75,7 +75,7 @@ public class MongoRepositoryTest : BaseMongoTest
     public void TestHandIsFinishedEvent()
     {
         var now = GetNow();
-        var handUid =  new HandUid(Guid.NewGuid());
+        var handUid = new HandUid(Guid.NewGuid());
 
         var @event = new HandIsFinishedEvent(
             OccuredAt: now
@@ -92,7 +92,7 @@ public class MongoRepositoryTest : BaseMongoTest
     public void TestStageIsStartedEvent()
     {
         var now = GetNow();
-        var handUid =  new HandUid(Guid.NewGuid());
+        var handUid = new HandUid(Guid.NewGuid());
 
         var @event = new StageIsStartedEvent(
             OccuredAt: now
@@ -109,7 +109,7 @@ public class MongoRepositoryTest : BaseMongoTest
     public void TestStageIsFinishedEvent()
     {
         var now = GetNow();
-        var handUid =  new HandUid(Guid.NewGuid());
+        var handUid = new HandUid(Guid.NewGuid());
 
         var @event = new StageIsFinishedEvent(
             OccuredAt: now
@@ -126,7 +126,7 @@ public class MongoRepositoryTest : BaseMongoTest
     public void TestPlayerConnectedEvent()
     {
         var now = GetNow();
-        var handUid =  new HandUid(Guid.NewGuid());
+        var handUid = new HandUid(Guid.NewGuid());
 
         var @event = new PlayerConnectedEvent(
             Nickname: new Nickname("SmallBlind"),
@@ -144,7 +144,7 @@ public class MongoRepositoryTest : BaseMongoTest
     public void TestPlayerDisconnectedEvent()
     {
         var now = GetNow();
-        var handUid =  new HandUid(Guid.NewGuid());
+        var handUid = new HandUid(Guid.NewGuid());
 
         var @event = new PlayerDisconnectedEvent(
             Nickname: new Nickname("SmallBlind"),
@@ -162,7 +162,7 @@ public class MongoRepositoryTest : BaseMongoTest
     public void TestSmallBlindIsPostedEvent()
     {
         var now = GetNow();
-        var handUid =  new HandUid(Guid.NewGuid());
+        var handUid = new HandUid(Guid.NewGuid());
 
         var @event = new SmallBlindIsPostedEvent(
             Nickname: new Nickname("SmallBlind"),
@@ -181,7 +181,7 @@ public class MongoRepositoryTest : BaseMongoTest
     public void TestBigBlindIsPostedEvent()
     {
         var now = GetNow();
-        var handUid =  new HandUid(Guid.NewGuid());
+        var handUid = new HandUid(Guid.NewGuid());
 
         var @event = new BigBlindIsPostedEvent(
             Nickname: new Nickname("BigBlind"),
@@ -200,7 +200,7 @@ public class MongoRepositoryTest : BaseMongoTest
     public void TestHoleCardsAreDealtEvent()
     {
         var now = GetNow();
-        var handUid =  new HandUid(Guid.NewGuid());
+        var handUid = new HandUid(Guid.NewGuid());
 
         var @event = new HoleCardsAreDealtEvent(
             Nickname: new Nickname("SmallBlind"),
@@ -219,7 +219,7 @@ public class MongoRepositoryTest : BaseMongoTest
     public void TestBoardCardsAreDealtEvent()
     {
         var now = GetNow();
-        var handUid =  new HandUid(Guid.NewGuid());
+        var handUid = new HandUid(Guid.NewGuid());
 
         var @event = new BoardCardsAreDealtEvent(
             Cards: new CardSet([Card.KingOfClubs, Card.TenOfDiamonds, Card.DeuceOfClubs]),
@@ -237,7 +237,7 @@ public class MongoRepositoryTest : BaseMongoTest
     public void TestDecisionIsRequestedEvent()
     {
         var now = GetNow();
-        var handUid =  new HandUid(Guid.NewGuid());
+        var handUid = new HandUid(Guid.NewGuid());
 
         var @event = new DecisionIsRequestedEvent(
             Nickname: new Nickname("SmallBlind"),
@@ -262,7 +262,7 @@ public class MongoRepositoryTest : BaseMongoTest
     public void TestDecisionIsCommittedEvent()
     {
         var now = GetNow();
-        var handUid =  new HandUid(Guid.NewGuid());
+        var handUid = new HandUid(Guid.NewGuid());
 
         var @event = new DecisionIsCommittedEvent(
             Nickname: new Nickname("SmallBlind"),
@@ -281,7 +281,7 @@ public class MongoRepositoryTest : BaseMongoTest
     public void TestRefundIsCommittedEvent()
     {
         var now = GetNow();
-        var handUid =  new HandUid(Guid.NewGuid());
+        var handUid = new HandUid(Guid.NewGuid());
 
         var @event = new RefundIsCommittedEvent(
             Nickname: new Nickname("SmallBlind"),
@@ -300,7 +300,7 @@ public class MongoRepositoryTest : BaseMongoTest
     public void WinWithoutShowdownIsCommittedEvent()
     {
         var now = GetNow();
-        var handUid =  new HandUid(Guid.NewGuid());
+        var handUid = new HandUid(Guid.NewGuid());
 
         var @event = new WinWithoutShowdownIsCommittedEvent(
             Nickname: new Nickname("SmallBlind"),
@@ -319,7 +319,7 @@ public class MongoRepositoryTest : BaseMongoTest
     public void WinAtShowdownIsCommittedEvent()
     {
         var now = GetNow();
-        var handUid =  new HandUid(Guid.NewGuid());
+        var handUid = new HandUid(Guid.NewGuid());
 
         var @event = new WinAtShowdownIsCommittedEvent(
             SidePot: new SidePot
@@ -342,7 +342,7 @@ public class MongoRepositoryTest : BaseMongoTest
     public void TestHoleCardsAreMuckedEvent()
     {
         var now = GetNow();
-        var handUid =  new HandUid(Guid.NewGuid());
+        var handUid = new HandUid(Guid.NewGuid());
 
         var @event = new HoleCardsAreMuckedEvent(
             Nickname: new Nickname("BigBlind"),
@@ -360,7 +360,7 @@ public class MongoRepositoryTest : BaseMongoTest
     public void TestHoleCardsAreShownEvent()
     {
         var now = GetNow();
-        var handUid =  new HandUid(Guid.NewGuid());
+        var handUid = new HandUid(Guid.NewGuid());
 
         var @event = new HoleCardsAreShownEvent(
             Nickname: new Nickname("SmallBlind"),

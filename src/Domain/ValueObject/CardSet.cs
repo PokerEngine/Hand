@@ -3,7 +3,7 @@ using System.Collections.Immutable;
 
 namespace Domain.ValueObject;
 
-public readonly struct CardSet : IReadOnlySet<Card>
+public readonly struct CardSet : IReadOnlySet<Card>, IEquatable<CardSet>
 {
     private readonly ImmutableSortedSet<Card> _cards;
 
@@ -15,6 +15,23 @@ public readonly struct CardSet : IReadOnlySet<Card>
     public CardSet()
     {
         _cards = ImmutableSortedSet<Card>.Empty;
+    }
+
+    public static CardSet FromString(string value)
+    {
+        if (value.Length % 2 != 0)
+        {
+            throw new NotValidError($"Invalid CardSet: {value}");
+        }
+
+        var cards = new List<Card>();
+        for (var i = 0; i < value.Length; i += 2)
+        {
+            var card = Card.FromString(value.Substring(i, 2));
+            cards.Add(card);
+        }
+
+        return new CardSet(cards);
     }
 
     public int Count => _cards.Count;
@@ -49,6 +66,9 @@ public readonly struct CardSet : IReadOnlySet<Card>
     public CardSet Except(CardSet other)
         => new(_cards.Except(other));
 
+    public bool Equals(CardSet other)
+        => _cards.SequenceEqual(other._cards);
+
     public override bool Equals(object? o)
     {
         if (o is null || o.GetType() != GetType())
@@ -79,7 +99,7 @@ public readonly struct CardSet : IReadOnlySet<Card>
 
     public override string ToString()
     {
-        return $"{{{String.Join(", ", _cards)}}}";
+        return String.Join("", _cards);
     }
 
     public override int GetHashCode()

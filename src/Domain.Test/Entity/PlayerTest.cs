@@ -432,7 +432,7 @@ public class PlayerTest
         );
         player.TakeHoleCards(new CardSet([Card.AceOfSpades, Card.DeuceOfClubs]));
 
-        Assert.Equal("BigBlind, BigBlind, 1000 chip(s), {As, 2c}", $"{player}");
+        Assert.Equal($"{player.Nickname}, {player.Position}, {player.Stake}, {player.HoleCards}", $"{player}");
     }
 
     private Player CreatePlayer(string nickname = "BigBlind", Position position = Position.BigBlind, int stake = 1000)

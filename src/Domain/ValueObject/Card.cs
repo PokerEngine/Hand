@@ -157,7 +157,7 @@ public readonly struct Card : IEquatable<Card>, IComparable<Card>
     {
         if (!Mapping.TryGetValue(value, out var card))
         {
-            throw new NotPerformedError($"Card {value} does not exist");
+            throw new NotValidError($"Invalid Card: {value}");
         }
 
         return card;
@@ -176,6 +176,12 @@ public readonly struct Card : IEquatable<Card>, IComparable<Card>
 
     public bool Equals(Card other)
         => Rank.Equals(other.Rank) && Suit.Equals(other.Suit);
+
+    public static bool operator ==(Card a, Card b)
+        => a.Rank == b.Rank && a.Suit == b.Suit;
+
+    public static bool operator !=(Card a, Card b)
+        => a.Rank != b.Rank || a.Suit != b.Suit;
 
     public override bool Equals(object? o)
     {

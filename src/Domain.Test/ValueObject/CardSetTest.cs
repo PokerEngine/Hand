@@ -7,12 +7,20 @@ public class CardSetTest
     [Fact]
     public void TestInitialization()
     {
-        var items = new List<Card>() { Card.AceOfSpades, Card.DeuceOfClubs };
+        var items = new List<Card> { Card.AceOfSpades, Card.DeuceOfClubs };
         var cards = new CardSet(items);
         Assert.Equal(items, cards.ToList());
 
         cards = new CardSet();
         Assert.Empty(cards.ToList());
+    }
+
+    [Fact]
+    public void TestFromString()
+    {
+        var cards = CardSet.FromString("As2c");
+
+        Assert.Equal(new CardSet([Card.AceOfSpades, Card.DeuceOfClubs]), cards);
     }
 
     [Fact]
@@ -137,6 +145,15 @@ public class CardSetTest
     }
 
     [Fact]
+    public void TestEquals()
+    {
+        var cards = new CardSet([Card.AceOfSpades, Card.JackOfClubs, Card.DeuceOfClubs]);
+
+        Assert.True(cards.Equals(new CardSet([Card.DeuceOfClubs, Card.JackOfClubs, Card.AceOfSpades])));
+        Assert.False(cards.Equals(new CardSet([Card.AceOfSpades, Card.JackOfClubs, Card.DeuceOfSpades])));
+    }
+
+    [Fact]
     public void TestComparison()
     {
         var cards = new CardSet([Card.AceOfSpades, Card.DeuceOfClubs]);
@@ -163,6 +180,6 @@ public class CardSetTest
     public void TestRepresentation()
     {
         var cards = new CardSet([Card.AceOfSpades, Card.DeuceOfClubs]);
-        Assert.Equal("{As, 2c}", $"{cards}");
+        Assert.Equal("As2c", $"{cards}");
     }
 }

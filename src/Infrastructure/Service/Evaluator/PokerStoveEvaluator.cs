@@ -5,7 +5,7 @@ using System.Diagnostics;
 
 namespace Infrastructure.Service.Evaluator;
 
-public static class PokerStoveClient
+internal static class PokerStoveClient
 {
     private static readonly Dictionary<Game, string> GameMapping = new()
     {
@@ -40,11 +40,11 @@ public static class PokerStoveClient
         var arguments = $"--game {GetGameRepresentation(game)}";
         if (holeCards.Count > 0)
         {
-            arguments += $" --hand {GetCardSetRepresentation(holeCards)}";
+            arguments += $" --hand {holeCards}";
         }
         if (boardCards.Count > 0)
         {
-            arguments += $" --board {GetCardSetRepresentation(boardCards)}";
+            arguments += $" --board {boardCards}";
         }
 
         return new Process
@@ -81,11 +81,6 @@ public static class PokerStoveClient
         }
 
         return gameType;
-    }
-
-    private static string GetCardSetRepresentation(CardSet cards)
-    {
-        return String.Join("", cards.Select(x => x.ToString()));
     }
 
     private static Combo ParseResponse(string output, string error)

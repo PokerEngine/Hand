@@ -465,7 +465,7 @@ internal class EventDocumentMapper
         {
             Nickname = @event.Nickname,
             FoldIsAvailable = @event.FoldIsAvailable,
-            CheckIsAvailable =  @event.CheckIsAvailable,
+            CheckIsAvailable = @event.CheckIsAvailable,
             CallIsAvailable = @event.CallIsAvailable,
             CallToAmount = @event.CallToAmount,
             RaiseIsAvailable = @event.RaiseIsAvailable,

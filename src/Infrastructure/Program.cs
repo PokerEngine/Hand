@@ -10,9 +10,15 @@ using Infrastructure.Service.Randomizer;
 
 var builder = Host.CreateApplicationBuilder(args);
 builder.Services.AddHostedService<Worker>();
-builder.Services.AddSingleton<IRepository, InMemoryRepository>();
+
 builder.Services.AddSingleton<IIntegrationEventBus, InMemoryIntegrationEventBus>();
+
+builder.Services.Configure<MongoRepositoryOptions>(builder.Configuration.GetSection("MongoRepository"));
+builder.Services.AddSingleton<IRepository, MongoRepository>();
+
 builder.Services.AddSingleton<IRandomizer, BuiltInRandomizer>();
+
+builder.Services.Configure<PokerStoveEvaluatorOptions>(builder.Configuration.GetSection("PokerStoveEvaluator"));
 builder.Services.AddSingleton<IEvaluator, PokerStoveEvaluator>();
 
 var host = builder.Build();

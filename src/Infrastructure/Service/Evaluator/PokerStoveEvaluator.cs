@@ -7,7 +7,9 @@ namespace Infrastructure.Service.Evaluator;
 
 public class PokerStoveEvaluator : IEvaluator
 {
-    private const string Path = "/usr/local/lib/pokerstove/build/bin/ps-recognize";
+    private readonly string _path;
+    private readonly ILogger<PokerStoveEvaluator> _logger;
+
     private static readonly Dictionary<Game, string> GameMapping = new()
     {
         { Game.HoldemNoLimit6Max, "h" },
@@ -28,6 +30,13 @@ public class PokerStoveEvaluator : IEvaluator
         {"str8 flush", ComboType.StraightFlush},
     };
 
+    public PokerStoveEvaluator(IConfiguration configuration, ILogger<PokerStoveEvaluator> logger)
+    {
+        _path = configuration.GetValue<string>("PokerStoveEvaluator:Path") ??
+                throw new ArgumentException("PokerStoveEvaluator:Path is not configured", nameof(configuration));
+        _logger = logger;
+    }
+
     public Combo Evaluate(Game game, CardSet holeCards, CardSet boardCards)
     {
         var process = PrepareProcess(game, boardCards, holeCards);
@@ -47,11 +56,13 @@ public class PokerStoveEvaluator : IEvaluator
             arguments += $" --board {boardCards}";
         }
 
+        _logger.LogDebug($"Call {_path} with {arguments}", _path, arguments);
+
         return new Process
         {
             StartInfo =
             {
-                FileName = Path,
+                FileName = _path,
                 Arguments = arguments,
                 RedirectStandardOutput = true,
                 RedirectStandardError = true,
@@ -69,6 +80,16 @@ public class PokerStoveEvaluator : IEvaluator
         var error = process.StandardError.ReadToEnd();
 
         process.WaitForExit();
+
+        if (output != "")
+        {
+            _logger.LogDebug($"Got output {output}", output);
+        }
+
+        if (error != "")
+        {
+            _logger.LogDebug($"Got error {error}", error);
+        }
 
         return (output, error);
     }
@@ -108,4 +129,9 @@ public class PokerStoveEvaluator : IEvaluator
 
         return new Combo(type: comboType, weight: comboWeight);
     }
+}
+
+public class PokerStoveEvaluatorOptions
+{
+    public required string Path { get; set; }
 }

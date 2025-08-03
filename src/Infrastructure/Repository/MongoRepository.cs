@@ -15,16 +15,21 @@ public class MongoRepository : IRepository
     private readonly IMongoCollection<BaseDocument> _collection;
     private readonly EventDocumentMapper _mapper;
 
-    public MongoRepository(
-        string host,
-        int port,
-        string username,
-        string password,
-        string databaseName,
-        string collectionName,
-        ILogger<MongoRepository> logger
-    )
+    public MongoRepository(IConfiguration configuration, ILogger<MongoRepository> logger)
     {
+        var host = configuration.GetValue<string>("MongoRepository:Host") ??
+                   throw new ArgumentException("MongoRepository:Host is not configured", nameof(configuration));
+        var port = configuration.GetValue<int?>("MongoRepository:Port") ??
+                   throw new ArgumentException("MongoRepository:Port is not configured", nameof(configuration));
+        var username = configuration.GetValue<string>("MongoRepository:Username") ??
+                       throw new ArgumentException("MongoRepository:Username is not configured", nameof(configuration));
+        var password = configuration.GetValue<string>("MongoRepository:Password") ??
+                       throw new ArgumentException("MongoRepository:Password is not configured", nameof(configuration));
+        var databaseName = configuration.GetValue<string>("MongoRepository:DatabaseName") ??
+                   throw new ArgumentException("MongoRepository:DatabaseName is not configured", nameof(configuration));
+        var collectionName = configuration.GetValue<string>("MongoRepository:CollectionName") ??
+                           throw new ArgumentException("MongoRepository:CollectionName is not configured", nameof(configuration));
+
         _logger = logger;
 
         var url = $"mongodb://{username}:{password}@{host}:{port}";
@@ -622,4 +627,14 @@ internal class EventDocumentMapper
     {
         throw new NotPerformedError($"Mapper is not implemented for {document.GetType().Name}");
     }
+}
+
+public class MongoRepositoryOptions
+{
+    public required string Host { get; set; }
+    public required int Port { get; set; }
+    public required string Username { get; set; }
+    public required string Password { get; set; }
+    public required string DatabaseName { get; set; }
+    public required string CollectionName { get; set; }
 }

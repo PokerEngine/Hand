@@ -6,6 +6,7 @@ using Infrastructure.IntegrationEvent;
 using Infrastructure.Repository;
 using Infrastructure.Service.Evaluator;
 using Infrastructure.Service.Randomizer;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 
@@ -68,13 +69,29 @@ public class WorkerTest
 
     private IHost GetHost()
     {
+        var configuration = new ConfigurationBuilder()
+            .AddJsonFile("appsettings.json", optional: true)
+            .AddJsonFile("appsettings.Test.json", optional: true)
+            .AddEnvironmentVariables()
+            .Build();
+
         return Host.CreateDefaultBuilder()
+            .ConfigureAppConfiguration((context, config) =>
+            {
+                configuration = config.Build();
+            })
             .ConfigureServices(services =>
             {
                 services.AddHostedService<Worker>();
-                services.AddSingleton<IRepository, InMemoryRepository>();
+
                 services.AddSingleton<IIntegrationEventBus, InMemoryIntegrationEventBus>();
+
+                services.Configure<MongoRepositoryOptions>(configuration.GetSection("Mongo"));
+                services.AddSingleton<IRepository, MongoRepository>();
+
                 services.AddSingleton<IRandomizer, BuiltInRandomizer>();
+
+                services.Configure<PokerStoveEvaluatorOptions>(configuration.GetSection("PokerStove"));
                 services.AddSingleton<IEvaluator, PokerStoveEvaluator>();
             }).Build();
     }

@@ -1,11 +1,14 @@
+using Domain.Service.Evaluator;
 using Domain.ValueObject;
 using Infrastructure.Service.Evaluator;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging.Abstractions;
 
 namespace Infrastructure.Test.Service.Evaluator;
 
 public class OmahaEvaluatorTest
 {
-    private readonly PokerStoveEvaluator _evaluator = new();
+    private readonly IEvaluator _evaluator = GetEvaluator();
 
     [Fact]
     public void TestHighCard()
@@ -71,5 +74,16 @@ public class OmahaEvaluatorTest
         var combo = _evaluator.Evaluate(Game.OmahaPotLimit6Max, boardCards, holeCards);
 
         Assert.Equal(ComboType.StraightFlush, combo.Type);
+    }
+
+    private static IEvaluator GetEvaluator()
+    {
+        var configuration = new ConfigurationBuilder()
+            .AddJsonFile("appsettings.json", optional: true)
+            .AddJsonFile("appsettings.Test.json", optional: true)
+            .AddEnvironmentVariables()
+            .Build();
+        var logger = NullLogger<PokerStoveEvaluator>.Instance;
+        return new PokerStoveEvaluator(configuration, logger);
     }
 }

@@ -14,21 +14,22 @@ public class MongoRepository : IRepository
     private readonly ILogger<MongoRepository> _logger;
     private readonly IMongoCollection<BaseDocument> _collection;
     private readonly EventDocumentMapper _mapper;
+    private bool _isConnected = false;
 
     public MongoRepository(IConfiguration configuration, ILogger<MongoRepository> logger)
     {
-        var host = configuration.GetValue<string>("MongoRepository:Host") ??
-                   throw new ArgumentException("MongoRepository:Host is not configured", nameof(configuration));
-        var port = configuration.GetValue<int?>("MongoRepository:Port") ??
-                   throw new ArgumentException("MongoRepository:Port is not configured", nameof(configuration));
-        var username = configuration.GetValue<string>("MongoRepository:Username") ??
-                       throw new ArgumentException("MongoRepository:Username is not configured", nameof(configuration));
-        var password = configuration.GetValue<string>("MongoRepository:Password") ??
-                       throw new ArgumentException("MongoRepository:Password is not configured", nameof(configuration));
-        var databaseName = configuration.GetValue<string>("MongoRepository:DatabaseName") ??
-                   throw new ArgumentException("MongoRepository:DatabaseName is not configured", nameof(configuration));
-        var collectionName = configuration.GetValue<string>("MongoRepository:CollectionName") ??
-                           throw new ArgumentException("MongoRepository:CollectionName is not configured", nameof(configuration));
+        var host = configuration.GetValue<string>("Mongo:Host") ??
+                   throw new ArgumentException("Mongo:Host is not configured", nameof(configuration));
+        var port = configuration.GetValue<int?>("Mongo:Port") ??
+                   throw new ArgumentException("Mongo:Port is not configured", nameof(configuration));
+        var username = configuration.GetValue<string>("Mongo:Username") ??
+                       throw new ArgumentException("Mongo:Username is not configured", nameof(configuration));
+        var password = configuration.GetValue<string>("Mongo:Password") ??
+                       throw new ArgumentException("Mongo:Password is not configured", nameof(configuration));
+        var databaseName = configuration.GetValue<string>("Mongo:DatabaseName") ??
+                   throw new ArgumentException("Mongo:DatabaseName is not configured", nameof(configuration));
+        var collectionName = configuration.GetValue<string>("Mongo:CollectionName") ??
+                           throw new ArgumentException("Mongo:CollectionName is not configured", nameof(configuration));
 
         _logger = logger;
 
@@ -44,16 +45,32 @@ public class MongoRepository : IRepository
 
     public void Connect()
     {
+        if (_isConnected)
+        {
+            throw new InvalidOperationException("Mongo is already connected");
+        }
+
+        _isConnected = true;
         _logger.LogInformation("Connected");
     }
 
     public void Disconnect()
     {
+        if (!_isConnected)
+        {
+            throw new InvalidOperationException("Mongo is not connected");
+        }
+
         _logger.LogInformation("Disconnected");
     }
 
     public IList<BaseEvent> GetEvents(HandUid handUid)
     {
+        if (!_isConnected)
+        {
+            throw new InvalidOperationException("Mongo is not connected");
+        }
+
         var sort = Builders<BaseDocument>.Sort.Ascending("_id");
         var documents = _collection.Find(e => e.HandUid == handUid).Sort(sort).ToEnumerable();
 
@@ -70,6 +87,11 @@ public class MongoRepository : IRepository
 
     public void AddEvents(HandUid handUid, IList<BaseEvent> events)
     {
+        if (!_isConnected)
+        {
+            throw new InvalidOperationException("Mongo is not connected");
+        }
+
         var documents = new List<BaseDocument>();
         foreach (var @event in events)
         {

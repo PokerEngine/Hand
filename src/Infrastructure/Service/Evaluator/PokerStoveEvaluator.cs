@@ -32,8 +32,8 @@ public class PokerStoveEvaluator : IEvaluator
 
     public PokerStoveEvaluator(IConfiguration configuration, ILogger<PokerStoveEvaluator> logger)
     {
-        _path = configuration.GetValue<string>("PokerStoveEvaluator:Path") ??
-                throw new ArgumentException("PokerStoveEvaluator:Path is not configured", nameof(configuration));
+        _path = configuration.GetValue<string>("PokerStove:Path") ??
+                throw new ArgumentException("PokerStove:Path is not configured", nameof(configuration));
         _logger = logger;
     }
 

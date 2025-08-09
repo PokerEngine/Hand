@@ -10,11 +10,11 @@ services:
             - .:/usr/local/project
         environment:
             DOTNET_ENVIRONMENT: Development
-            MONGO_HOST: mongo
-            MONGO_USERNAME: ${MONGO_USERNAME}
-            MONGO_PASSWORD: ${MONGO_PASSWORD}
-            MONGO_DATABASE: ${MONGO_DATABASE}
-            MONGO_COLLECTION: ${MONGO_COLLECTION}
+            Mongo__Host: mongo
+            Mongo__Port: 27017
+            Mongo__Username: ${MONGO_USERNAME}
+            Mongo__Password: ${MONGO_PASSWORD}
+            Mongo__DatabaseName: ${MONGO_DATABASE}
         depends_on:
             - mongo
 

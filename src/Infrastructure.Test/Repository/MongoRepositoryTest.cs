@@ -1,32 +1,25 @@
+using Application.Repository;
 using Domain.Event;
 using Domain.ValueObject;
 using Infrastructure.Repository;
 using Infrastructure.Test.Fixture;
-using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging.Abstractions;
 
 namespace Infrastructure.Test.Repository;
 
 
-public class MongoRepositoryTest : BaseMongoTest
+public class MongoRepositoryTest : IClassFixture<MongoFixture>
 {
-    private readonly MongoRepository _repository;
+    private readonly IRepository _repository;
 
-    public MongoRepositoryTest(MongoFixture fixture) : base(fixture)
+    public MongoRepositoryTest(MongoFixture fixture)
     {
-        var loggerFactory = LoggerFactory.Create(builder =>
-        {
-            builder.AddConsole().SetMinimumLevel(LogLevel.Warning);
-        });
+        var collectionName = fixture.Configuration.GetValue<string>("Mongo:CollectionName");
+        fixture.Database.DropCollection(collectionName);
 
-        _repository = new MongoRepository(
-            host: fixture.Host,
-            port: fixture.Port,
-            username: fixture.Username,
-            password: fixture.Password,
-            databaseName: fixture.DatabaseName,
-            collectionName: fixture.CollectionName,
-            logger: loggerFactory.CreateLogger<MongoRepository>()
-        );
+        var logger = NullLogger<MongoRepository>.Instance;
+        _repository = new MongoRepository(fixture.Configuration, logger);
     }
 
     [Fact]

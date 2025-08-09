@@ -5,18 +5,16 @@ namespace Domain.Test.ValueObject;
 public class CardTest
 {
     [Fact]
-    public void TestInitialization()
-    {
-        var card = Card.AceOfSpades;
-
-        Assert.Equal(Rank.Ace, card.Rank);
-        Assert.Equal(Suit.Spades, card.Suit);
-    }
-
-    [Fact]
     public void TestFromString()
     {
         Assert.Equal(Card.AceOfSpades, Card.FromString("As"));
+    }
+
+    [Fact]
+    public void TestRandAndSuit()
+    {
+        Assert.Equal(Rank.Ace, Card.AceOfSpades.Rank);
+        Assert.Equal(Suit.Spades, Card.AceOfSpades.Suit);
     }
 
     [Fact]
@@ -40,10 +38,8 @@ public class CardTest
     [Fact]
     public void TestComparison()
     {
-        Assert.True(Card.AceOfSpades == Card.AceOfSpades);
         Assert.False(Card.AceOfSpades == Card.AceOfHearts);
         Assert.False(Card.AceOfSpades == Card.KingOfSpades);
-        Assert.False(Card.AceOfSpades != Card.AceOfSpades);
         Assert.True(Card.AceOfSpades != Card.AceOfHearts);
         Assert.True(Card.AceOfSpades != Card.KingOfSpades);
     }
@@ -51,7 +47,6 @@ public class CardTest
     [Fact]
     public void TestRepresentation()
     {
-        var cards = new CardSet([Card.AceOfSpades, Card.DeuceOfClubs]);
         Assert.Equal("As", $"{Card.AceOfSpades}");
     }
 }

@@ -1,11 +1,14 @@
-﻿using Domain.ValueObject;
+﻿using Domain.Service.Evaluator;
+using Domain.ValueObject;
 using Infrastructure.Service.Evaluator;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging.Abstractions;
 
 namespace Infrastructure.Test.Service.Evaluator;
 
 public class HoldemEvaluatorTest
 {
-    private readonly PokerStoveEvaluator _evaluator = new();
+    private readonly IEvaluator _evaluator = GetEvaluator();
 
     [Fact]
     public void TestHighCard()
@@ -104,5 +107,16 @@ public class HoldemEvaluatorTest
         var combo = _evaluator.Evaluate(Game.HoldemNoLimit6Max, boardCards, holeCards);
 
         Assert.Equal(ComboType.StraightFlush, combo.Type);
+    }
+
+    private static IEvaluator GetEvaluator()
+    {
+        var configuration = new ConfigurationBuilder()
+            .AddJsonFile("appsettings.json", optional: true)
+            .AddJsonFile("appsettings.Test.json", optional: true)
+            .AddEnvironmentVariables()
+            .Build();
+        var logger = NullLogger<PokerStoveEvaluator>.Instance;
+        return new PokerStoveEvaluator(configuration, logger);
     }
 }

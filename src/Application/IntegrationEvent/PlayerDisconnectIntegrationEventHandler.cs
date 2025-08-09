@@ -27,7 +27,7 @@ public class PlayerDisconnectIntegrationEventHandler : IIntegrationEventHandler<
         _evaluator = evaluator;
     }
 
-    public void Handle(PlayerDisconnectIntegrationEvent integrationEvent)
+    public async Task Handle(PlayerDisconnectIntegrationEvent integrationEvent)
     {
         var handUid = new HandUid(integrationEvent.HandUid);
         var nickname = new Nickname(integrationEvent.Nickname);
@@ -36,7 +36,7 @@ public class PlayerDisconnectIntegrationEventHandler : IIntegrationEventHandler<
             uid: handUid,
             randomizer: _randomizer,
             evaluator: _evaluator,
-            events: _repository.GetEvents(handUid)
+            events: await _repository.GetEvents(handUid)
         );
 
         var eventBus = new EventBus();
@@ -51,13 +51,13 @@ public class PlayerDisconnectIntegrationEventHandler : IIntegrationEventHandler<
 
         eventBus.Unsubscribe(listener);
 
-        _repository.AddEvents(handUid, events);
+        await _repository.AddEvents(handUid, events);
 
         var publisher = new DomainEventPublisher(
             integrationEventBus: _integrationEventBus,
             tableUid: integrationEvent.TableUid,
             handUid: integrationEvent.HandUid
         );
-        publisher.Publish(events);
+        await publisher.Publish(events);
     }
 }

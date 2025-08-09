@@ -12,17 +12,19 @@ public class InMemoryIntegrationEventBus : IIntegrationEventBus
         _logger = logger;
     }
 
-    public void Connect()
+    public async Task Connect()
     {
         _logger.LogInformation("Connected");
+        await Task.CompletedTask;
     }
 
-    public void Disconnect()
+    public async Task Disconnect()
     {
         _logger.LogInformation("Disconnected");
+        await Task.CompletedTask;
     }
 
-    public void Subscribe<T>(IIntegrationEventHandler<T> handler, IntegrationEventQueue queue) where T : IIntegrationEvent
+    public async Task Subscribe<T>(IIntegrationEventHandler<T> handler, IntegrationEventQueue queue) where T : IIntegrationEvent
     {
         _logger.LogInformation("{handler} subscribed to {queue}", handler.GetType().Name, queue);
 
@@ -30,9 +32,11 @@ public class InMemoryIntegrationEventBus : IIntegrationEventBus
         {
             _mapping[queue].Add(handler.Handle);
         }
+
+        await Task.CompletedTask;
     }
 
-    public void Unsubscribe<T>(IIntegrationEventHandler<T> handler, IntegrationEventQueue queue) where T : IIntegrationEvent
+    public async Task Unsubscribe<T>(IIntegrationEventHandler<T> handler, IntegrationEventQueue queue) where T : IIntegrationEvent
     {
         _logger.LogInformation("{handler} unsubscribed from {queue}", handler.GetType().Name, queue);
 
@@ -40,9 +44,11 @@ public class InMemoryIntegrationEventBus : IIntegrationEventBus
         {
             listeners.Remove(handler.Handle);
         }
+
+        await Task.CompletedTask;
     }
 
-    public void Publish<T>(T integrationEvent, IntegrationEventQueue queue) where T : IIntegrationEvent
+    public async Task Publish<T>(T integrationEvent, IntegrationEventQueue queue) where T : IIntegrationEvent
     {
         _logger.LogInformation("{integrationEvent} is published to {queue}", integrationEvent, queue);
 
@@ -55,13 +61,15 @@ public class InMemoryIntegrationEventBus : IIntegrationEventBus
 
             foreach (var listener in listeners)
             {
-                if (listener is Action<T> typedListener)
+                if (listener is Func<T, Task> typedListener)
                 {
                     _logger.LogInformation("    {typedListener} is called", typedListener);
 
-                    typedListener(integrationEvent);
+                    await typedListener(integrationEvent);
                 }
             }
         }
+
+        await Task.CompletedTask;
     }
 }

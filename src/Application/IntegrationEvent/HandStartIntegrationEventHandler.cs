@@ -27,7 +27,7 @@ public class HandStartIntegrationEventHandler : IIntegrationEventHandler<HandSta
         _evaluator = evaluator;
     }
 
-    public void Handle(HandStartIntegrationEvent integrationEvent)
+    public async Task Handle(HandStartIntegrationEvent integrationEvent)
     {
         var handUid = new HandUid(integrationEvent.HandUid);
 
@@ -35,7 +35,7 @@ public class HandStartIntegrationEventHandler : IIntegrationEventHandler<HandSta
             uid: handUid,
             randomizer: _randomizer,
             evaluator: _evaluator,
-            events: _repository.GetEvents(handUid)
+            events: await _repository.GetEvents(handUid)
         );
 
         var eventBus = new EventBus();
@@ -47,13 +47,13 @@ public class HandStartIntegrationEventHandler : IIntegrationEventHandler<HandSta
 
         eventBus.Unsubscribe(listener);
 
-        _repository.AddEvents(handUid, events);
+        await _repository.AddEvents(handUid, events);
 
         var publisher = new DomainEventPublisher(
             integrationEventBus: _integrationEventBus,
             tableUid: integrationEvent.TableUid,
             handUid: integrationEvent.HandUid
         );
-        publisher.Publish(events);
+        await publisher.Publish(events);
     }
 }

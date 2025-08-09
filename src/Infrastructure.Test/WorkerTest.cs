@@ -16,9 +16,10 @@ public class TestHandIsCreatedIntegrationEventHandler : IIntegrationEventHandler
 {
     public readonly List<HandIsCreatedIntegrationEvent> IntegrationEvents = [];
 
-    public void Handle(HandIsCreatedIntegrationEvent integrationEvent)
+    public async Task Handle(HandIsCreatedIntegrationEvent integrationEvent)
     {
         IntegrationEvents.Add(integrationEvent);
+        await Task.CompletedTask;
     }
 }
 
@@ -37,7 +38,7 @@ public class WorkerTest
         var integrationEventBus = host.Services.GetRequiredService<IIntegrationEventBus>();
 
         var testHandIsCreatedHandler = new TestHandIsCreatedIntegrationEventHandler();
-        integrationEventBus.Subscribe(testHandIsCreatedHandler, new IntegrationEventQueue("hand.hand-created"));
+        await integrationEventBus.Subscribe(testHandIsCreatedHandler, new IntegrationEventQueue("hand.hand-created"));
 
         var handCreateEvent = new HandCreateIntegrationEvent(
             Game: "HoldemNoLimit6Max",
@@ -52,9 +53,9 @@ public class WorkerTest
             HandUid: Guid.NewGuid(),
             OccuredAt: DateTime.Now
         );
-        integrationEventBus.Publish(handCreateEvent, new IntegrationEventQueue("hand.hand-create"));
+        await integrationEventBus.Publish(handCreateEvent, new IntegrationEventQueue("hand.hand-create"));
 
-        integrationEventBus.Unsubscribe(testHandIsCreatedHandler, new IntegrationEventQueue("hand.hand-created"));
+        await integrationEventBus.Unsubscribe(testHandIsCreatedHandler, new IntegrationEventQueue("hand.hand-created"));
 
         Assert.Single(testHandIsCreatedHandler.IntegrationEvents);
         Assert.Equal(handCreateEvent.Game, testHandIsCreatedHandler.IntegrationEvents[0].Game);

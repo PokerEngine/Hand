@@ -29,7 +29,7 @@ public class HandCreateIntegrationEventHandler : IIntegrationEventHandler<HandCr
         _evaluator = evaluator;
     }
 
-    public void Handle(HandCreateIntegrationEvent integrationEvent)
+    public async Task Handle(HandCreateIntegrationEvent integrationEvent)
     {
         var game = ParseGame(integrationEvent.Game);
         var handUid = new HandUid(integrationEvent.HandUid);
@@ -55,14 +55,14 @@ public class HandCreateIntegrationEventHandler : IIntegrationEventHandler<HandCr
 
         eventBus.Unsubscribe(listener);
 
-        _repository.AddEvents(handUid, events);
+        await _repository.AddEvents(handUid, events);
 
         var publisher = new DomainEventPublisher(
             integrationEventBus: _integrationEventBus,
             tableUid: integrationEvent.TableUid,
             handUid: integrationEvent.HandUid
         );
-        publisher.Publish(events);
+        await publisher.Publish(events);
     }
 
     private Game ParseGame(string value)

@@ -21,15 +21,15 @@ public class DomainEventPublisher
         _handUid = handUid;
     }
 
-    public void Publish(IEnumerable<BaseEvent> events)
+    public async Task Publish(IEnumerable<BaseEvent> events)
     {
         foreach (var @event in events)
         {
-            PublishEvent((dynamic)@event);
+            await PublishEvent((dynamic)@event);
         }
     }
 
-    private void PublishEvent(HandIsCreatedEvent @event)
+    private async Task PublishEvent(HandIsCreatedEvent @event)
     {
         var queue = new IntegrationEventQueue("hand.hand-created");
         var integrationEvent = new HandIsCreatedIntegrationEvent(
@@ -41,10 +41,10 @@ public class DomainEventPublisher
             TableUid: _tableUid,
             OccuredAt: @event.OccuredAt
         );
-        _integrationEventBus.Publish(integrationEvent, queue);
+        await _integrationEventBus.Publish(integrationEvent, queue);
     }
 
-    private void PublishEvent(HandIsStartedEvent @event)
+    private async Task PublishEvent(HandIsStartedEvent @event)
     {
         var queue = new IntegrationEventQueue("hand.hand-started");
         var integrationEvent = new HandIsStartedIntegrationEvent(
@@ -52,10 +52,10 @@ public class DomainEventPublisher
             TableUid: _tableUid,
             OccuredAt: @event.OccuredAt
         );
-        _integrationEventBus.Publish(integrationEvent, queue);
+        await _integrationEventBus.Publish(integrationEvent, queue);
     }
 
-    private void PublishEvent(HandIsFinishedEvent @event)
+    private async Task PublishEvent(HandIsFinishedEvent @event)
     {
         var queue = new IntegrationEventQueue("hand.hand-finished");
         var integrationEvent = new HandIsFinishedIntegrationEvent(
@@ -63,10 +63,10 @@ public class DomainEventPublisher
             TableUid: _tableUid,
             OccuredAt: @event.OccuredAt
         );
-        _integrationEventBus.Publish(integrationEvent, queue);
+        await _integrationEventBus.Publish(integrationEvent, queue);
     }
 
-    private void PublishEvent(PlayerConnectedEvent @event)
+    private async Task PublishEvent(PlayerConnectedEvent @event)
     {
         var queue = new IntegrationEventQueue("hand.player-connected");
         var integrationEvent = new PlayerConnectedIntegrationEvent(
@@ -75,10 +75,10 @@ public class DomainEventPublisher
             TableUid: _tableUid,
             OccuredAt: @event.OccuredAt
         );
-        _integrationEventBus.Publish(integrationEvent, queue);
+        await _integrationEventBus.Publish(integrationEvent, queue);
     }
 
-    private void PublishEvent(PlayerDisconnectedEvent @event)
+    private async Task PublishEvent(PlayerDisconnectedEvent @event)
     {
         var queue = new IntegrationEventQueue("hand.player-disconnected");
         var integrationEvent = new PlayerDisconnectedIntegrationEvent(
@@ -87,10 +87,10 @@ public class DomainEventPublisher
             TableUid: _tableUid,
             OccuredAt: @event.OccuredAt
         );
-        _integrationEventBus.Publish(integrationEvent, queue);
+        await _integrationEventBus.Publish(integrationEvent, queue);
     }
 
-    private void PublishEvent(SmallBlindIsPostedEvent @event)
+    private async Task PublishEvent(SmallBlindIsPostedEvent @event)
     {
         var queue = new IntegrationEventQueue("hand.blind-posted");
         var integrationEvent = new BlindIsPostedIntegrationEvent(
@@ -100,10 +100,10 @@ public class DomainEventPublisher
             TableUid: _tableUid,
             OccuredAt: @event.OccuredAt
         );
-        _integrationEventBus.Publish(integrationEvent, queue);
+        await _integrationEventBus.Publish(integrationEvent, queue);
     }
 
-    private void PublishEvent(BigBlindIsPostedEvent @event)
+    private async Task PublishEvent(BigBlindIsPostedEvent @event)
     {
         var queue = new IntegrationEventQueue("hand.blind-posted");
         var integrationEvent = new BlindIsPostedIntegrationEvent(
@@ -113,10 +113,10 @@ public class DomainEventPublisher
             TableUid: _tableUid,
             OccuredAt: @event.OccuredAt
         );
-        _integrationEventBus.Publish(integrationEvent, queue);
+        await _integrationEventBus.Publish(integrationEvent, queue);
     }
 
-    private void PublishEvent(HoleCardsAreDealtEvent @event)
+    private async Task PublishEvent(HoleCardsAreDealtEvent @event)
     {
         var queue = new IntegrationEventQueue("hand.hole-cards-dealt");
         var integrationEvent = new HoleCardsAreDealtIntegrationEvent(
@@ -126,10 +126,10 @@ public class DomainEventPublisher
             TableUid: _tableUid,
             OccuredAt: @event.OccuredAt
         );
-        _integrationEventBus.Publish(integrationEvent, queue);
+        await _integrationEventBus.Publish(integrationEvent, queue);
     }
 
-    private void PublishEvent(BoardCardsAreDealtEvent @event)
+    private async Task PublishEvent(BoardCardsAreDealtEvent @event)
     {
         var queue = new IntegrationEventQueue("hand.board-cards-dealt");
         var integrationEvent = new BoardCardsAreDealtIntegrationEvent(
@@ -138,10 +138,10 @@ public class DomainEventPublisher
             TableUid: _tableUid,
             OccuredAt: @event.OccuredAt
         );
-        _integrationEventBus.Publish(integrationEvent, queue);
+        await _integrationEventBus.Publish(integrationEvent, queue);
     }
 
-    private void PublishEvent(DecisionIsRequestedEvent @event)
+    private async Task PublishEvent(DecisionIsRequestedEvent @event)
     {
         var queue = new IntegrationEventQueue("hand.decision-requested");
         var integrationEvent = new DecisionIsRequestedIntegrationEvent(
@@ -157,10 +157,10 @@ public class DomainEventPublisher
             TableUid: _tableUid,
             OccuredAt: @event.OccuredAt
         );
-        _integrationEventBus.Publish(integrationEvent, queue);
+        await _integrationEventBus.Publish(integrationEvent, queue);
     }
 
-    private void PublishEvent(DecisionIsCommittedEvent @event)
+    private async Task PublishEvent(DecisionIsCommittedEvent @event)
     {
         var queue = new IntegrationEventQueue("hand.decision-committed");
         var integrationEvent = new DecisionIsCommittedIntegrationEvent(
@@ -171,10 +171,10 @@ public class DomainEventPublisher
             TableUid: _tableUid,
             OccuredAt: @event.OccuredAt
         );
-        _integrationEventBus.Publish(integrationEvent, queue);
+        await _integrationEventBus.Publish(integrationEvent, queue);
     }
 
-    private void PublishEvent(RefundIsCommittedEvent @event)
+    private async Task PublishEvent(RefundIsCommittedEvent @event)
     {
         var queue = new IntegrationEventQueue("hand.refund-committed");
         var integrationEvent = new RefundIsCommittedIntegrationEvent(
@@ -184,10 +184,10 @@ public class DomainEventPublisher
             TableUid: _tableUid,
             OccuredAt: @event.OccuredAt
         );
-        _integrationEventBus.Publish(integrationEvent, queue);
+        await _integrationEventBus.Publish(integrationEvent, queue);
     }
 
-    private void PublishEvent(WinWithoutShowdownIsCommittedEvent @event)
+    private async Task PublishEvent(WinWithoutShowdownIsCommittedEvent @event)
     {
         var queue = new IntegrationEventQueue("hand.win-without-showdown-committed");
         var integrationEvent = new WinWithoutShowdownIsCommittedIntegrationEvent(
@@ -197,10 +197,10 @@ public class DomainEventPublisher
             TableUid: _tableUid,
             OccuredAt: @event.OccuredAt
         );
-        _integrationEventBus.Publish(integrationEvent, queue);
+        await _integrationEventBus.Publish(integrationEvent, queue);
     }
 
-    private void PublishEvent(WinAtShowdownIsCommittedEvent @event)
+    private async Task PublishEvent(WinAtShowdownIsCommittedEvent @event)
     {
         var queue = new IntegrationEventQueue("hand.win-at-showdown-committed");
         foreach (var (nickname, amount) in @event.WinPot)
@@ -212,11 +212,11 @@ public class DomainEventPublisher
                 TableUid: _tableUid,
                 OccuredAt: @event.OccuredAt
             );
-            _integrationEventBus.Publish(integrationEvent, queue);
+            await _integrationEventBus.Publish(integrationEvent, queue);
         }
     }
 
-    private void PublishEvent(HoleCardsAreShownEvent @event)
+    private async Task PublishEvent(HoleCardsAreShownEvent @event)
     {
         var queue = new IntegrationEventQueue("hand.hole-cards-shown");
         var integrationEvent = new HoleCardsAreShownIntegrationEvent(
@@ -228,10 +228,10 @@ public class DomainEventPublisher
             TableUid: _tableUid,
             OccuredAt: @event.OccuredAt
         );
-        _integrationEventBus.Publish(integrationEvent, queue);
+        await _integrationEventBus.Publish(integrationEvent, queue);
     }
 
-    private void PublishEvent(HoleCardsAreMuckedEvent @event)
+    private async Task PublishEvent(HoleCardsAreMuckedEvent @event)
     {
         var queue = new IntegrationEventQueue("hand.hole-cards-mucked");
         var integrationEvent = new HoleCardsAreMuckedIntegrationEvent(
@@ -240,12 +240,13 @@ public class DomainEventPublisher
             TableUid: _tableUid,
             OccuredAt: @event.OccuredAt
         );
-        _integrationEventBus.Publish(integrationEvent, queue);
+        await _integrationEventBus.Publish(integrationEvent, queue);
     }
 
-    private void PublishEvent(object @event)
+    private async Task PublishEvent(object @event)
     {
         // No handler for the given event
+        await Task.CompletedTask;
     }
 
     private IntegrationEventParticipant ProcessParticipant(Participant participant)

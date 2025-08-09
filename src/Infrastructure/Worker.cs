@@ -65,26 +65,26 @@ public class Worker : BackgroundService
     {
         await base.StartAsync(cancellationToken);
 
-        _integrationEventBus.Subscribe(_handCreateHandler, new IntegrationEventQueue("hand.hand-create"));
-        _integrationEventBus.Subscribe(_handStartHandler, new IntegrationEventQueue("hand.hand-start"));
-        _integrationEventBus.Subscribe(_playerConnectHandler, new IntegrationEventQueue("hand.player-connect"));
-        _integrationEventBus.Subscribe(_playerDisconnectHandler, new IntegrationEventQueue("hand.player-disconnect"));
-        _integrationEventBus.Subscribe(_decisionCommitHandler, new IntegrationEventQueue("hand.decision-commit"));
+        await _integrationEventBus.Subscribe(_handCreateHandler, new IntegrationEventQueue("hand.hand-create"));
+        await _integrationEventBus.Subscribe(_handStartHandler, new IntegrationEventQueue("hand.hand-start"));
+        await _integrationEventBus.Subscribe(_playerConnectHandler, new IntegrationEventQueue("hand.player-connect"));
+        await _integrationEventBus.Subscribe(_playerDisconnectHandler, new IntegrationEventQueue("hand.player-disconnect"));
+        await _integrationEventBus.Subscribe(_decisionCommitHandler, new IntegrationEventQueue("hand.decision-commit"));
 
-        _repository.Connect();
-        _integrationEventBus.Connect();
+        await _repository.Connect();
+        await _integrationEventBus.Connect();
     }
 
     public override async Task StopAsync(CancellationToken cancellationToken)
     {
-        _integrationEventBus.Disconnect();
-        _repository.Disconnect();
+        await _integrationEventBus.Disconnect();
+        await _repository.Disconnect();
 
-        _integrationEventBus.Unsubscribe(_handCreateHandler, new IntegrationEventQueue("hand.hand-create"));
-        _integrationEventBus.Unsubscribe(_handStartHandler, new IntegrationEventQueue("hand.hand-start"));
-        _integrationEventBus.Unsubscribe(_playerConnectHandler, new IntegrationEventQueue("hand.player-connect"));
-        _integrationEventBus.Unsubscribe(_playerDisconnectHandler, new IntegrationEventQueue("hand.player-disconnect"));
-        _integrationEventBus.Unsubscribe(_decisionCommitHandler, new IntegrationEventQueue("hand.decision-commit"));
+        await _integrationEventBus.Unsubscribe(_handCreateHandler, new IntegrationEventQueue("hand.hand-create"));
+        await _integrationEventBus.Unsubscribe(_handStartHandler, new IntegrationEventQueue("hand.hand-start"));
+        await _integrationEventBus.Unsubscribe(_playerConnectHandler, new IntegrationEventQueue("hand.player-connect"));
+        await _integrationEventBus.Unsubscribe(_playerDisconnectHandler, new IntegrationEventQueue("hand.player-disconnect"));
+        await _integrationEventBus.Unsubscribe(_decisionCommitHandler, new IntegrationEventQueue("hand.decision-commit"));
 
         await base.StopAsync(cancellationToken);
     }

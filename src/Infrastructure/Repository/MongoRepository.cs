@@ -14,7 +14,7 @@ public class MongoRepository : IRepository
     private readonly ILogger<MongoRepository> _logger;
     private readonly IMongoCollection<BaseDocument> _collection;
     private readonly EventDocumentMapper _mapper;
-    private bool _isConnected = false;
+    private bool _isConnected;
 
     public MongoRepository(IConfiguration configuration, ILogger<MongoRepository> logger)
     {
@@ -43,7 +43,7 @@ public class MongoRepository : IRepository
         RegisterClassMap();
     }
 
-    public void Connect()
+    public async Task Connect()
     {
         if (_isConnected)
         {
@@ -52,9 +52,10 @@ public class MongoRepository : IRepository
 
         _isConnected = true;
         _logger.LogInformation("Connected");
+        await Task.CompletedTask;
     }
 
-    public void Disconnect()
+    public async Task Disconnect()
     {
         if (!_isConnected)
         {
@@ -62,9 +63,10 @@ public class MongoRepository : IRepository
         }
 
         _logger.LogInformation("Disconnected");
+        await Task.CompletedTask;
     }
 
-    public IList<BaseEvent> GetEvents(HandUid handUid)
+    public async Task<IList<BaseEvent>> GetEvents(HandUid handUid)
     {
         if (!_isConnected)
         {
@@ -72,7 +74,12 @@ public class MongoRepository : IRepository
         }
 
         var sort = Builders<BaseDocument>.Sort.Ascending("_id");
-        var documents = _collection.Find(e => e.HandUid == handUid).Sort(sort).ToEnumerable();
+        var findOptions = new FindOptions<BaseDocument>
+        {
+            Sort = sort
+        };
+        var cursor = await _collection.FindAsync(e => e.HandUid == handUid, findOptions);
+        var documents = await cursor.ToListAsync();
 
         var events = new List<BaseEvent>();
         foreach (var document in documents)
@@ -85,7 +92,7 @@ public class MongoRepository : IRepository
         return events;
     }
 
-    public void AddEvents(HandUid handUid, IList<BaseEvent> events)
+    public async Task AddEvents(HandUid handUid, IList<BaseEvent> events)
     {
         if (!_isConnected)
         {
@@ -99,7 +106,7 @@ public class MongoRepository : IRepository
             documents.Add(document);
         }
 
-        _collection.InsertMany(documents);
+        await _collection.InsertManyAsync(documents);
 
         _logger.LogInformation("{eventCount} events are added for {handUid}", events.Count, handUid);
     }

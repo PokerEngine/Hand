@@ -14,17 +14,19 @@ public class InMemoryRepository : IRepository
         _logger = logger;
     }
 
-    public void Connect()
+    public async Task Connect()
     {
         _logger.LogInformation("Connected");
+        await Task.CompletedTask;
     }
 
-    public void Disconnect()
+    public async Task Disconnect()
     {
         _logger.LogInformation("Disconnected");
+        await Task.CompletedTask;
     }
 
-    public IList<BaseEvent> GetEvents(HandUid handUid)
+    public async Task<IList<BaseEvent>> GetEvents(HandUid handUid)
     {
         if (!_mapping.TryGetValue(handUid, out var events))
         {
@@ -32,10 +34,11 @@ public class InMemoryRepository : IRepository
         }
 
         _logger.LogInformation("{eventCount} events are got for {handUid}", events.Count, handUid);
+        await  Task.CompletedTask;
         return events;
     }
 
-    public void AddEvents(HandUid handUid, IList<BaseEvent> events)
+    public async Task AddEvents(HandUid handUid, IList<BaseEvent> events)
     {
         if (!_mapping.TryAdd(handUid, events.ToList()))
         {
@@ -43,5 +46,6 @@ public class InMemoryRepository : IRepository
         }
 
         _logger.LogInformation("{eventCount} events are added for {handUid}", events.Count, handUid);
+        await  Task.CompletedTask;
     }
 }

@@ -65,26 +65,26 @@ public class Worker : BackgroundService
     {
         await base.StartAsync(cancellationToken);
 
+        await _repository.Connect();
+        await _integrationEventBus.Connect();
+
         await _integrationEventBus.Subscribe(_handCreateHandler, new IntegrationEventQueue("hand.hand-create"));
         await _integrationEventBus.Subscribe(_handStartHandler, new IntegrationEventQueue("hand.hand-start"));
         await _integrationEventBus.Subscribe(_playerConnectHandler, new IntegrationEventQueue("hand.player-connect"));
         await _integrationEventBus.Subscribe(_playerDisconnectHandler, new IntegrationEventQueue("hand.player-disconnect"));
         await _integrationEventBus.Subscribe(_decisionCommitHandler, new IntegrationEventQueue("hand.decision-commit"));
-
-        await _repository.Connect();
-        await _integrationEventBus.Connect();
     }
 
     public override async Task StopAsync(CancellationToken cancellationToken)
     {
-        await _integrationEventBus.Disconnect();
-        await _repository.Disconnect();
-
         await _integrationEventBus.Unsubscribe(_handCreateHandler, new IntegrationEventQueue("hand.hand-create"));
         await _integrationEventBus.Unsubscribe(_handStartHandler, new IntegrationEventQueue("hand.hand-start"));
         await _integrationEventBus.Unsubscribe(_playerConnectHandler, new IntegrationEventQueue("hand.player-connect"));
         await _integrationEventBus.Unsubscribe(_playerDisconnectHandler, new IntegrationEventQueue("hand.player-disconnect"));
         await _integrationEventBus.Unsubscribe(_decisionCommitHandler, new IntegrationEventQueue("hand.decision-commit"));
+
+        await _integrationEventBus.Disconnect();
+        await _repository.Disconnect();
 
         await base.StopAsync(cancellationToken);
     }

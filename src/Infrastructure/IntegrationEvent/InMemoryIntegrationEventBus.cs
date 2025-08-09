@@ -6,6 +6,7 @@ public class InMemoryIntegrationEventBus : IIntegrationEventBus
 {
     private readonly ILogger<InMemoryIntegrationEventBus> _logger;
     private readonly Dictionary<IntegrationEventQueue, List<Delegate>> _mapping = new();
+    private bool _isConnected;
 
     public InMemoryIntegrationEventBus(ILogger<InMemoryIntegrationEventBus> logger)
     {
@@ -14,18 +15,35 @@ public class InMemoryIntegrationEventBus : IIntegrationEventBus
 
     public async Task Connect()
     {
+        if (_isConnected)
+        {
+            throw new InvalidOperationException("Mongo is already connected");
+        }
+
         _logger.LogInformation("Connected");
+        _isConnected = true;
         await Task.CompletedTask;
     }
 
     public async Task Disconnect()
     {
+        if (!_isConnected)
+        {
+            throw new InvalidOperationException("Not connected");
+        }
+
         _logger.LogInformation("Disconnected");
+        _isConnected = false;
         await Task.CompletedTask;
     }
 
     public async Task Subscribe<T>(IIntegrationEventHandler<T> handler, IntegrationEventQueue queue) where T : IIntegrationEvent
     {
+        if (!_isConnected)
+        {
+            throw new InvalidOperationException("Not connected");
+        }
+
         _logger.LogInformation("{handler} subscribed to {queue}", handler.GetType().Name, queue);
 
         if (!_mapping.TryAdd(queue, [handler.Handle]))
@@ -38,6 +56,11 @@ public class InMemoryIntegrationEventBus : IIntegrationEventBus
 
     public async Task Unsubscribe<T>(IIntegrationEventHandler<T> handler, IntegrationEventQueue queue) where T : IIntegrationEvent
     {
+        if (!_isConnected)
+        {
+            throw new InvalidOperationException("Not connected");
+        }
+
         _logger.LogInformation("{handler} unsubscribed from {queue}", handler.GetType().Name, queue);
 
         if (_mapping.TryGetValue(queue, out var listeners))
@@ -50,6 +73,11 @@ public class InMemoryIntegrationEventBus : IIntegrationEventBus
 
     public async Task Publish<T>(T integrationEvent, IntegrationEventQueue queue) where T : IIntegrationEvent
     {
+        if (!_isConnected)
+        {
+            throw new InvalidOperationException("Not connected");
+        }
+
         _logger.LogInformation("{integrationEvent} is published to {queue}", integrationEvent, queue);
 
         foreach (var (q, listeners) in _mapping)
@@ -59,14 +87,11 @@ public class InMemoryIntegrationEventBus : IIntegrationEventBus
                 continue;
             }
 
-            foreach (var listener in listeners)
+            foreach (var listener in listeners.OfType<Func<T, Task>>())
             {
-                if (listener is Func<T, Task> typedListener)
-                {
-                    _logger.LogInformation("    {typedListener} is called", typedListener);
+                _logger.LogInformation("    {typedListener} is called", listener);
 
-                    await typedListener(integrationEvent);
-                }
+                await listener(integrationEvent);
             }
         }
 

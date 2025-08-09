@@ -47,7 +47,7 @@ public class MongoDbRepository : IRepository
     {
         if (_isConnected)
         {
-            throw new InvalidOperationException("Mongo is already connected");
+            throw new InvalidOperationException("Already connected");
         }
 
         _isConnected = true;
@@ -59,10 +59,11 @@ public class MongoDbRepository : IRepository
     {
         if (!_isConnected)
         {
-            throw new InvalidOperationException("Mongo is not connected");
+            throw new InvalidOperationException("Not connected");
         }
 
         _logger.LogInformation("Disconnected");
+        _isConnected = false;
         await Task.CompletedTask;
     }
 
@@ -70,7 +71,7 @@ public class MongoDbRepository : IRepository
     {
         if (!_isConnected)
         {
-            throw new InvalidOperationException("Mongo is not connected");
+            throw new InvalidOperationException("Not connected");
         }
 
         var sort = Builders<BaseDocument>.Sort.Ascending("_id");
@@ -96,7 +97,7 @@ public class MongoDbRepository : IRepository
     {
         if (!_isConnected)
         {
-            throw new InvalidOperationException("Mongo is not connected");
+            throw new InvalidOperationException("Not connected");
         }
 
         var documents = new List<BaseDocument>();

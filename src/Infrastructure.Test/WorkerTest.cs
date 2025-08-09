@@ -87,8 +87,8 @@ public class WorkerTest
 
                 services.AddSingleton<IIntegrationEventBus, InMemoryIntegrationEventBus>();
 
-                services.Configure<MongoRepositoryOptions>(configuration.GetSection("Mongo"));
-                services.AddSingleton<IRepository, MongoRepository>();
+                services.Configure<MongoDbRepositoryOptions>(configuration.GetSection("Mongo"));
+                services.AddSingleton<IRepository, MongoDbRepository>();
 
                 services.AddSingleton<IRandomizer, BuiltInRandomizer>();
 

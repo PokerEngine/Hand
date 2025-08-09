@@ -9,27 +9,27 @@ using System.Collections.Immutable;
 
 namespace Infrastructure.Repository;
 
-public class MongoRepository : IRepository
+public class MongoDbRepository : IRepository
 {
-    private readonly ILogger<MongoRepository> _logger;
+    private readonly ILogger<MongoDbRepository> _logger;
     private readonly IMongoCollection<BaseDocument> _collection;
     private readonly EventDocumentMapper _mapper;
     private bool _isConnected;
 
-    public MongoRepository(IConfiguration configuration, ILogger<MongoRepository> logger)
+    public MongoDbRepository(IConfiguration configuration, ILogger<MongoDbRepository> logger)
     {
-        var host = configuration.GetValue<string>("Mongo:Host") ??
-                   throw new ArgumentException("Mongo:Host is not configured", nameof(configuration));
-        var port = configuration.GetValue<int?>("Mongo:Port") ??
-                   throw new ArgumentException("Mongo:Port is not configured", nameof(configuration));
-        var username = configuration.GetValue<string>("Mongo:Username") ??
-                       throw new ArgumentException("Mongo:Username is not configured", nameof(configuration));
-        var password = configuration.GetValue<string>("Mongo:Password") ??
-                       throw new ArgumentException("Mongo:Password is not configured", nameof(configuration));
-        var databaseName = configuration.GetValue<string>("Mongo:DatabaseName") ??
-                   throw new ArgumentException("Mongo:DatabaseName is not configured", nameof(configuration));
-        var collectionName = configuration.GetValue<string>("Mongo:CollectionName") ??
-                           throw new ArgumentException("Mongo:CollectionName is not configured", nameof(configuration));
+        var host = configuration.GetValue<string>("MongoDB:Host") ??
+                   throw new ArgumentException("MongoDB:Host is not configured", nameof(configuration));
+        var port = configuration.GetValue<int?>("MongoDB:Port") ??
+                   throw new ArgumentException("MongoDB:Port is not configured", nameof(configuration));
+        var username = configuration.GetValue<string>("MongoDB:Username") ??
+                       throw new ArgumentException("MongoDB:Username is not configured", nameof(configuration));
+        var password = configuration.GetValue<string>("MongoDB:Password") ??
+                       throw new ArgumentException("MongoDB:Password is not configured", nameof(configuration));
+        var databaseName = configuration.GetValue<string>("MongoDB:DatabaseName") ??
+                   throw new ArgumentException("MongoDB:DatabaseName is not configured", nameof(configuration));
+        var collectionName = configuration.GetValue<string>("MongoDB:CollectionName") ??
+                           throw new ArgumentException("MongoDB:CollectionName is not configured", nameof(configuration));
 
         _logger = logger;
 
@@ -658,7 +658,7 @@ internal class EventDocumentMapper
     }
 }
 
-public class MongoRepositoryOptions
+public class MongoDbRepositoryOptions
 {
     public required string Host { get; set; }
     public required int Port { get; set; }

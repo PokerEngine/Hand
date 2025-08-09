@@ -13,8 +13,8 @@ builder.Services.AddHostedService<Worker>();
 
 builder.Services.AddSingleton<IIntegrationEventBus, InMemoryIntegrationEventBus>();
 
-builder.Services.Configure<MongoRepositoryOptions>(builder.Configuration.GetSection("Mongo"));
-builder.Services.AddSingleton<IRepository, MongoRepository>();
+builder.Services.Configure<MongoDbRepositoryOptions>(builder.Configuration.GetSection("Mongo"));
+builder.Services.AddSingleton<IRepository, MongoDbRepository>();
 
 builder.Services.AddSingleton<IRandomizer, BuiltInRandomizer>();
 

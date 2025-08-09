@@ -8,11 +8,11 @@ services:
             - ..:/usr/local/project
         environment:
             DOTNET_ENVIRONMENT: Development
-            Mongo__Host: mongo
-            Mongo__Port: 27017
-            Mongo__Username: hand
-            Mongo__Password: hand
-            Mongo__DatabaseName: hand
+            MongoDB__Host: mongo
+            MongoDB__Port: 27017
+            MongoDB__Username: hand
+            MongoDB__Password: hand
+            MongoDB__DatabaseName: hand
         depends_on:
             - mongo
 

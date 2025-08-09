@@ -9,17 +9,17 @@ using Microsoft.Extensions.Logging.Abstractions;
 namespace Infrastructure.Test.Repository;
 
 
-public class MongoRepositoryTest : IClassFixture<MongoFixture>
+public class MongoDbRepositoryTest : IClassFixture<MongoDbFixture>
 {
     private readonly IRepository _repository;
 
-    public MongoRepositoryTest(MongoFixture fixture)
+    public MongoDbRepositoryTest(MongoDbFixture dbFixture)
     {
-        var collectionName = fixture.Configuration.GetValue<string>("Mongo:CollectionName");
-        fixture.Database.DropCollection(collectionName);
+        var collectionName = dbFixture.Configuration.GetValue<string>("MongoDB:CollectionName");
+        dbFixture.Database.DropCollection(collectionName);
 
-        var logger = NullLogger<MongoRepository>.Instance;
-        _repository = new MongoRepository(fixture.Configuration, logger);
+        var logger = NullLogger<MongoDbRepository>.Instance;
+        _repository = new MongoDbRepository(dbFixture.Configuration, logger);
         _repository.Connect();
     }
 

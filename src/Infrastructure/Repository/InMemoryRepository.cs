@@ -22,9 +22,10 @@ public class InMemoryRepository : IRepository
             throw new InvalidOperationException("Already connected");
         }
 
-        _logger.LogInformation("Connected");
         _isConnected = true;
         await Task.CompletedTask;
+
+        _logger.LogInformation("Connected");
     }
 
     public async Task Disconnect()
@@ -34,9 +35,10 @@ public class InMemoryRepository : IRepository
             throw new InvalidOperationException("Not connected");
         }
 
-        _logger.LogInformation("Disconnected");
         _isConnected = false;
         await Task.CompletedTask;
+
+        _logger.LogInformation("Disconnected");
     }
 
     public async Task<IList<BaseEvent>> GetEvents(HandUid handUid)
@@ -51,8 +53,9 @@ public class InMemoryRepository : IRepository
             events = [];
         }
 
-        _logger.LogInformation("{eventCount} events are got for {handUid}", events.Count, handUid);
         await Task.CompletedTask;
+
+        _logger.LogInformation("{eventCount} events are got for {handUid}", events.Count, handUid);
         return events;
     }
 
@@ -68,7 +71,8 @@ public class InMemoryRepository : IRepository
             _mapping[handUid].AddRange(events);
         }
 
-        _logger.LogInformation("{eventCount} events are added for {handUid}", events.Count, handUid);
         await Task.CompletedTask;
+
+        _logger.LogInformation("{eventCount} events are added for {handUid}", events.Count, handUid);
     }
 }

@@ -102,14 +102,14 @@ public record BlindIsPostedIntegrationEvent(
 
 public record HoleCardsAreDealtIntegrationEvent(
     string Nickname,
-    List<string> Cards,
+    string Cards,
     Guid TableUid,
     Guid HandUid,
     DateTime OccuredAt
 ) : IIntegrationEvent;
 
 public record BoardCardsAreDealtIntegrationEvent(
-    List<string> Cards,
+    string Cards,
     Guid TableUid,
     Guid HandUid,
     DateTime OccuredAt
@@ -164,7 +164,7 @@ public record WinAtShowdownIsCommittedIntegrationEvent(
 
 public record HoleCardsAreShownIntegrationEvent(
     string Nickname,
-    List<string> Cards,
+    string Cards,
     string ComboType,
     int ComboWeight,
     Guid TableUid,

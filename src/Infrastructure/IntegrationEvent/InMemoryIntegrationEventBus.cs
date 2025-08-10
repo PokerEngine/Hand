@@ -20,9 +20,10 @@ public class InMemoryIntegrationEventBus : IIntegrationEventBus
             throw new InvalidOperationException("Mongo is already connected");
         }
 
-        _logger.LogInformation("Connected");
         _isConnected = true;
         await Task.CompletedTask;
+
+        _logger.LogInformation("Connected");
     }
 
     public async Task Disconnect()
@@ -32,9 +33,10 @@ public class InMemoryIntegrationEventBus : IIntegrationEventBus
             throw new InvalidOperationException("Not connected");
         }
 
-        _logger.LogInformation("Disconnected");
         _isConnected = false;
         await Task.CompletedTask;
+
+        _logger.LogInformation("Disconnected");
     }
 
     public async Task Subscribe<T>(IIntegrationEventHandler<T> handler, IntegrationEventQueue queue) where T : IIntegrationEvent

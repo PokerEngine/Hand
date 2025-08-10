@@ -51,8 +51,9 @@ public class MongoDbRepository : IRepository
         }
 
         _isConnected = true;
-        _logger.LogInformation("Connected");
         await Task.CompletedTask;
+
+        _logger.LogInformation("Connected");
     }
 
     public async Task Disconnect()
@@ -62,9 +63,10 @@ public class MongoDbRepository : IRepository
             throw new InvalidOperationException("Not connected");
         }
 
-        _logger.LogInformation("Disconnected");
         _isConnected = false;
         await Task.CompletedTask;
+
+        _logger.LogInformation("Disconnected");
     }
 
     public async Task<IList<BaseEvent>> GetEvents(HandUid handUid)

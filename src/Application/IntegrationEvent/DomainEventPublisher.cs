@@ -121,7 +121,7 @@ public class DomainEventPublisher
         var queue = new IntegrationEventQueue("hand.hole-cards-dealt");
         var integrationEvent = new HoleCardsAreDealtIntegrationEvent(
             Nickname: (string)@event.Nickname,
-            Cards: ProcessCards(@event.Cards),
+            Cards: @event.Cards.ToString(),
             HandUid: _handUid,
             TableUid: _tableUid,
             OccuredAt: @event.OccuredAt
@@ -133,7 +133,7 @@ public class DomainEventPublisher
     {
         var queue = new IntegrationEventQueue("hand.board-cards-dealt");
         var integrationEvent = new BoardCardsAreDealtIntegrationEvent(
-            Cards: ProcessCards(@event.Cards),
+            Cards: @event.Cards.ToString(),
             HandUid: _handUid,
             TableUid: _tableUid,
             OccuredAt: @event.OccuredAt
@@ -221,7 +221,7 @@ public class DomainEventPublisher
         var queue = new IntegrationEventQueue("hand.hole-cards-shown");
         var integrationEvent = new HoleCardsAreShownIntegrationEvent(
             Nickname: (string)@event.Nickname,
-            Cards: ProcessCards(@event.Cards),
+            Cards: @event.Cards.ToString(),
             ComboType: @event.Combo.Type.ToString(),
             ComboWeight: @event.Combo.Weight,
             HandUid: _handUid,
@@ -256,10 +256,5 @@ public class DomainEventPublisher
             Position: participant.Position.ToString(),
             Stake: (int)participant.Stake
         );
-    }
-
-    private List<string> ProcessCards(CardSet cards)
-    {
-        return cards.Select(x => x.ToString()).ToList();
     }
 }

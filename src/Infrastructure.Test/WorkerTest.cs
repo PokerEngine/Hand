@@ -6,6 +6,7 @@ using Infrastructure.IntegrationEvent;
 using Infrastructure.Repository;
 using Infrastructure.Service.Evaluator;
 using Infrastructure.Service.Randomizer;
+using Infrastructure.Test.Fixture;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -23,8 +24,21 @@ public class TestHandIsCreatedIntegrationEventHandler : IIntegrationEventHandler
     }
 }
 
-public class WorkerTest
+public class WorkerTest : IClassFixture<MongoDbFixture>, IDisposable
 {
+    private readonly MongoDbFixture _dbFixture;
+
+    public WorkerTest(MongoDbFixture dbFixture)
+    {
+        _dbFixture = dbFixture;
+        _dbFixture.Database.CreateCollection("events");
+    }
+
+    public void Dispose()
+    {
+        _dbFixture.Database.DropCollection("events");
+    }
+
     [Fact]
     public async Task TestHandCreate()
     {

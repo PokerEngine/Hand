@@ -3,24 +3,29 @@ using Domain.Event;
 using Domain.ValueObject;
 using Infrastructure.Repository;
 using Infrastructure.Test.Fixture;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging.Abstractions;
 
 namespace Infrastructure.Test.Repository;
 
 
-public class MongoDbRepositoryTest : IClassFixture<MongoDbFixture>
+public class MongoDbRepositoryTest : IClassFixture<MongoDbFixture>, IDisposable
 {
+    private readonly MongoDbFixture _dbFixture;
     private readonly IRepository _repository;
 
     public MongoDbRepositoryTest(MongoDbFixture dbFixture)
     {
-        var collectionName = dbFixture.Configuration.GetValue<string>("MongoDB:CollectionName");
-        dbFixture.Database.DropCollection(collectionName);
+        _dbFixture = dbFixture;
+        _dbFixture.Database.CreateCollection("events");
 
         var logger = NullLogger<MongoDbRepository>.Instance;
         _repository = new MongoDbRepository(dbFixture.Configuration, logger);
         _repository.Connect();
+    }
+
+    public void Dispose()
+    {
+        _dbFixture.Database.DropCollection("events");
     }
 
     [Fact]

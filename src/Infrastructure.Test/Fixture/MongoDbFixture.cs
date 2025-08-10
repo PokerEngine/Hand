@@ -25,20 +25,17 @@ public class MongoDbFixture : IDisposable
                        throw new ArgumentException("MongoDB:Username is not configured");
         var password = Configuration.GetValue<string>("MongoDB:Password") ??
                        throw new ArgumentException("MongoDB:Password is not configured");
-        var databaseName = Configuration.GetValue<string>("MongoDB:DatabaseName") ??
-                           throw new ArgumentException("MongoDB:DatabaseName is not configured");
-        var collectionName = Configuration.GetValue<string>("MongoDB:CollectionName") ??
-                             throw new ArgumentException("MongoDB:CollectionName is not configured");
+        var database = Configuration.GetValue<string>("MongoDB:Database") ??
+                       throw new ArgumentException("MongoDB:Database is not configured");
 
         var url = $"mongodb://{username}:{password}@{host}:{port}";
         Client = new MongoClient(url);
-        Database = Client.GetDatabase(databaseName);
-        Database.CreateCollection(collectionName);
+        Database = Client.GetDatabase(database);
     }
 
     public void Dispose()
     {
-        var databaseName = Configuration.GetValue<string>("MongoDB:DatabaseName");
-        Client.DropDatabase(databaseName);
+        var database = Configuration.GetValue<string>("MongoDB:Database");
+        Client.DropDatabase(database);
     }
 }

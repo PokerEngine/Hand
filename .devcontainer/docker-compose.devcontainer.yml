@@ -1,6 +1,3 @@
-volumes:
-    mongo-data:
-
 services:
     hand:
         image: hand-hand:latest
@@ -8,19 +5,22 @@ services:
             - ..:/usr/local/project
         environment:
             DOTNET_ENVIRONMENT: Development
-            MongoDB__Host: mongo
+            MongoDB__Host: mongodb
             MongoDB__Port: 27017
             MongoDB__Username: hand
             MongoDB__Password: hand
-            MongoDB__DatabaseName: hand
+            MongoDB__Database: hand
         depends_on:
-            - mongo
+            - mongodb
 
-    mongo:
+    mongodb:
         image: mongo:8.0.9
         volumes:
-            - mongo-data:/data/db
+            - mongodb-data:/data/db
         environment:
-            MONGO_INITDB_DATABASE: hand
             MONGO_INITDB_ROOT_USERNAME: hand
             MONGO_INITDB_ROOT_PASSWORD: hand
+            MONGO_INITDB_DATABASE: hand
+
+volumes:
+    mongodb-data:

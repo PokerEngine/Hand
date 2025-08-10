@@ -15,6 +15,7 @@ public class MongoDbRepository : IRepository
     private readonly IMongoCollection<BaseDocument> _collection;
     private readonly EventDocumentMapper _mapper;
     private bool _isConnected;
+    private const string Collection = "events";
 
     public MongoDbRepository(IConfiguration configuration, ILogger<MongoDbRepository> logger)
     {
@@ -26,17 +27,15 @@ public class MongoDbRepository : IRepository
                        throw new ArgumentException("MongoDB:Username is not configured", nameof(configuration));
         var password = configuration.GetValue<string>("MongoDB:Password") ??
                        throw new ArgumentException("MongoDB:Password is not configured", nameof(configuration));
-        var databaseName = configuration.GetValue<string>("MongoDB:DatabaseName") ??
-                   throw new ArgumentException("MongoDB:DatabaseName is not configured", nameof(configuration));
-        var collectionName = configuration.GetValue<string>("MongoDB:CollectionName") ??
-                           throw new ArgumentException("MongoDB:CollectionName is not configured", nameof(configuration));
+        var database = configuration.GetValue<string>("MongoDB:Database") ??
+                       throw new ArgumentException("MongoDB:Database is not configured", nameof(configuration));
 
         _logger = logger;
 
         var url = $"mongodb://{username}:{password}@{host}:{port}";
         var client = new MongoClient(url);
-        var db = client.GetDatabase(databaseName);
-        _collection = db.GetCollection<BaseDocument>(collectionName);
+        var db = client.GetDatabase(database);
+        _collection = db.GetCollection<BaseDocument>(Collection);
 
         _mapper = new EventDocumentMapper();
 
@@ -667,6 +666,5 @@ public class MongoDbRepositoryOptions
     public required int Port { get; set; }
     public required string Username { get; set; }
     public required string Password { get; set; }
-    public required string DatabaseName { get; set; }
-    public required string CollectionName { get; set; }
+    public required string Database { get; set; }
 }

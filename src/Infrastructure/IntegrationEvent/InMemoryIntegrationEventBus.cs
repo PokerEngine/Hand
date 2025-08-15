@@ -17,7 +17,7 @@ public class InMemoryIntegrationEventBus : IIntegrationEventBus
     {
         if (_isConnected)
         {
-            throw new InvalidOperationException("Mongo is already connected");
+            throw new InvalidOperationException("Already connected");
         }
 
         _isConnected = true;
@@ -84,7 +84,7 @@ public class InMemoryIntegrationEventBus : IIntegrationEventBus
 
         foreach (var (q, listeners) in _mapping)
         {
-            if (!q.IsSubQueue(queue))
+            if (q != queue)
             {
                 continue;
             }

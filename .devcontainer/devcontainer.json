@@ -3,7 +3,7 @@
     "dockerComposeFile": "docker-compose.devcontainer.yml",
     "service": "hand",
     "workspaceFolder": "/usr/local/project",
-    "forwardPorts": [27017],
+    "forwardPorts": [27017, 5672],
     "features": {},
     "customizations": {
         "jetbrains": {

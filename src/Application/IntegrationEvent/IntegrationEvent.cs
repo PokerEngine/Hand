@@ -10,9 +10,9 @@ public record IntegrationEventParticipant(
 
 public interface IIntegrationEvent
 {
-    public Guid TableUid { init; get; }
-    public Guid HandUid { init; get; }
-    public DateTime OccuredAt { init; get; }
+    Guid TableUid { init; get; }
+    Guid HandUid { init; get; }
+    DateTime OccuredAt { init; get; }
 }
 
 /* Incoming events aka commands */
@@ -20,11 +20,39 @@ public record HandCreateIntegrationEvent(
     string Game,
     int SmallBlind,
     int BigBlind,
-    List<IntegrationEventParticipant> Participants,
+    ImmutableList<IntegrationEventParticipant> Participants,
     Guid TableUid,
     Guid HandUid,
     DateTime OccuredAt
-) : IIntegrationEvent;
+) : IIntegrationEvent
+{
+    public virtual bool Equals(HandCreateIntegrationEvent? other)
+    {
+        // We override it to check participants equality by value
+        return other is not null
+               && Game == other.Game
+               && SmallBlind == other.SmallBlind
+               && BigBlind == other.BigBlind
+               && Participants.SequenceEqual(other.Participants)
+               && TableUid == other.TableUid
+               && HandUid == other.HandUid
+               && OccuredAt == other.OccuredAt;
+    }
+
+    public override int GetHashCode()
+    {
+        var hash = new HashCode();
+        hash.Add(Game);
+        hash.Add(SmallBlind);
+        hash.Add(BigBlind);
+        foreach (var p in Participants)
+            hash.Add(p);
+        hash.Add(TableUid);
+        hash.Add(HandUid);
+        hash.Add(OccuredAt);
+        return hash.ToHashCode();
+    }
+}
 
 public record HandStartIntegrationEvent(
     Guid TableUid,
@@ -64,7 +92,35 @@ public record HandIsCreatedIntegrationEvent(
     Guid TableUid,
     Guid HandUid,
     DateTime OccuredAt
-) : IIntegrationEvent;
+) : IIntegrationEvent
+{
+    public virtual bool Equals(HandIsCreatedIntegrationEvent? other)
+    {
+        // We override it to check participants equality by value
+        return other is not null
+               && Game == other.Game
+               && SmallBlind == other.SmallBlind
+               && BigBlind == other.BigBlind
+               && Participants.SequenceEqual(other.Participants)
+               && TableUid == other.TableUid
+               && HandUid == other.HandUid
+               && OccuredAt == other.OccuredAt;
+    }
+
+    public override int GetHashCode()
+    {
+        var hash = new HashCode();
+        hash.Add(Game);
+        hash.Add(SmallBlind);
+        hash.Add(BigBlind);
+        foreach (var p in Participants)
+            hash.Add(p);
+        hash.Add(TableUid);
+        hash.Add(HandUid);
+        hash.Add(OccuredAt);
+        return hash.ToHashCode();
+    }
+}
 
 public record HandIsStartedIntegrationEvent(
     Guid TableUid,

@@ -27,39 +27,28 @@ public readonly struct IntegrationEventQueue : IEquatable<IntegrationEventQueue>
     public static explicit operator IntegrationEventQueue(string a)
         => new(a);
 
-    public bool IsSubQueue(IntegrationEventQueue other)
+    public static bool operator ==(IntegrationEventQueue a, IntegrationEventQueue b)
+        => a._name == b._name;
+
+    public static bool operator !=(IntegrationEventQueue a, IntegrationEventQueue b)
+        => a._name != b._name;
+
+    public bool Equals(IntegrationEventQueue other)
+        => _name.Equals(other._name);
+
+    public override bool Equals(object? o)
     {
-        if (_name == other._name)
-        {
-            return true;
-        }
-
-        var parts = Split().ToList();
-        var otherParts = other.Split().ToList();
-
-        if (parts.Count > otherParts.Count)
+        if (o is null || o.GetType() != GetType())
         {
             return false;
         }
 
-        for (var i = 0; i < parts.Count; i++)
-        {
-            if (parts[i] != otherParts[i])
-            {
-                return false;
-            }
-        }
-
-        return true;
+        var c = (IntegrationEventQueue)o;
+        return _name.Equals(c._name);
     }
 
-    public IEnumerable<IntegrationEventQueue> Split()
-    {
-        return _name.Split(".").Select(x => new IntegrationEventQueue(x));
-    }
-
-    public bool Equals(IntegrationEventQueue other)
-        => _name.Equals(other._name);
+    public override int GetHashCode()
+        => _name.GetHashCode();
 
     public override string ToString()
         => _name;

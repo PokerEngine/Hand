@@ -1,4 +1,3 @@
-using Application.Repository;
 using Domain.Event;
 using Domain.ValueObject;
 using Infrastructure.Repository;
@@ -10,22 +9,23 @@ namespace Infrastructure.Test.Repository;
 
 public class MongoDbRepositoryTest : IClassFixture<MongoDbFixture>, IDisposable
 {
-    private readonly MongoDbFixture _dbFixture;
-    private readonly IRepository _repository;
+    private readonly MongoDbFixture _mongoDbFixture;
+    private readonly MongoDbRepository _repository;
 
-    public MongoDbRepositoryTest(MongoDbFixture dbFixture)
+    public MongoDbRepositoryTest(MongoDbFixture mongoDbFixture)
     {
-        _dbFixture = dbFixture;
-        _dbFixture.Database.CreateCollection("events");
+        _mongoDbFixture = mongoDbFixture;
+        _mongoDbFixture.Database.CreateCollection("events");
 
         var logger = NullLogger<MongoDbRepository>.Instance;
-        _repository = new MongoDbRepository(dbFixture.Configuration, logger);
-        _repository.Connect();
+        _repository = new MongoDbRepository(_mongoDbFixture.Configuration, logger);
+        _repository.Connect().GetAwaiter().GetResult();
     }
 
     public void Dispose()
     {
-        _dbFixture.Database.DropCollection("events");
+        _repository.Disconnect().GetAwaiter().GetResult();
+        _mongoDbFixture.Database.DropCollection("events");
     }
 
     [Fact]

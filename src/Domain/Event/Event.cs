@@ -22,8 +22,8 @@ public record HandIsCreatedEvent(
                && Game == other.Game
                && SmallBlind == other.SmallBlind
                && BigBlind == other.BigBlind
-               && OccuredAt == other.OccuredAt
-               && Participants.SequenceEqual(other.Participants);
+               && Participants.SequenceEqual(other.Participants)
+               && OccuredAt == other.OccuredAt;
     }
 
     public override int GetHashCode()

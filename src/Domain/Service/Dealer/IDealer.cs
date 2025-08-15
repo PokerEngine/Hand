@@ -8,7 +8,7 @@ namespace Domain.Service.Dealer;
 
 public interface IDealer
 {
-    public void Start(
+    void Start(
         Game game,
         BaseTable table,
         BasePot pot,
@@ -18,7 +18,7 @@ public interface IDealer
         IEventBus eventBus
     );
 
-    public void Handle(
+    void Handle(
         BaseEvent @event,
         Game game,
         BaseTable table,
@@ -28,7 +28,7 @@ public interface IDealer
         IEvaluator evaluator
     );
 
-    public void CommitDecision(
+    void CommitDecision(
         Nickname nickname,
         Decision decision,
         Game game,

@@ -60,7 +60,7 @@ public abstract class BasePot
                 RaiseTo(player, decision.Amount);
                 break;
             default:
-                throw new NotValidError("The decision is unknown");
+                throw new ArgumentException("The decision is unknown", nameof(decision));
         }
     }
 
@@ -240,7 +240,7 @@ public abstract class BasePot
             ValidateFold(player);
             return true;
         }
-        catch (NotAvailableError)
+        catch (InvalidOperationException)
         {
             return false;
         }
@@ -253,7 +253,7 @@ public abstract class BasePot
             ValidateCheck(player);
             return true;
         }
-        catch (NotAvailableError)
+        catch (InvalidOperationException)
         {
             return false;
         }
@@ -267,7 +267,7 @@ public abstract class BasePot
             ValidateCallTo(player, amount);
             return true;
         }
-        catch (NotAvailableError)
+        catch (InvalidOperationException)
         {
             return false;
         }
@@ -281,7 +281,7 @@ public abstract class BasePot
             ValidateRaiseTo(player, amount);
             return true;
         }
-        catch (NotAvailableError)
+        catch (InvalidOperationException)
         {
             return false;
         }
@@ -399,7 +399,7 @@ public abstract class BasePot
         var expectedAmount = (blind <= player.Stake) ? blind : player.Stake;
         if (amount != expectedAmount)
         {
-            throw new NotAvailableError($"The player must post {expectedAmount}");
+            throw new InvalidOperationException($"The player must post {expectedAmount}");
         }
     }
 
@@ -410,12 +410,12 @@ public abstract class BasePot
 
         if (currentPostedAmount > currentMaxAmount)
         {
-            throw new NotAvailableError("The player has posted the most amount into the pot, he cannot fold");
+            throw new InvalidOperationException("The player has posted the most amount into the pot, he cannot fold");
         }
 
         if (currentPostedAmount == currentMaxAmount)
         {
-            throw new NotAvailableError("The player has posted the same amount into the pot, he cannot fold");
+            throw new InvalidOperationException("The player has posted the same amount into the pot, he cannot fold");
         }
     }
 
@@ -426,18 +426,18 @@ public abstract class BasePot
 
         if (currentPostedAmount > currentMaxAmount)
         {
-            throw new NotAvailableError("The player has posted the most amount into the pot, he cannot check");
+            throw new InvalidOperationException("The player has posted the most amount into the pot, he cannot check");
         }
 
         if (currentPostedAmount < currentMaxAmount)
         {
-            throw new NotAvailableError("The player has posted less amount into the pot, he cannot check");
+            throw new InvalidOperationException("The player has posted less amount into the pot, he cannot check");
         }
 
         // Covers a case when the player is on a blind and there was a limp 
         if (IsCurrentDecisionCommitted(player))
         {
-            throw new NotAvailableError("The player has already performed an action, he cannot check");
+            throw new InvalidOperationException("The player has already performed an action, he cannot check");
         }
     }
 
@@ -448,18 +448,18 @@ public abstract class BasePot
 
         if (currentPostedAmount > currentMaxAmount)
         {
-            throw new NotAvailableError("The player has posted the most amount into the pot, he cannot call");
+            throw new InvalidOperationException("The player has posted the most amount into the pot, he cannot call");
         }
 
         if (currentPostedAmount == currentMaxAmount)
         {
-            throw new NotAvailableError("The player has posted the same amount into the pot, he cannot call");
+            throw new InvalidOperationException("The player has posted the same amount into the pot, he cannot call");
         }
 
         var expectedAmount = GetCallToAmount(player);
         if (amount != expectedAmount)
         {
-            throw new NotAvailableError($"The player must call to {expectedAmount}");
+            throw new InvalidOperationException($"The player must call to {expectedAmount}");
         }
     }
 
@@ -470,28 +470,28 @@ public abstract class BasePot
 
         if (currentPostedAmount > currentMaxAmount)
         {
-            throw new NotAvailableError("The player has posted the most amount into the pot, he cannot raise");
+            throw new InvalidOperationException("The player has posted the most amount into the pot, he cannot raise");
         }
 
         if (IsCurrentDecisionCommitted(player) && !ThereWasRaiseSincePlayerDecision(player))
         {
-            throw new NotAvailableError("There was no raise since the player's last action, he cannot raise");
+            throw new InvalidOperationException("There was no raise since the player's last action, he cannot raise");
         }
 
         var minExpectedAmount = GetMinRaiseToAmount(player);
         if (minExpectedAmount < currentMaxAmount)
         {
-            throw new NotAvailableError($"The player must call to {minExpectedAmount}");
+            throw new InvalidOperationException($"The player must call to {minExpectedAmount}");
         }
         if (amount < minExpectedAmount)
         {
-            throw new NotAvailableError($"The player must raise to minimum {minExpectedAmount}");
+            throw new InvalidOperationException($"The player must raise to minimum {minExpectedAmount}");
         }
 
         var maxExpectedAmount = GetMaxRaiseToAmount(player);
         if (amount > maxExpectedAmount)
         {
-            throw new NotAvailableError($"The player must raise to maximum {maxExpectedAmount}");
+            throw new InvalidOperationException($"The player must raise to maximum {maxExpectedAmount}");
         }
     }
 
@@ -501,12 +501,12 @@ public abstract class BasePot
 
         if (!expectedAmount)
         {
-            throw new NotAvailableError("The player cannot refund");
+            throw new InvalidOperationException("The player cannot refund");
         }
 
         if (amount != expectedAmount)
         {
-            throw new NotAvailableError($"The player must refund {expectedAmount}");
+            throw new InvalidOperationException($"The player must refund {expectedAmount}");
         }
     }
 
@@ -515,7 +515,7 @@ public abstract class BasePot
         var expectedAmount = GetTotalAmount();
         if (amount != expectedAmount)
         {
-            throw new NotAvailableError($"The player must win {expectedAmount}");
+            throw new InvalidOperationException($"The player must win {expectedAmount}");
         }
     }
 
@@ -524,11 +524,11 @@ public abstract class BasePot
         var expectedWinPot = GetWinPot(players, sidePot);
         if (expectedWinPot.Amount != winPot.Amount)
         {
-            throw new NotAvailableError($"The player(s) must win {expectedWinPot.Amount}");
+            throw new InvalidOperationException($"The player(s) must win {expectedWinPot.Amount}");
         }
         if (!expectedWinPot.Equals(winPot))
         {
-            throw new NotAvailableError($"The player(s) must win {expectedWinPot}");
+            throw new InvalidOperationException($"The player(s) must win {expectedWinPot}");
         }
     }
 

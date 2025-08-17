@@ -6,11 +6,11 @@ public readonly struct Chips : IMinMaxValue<Chips>, IComparable<Chips>, IEquatab
 {
     public static Chips MinValue
     {
-        get => new Chips(0);
+        get => new(0);
     }
     public static Chips MaxValue
     {
-        get => new Chips(int.MaxValue);
+        get => new(int.MaxValue);
     }
 
     private readonly int _amount;
@@ -19,7 +19,7 @@ public readonly struct Chips : IMinMaxValue<Chips>, IComparable<Chips>, IEquatab
     {
         if (amount < 0)
         {
-            throw new ArgumentException("Chips amount must be a non-negative integer");
+            throw new ArgumentOutOfRangeException(nameof(amount), amount, "Chips amount must be a non-negative integer");
         }
 
         _amount = amount;

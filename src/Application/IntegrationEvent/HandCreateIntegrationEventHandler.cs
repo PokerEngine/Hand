@@ -1,5 +1,4 @@
 using Application.Repository;
-using Domain;
 using Domain.Entity;
 using Domain.Event;
 using Domain.Service.Evaluator;
@@ -72,7 +71,7 @@ public class HandCreateIntegrationEventHandler : IIntegrationEventHandler<HandCr
             return game;
         }
 
-        throw new NotValidError($"Invalid game: {value}");
+        throw new ArgumentException("Invalid game", nameof(value));
     }
 
     private Participant ParseParticipant(IntegrationEventParticipant value)
@@ -91,6 +90,6 @@ public class HandCreateIntegrationEventHandler : IIntegrationEventHandler<HandCr
             return position;
         }
 
-        throw new NotValidError($"Invalid position: {value}");
+        throw new ArgumentException("Invalid position", nameof(value));
     }
 }

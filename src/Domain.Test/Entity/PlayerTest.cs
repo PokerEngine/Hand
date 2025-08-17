@@ -38,7 +38,7 @@ public class PlayerTest
         var player = CreatePlayer();
         player.Connect();
 
-        var exc = Assert.Throws<NotAvailableError>(() => player.Connect());
+        var exc = Assert.Throws<InvalidOperationException>(() => player.Connect());
 
         Assert.Equal("The player has already connected", exc.Message);
         Assert.True(player.IsConnected);
@@ -60,7 +60,7 @@ public class PlayerTest
     {
         var player = CreatePlayer();
 
-        var exc = Assert.Throws<NotAvailableError>(() => player.Disconnect());
+        var exc = Assert.Throws<InvalidOperationException>(() => player.Disconnect());
 
         Assert.Equal("The player has not connected yet", exc.Message);
         Assert.False(player.IsConnected);
@@ -87,7 +87,7 @@ public class PlayerTest
         player.Connect();
         player.Fold();
 
-        var exc = Assert.Throws<NotAvailableError>(() => player.TakeHoleCards(new CardSet([Card.KingOfHearts, Card.TreyOfDiamonds])));
+        var exc = Assert.Throws<InvalidOperationException>(() => player.TakeHoleCards(new CardSet([Card.KingOfHearts, Card.TreyOfDiamonds])));
 
         Assert.Equal("The player has already folded", exc.Message);
         Assert.Empty(player.HoleCards);
@@ -112,7 +112,7 @@ public class PlayerTest
         player.Connect();
         player.Fold();
 
-        var exc = Assert.Throws<NotAvailableError>(() => player.Fold());
+        var exc = Assert.Throws<InvalidOperationException>(() => player.Fold());
 
         Assert.Equal("The player has already folded", exc.Message);
         Assert.True(player.IsFolded);
@@ -126,7 +126,7 @@ public class PlayerTest
         player.Connect();
         player.Bet(player.Stake);
 
-        var exc = Assert.Throws<NotAvailableError>(() => player.Fold());
+        var exc = Assert.Throws<InvalidOperationException>(() => player.Fold());
 
         Assert.Equal("The player has already been all in", exc.Message);
         Assert.False(player.IsFolded);
@@ -152,7 +152,7 @@ public class PlayerTest
         player.Connect();
         player.Fold();
 
-        var exc = Assert.Throws<NotAvailableError>(() => player.Check());
+        var exc = Assert.Throws<InvalidOperationException>(() => player.Check());
 
         Assert.Equal("The player has already folded", exc.Message);
         Assert.True(player.IsFolded);
@@ -164,7 +164,7 @@ public class PlayerTest
     {
         var player = CreatePlayer();
 
-        var exc = Assert.Throws<NotAvailableError>(() => player.Check());
+        var exc = Assert.Throws<InvalidOperationException>(() => player.Check());
 
         Assert.Equal("The player has not connected yet", exc.Message);
         Assert.False(player.IsFolded);
@@ -178,7 +178,7 @@ public class PlayerTest
         player.Connect();
         player.Bet(player.Stake);
 
-        var exc = Assert.Throws<NotAvailableError>(() => player.Check());
+        var exc = Assert.Throws<InvalidOperationException>(() => player.Check());
 
         Assert.Equal("The player has already been all in", exc.Message);
         Assert.False(player.IsFolded);
@@ -218,7 +218,7 @@ public class PlayerTest
         player.Connect();
         player.Fold();
 
-        var exc = Assert.Throws<NotAvailableError>(() => player.Bet(new Chips(25)));
+        var exc = Assert.Throws<InvalidOperationException>(() => player.Bet(new Chips(25)));
 
         Assert.Equal("The player has already folded", exc.Message);
         Assert.True(player.IsFolded);
@@ -231,7 +231,7 @@ public class PlayerTest
     {
         var player = CreatePlayer();
 
-        var exc = Assert.Throws<NotAvailableError>(() => player.Bet(new Chips(25)));
+        var exc = Assert.Throws<InvalidOperationException>(() => player.Bet(new Chips(25)));
 
         Assert.Equal("The player has not connected yet", exc.Message);
         Assert.False(player.IsFolded);
@@ -246,7 +246,7 @@ public class PlayerTest
         player.Connect();
         player.Bet(player.Stake);
 
-        var exc = Assert.Throws<NotAvailableError>(() => player.Bet(new Chips(25)));
+        var exc = Assert.Throws<InvalidOperationException>(() => player.Bet(new Chips(25)));
 
         Assert.Equal("The player has already been all in", exc.Message);
         Assert.False(player.IsFolded);
@@ -259,7 +259,7 @@ public class PlayerTest
         var player = CreatePlayer();
         player.Connect();
 
-        var exc = Assert.Throws<NotAvailableError>(() => player.Bet(new Chips(1025)));
+        var exc = Assert.Throws<InvalidOperationException>(() => player.Bet(new Chips(1025)));
 
         Assert.Equal("The player cannot bet more amount than his stake", exc.Message);
         Assert.False(player.IsFolded);
@@ -312,7 +312,7 @@ public class PlayerTest
         player.Connect();
         player.Fold();
 
-        var exc = Assert.Throws<NotAvailableError>(() => player.Post(new Chips(25)));
+        var exc = Assert.Throws<InvalidOperationException>(() => player.Post(new Chips(25)));
 
         Assert.Equal("The player has already folded", exc.Message);
         Assert.True(player.IsFolded);
@@ -327,7 +327,7 @@ public class PlayerTest
         player.Connect();
         player.Post(player.Stake);
 
-        var exc = Assert.Throws<NotAvailableError>(() => player.Post(new Chips(25)));
+        var exc = Assert.Throws<InvalidOperationException>(() => player.Post(new Chips(25)));
 
         Assert.Equal("The player has already been all in", exc.Message);
         Assert.False(player.IsFolded);
@@ -340,7 +340,7 @@ public class PlayerTest
         var player = CreatePlayer();
         player.Connect();
 
-        var exc = Assert.Throws<NotAvailableError>(() => player.Post(new Chips(1025)));
+        var exc = Assert.Throws<InvalidOperationException>(() => player.Post(new Chips(1025)));
 
         Assert.Equal("The player cannot post more amount than his stake", exc.Message);
         Assert.False(player.IsFolded);
@@ -378,7 +378,7 @@ public class PlayerTest
         player.Connect();
         player.Fold();
 
-        var exc = Assert.Throws<NotAvailableError>(() => player.Win(new Chips(25)));
+        var exc = Assert.Throws<InvalidOperationException>(() => player.Win(new Chips(25)));
 
         Assert.Equal("The player has already folded", exc.Message);
         Assert.True(player.IsFolded);
@@ -415,7 +415,7 @@ public class PlayerTest
         player.Connect();
         player.Fold();
 
-        var exc = Assert.Throws<NotAvailableError>(() => player.Refund(new Chips(25)));
+        var exc = Assert.Throws<InvalidOperationException>(() => player.Refund(new Chips(25)));
 
         Assert.Equal("The player has already folded", exc.Message);
         Assert.True(player.IsFolded);

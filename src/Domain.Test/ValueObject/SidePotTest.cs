@@ -35,17 +35,6 @@ public class SidePotTest
     }
 
     [Fact]
-    public void TestAddZeroAmount()
-    {
-        var nickname = new Nickname("Alpha");
-        var sidePot = new SidePot();
-
-        var exc = Assert.Throws<NotAvailableError>(() => sidePot.Add(nickname, new Chips(0)));
-
-        Assert.Equal("Cannot add zero amount", exc.Message);
-    }
-
-    [Fact]
     public void TestSub()
     {
         var nickname = new Nickname("Alpha");
@@ -66,25 +55,13 @@ public class SidePotTest
     }
 
     [Fact]
-    public void TestSubZeroAmount()
-    {
-        var nickname = new Nickname("Alpha");
-        var sidePot = new SidePot();
-
-        sidePot = sidePot.Add(nickname, new Chips(30));
-        var exc = Assert.Throws<NotAvailableError>(() => sidePot.Sub(nickname, new Chips(0)));
-
-        Assert.Equal("Cannot sub zero amount", exc.Message);
-    }
-
-    [Fact]
     public void TestSubMoreThanAddedAmount()
     {
         var nickname = new Nickname("Alpha");
         var sidePot = new SidePot();
 
         sidePot = sidePot.Add(nickname, new Chips(30));
-        var exc = Assert.Throws<NotAvailableError>(() => sidePot.Sub(nickname, new Chips(31)));
+        var exc = Assert.Throws<InvalidOperationException>(() => sidePot.Sub(nickname, new Chips(31)));
 
         Assert.Equal("Cannot sub more amount than added", exc.Message);
     }

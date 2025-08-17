@@ -30,7 +30,7 @@ public class Player : IEquatable<Player>
     {
         if (IsConnected)
         {
-            throw new NotAvailableError("The player has already connected");
+            throw new InvalidOperationException("The player has already connected");
         }
 
         IsConnected = true;
@@ -40,7 +40,7 @@ public class Player : IEquatable<Player>
     {
         if (!IsConnected)
         {
-            throw new NotAvailableError("The player has not connected yet");
+            throw new InvalidOperationException("The player has not connected yet");
         }
 
         IsConnected = false;
@@ -50,7 +50,7 @@ public class Player : IEquatable<Player>
     {
         if (IsFolded)
         {
-            throw new NotAvailableError("The player has already folded");
+            throw new InvalidOperationException("The player has already folded");
         }
 
         HoleCards += holeCards;
@@ -60,15 +60,15 @@ public class Player : IEquatable<Player>
     {
         if (!IsConnected)
         {
-            throw new NotAvailableError("The player has not connected yet");
+            throw new InvalidOperationException("The player has not connected yet");
         }
         if (IsFolded)
         {
-            throw new NotAvailableError("The player has already folded");
+            throw new InvalidOperationException("The player has already folded");
         }
         if (IsAllIn)
         {
-            throw new NotAvailableError("The player has already been all in");
+            throw new InvalidOperationException("The player has already been all in");
         }
 
         IsFolded = true;
@@ -78,15 +78,15 @@ public class Player : IEquatable<Player>
     {
         if (!IsConnected)
         {
-            throw new NotAvailableError("The player has not connected yet");
+            throw new InvalidOperationException("The player has not connected yet");
         }
         if (IsFolded)
         {
-            throw new NotAvailableError("The player has already folded");
+            throw new InvalidOperationException("The player has already folded");
         }
         if (IsAllIn)
         {
-            throw new NotAvailableError("The player has already been all in");
+            throw new InvalidOperationException("The player has already been all in");
         }
     }
 
@@ -95,19 +95,19 @@ public class Player : IEquatable<Player>
         // Bet means that the player puts chips into the pot voluntarily
         if (!IsConnected)
         {
-            throw new NotAvailableError("The player has not connected yet");
+            throw new InvalidOperationException("The player has not connected yet");
         }
         if (IsFolded)
         {
-            throw new NotAvailableError("The player has already folded");
+            throw new InvalidOperationException("The player has already folded");
         }
         if (IsAllIn)
         {
-            throw new NotAvailableError("The player has already been all in");
+            throw new InvalidOperationException("The player has already been all in");
         }
         if (Stake < amount)
         {
-            throw new NotAvailableError("The player cannot bet more amount than his stake");
+            throw new InvalidOperationException("The player cannot bet more amount than his stake");
         }
 
         Stake -= amount;
@@ -118,15 +118,15 @@ public class Player : IEquatable<Player>
         // Post means that the player puts chips into the pot forcibly (blinds, ante)
         if (IsFolded)
         {
-            throw new NotAvailableError("The player has already folded");
+            throw new InvalidOperationException("The player has already folded");
         }
         if (IsAllIn)
         {
-            throw new NotAvailableError("The player has already been all in");
+            throw new InvalidOperationException("The player has already been all in");
         }
         if (Stake < amount)
         {
-            throw new NotAvailableError("The player cannot post more amount than his stake");
+            throw new InvalidOperationException("The player cannot post more amount than his stake");
         }
 
         Stake -= amount;
@@ -136,7 +136,7 @@ public class Player : IEquatable<Player>
     {
         if (IsFolded)
         {
-            throw new NotAvailableError("The player has already folded");
+            throw new InvalidOperationException("The player has already folded");
         }
 
         Stake += amount;
@@ -146,7 +146,7 @@ public class Player : IEquatable<Player>
     {
         if (IsFolded)
         {
-            throw new NotAvailableError("The player has already folded");
+            throw new InvalidOperationException("The player has already folded");
         }
 
         Stake += amount;

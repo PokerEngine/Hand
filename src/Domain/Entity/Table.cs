@@ -18,23 +18,23 @@ public abstract class BaseTable : IEnumerable<Player>
         var nicknames = orderedPlayers.Select(x => x.Nickname).ToHashSet();
         if (orderedPlayers.Count != nicknames.Count)
         {
-            throw new NotAvailableError("The table must contain players with unique nicknames");
+            throw new ArgumentException("The table must contain players with unique nicknames", nameof(players));
         }
 
         var positions = orderedPlayers.Select(x => x.Position).ToHashSet();
         if (orderedPlayers.Count != positions.Count)
         {
-            throw new NotAvailableError("The table must contain players with unique positions");
+            throw new ArgumentException("The table must contain players with unique positions", nameof(players));
         }
 
         if (orderedPlayers.Count < 2)
         {
-            throw new NotAvailableError("The table must contain at least 2 players");
+            throw new ArgumentException("The table must contain at least 2 players", nameof(players));
         }
 
         if (!positions.Contains(Position.BigBlind))
         {
-            throw new NotAvailableError("The table must contain a player on the big blind");
+            throw new ArgumentException("The table must contain a player on the big blind", nameof(players));
         }
 
         _players = orderedPlayers;
@@ -51,7 +51,7 @@ public abstract class BaseTable : IEnumerable<Player>
             }
         }
 
-        throw new NotFoundError("A player with the given nickname is not found at the table");
+        throw new ArgumentException("A player with the given nickname is not found at the table", nameof(nickname));
     }
 
     public Player GetPlayerByPosition(Position position)
@@ -64,7 +64,7 @@ public abstract class BaseTable : IEnumerable<Player>
             }
         }
 
-        throw new NotFoundError("A player on the given position is not found at the table");
+        throw new ArgumentException("A player on the given position is not found at the table", nameof(position));
     }
 
     public void TakeBoardCards(CardSet boardCards)
@@ -104,7 +104,7 @@ public class SixMaxTable : BaseTable
 
         if (!positions.IsSubsetOf(AllowedPositions))
         {
-            throw new NotAvailableError("The table must contain players with allowed positions");
+            throw new ArgumentException("The table must contain players with allowed positions", nameof(players));
         }
     }
 }
@@ -129,7 +129,7 @@ public class NineMaxTable : BaseTable
 
         if (!positions.IsSubsetOf(AllowedPositions))
         {
-            throw new NotAvailableError("The table must contain players with allowed positions");
+            throw new ArgumentException("The table must contain players with allowed positions", nameof(positions));
         }
     }
 }

@@ -651,11 +651,11 @@ internal class EventDocumentMapper
 
     public BaseDocument ToDocument(BaseEvent @event, HandUid handUid)
     {
-        throw new NotPerformedError($"Mapper is not implemented for {@event.GetType().Name}");
+        throw new NotImplementedException($"Mapper is not implemented for {@event.GetType().Name}");
     }
 
     public BaseDocument ToEvent(BaseDocument document)
     {
-        throw new NotPerformedError($"Mapper is not implemented for {document.GetType().Name}");
+        throw new NotImplementedException($"Mapper is not implemented for {document.GetType().Name}");
     }
 }

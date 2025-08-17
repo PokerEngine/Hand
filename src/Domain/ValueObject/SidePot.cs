@@ -58,23 +58,14 @@ public readonly struct SidePot : IEnumerable<KeyValuePair<Nickname, Chips>>, IEq
 
     public SidePot Add(Nickname nickname, Chips amount)
     {
-        if (!amount)
-        {
-            throw new NotAvailableError("Cannot add zero amount");
-        }
         return new SidePot(_mapping.SetItem(nickname, Get(nickname) + amount));
     }
 
     public SidePot Sub(Nickname nickname, Chips amount)
     {
-        if (!amount)
-        {
-            throw new NotAvailableError("Cannot sub zero amount");
-        }
-
         if (amount > Get(nickname))
         {
-            throw new NotAvailableError("Cannot sub more amount than added");
+            throw new InvalidOperationException("Cannot sub more amount than added");
         }
 
         if (amount == Get(nickname))

@@ -94,7 +94,7 @@ public class HoleCardsDealingDealer : IDealer
             case StageIsFinishedEvent:
                 break;
             default:
-                throw new NotAvailableError($"The event {@event} is not supported");
+                throw new ArgumentException("The event is not supported", nameof(@event));
         }
     }
 
@@ -110,6 +110,6 @@ public class HoleCardsDealingDealer : IDealer
         IEventBus eventBus
     )
     {
-        throw new NotAvailableError("The player cannot commit a decision during this stage");
+        throw new InvalidOperationException("The player cannot commit a decision during this stage");
     }
 }

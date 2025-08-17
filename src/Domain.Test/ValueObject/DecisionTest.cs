@@ -22,7 +22,7 @@ public class DecisionTest
     public void TestInitializationWithNonZeroAmount(DecisionType type, int amount)
     {
         var exc = Assert.Throws<ArgumentException>(() => new Decision(type, new Chips(amount)));
-        Assert.Equal($"Amount must be zero for {type}", exc.Message);
+        Assert.StartsWith($"Amount must be zero for {type}", exc.Message);
     }
 
     [Theory]
@@ -31,7 +31,7 @@ public class DecisionTest
     public void TestInitializationWithZeroAmount(DecisionType type, int amount)
     {
         var exc = Assert.Throws<ArgumentException>(() => new Decision(type, new Chips(amount)));
-        Assert.Equal($"Amount must be non-zero for {type}", exc.Message);
+        Assert.StartsWith($"Amount must be non-zero for {type}", exc.Message);
     }
 
     [Fact]

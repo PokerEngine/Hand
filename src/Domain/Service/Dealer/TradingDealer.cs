@@ -61,7 +61,7 @@ public class TradingDealer : IDealer
                 pot.FinishStage();
                 break;
             default:
-                throw new NotAvailableError($"The event {@event} is not supported");
+                throw new ArgumentException("The event is not supported", nameof(@event));
         }
     }
 
@@ -81,7 +81,7 @@ public class TradingDealer : IDealer
         var expectedPlayer = GetNextPlayerForTrading(table: table, previousPlayer: previousPlayer);
         if (expectedPlayer == null || expectedPlayer.Nickname != nickname)
         {
-            throw new NotAvailableError("The player cannot commit a decision for now");
+            throw new InvalidOperationException("The player cannot commit a decision for now");
         }
 
         var player = table.GetPlayerByNickname(nickname);

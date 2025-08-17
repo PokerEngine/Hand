@@ -157,7 +157,7 @@ public readonly struct Card : IEquatable<Card>, IComparable<Card>
     {
         if (!Mapping.TryGetValue(value, out var card))
         {
-            throw new NotValidError($"Invalid Card: {value}");
+            throw new ArgumentException($"Invalid Card: {value}", nameof(value));
         }
 
         return card;

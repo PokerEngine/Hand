@@ -40,8 +40,8 @@ public class SixMaxTableTest
         );
 
         SixMaxTable table;
-        var exc = Assert.Throws<NotAvailableError>(() => table = new SixMaxTable([playerA, playerB]));
-        Assert.Equal("The table must contain players with unique nicknames", exc.Message);
+        var exc = Assert.Throws<ArgumentException>(() => table = new SixMaxTable([playerA, playerB]));
+        Assert.StartsWith("The table must contain players with unique nicknames", exc.Message);
     }
 
     [Fact]
@@ -57,8 +57,8 @@ public class SixMaxTableTest
         );
 
         SixMaxTable table;
-        var exc = Assert.Throws<NotAvailableError>(() => table = new SixMaxTable([playerA, playerB]));
-        Assert.Equal("The table must contain players with unique positions", exc.Message);
+        var exc = Assert.Throws<ArgumentException>(() => table = new SixMaxTable([playerA, playerB]));
+        Assert.StartsWith("The table must contain players with unique positions", exc.Message);
     }
 
     [Fact]
@@ -70,8 +70,8 @@ public class SixMaxTableTest
         );
 
         SixMaxTable table;
-        var exc = Assert.Throws<NotAvailableError>(() => table = new SixMaxTable([playerBb]));
-        Assert.Equal("The table must contain at least 2 players", exc.Message);
+        var exc = Assert.Throws<ArgumentException>(() => table = new SixMaxTable([playerBb]));
+        Assert.StartsWith("The table must contain at least 2 players", exc.Message);
     }
 
     [Fact]
@@ -87,8 +87,8 @@ public class SixMaxTableTest
         );
 
         SixMaxTable table;
-        var exc = Assert.Throws<NotAvailableError>(() => table = new SixMaxTable([playerSb, playerBu]));
-        Assert.Equal("The table must contain a player on the big blind", exc.Message);
+        var exc = Assert.Throws<ArgumentException>(() => table = new SixMaxTable([playerSb, playerBu]));
+        Assert.StartsWith("The table must contain a player on the big blind", exc.Message);
     }
 
     [Fact]
@@ -108,8 +108,8 @@ public class SixMaxTableTest
         );
 
         SixMaxTable table;
-        var exc = Assert.Throws<NotAvailableError>(() => table = new SixMaxTable([playerSb, playerBb, playerUtg1]));
-        Assert.Equal("The table must contain players with allowed positions", exc.Message);
+        var exc = Assert.Throws<ArgumentException>(() => table = new SixMaxTable([playerSb, playerBb, playerUtg1]));
+        Assert.StartsWith("The table must contain players with allowed positions", exc.Message);
     }
 
     [Fact]
@@ -145,8 +145,8 @@ public class SixMaxTableTest
         var table = CreateTable([playerSb, playerBb]);
 
         Player player;
-        var exc = Assert.Throws<NotFoundError>(() => player = table.GetPlayerByNickname(new Nickname("Button")));
-        Assert.Equal("A player with the given nickname is not found at the table", exc.Message);
+        var exc = Assert.Throws<ArgumentException>(() => player = table.GetPlayerByNickname(new Nickname("Button")));
+        Assert.StartsWith("A player with the given nickname is not found at the table", exc.Message);
     }
 
     [Fact]
@@ -182,8 +182,8 @@ public class SixMaxTableTest
         var table = CreateTable([playerSb, playerBb]);
 
         Player player;
-        var exc = Assert.Throws<NotFoundError>(() => player = table.GetPlayerByPosition(Position.Button));
-        Assert.Equal("A player on the given position is not found at the table", exc.Message);
+        var exc = Assert.Throws<ArgumentException>(() => player = table.GetPlayerByPosition(Position.Button));
+        Assert.StartsWith("A player on the given position is not found at the table", exc.Message);
     }
 
     [Fact]

@@ -17,16 +17,17 @@ public readonly struct Nickname : IComparable<Nickname>, IEquatable<Nickname>
     {
         if (name.Length < MinLength)
         {
-            throw new ArgumentException($"Nickname must contain at least {MinLength} symbol(s)");
+            throw new ArgumentException($"Nickname must contain at least {MinLength} symbol(s)", nameof(name));
         }
         if (name.Length > MaxLength)
         {
-            throw new ArgumentException($"Nickname must not contain more than {MaxLength} symbol(s)");
+            throw new ArgumentException($"Nickname must not contain more than {MaxLength} symbol(s)", nameof(name));
         }
         if (!Pattern.IsMatch(name))
         {
             throw new ArgumentException(
-                "Nickname must start with a latin letter and contain only latin letters, digits and underscore symbols"
+                "Nickname must start with a latin letter and contain only latin letters, digits and underscore symbols",
+                nameof(name)
             );
         }
 

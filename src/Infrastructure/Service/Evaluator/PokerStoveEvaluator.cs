@@ -1,4 +1,3 @@
-using Domain;
 using Domain.Service.Evaluator;
 using Domain.ValueObject;
 using System.Diagnostics;
@@ -98,7 +97,7 @@ public class PokerStoveEvaluator : IEvaluator
     {
         if (!GameMapping.TryGetValue(game, out var gameType))
         {
-            throw new NotPerformedError($"Game {game} is not supported");
+            throw new ArgumentException("Game is not supported", nameof(game));
         }
 
         return gameType;
@@ -108,23 +107,23 @@ public class PokerStoveEvaluator : IEvaluator
     {
         if (error != "")
         {
-            throw new NotPerformedError(error);
+            throw new ArgumentException("Error is caught", nameof(error));
         }
 
         var parts = output.Split(':').Select(x => x.Trim()).ToArray();
         if (parts.Length != 3)
         {
-            throw new NotPerformedError($"Invalid response: {output}");
+            throw new ArgumentException("Invalid response", nameof(output));
         }
 
         if (!ComboTypeMapping.TryGetValue(parts[0], out var comboType))
         {
-            throw new NotPerformedError($"Invalid combo: {output}");
+            throw new ArgumentException("Invalid combo", nameof(output));
         }
 
         if (!Int32.TryParse(parts[2], out var comboWeight))
         {
-            throw new NotPerformedError($"Invalid weight: {output}");
+            throw new ArgumentException("Invalid weight", nameof(output));
         }
 
         return new Combo(type: comboType, weight: comboWeight);

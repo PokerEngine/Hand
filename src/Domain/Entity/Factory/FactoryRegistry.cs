@@ -16,7 +16,7 @@ public static class FactoryRegistry
     {
         if (!Mapping.TryGetValue(game, out var factory))
         {
-            throw new NotFoundError("The game is not found");
+            throw new ArgumentException("The game is not found", nameof(game));
         }
 
         return factory;

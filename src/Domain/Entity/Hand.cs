@@ -88,7 +88,7 @@ public class Hand
     {
         if (events.Count == 0 || events[0] is not HandIsCreatedEvent)
         {
-            throw new NotAvailableError("The first event must be a HandIsCreatedEvent");
+            throw new InvalidOperationException("The first event must be a HandIsCreatedEvent");
         }
 
         var eventBus = new EventBus();

@@ -17,12 +17,12 @@ public readonly struct Decision
     {
         if ((type == DecisionType.Fold || type == DecisionType.Check) && !!amount)
         {
-            throw new ArgumentException($"Amount must be zero for {type}");
+            throw new ArgumentException($"Amount must be zero for {type}", nameof(amount));
         }
 
         if ((type == DecisionType.CallTo || type == DecisionType.RaiseTo) && !amount)
         {
-            throw new ArgumentException($"Amount must be non-zero for {type}");
+            throw new ArgumentException($"Amount must be non-zero for {type}", nameof(amount));
         }
 
         Type = type;

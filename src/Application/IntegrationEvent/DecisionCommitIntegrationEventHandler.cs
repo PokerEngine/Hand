@@ -1,5 +1,4 @@
 using Application.Repository;
-using Domain;
 using Domain.Entity;
 using Domain.Event;
 using Domain.Service.Evaluator;
@@ -74,6 +73,6 @@ public class DecisionCommitIntegrationEventHandler : IIntegrationEventHandler<De
             return decisionType;
         }
 
-        throw new NotValidError($"Invalid decision type: {value}");
+        throw new ArgumentException("Invalid decision type", nameof(value));
     }
 }

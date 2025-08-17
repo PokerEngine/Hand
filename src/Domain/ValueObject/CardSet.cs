@@ -21,7 +21,7 @@ public readonly struct CardSet : IReadOnlySet<Card>, IEquatable<CardSet>
     {
         if (value.Length % 2 != 0)
         {
-            throw new NotValidError($"Invalid CardSet: {value}");
+            throw new ArgumentException($"Invalid CardSet: {value}", nameof(value));
         }
 
         var cards = new List<Card>();

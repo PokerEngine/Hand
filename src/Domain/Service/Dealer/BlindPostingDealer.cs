@@ -40,7 +40,7 @@ public class BlindPostingDealer : IDealer
         {
             player = table.GetPlayerByPosition(Position.SmallBlind);
         }
-        catch (NotFoundError)
+        catch (ArgumentException)
         {
             return;
         }
@@ -68,7 +68,7 @@ public class BlindPostingDealer : IDealer
         {
             player = table.GetPlayerByPosition(Position.BigBlind);
         }
-        catch (NotFoundError)
+        catch (ArgumentException)
         {
             return;
         }
@@ -107,7 +107,7 @@ public class BlindPostingDealer : IDealer
             case StageIsFinishedEvent:
                 break;
             default:
-                throw new NotAvailableError($"The event {@event} is not supported");
+                throw new ArgumentException("The event is not supported", nameof(@event));
         }
     }
 
@@ -123,6 +123,6 @@ public class BlindPostingDealer : IDealer
         IEventBus eventBus
     )
     {
-        throw new NotAvailableError("The player cannot commit a decision during this stage");
+        throw new InvalidOperationException("The player cannot commit a decision during this stage");
     }
 }

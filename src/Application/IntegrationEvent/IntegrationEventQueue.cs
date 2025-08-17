@@ -15,7 +15,7 @@ public readonly struct IntegrationEventQueue : IEquatable<IntegrationEventQueue>
     {
         if (!Pattern.IsMatch(name))
         {
-            throw new ArgumentException("IntegrationEventQueue must start with a latin letter and contain only latin letters, digits, underscore symbols and dashes");
+            throw new ArgumentException("Must start with a latin letter and contain only latin letters, digits, underscore symbols and dashes", nameof(name));
         }
 
         _name = name;

@@ -24,16 +24,10 @@ public class NicknameTest
         Nickname nickname;
 
         var exc = Assert.Throws<ArgumentException>(() => nickname = new Nickname(name));
-        Assert.Equal(
-            "Nickname must contain at least 4 symbol(s)",
-            exc.Message
-        );
+        Assert.StartsWith("Nickname must contain at least 4 symbol(s)", exc.Message);
 
         exc = Assert.Throws<ArgumentException>(() => nickname = (Nickname)name);
-        Assert.Equal(
-            "Nickname must contain at least 4 symbol(s)",
-            exc.Message
-        );
+        Assert.StartsWith("Nickname must contain at least 4 symbol(s)", exc.Message);
     }
 
     [Fact]
@@ -43,16 +37,10 @@ public class NicknameTest
         Nickname nickname;
 
         var exc = Assert.Throws<ArgumentException>(() => nickname = new Nickname(name));
-        Assert.Equal(
-            "Nickname must not contain more than 32 symbol(s)",
-            exc.Message
-        );
+        Assert.StartsWith("Nickname must not contain more than 32 symbol(s)", exc.Message);
 
         exc = Assert.Throws<ArgumentException>(() => nickname = (Nickname)name);
-        Assert.Equal(
-            "Nickname must not contain more than 32 symbol(s)",
-            exc.Message
-        );
+        Assert.StartsWith("Nickname must not contain more than 32 symbol(s)", exc.Message);
     }
 
     [Theory]
@@ -66,13 +54,13 @@ public class NicknameTest
         Nickname nickname;
 
         var exc = Assert.Throws<ArgumentException>(() => nickname = new Nickname(name));
-        Assert.Equal(
+        Assert.StartsWith(
             "Nickname must start with a latin letter and contain only latin letters, digits and underscore symbols",
             exc.Message
         );
 
         exc = Assert.Throws<ArgumentException>(() => nickname = (Nickname)name);
-        Assert.Equal(
+        Assert.StartsWith(
             "Nickname must start with a latin letter and contain only latin letters, digits and underscore symbols",
             exc.Message
         );

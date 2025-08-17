@@ -659,12 +659,3 @@ internal class EventDocumentMapper
         throw new NotPerformedError($"Mapper is not implemented for {document.GetType().Name}");
     }
 }
-
-public class MongoDbRepositoryOptions
-{
-    public required string Host { get; set; }
-    public required int Port { get; set; }
-    public required string Username { get; set; }
-    public required string Password { get; set; }
-    public required string Database { get; set; }
-}

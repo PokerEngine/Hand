@@ -15,16 +15,18 @@ namespace Infrastructure.Test;
 
 public class TestHandIsCreatedIntegrationEventHandler : IIntegrationEventHandler<HandIsCreatedIntegrationEvent>
 {
-    public readonly List<HandIsCreatedIntegrationEvent> IntegrationEvents = [];
+    public readonly List<HandIsCreatedIntegrationEvent> Events = new();
+    public readonly TaskCompletionSource<bool> EventHandledTcs = new();
 
     public async Task Handle(HandIsCreatedIntegrationEvent integrationEvent)
     {
-        IntegrationEvents.Add(integrationEvent);
+        Events.Add(integrationEvent);
+        EventHandledTcs.TrySetResult(true);
         await Task.CompletedTask;
     }
 }
 
-public class WorkerTest : IClassFixture<MongoDbFixture>, IDisposable
+public class WorkerTest : IClassFixture<MongoDbFixture>, IClassFixture<RabbitMqFixture>, IDisposable
 {
     private readonly MongoDbFixture _dbFixture;
 
@@ -68,16 +70,17 @@ public class WorkerTest : IClassFixture<MongoDbFixture>, IDisposable
             OccuredAt: DateTime.Now
         );
         await integrationEventBus.Publish(handCreateEvent, new IntegrationEventQueue("hand.hand-create"));
+        await Task.WhenAny(testHandIsCreatedHandler.EventHandledTcs.Task, Task.Delay(500, cts.Token));
 
         await integrationEventBus.Unsubscribe(testHandIsCreatedHandler, new IntegrationEventQueue("hand.hand-created"));
 
-        Assert.Single(testHandIsCreatedHandler.IntegrationEvents);
-        Assert.Equal(handCreateEvent.Game, testHandIsCreatedHandler.IntegrationEvents[0].Game);
-        Assert.Equal(handCreateEvent.SmallBlind, testHandIsCreatedHandler.IntegrationEvents[0].SmallBlind);
-        Assert.Equal(handCreateEvent.BigBlind, testHandIsCreatedHandler.IntegrationEvents[0].BigBlind);
-        Assert.Equal(handCreateEvent.Participants, testHandIsCreatedHandler.IntegrationEvents[0].Participants);
-        Assert.Equal(handCreateEvent.TableUid, testHandIsCreatedHandler.IntegrationEvents[0].TableUid);
-        Assert.Equal(handCreateEvent.HandUid, testHandIsCreatedHandler.IntegrationEvents[0].HandUid);
+        Assert.Single(testHandIsCreatedHandler.Events);
+        Assert.Equal(handCreateEvent.Game, testHandIsCreatedHandler.Events[0].Game);
+        Assert.Equal(handCreateEvent.SmallBlind, testHandIsCreatedHandler.Events[0].SmallBlind);
+        Assert.Equal(handCreateEvent.BigBlind, testHandIsCreatedHandler.Events[0].BigBlind);
+        Assert.Equal(handCreateEvent.Participants, testHandIsCreatedHandler.Events[0].Participants);
+        Assert.Equal(handCreateEvent.TableUid, testHandIsCreatedHandler.Events[0].TableUid);
+        Assert.Equal(handCreateEvent.HandUid, testHandIsCreatedHandler.Events[0].HandUid);
 
         await host.StopAsync(cts.Token);
     }
@@ -99,14 +102,15 @@ public class WorkerTest : IClassFixture<MongoDbFixture>, IDisposable
             {
                 services.AddHostedService<Worker>();
 
-                services.AddSingleton<IIntegrationEventBus, InMemoryIntegrationEventBus>();
+                services.Configure<RabbitMqOptions>(configuration.GetSection("RabbitMQ"));
+                services.AddSingleton<IIntegrationEventBus, RabbitMqIntegrationEventBus>();
 
-                services.Configure<MongoDbRepositoryOptions>(configuration.GetSection("Mongo"));
+                services.Configure<MongoDbOptions>(configuration.GetSection("MongoDB"));
                 services.AddSingleton<IRepository, MongoDbRepository>();
 
                 services.AddSingleton<IRandomizer, BuiltInRandomizer>();
 
-                services.Configure<PokerStoveEvaluatorOptions>(configuration.GetSection("PokerStove"));
+                services.Configure<PokerStoveOptions>(configuration.GetSection("PokerStove"));
                 services.AddSingleton<IEvaluator, PokerStoveEvaluator>();
             }).Build();
     }

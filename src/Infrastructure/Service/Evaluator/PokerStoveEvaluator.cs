@@ -130,8 +130,3 @@ public class PokerStoveEvaluator : IEvaluator
         return new Combo(type: comboType, weight: comboWeight);
     }
 }
-
-public class PokerStoveEvaluatorOptions
-{
-    public required string Path { get; set; }
-}

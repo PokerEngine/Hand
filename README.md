@@ -23,6 +23,8 @@ It might be helpful when you need to clear all data and run the project from scr
 ### How to run tests?
 ```shell
 docker compose run --rm hand dotnet test
+docker compose run --rm hand dotnet test src/Infrastructure.Test
+docker compose run --rm hand dotnet test src/Infrastructure.Test --filter "FullyQualifiedName=Infrastructure.Test.WorkerTest.TestHandCreate"
 ```
 
 ### How to run formatting?

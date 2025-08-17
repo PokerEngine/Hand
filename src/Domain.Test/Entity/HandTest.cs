@@ -541,6 +541,94 @@ public class HoldemNoLimit6MaxHandTest
         Assert.Equal(46, events.Count);
     }
 
+        [Fact]
+    public void TestHeadsUpFlow()
+    {
+        var participantSb = CreateParticipant(
+            nickname: "SmallBlind",
+            position: Position.SmallBlind
+        );
+        var participantBb = CreateParticipant(
+            nickname: "BigBlind",
+            position: Position.BigBlind
+        );
+        var eventBus = new EventBus();
+
+        var hand = CreateHand(
+            participants: [participantSb, participantBb]
+        );
+
+        var events = new List<BaseEvent>();
+        var decisionRequestEvents = new List<DecisionIsRequestedEvent>();
+        var listener = (BaseEvent @event) => events.Add(@event);
+        var decisionRequestListener = (DecisionIsRequestedEvent @event) => decisionRequestEvents.Add(@event);
+        eventBus.Subscribe(listener);
+        eventBus.Subscribe(decisionRequestListener);
+
+        hand.ConnectPlayer(
+            nickname: new Nickname("SmallBlind"),
+            eventBus: eventBus
+        );
+        hand.ConnectPlayer(
+            nickname: new Nickname("BigBlind"),
+            eventBus: eventBus
+        );
+
+        hand.Start(eventBus);
+
+        Assert.Equal(13, events.Count);
+        Assert.Single(decisionRequestEvents);
+        Assert.Equal(new Nickname("SmallBlind"), decisionRequestEvents[0].Nickname);
+
+        hand.CommitDecision(
+            nickname: new Nickname("SmallBlind"),
+            decision: new Decision(DecisionType.RaiseTo, new Chips(25)),
+            eventBus: eventBus
+        );
+
+        Assert.Equal(15, events.Count);
+        Assert.Equal(2, decisionRequestEvents.Count);
+        Assert.Equal(new Nickname("BigBlind"), decisionRequestEvents[1].Nickname);
+
+        hand.CommitDecision(
+            nickname: new Nickname("BigBlind"),
+            decision: new Decision(DecisionType.CallTo, new Chips(25)),
+            eventBus: eventBus
+        );
+        
+        Assert.Equal(22, events.Count);
+        Assert.Equal(3, decisionRequestEvents.Count);
+        Assert.Equal(new Nickname("BigBlind"), decisionRequestEvents[2].Nickname);
+
+        hand.CommitDecision(
+            nickname: new Nickname("BigBlind"),
+            decision: new Decision(DecisionType.Check, new Chips(0)),
+            eventBus: eventBus
+        );
+
+        Assert.Equal(24, events.Count);
+        Assert.Equal(4, decisionRequestEvents.Count);
+        Assert.Equal(new Nickname("SmallBlind"), decisionRequestEvents[3].Nickname);
+
+        hand.CommitDecision(
+            nickname: new Nickname("SmallBlind"),
+            decision: new Decision(DecisionType.RaiseTo, new Chips(15)),
+            eventBus: eventBus
+        );
+
+        Assert.Equal(26, events.Count);
+        Assert.Equal(5, decisionRequestEvents.Count);
+        Assert.Equal(new Nickname("BigBlind"), decisionRequestEvents[4].Nickname);
+
+        hand.CommitDecision(
+            nickname: new Nickname("BigBlind"),
+            decision: new Decision(DecisionType.Fold, new Chips(0)),
+            eventBus: eventBus
+        );
+
+        Assert.Equal(42, events.Count);
+    }
+
     private Hand CreateHand(ImmutableList<Participant> participants, int smallBlind = 5, int bigBlind = 10)
     {
         return Hand.FromScratch(

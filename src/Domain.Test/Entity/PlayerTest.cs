@@ -10,12 +10,12 @@ public class PlayerTest
     {
         var player = new Player(
             nickname: new Nickname("BigBlind"),
-            position: Position.BigBlind,
+            seat: new Seat(1),
             stake: new Chips(1000)
         );
 
         Assert.Equal(new Nickname("BigBlind"), player.Nickname);
-        Assert.Equal(Position.BigBlind, player.Position);
+        Assert.Equal(new Seat(1), player.Seat);
         Assert.Equal(new Chips(1000), player.Stake);
         Assert.Empty(player.HoleCards);
         Assert.False(player.IsConnected);
@@ -427,19 +427,19 @@ public class PlayerTest
     {
         var player = new Player(
             nickname: new Nickname("BigBlind"),
-            position: Position.BigBlind,
+            seat: new Seat(1),
             stake: new Chips(1000)
         );
         player.TakeHoleCards(new CardSet([Card.AceOfSpades, Card.DeuceOfClubs]));
 
-        Assert.Equal($"{player.Nickname}, {player.Position}, {player.Stake}, {player.HoleCards}", $"{player}");
+        Assert.Equal($"{player.Nickname}, {player.Seat}, {player.Stake}, {player.HoleCards}", $"{player}");
     }
 
-    private Player CreatePlayer(string nickname = "BigBlind", Position position = Position.BigBlind, int stake = 1000)
+    private Player CreatePlayer(string nickname = "BigBlind", int seat = 1, int stake = 1000)
     {
         return new Player(
             nickname: new Nickname(nickname),
-            position: position,
+            seat: new Seat(seat),
             stake: new Chips(stake)
         );
     }

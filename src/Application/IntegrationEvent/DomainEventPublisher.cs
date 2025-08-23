@@ -34,8 +34,11 @@ public class DomainEventPublisher
         var queue = new IntegrationEventQueue("hand.hand-created");
         var integrationEvent = new HandIsCreatedIntegrationEvent(
             Game: @event.Game.ToString(),
-            SmallBlind: (int)@event.SmallBlind,
-            BigBlind: (int)@event.BigBlind,
+            SmallBlind: @event.SmallBlind,
+            BigBlind: @event.BigBlind,
+            SmallBlindSeat: @event.SmallBlindSeat,
+            BigBlindSeat: @event.BigBlindSeat,
+            ButtonSeat: @event.ButtonSeat,
             Participants: @event.Participants.Select(ProcessParticipant).ToImmutableList(),
             HandUid: _handUid,
             TableUid: _tableUid,
@@ -70,7 +73,7 @@ public class DomainEventPublisher
     {
         var queue = new IntegrationEventQueue("hand.player-connected");
         var integrationEvent = new PlayerConnectedIntegrationEvent(
-            Nickname: (string)@event.Nickname,
+            Nickname: @event.Nickname,
             HandUid: _handUid,
             TableUid: _tableUid,
             OccuredAt: @event.OccuredAt
@@ -82,7 +85,7 @@ public class DomainEventPublisher
     {
         var queue = new IntegrationEventQueue("hand.player-disconnected");
         var integrationEvent = new PlayerDisconnectedIntegrationEvent(
-            Nickname: (string)@event.Nickname,
+            Nickname: @event.Nickname,
             HandUid: _handUid,
             TableUid: _tableUid,
             OccuredAt: @event.OccuredAt
@@ -94,8 +97,8 @@ public class DomainEventPublisher
     {
         var queue = new IntegrationEventQueue("hand.blind-posted");
         var integrationEvent = new BlindIsPostedIntegrationEvent(
-            Nickname: (string)@event.Nickname,
-            Amount: (int)@event.Amount,
+            Nickname: @event.Nickname,
+            Amount: @event.Amount,
             HandUid: _handUid,
             TableUid: _tableUid,
             OccuredAt: @event.OccuredAt
@@ -107,8 +110,8 @@ public class DomainEventPublisher
     {
         var queue = new IntegrationEventQueue("hand.blind-posted");
         var integrationEvent = new BlindIsPostedIntegrationEvent(
-            Nickname: (string)@event.Nickname,
-            Amount: (int)@event.Amount,
+            Nickname: @event.Nickname,
+            Amount: @event.Amount,
             HandUid: _handUid,
             TableUid: _tableUid,
             OccuredAt: @event.OccuredAt
@@ -120,7 +123,7 @@ public class DomainEventPublisher
     {
         var queue = new IntegrationEventQueue("hand.hole-cards-dealt");
         var integrationEvent = new HoleCardsAreDealtIntegrationEvent(
-            Nickname: (string)@event.Nickname,
+            Nickname: @event.Nickname,
             Cards: @event.Cards.ToString(),
             HandUid: _handUid,
             TableUid: _tableUid,
@@ -145,14 +148,14 @@ public class DomainEventPublisher
     {
         var queue = new IntegrationEventQueue("hand.decision-requested");
         var integrationEvent = new DecisionIsRequestedIntegrationEvent(
-            Nickname: (string)@event.Nickname,
+            Nickname: @event.Nickname,
             FoldIsAvailable: @event.FoldIsAvailable,
             CheckIsAvailable: @event.CheckIsAvailable,
             CallIsAvailable: @event.CallIsAvailable,
-            CallToAmount: (int)@event.CallToAmount,
+            CallToAmount: @event.CallToAmount,
             RaiseIsAvailable: @event.RaiseIsAvailable,
-            MinRaiseToAmount: (int)@event.MinRaiseToAmount,
-            MaxRaiseToAmount: (int)@event.MaxRaiseToAmount,
+            MinRaiseToAmount: @event.MinRaiseToAmount,
+            MaxRaiseToAmount: @event.MaxRaiseToAmount,
             HandUid: _handUid,
             TableUid: _tableUid,
             OccuredAt: @event.OccuredAt
@@ -164,9 +167,9 @@ public class DomainEventPublisher
     {
         var queue = new IntegrationEventQueue("hand.decision-committed");
         var integrationEvent = new DecisionIsCommittedIntegrationEvent(
-            Nickname: (string)@event.Nickname,
+            Nickname: @event.Nickname,
             DecisionType: @event.Decision.Type.ToString(),
-            DecisionAmount: (int)@event.Decision.Amount,
+            DecisionAmount: @event.Decision.Amount,
             HandUid: _handUid,
             TableUid: _tableUid,
             OccuredAt: @event.OccuredAt
@@ -178,8 +181,8 @@ public class DomainEventPublisher
     {
         var queue = new IntegrationEventQueue("hand.refund-committed");
         var integrationEvent = new RefundIsCommittedIntegrationEvent(
-            Nickname: (string)@event.Nickname,
-            Amount: (int)@event.Amount,
+            Nickname: @event.Nickname,
+            Amount: @event.Amount,
             HandUid: _handUid,
             TableUid: _tableUid,
             OccuredAt: @event.OccuredAt
@@ -191,8 +194,8 @@ public class DomainEventPublisher
     {
         var queue = new IntegrationEventQueue("hand.win-without-showdown-committed");
         var integrationEvent = new WinWithoutShowdownIsCommittedIntegrationEvent(
-            Nickname: (string)@event.Nickname,
-            Amount: (int)@event.Amount,
+            Nickname: @event.Nickname,
+            Amount: @event.Amount,
             HandUid: _handUid,
             TableUid: _tableUid,
             OccuredAt: @event.OccuredAt
@@ -206,8 +209,8 @@ public class DomainEventPublisher
         foreach (var (nickname, amount) in @event.WinPot)
         {
             var integrationEvent = new WinAtShowdownIsCommittedIntegrationEvent(
-                Nickname: (string)nickname,
-                Amount: (int)amount,
+                Nickname: nickname,
+                Amount: amount,
                 HandUid: _handUid,
                 TableUid: _tableUid,
                 OccuredAt: @event.OccuredAt
@@ -220,7 +223,7 @@ public class DomainEventPublisher
     {
         var queue = new IntegrationEventQueue("hand.hole-cards-shown");
         var integrationEvent = new HoleCardsAreShownIntegrationEvent(
-            Nickname: (string)@event.Nickname,
+            Nickname: @event.Nickname,
             Cards: @event.Cards.ToString(),
             ComboType: @event.Combo.Type.ToString(),
             ComboWeight: @event.Combo.Weight,
@@ -235,7 +238,7 @@ public class DomainEventPublisher
     {
         var queue = new IntegrationEventQueue("hand.hole-cards-mucked");
         var integrationEvent = new HoleCardsAreMuckedIntegrationEvent(
-            Nickname: (string)@event.Nickname,
+            Nickname: @event.Nickname,
             HandUid: _handUid,
             TableUid: _tableUid,
             OccuredAt: @event.OccuredAt
@@ -252,9 +255,9 @@ public class DomainEventPublisher
     private IntegrationEventParticipant ProcessParticipant(Participant participant)
     {
         return new IntegrationEventParticipant(
-            Nickname: (string)participant.Nickname,
-            Position: participant.Position.ToString(),
-            Stake: (int)participant.Stake
+            Nickname: participant.Nickname,
+            Seat: participant.Seat,
+            Stake: participant.Stake
         );
     }
 }

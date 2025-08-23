@@ -5,7 +5,7 @@ namespace Domain.Entity;
 public class Player : IEquatable<Player>
 {
     public Nickname Nickname { get; }
-    public Position Position { get; }
+    public Seat Seat { get; }
     public Chips Stake { get; private set; }
     public CardSet HoleCards { get; private set; }
     public bool IsConnected { get; private set; }
@@ -16,10 +16,10 @@ public class Player : IEquatable<Player>
         get => !Stake;
     }
 
-    public Player(Nickname nickname, Position position, Chips stake)
+    public Player(Nickname nickname, Seat seat, Chips stake)
     {
         Nickname = nickname;
-        Position = position;
+        Seat = seat;
         Stake = stake;
         HoleCards = new CardSet();
         IsConnected = false;
@@ -163,5 +163,5 @@ public class Player : IEquatable<Player>
     }
 
     public override string ToString()
-        => $"{Nickname}, {Position}, {Stake}, {HoleCards}";
+        => $"{Nickname}, {Seat}, {Stake}, {HoleCards}";
 }

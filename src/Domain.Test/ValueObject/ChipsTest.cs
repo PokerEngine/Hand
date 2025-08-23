@@ -55,6 +55,15 @@ public class ChipsTest
     }
 
     [Fact]
+    public void TestEquals()
+    {
+        var chips = new Chips(5);
+
+        Assert.True(chips.Equals(new Chips(5)));
+        Assert.False(chips.Equals(new Chips(4)));
+    }
+
+    [Fact]
     public void TestComparison()
     {
         Assert.True(new Chips(5) == new Chips(5));

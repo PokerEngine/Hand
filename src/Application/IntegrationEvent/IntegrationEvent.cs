@@ -4,7 +4,7 @@ namespace Application.IntegrationEvent;
 
 public record IntegrationEventParticipant(
     string Nickname,
-    string Position,
+    int Seat,
     int Stake
 );
 
@@ -20,6 +20,9 @@ public record HandCreateIntegrationEvent(
     string Game,
     int SmallBlind,
     int BigBlind,
+    int SmallBlindSeat,
+    int BigBlindSeat,
+    int ButtonSeat,
     ImmutableList<IntegrationEventParticipant> Participants,
     Guid TableUid,
     Guid HandUid,
@@ -33,6 +36,9 @@ public record HandCreateIntegrationEvent(
                && Game == other.Game
                && SmallBlind == other.SmallBlind
                && BigBlind == other.BigBlind
+               && SmallBlindSeat == other.SmallBlindSeat
+               && BigBlindSeat == other.BigBlindSeat
+               && ButtonSeat == other.ButtonSeat
                && Participants.SequenceEqual(other.Participants)
                && TableUid == other.TableUid
                && HandUid == other.HandUid
@@ -45,6 +51,9 @@ public record HandCreateIntegrationEvent(
         hash.Add(Game);
         hash.Add(SmallBlind);
         hash.Add(BigBlind);
+        hash.Add(SmallBlindSeat);
+        hash.Add(BigBlindSeat);
+        hash.Add(ButtonSeat);
         foreach (var p in Participants)
             hash.Add(p);
         hash.Add(TableUid);
@@ -88,6 +97,9 @@ public record HandIsCreatedIntegrationEvent(
     string Game,
     int SmallBlind,
     int BigBlind,
+    int SmallBlindSeat,
+    int BigBlindSeat,
+    int ButtonSeat,
     ImmutableList<IntegrationEventParticipant> Participants,
     Guid TableUid,
     Guid HandUid,
@@ -101,6 +113,9 @@ public record HandIsCreatedIntegrationEvent(
                && Game == other.Game
                && SmallBlind == other.SmallBlind
                && BigBlind == other.BigBlind
+               && SmallBlindSeat == other.SmallBlindSeat
+               && BigBlindSeat == other.BigBlindSeat
+               && ButtonSeat == other.ButtonSeat
                && Participants.SequenceEqual(other.Participants)
                && TableUid == other.TableUid
                && HandUid == other.HandUid
@@ -113,6 +128,9 @@ public record HandIsCreatedIntegrationEvent(
         hash.Add(Game);
         hash.Add(SmallBlind);
         hash.Add(BigBlind);
+        hash.Add(SmallBlindSeat);
+        hash.Add(BigBlindSeat);
+        hash.Add(ButtonSeat);
         foreach (var p in Participants)
             hash.Add(p);
         hash.Add(TableUid);

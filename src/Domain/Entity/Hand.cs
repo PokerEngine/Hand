@@ -49,6 +49,9 @@ public class Hand
         Game game,
         Chips smallBlind,
         Chips bigBlind,
+        Seat smallBlindSeat,
+        Seat bigBlindSeat,
+        Seat buttonSeat,
         ImmutableList<Participant> participants,
         IRandomizer randomizer,
         IEvaluator evaluator,
@@ -59,8 +62,16 @@ public class Hand
         var hand = new Hand(
             uid: uid,
             game: game,
-            table: factory.GetTable(participants),
-            pot: factory.GetPot(smallBlind, bigBlind),
+            table: factory.GetTable(
+                participants: participants,
+                smallBlindSeat: smallBlindSeat,
+                bigBlindSeat: bigBlindSeat,
+                buttonSeat: buttonSeat
+            ),
+            pot: factory.GetPot(
+                smallBlind: smallBlind,
+                bigBlind: bigBlind
+            ),
             deck: factory.GetDeck(),
             randomizer: randomizer,
             evaluator: evaluator,
@@ -71,6 +82,9 @@ public class Hand
             Game: game,
             SmallBlind: smallBlind,
             BigBlind: bigBlind,
+            SmallBlindSeat: smallBlindSeat,
+            BigBlindSeat: bigBlindSeat,
+            ButtonSeat: buttonSeat,
             Participants: participants,
             OccuredAt: DateTime.Now
         );
@@ -99,6 +113,9 @@ public class Hand
             game: createdEvent.Game,
             smallBlind: createdEvent.SmallBlind,
             bigBlind: createdEvent.BigBlind,
+            smallBlindSeat: createdEvent.SmallBlindSeat,
+            bigBlindSeat: createdEvent.BigBlindSeat,
+            buttonSeat: createdEvent.ButtonSeat,
             participants: createdEvent.Participants,
             randomizer: randomizer,
             evaluator: evaluator,

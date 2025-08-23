@@ -1,49 +1,79 @@
 using Domain.ValueObject;
 using System.Collections;
-using System.Collections.Immutable;
 
 namespace Domain.Entity;
 
 public abstract class BaseTable : IEnumerable<Player>
 {
-    private ImmutableList<Player> _players;
+    private readonly Player?[] _players;
+    private readonly Seat _smallBlindSeat;
+    private readonly Seat _bigBlindSeat;
+    private readonly Seat _buttonSeat;
+
     public CardSet BoardCards { get; private set; }
+    public int Count => _players.Count(x => x != null);
 
-    public int Count => _players.Count;
-
-    protected BaseTable(IEnumerable<Player> players)
+    protected BaseTable(
+        IEnumerable<Player> players,
+        Seat maxSeat,
+        Seat smallBlindSeat,
+        Seat bigBlindSeat,
+        Seat buttonSeat
+    )
     {
-        var orderedPlayers = players.OrderBy(x => x.Position).ToImmutableList();
+        _players = new Player?[maxSeat];
+        _bigBlindSeat = bigBlindSeat;
+        _smallBlindSeat = smallBlindSeat;
+        _buttonSeat = buttonSeat;
 
-        var nicknames = orderedPlayers.Select(x => x.Nickname).ToHashSet();
-        if (orderedPlayers.Count != nicknames.Count)
+        BoardCards = new CardSet();
+
+        var allPlayers = players.ToList();
+        foreach (var player in allPlayers)
+        {
+            if (player.Seat > maxSeat)
+            {
+                throw new ArgumentOutOfRangeException(nameof(players), players, $"The table supports seats till {maxSeat}");
+            }
+            _players[player.Seat - 1] = player;
+        }
+
+        var nicknames = allPlayers.Select(x => x.Nickname).ToHashSet();
+        if (allPlayers.Count != nicknames.Count)
         {
             throw new ArgumentException("The table must contain players with unique nicknames", nameof(players));
         }
 
-        var positions = orderedPlayers.Select(x => x.Position).ToHashSet();
-        if (orderedPlayers.Count != positions.Count)
+        var seats = allPlayers.Select(x => x.Seat).ToHashSet();
+        if (allPlayers.Count != seats.Count)
         {
-            throw new ArgumentException("The table must contain players with unique positions", nameof(players));
+            throw new ArgumentException("The table must contain players with unique seats", nameof(players));
         }
 
-        if (orderedPlayers.Count < 2)
+        if (allPlayers.Count < 2)
         {
             throw new ArgumentException("The table must contain at least 2 players", nameof(players));
         }
 
-        if (!positions.Contains(Position.BigBlind))
+        if (_players[_bigBlindSeat - 1] == null)
         {
             throw new ArgumentException("The table must contain a player on the big blind", nameof(players));
         }
 
-        _players = orderedPlayers;
-        BoardCards = new CardSet();
+        if (_smallBlindSeat == _bigBlindSeat)
+        {
+            throw new ArgumentException("The table must contain different players on the big and small blinds", nameof(smallBlindSeat));
+        }
+
+        if (_buttonSeat == _bigBlindSeat)
+        {
+            throw new ArgumentException("The table must contain different players on the big blind and button", nameof(buttonSeat));
+        }
     }
 
     public Player GetPlayerByNickname(Nickname nickname)
     {
-        foreach (var player in _players)
+        foreach (var player in this)
         {
             if (player.Nickname == nickname)
             {
@@ -54,17 +84,24 @@ public abstract class BaseTable : IEnumerable<Player>
         throw new ArgumentException("A player with the given nickname is not found at the table", nameof(nickname));
     }
 
-    public Player GetPlayerByPosition(Position position)
+    public Player? GetPlayerOnSmallBlind()
     {
-        foreach (var player in _players)
-        {
-            if (player.Position == position)
-            {
-                return player;
-            }
-        }
+        return GetPlayerOnSeat(_smallBlindSeat);
+    }
 
-        throw new ArgumentException("A player on the given position is not found at the table", nameof(position));
+    public Player? GetPlayerOnBigBlind()
+    {
+        return GetPlayerOnSeat(_bigBlindSeat);
+    }
+
+    public Player? GetPlayerOnButton()
+    {
+        return GetPlayerOnSeat(_buttonSeat);
+    }
+
+    private Player? GetPlayerOnSeat(Seat seat)
+    {
+        return _players[seat - 1];
     }
 
     public void TakeBoardCards(CardSet boardCards)
@@ -76,7 +113,10 @@ public abstract class BaseTable : IEnumerable<Player>
     {
         foreach (var player in _players)
         {
-            yield return player;
+            if (player != null)
+            {
+                yield return player;
+            }
         }
     }
 
@@ -84,52 +124,25 @@ public abstract class BaseTable : IEnumerable<Player>
         => GetEnumerator();
 
     public override string ToString()
-        => $"{GetType().Name}: {_players.Count} player(s), {BoardCards}";
+        => $"{GetType().Name}: {Count} player(s), {BoardCards}";
 }
 
 public class SixMaxTable : BaseTable
 {
-    private static readonly Position[] AllowedPositions = [
-        Position.SmallBlind,
-        Position.BigBlind,
-        Position.Early,
-        Position.Middle,
-        Position.CutOff,
-        Position.Button,
-    ];
-
-    public SixMaxTable(IEnumerable<Player> players) : base(players)
-    {
-        var positions = players.Select(x => x.Position).ToHashSet();
-
-        if (!positions.IsSubsetOf(AllowedPositions))
-        {
-            throw new ArgumentException("The table must contain players with allowed positions", nameof(players));
-        }
-    }
+    public SixMaxTable(
+        IEnumerable<Player> players,
+        Seat smallBlindSeat,
+        Seat bigBlindSeat,
+        Seat buttonSeat
+    ) : base(players, new Seat(6), smallBlindSeat, bigBlindSeat, buttonSeat) { }
 }
 
 public class NineMaxTable : BaseTable
 {
-    private static readonly Position[] AllowedPositions = [
-        Position.SmallBlind,
-        Position.BigBlind,
-        Position.UnderTheGun1,
-        Position.UnderTheGun2,
-        Position.UnderTheGun3,
-        Position.Early,
-        Position.Middle,
-        Position.CutOff,
-        Position.Button,
-    ];
-
-    public NineMaxTable(IEnumerable<Player> players) : base(players)
-    {
-        var positions = players.Select(x => x.Position).ToHashSet();
-
-        if (!positions.IsSubsetOf(AllowedPositions))
-        {
-            throw new ArgumentException("The table must contain players with allowed positions", nameof(positions));
-        }
-    }
+    public NineMaxTable(
+        IEnumerable<Player> players,
+        Seat smallBlindSeat,
+        Seat bigBlindSeat,
+        Seat buttonSeat
+    ) : base(players, new Seat(9), smallBlindSeat, bigBlindSeat, buttonSeat) { }
 }

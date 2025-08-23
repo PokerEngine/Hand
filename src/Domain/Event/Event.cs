@@ -11,6 +11,9 @@ public record HandIsCreatedEvent(
     Game Game,
     Chips SmallBlind,
     Chips BigBlind,
+    Seat SmallBlindSeat,
+    Seat BigBlindSeat,
+    Seat ButtonSeat,
     ImmutableList<Participant> Participants,
     DateTime OccuredAt
 ) : BaseEvent(OccuredAt)
@@ -22,6 +25,9 @@ public record HandIsCreatedEvent(
                && Game == other.Game
                && SmallBlind == other.SmallBlind
                && BigBlind == other.BigBlind
+               && SmallBlindSeat == other.SmallBlindSeat
+               && BigBlindSeat == other.BigBlindSeat
+               && ButtonSeat == other.ButtonSeat
                && Participants.SequenceEqual(other.Participants)
                && OccuredAt == other.OccuredAt;
     }
@@ -32,6 +38,9 @@ public record HandIsCreatedEvent(
         hash.Add(Game);
         hash.Add(SmallBlind);
         hash.Add(BigBlind);
+        hash.Add(SmallBlindSeat);
+        hash.Add(BigBlindSeat);
+        hash.Add(ButtonSeat);
         foreach (var p in Participants)
             hash.Add(p);
         hash.Add(OccuredAt);

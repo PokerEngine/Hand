@@ -34,6 +34,9 @@ public class HandCreateIntegrationEventHandler : IIntegrationEventHandler<HandCr
         var handUid = new HandUid(integrationEvent.HandUid);
         var smallBlind = new Chips(integrationEvent.SmallBlind);
         var bigBlind = new Chips(integrationEvent.BigBlind);
+        var smallBlindSeat = new Seat(integrationEvent.SmallBlindSeat);
+        var bigBlindSeat = new Seat(integrationEvent.BigBlindSeat);
+        var buttonSeat = new Seat(integrationEvent.ButtonSeat);
         var participants = integrationEvent.Participants.Select(ParseParticipant).ToImmutableList();
 
         var eventBus = new EventBus();
@@ -46,6 +49,9 @@ public class HandCreateIntegrationEventHandler : IIntegrationEventHandler<HandCr
             game: game,
             smallBlind: smallBlind,
             bigBlind: bigBlind,
+            smallBlindSeat: smallBlindSeat,
+            bigBlindSeat: bigBlindSeat,
+            buttonSeat: buttonSeat,
             participants: participants,
             randomizer: _randomizer,
             evaluator: _evaluator,
@@ -78,18 +84,8 @@ public class HandCreateIntegrationEventHandler : IIntegrationEventHandler<HandCr
     {
         return new Participant(
             nickname: new Nickname(value.Nickname),
-            position: ParsePosition(value.Position),
+            seat: new Seat(value.Seat),
             stake: new Chips(value.Stake)
         );
-    }
-
-    private Position ParsePosition(string value)
-    {
-        if (Enum.TryParse(value, out Position position))
-        {
-            return position;
-        }
-
-        throw new ArgumentException("Invalid position", nameof(value));
     }
 }

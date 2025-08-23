@@ -171,7 +171,10 @@ internal record HandIsCreatedDocument : BaseDocument
     public required Game Game { get; init; }
     public required int SmallBlind { get; init; }
     public required int BigBlind { get; init; }
-    public required ImmutableList<(string, Position, int)> Participants { get; init; }
+    public required int SmallBlindSeat { get; init; }
+    public required int BigBlindSeat { get; init; }
+    public required int ButtonSeat { get; init; }
+    public required ImmutableList<(string, int, int)> Participants { get; init; }
 }
 
 [BsonIgnoreExtraElements]
@@ -291,7 +294,10 @@ internal class EventDocumentMapper
             Game = @event.Game,
             SmallBlind = @event.SmallBlind,
             BigBlind = @event.BigBlind,
-            Participants = @event.Participants.Select(x => ((string)x.Nickname, x.Position, (int)x.Stake)).ToImmutableList(),
+            SmallBlindSeat = @event.SmallBlindSeat,
+            BigBlindSeat = @event.BigBlindSeat,
+            ButtonSeat = @event.ButtonSeat,
+            Participants = @event.Participants.Select(x => ((string)x.Nickname, (int)x.Seat, (int)x.Stake)).ToImmutableList(),
             OccuredAt = @event.OccuredAt,
             HandUid = handUid
         };
@@ -301,17 +307,21 @@ internal class EventDocumentMapper
     {
         List<Participant> participants = [];
 
-        foreach (var (n, p, s) in document.Participants)
+        foreach (var (nn, st, sk) in document.Participants)
         {
-            var nickname = new Nickname(n);
-            var stake = new Chips(s);
-            participants.Add(new Participant(nickname, p, stake));
+            var nickname = new Nickname(nn);
+            var seat = new Seat(st);
+            var stake = new Chips(sk);
+            participants.Add(new Participant(nickname, seat, stake));
         }
 
         return new HandIsCreatedEvent(
             Game: document.Game,
             SmallBlind: new Chips(document.SmallBlind),
             BigBlind: new Chips(document.BigBlind),
+            SmallBlindSeat: new Seat(document.SmallBlindSeat),
+            BigBlindSeat: new Seat(document.BigBlindSeat),
+            ButtonSeat: new Seat(document.ButtonSeat),
             Participants: participants.ToImmutableList(),
             OccuredAt: document.OccuredAt
         );

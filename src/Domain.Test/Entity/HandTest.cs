@@ -18,32 +18,32 @@ public class HoldemNoLimit6MaxHandTest
         var handUid = new HandUid(Guid.NewGuid());
         var participantSb = new Participant(
             nickname: new Nickname("SmallBlind"),
-            position: Position.SmallBlind,
+            seat: new Seat(1),
             stake: new Chips(1000)
         );
         var participantBb = new Participant(
             nickname: new Nickname("BigBlind"),
-            position: Position.BigBlind,
+            seat: new Seat(2),
             stake: new Chips(900)
         );
         var participantEp = new Participant(
             nickname: new Nickname("Early"),
-            position: Position.Early,
+            seat: new Seat(3),
             stake: new Chips(800)
         );
         var participantMp = new Participant(
             nickname: new Nickname("Middle"),
-            position: Position.Middle,
+            seat: new Seat(4),
             stake: new Chips(700)
         );
         var participantCo = new Participant(
             nickname: new Nickname("CutOff"),
-            position: Position.CutOff,
+            seat: new Seat(5),
             stake: new Chips(600)
         );
         var participantBu = new Participant(
             nickname: new Nickname("Button"),
-            position: Position.Button,
+            seat: new Seat(6),
             stake: new Chips(500)
         );
         var eventBus = new EventBus();
@@ -57,6 +57,9 @@ public class HoldemNoLimit6MaxHandTest
             game: Game.HoldemNoLimit6Max,
             smallBlind: new Chips(5),
             bigBlind: new Chips(10),
+            smallBlindSeat: new Seat(1),
+            bigBlindSeat: new Seat(2),
+            buttonSeat: new Seat(6),
             participants: [participantSb, participantBb, participantEp, participantMp, participantCo, participantBu],
             randomizer: _randomizer,
             evaluator: _evaluator,
@@ -88,17 +91,17 @@ public class HoldemNoLimit6MaxHandTest
         var handUid = new HandUid(Guid.NewGuid());
         var participantSb = new Participant(
             nickname: new Nickname("SmallBlind"),
-            position: Position.SmallBlind,
+            seat: new Seat(1),
             stake: new Chips(1000)
         );
         var participantBb = new Participant(
             nickname: new Nickname("BigBlind"),
-            position: Position.BigBlind,
+            seat: new Seat(2),
             stake: new Chips(900)
         );
         var participantBu = new Participant(
             nickname: new Nickname("Button"),
-            position: Position.Button,
+            seat: new Seat(6),
             stake: new Chips(800)
         );
 
@@ -108,6 +111,9 @@ public class HoldemNoLimit6MaxHandTest
                 Game: Game.HoldemNoLimit6Max,
                 SmallBlind: new Chips(5),
                 BigBlind: new Chips(10),
+                SmallBlindSeat: new Seat(1),
+                BigBlindSeat: new Seat(2),
+                ButtonSeat: new Seat(6),
                 Participants: [participantSb, participantBb, participantBu],
                 OccuredAt: new DateTime(2025, 1, 1)
             ),
@@ -367,15 +373,15 @@ public class HoldemNoLimit6MaxHandTest
     {
         var participantSb = CreateParticipant(
             nickname: "SmallBlind",
-            position: Position.SmallBlind
+            seat: 1
         );
         var participantBb = CreateParticipant(
             nickname: "BigBlind",
-            position: Position.BigBlind
+            seat: 2
         );
         var participantBu = CreateParticipant(
             nickname: "Button",
-            position: Position.Button
+            seat: 6
         );
         var eventBus = new EventBus();
 
@@ -401,15 +407,15 @@ public class HoldemNoLimit6MaxHandTest
     {
         var participantSb = CreateParticipant(
             nickname: "SmallBlind",
-            position: Position.SmallBlind
+            seat: 1
         );
         var participantBb = CreateParticipant(
             nickname: "BigBlind",
-            position: Position.BigBlind
+            seat: 2
         );
         var participantBu = CreateParticipant(
             nickname: "Button",
-            position: Position.Button
+            seat: 6
         );
         var eventBus = new EventBus();
 
@@ -440,15 +446,15 @@ public class HoldemNoLimit6MaxHandTest
     {
         var participantSb = CreateParticipant(
             nickname: "SmallBlind",
-            position: Position.SmallBlind
+            seat: 1
         );
         var participantBb = CreateParticipant(
             nickname: "BigBlind",
-            position: Position.BigBlind
+            seat: 2
         );
         var participantBu = CreateParticipant(
             nickname: "Button",
-            position: Position.Button
+            seat: 6
         );
         var eventBus = new EventBus();
 
@@ -541,21 +547,24 @@ public class HoldemNoLimit6MaxHandTest
         Assert.Equal(46, events.Count);
     }
 
-        [Fact]
+    [Fact]
     public void TestHeadsUpFlow()
     {
         var participantSb = CreateParticipant(
             nickname: "SmallBlind",
-            position: Position.SmallBlind
+            seat: 1
         );
         var participantBb = CreateParticipant(
             nickname: "BigBlind",
-            position: Position.BigBlind
+            seat: 2
         );
         var eventBus = new EventBus();
 
         var hand = CreateHand(
-            participants: [participantSb, participantBb]
+            participants: [participantSb, participantBb],
+            smallBlindSeat: 1,
+            bigBlindSeat: 2,
+            buttonSeat: 1
         );
 
         var events = new List<BaseEvent>();
@@ -595,7 +604,7 @@ public class HoldemNoLimit6MaxHandTest
             decision: new Decision(DecisionType.CallTo, new Chips(25)),
             eventBus: eventBus
         );
-        
+
         Assert.Equal(22, events.Count);
         Assert.Equal(3, decisionRequestEvents.Count);
         Assert.Equal(new Nickname("BigBlind"), decisionRequestEvents[2].Nickname);
@@ -629,13 +638,23 @@ public class HoldemNoLimit6MaxHandTest
         Assert.Equal(42, events.Count);
     }
 
-    private Hand CreateHand(ImmutableList<Participant> participants, int smallBlind = 5, int bigBlind = 10)
+    private Hand CreateHand(
+        ImmutableList<Participant> participants,
+        int smallBlindSeat = 1,
+        int bigBlindSeat = 2,
+        int buttonSeat = 6,
+        int smallBlind = 5,
+        int bigBlind = 10
+    )
     {
         return Hand.FromScratch(
             uid: new HandUid(Guid.NewGuid()),
             game: Game.HoldemNoLimit6Max,
             smallBlind: new Chips(smallBlind),
             bigBlind: new Chips(bigBlind),
+            smallBlindSeat: new Seat(smallBlindSeat),
+            bigBlindSeat: new Seat(bigBlindSeat),
+            buttonSeat: new Seat(buttonSeat),
             participants: participants,
             randomizer: _randomizer,
             evaluator: _evaluator,
@@ -643,11 +662,11 @@ public class HoldemNoLimit6MaxHandTest
         );
     }
 
-    private Participant CreateParticipant(string nickname, Position position, int stake = 1000)
+    private Participant CreateParticipant(string nickname, int seat, int stake = 1000)
     {
         return new Participant(
             nickname: new Nickname(nickname),
-            position: position,
+            seat: new Seat(seat),
             stake: new Chips(stake)
         );
     }
@@ -664,47 +683,47 @@ public class HoldemNoLimit9MaxHandTest
         var handUid = new HandUid(Guid.NewGuid());
         var participantSb = new Participant(
             nickname: new Nickname("SmallBlind"),
-            position: Position.SmallBlind,
+            seat: new Seat(1),
             stake: new Chips(1000)
         );
         var participantBb = new Participant(
             nickname: new Nickname("BigBlind"),
-            position: Position.BigBlind,
+            seat: new Seat(2),
             stake: new Chips(900)
         );
         var participantUtg1 = new Participant(
             nickname: new Nickname("UnderTheGun1"),
-            position: Position.UnderTheGun1,
+            seat: new Seat(3),
             stake: new Chips(800)
         );
         var participantUtg2 = new Participant(
             nickname: new Nickname("UnderTheGun2"),
-            position: Position.UnderTheGun2,
+            seat: new Seat(4),
             stake: new Chips(700)
         );
         var participantUtg3 = new Participant(
             nickname: new Nickname("UnderTheGun3"),
-            position: Position.UnderTheGun3,
+            seat: new Seat(5),
             stake: new Chips(600)
         );
         var participantEp = new Participant(
             nickname: new Nickname("Early"),
-            position: Position.Early,
+            seat: new Seat(6),
             stake: new Chips(500)
         );
         var participantMp = new Participant(
             nickname: new Nickname("Middle"),
-            position: Position.Middle,
+            seat: new Seat(7),
             stake: new Chips(400)
         );
         var participantCo = new Participant(
             nickname: new Nickname("CutOff"),
-            position: Position.CutOff,
+            seat: new Seat(8),
             stake: new Chips(300)
         );
         var participantBu = new Participant(
             nickname: new Nickname("Button"),
-            position: Position.Button,
+            seat: new Seat(9),
             stake: new Chips(200)
         );
         var eventBus = new EventBus();
@@ -718,6 +737,9 @@ public class HoldemNoLimit9MaxHandTest
             game: Game.HoldemNoLimit9Max,
             smallBlind: new Chips(5),
             bigBlind: new Chips(10),
+            smallBlindSeat: new Seat(1),
+            bigBlindSeat: new Seat(2),
+            buttonSeat: new Seat(9),
             participants: [participantSb, participantBb, participantUtg1, participantUtg2, participantUtg3, participantEp, participantMp, participantCo, participantBu],
             randomizer: _randomizer,
             evaluator: _evaluator,
@@ -758,32 +780,32 @@ public class OmahaPotLimit6MaxHandTest
         var handUid = new HandUid(Guid.NewGuid());
         var participantSb = new Participant(
             nickname: new Nickname("SmallBlind"),
-            position: Position.SmallBlind,
+            seat: new Seat(1),
             stake: new Chips(1000)
         );
         var participantBb = new Participant(
             nickname: new Nickname("BigBlind"),
-            position: Position.BigBlind,
+            seat: new Seat(2),
             stake: new Chips(900)
         );
         var participantEp = new Participant(
             nickname: new Nickname("Early"),
-            position: Position.Early,
+            seat: new Seat(3),
             stake: new Chips(800)
         );
         var participantMp = new Participant(
             nickname: new Nickname("Middle"),
-            position: Position.Middle,
+            seat: new Seat(4),
             stake: new Chips(700)
         );
         var participantCo = new Participant(
             nickname: new Nickname("CutOff"),
-            position: Position.CutOff,
+            seat: new Seat(5),
             stake: new Chips(600)
         );
         var participantBu = new Participant(
             nickname: new Nickname("Button"),
-            position: Position.Button,
+            seat: new Seat(6),
             stake: new Chips(500)
         );
         var eventBus = new EventBus();
@@ -797,6 +819,9 @@ public class OmahaPotLimit6MaxHandTest
             game: Game.OmahaPotLimit6Max,
             smallBlind: new Chips(5),
             bigBlind: new Chips(10),
+            smallBlindSeat: new Seat(1),
+            bigBlindSeat: new Seat(2),
+            buttonSeat: new Seat(6),
             participants: [participantSb, participantBb, participantEp, participantMp, participantCo, participantBu],
             randomizer: _randomizer,
             evaluator: _evaluator,
@@ -834,47 +859,47 @@ public class OmahaPotLimit9MaxHandTest
         var handUid = new HandUid(Guid.NewGuid());
         var participantSb = new Participant(
             nickname: new Nickname("SmallBlind"),
-            position: Position.SmallBlind,
+            seat: new Seat(1),
             stake: new Chips(1000)
         );
         var participantBb = new Participant(
             nickname: new Nickname("BigBlind"),
-            position: Position.BigBlind,
+            seat: new Seat(2),
             stake: new Chips(900)
         );
         var participantUtg1 = new Participant(
             nickname: new Nickname("UnderTheGun1"),
-            position: Position.UnderTheGun1,
+            seat: new Seat(3),
             stake: new Chips(800)
         );
         var participantUtg2 = new Participant(
             nickname: new Nickname("UnderTheGun2"),
-            position: Position.UnderTheGun2,
+            seat: new Seat(4),
             stake: new Chips(700)
         );
         var participantUtg3 = new Participant(
             nickname: new Nickname("UnderTheGun3"),
-            position: Position.UnderTheGun3,
+            seat: new Seat(5),
             stake: new Chips(600)
         );
         var participantEp = new Participant(
             nickname: new Nickname("Early"),
-            position: Position.Early,
+            seat: new Seat(6),
             stake: new Chips(500)
         );
         var participantMp = new Participant(
             nickname: new Nickname("Middle"),
-            position: Position.Middle,
+            seat: new Seat(7),
             stake: new Chips(400)
         );
         var participantCo = new Participant(
             nickname: new Nickname("CutOff"),
-            position: Position.CutOff,
+            seat: new Seat(8),
             stake: new Chips(300)
         );
         var participantBu = new Participant(
             nickname: new Nickname("Button"),
-            position: Position.Button,
+            seat: new Seat(9),
             stake: new Chips(200)
         );
         var eventBus = new EventBus();
@@ -888,6 +913,9 @@ public class OmahaPotLimit9MaxHandTest
             game: Game.OmahaPotLimit9Max,
             smallBlind: new Chips(5),
             bigBlind: new Chips(10),
+            smallBlindSeat: new Seat(1),
+            bigBlindSeat: new Seat(2),
+            buttonSeat: new Seat(9),
             participants: [participantSb, participantBb, participantUtg1, participantUtg2, participantUtg3, participantEp, participantMp, participantCo, participantBu],
             randomizer: _randomizer,
             evaluator: _evaluator,

@@ -60,10 +60,13 @@ public class WorkerTest : IClassFixture<MongoDbFixture>, IClassFixture<RabbitMqF
             Game: "HoldemNoLimit6Max",
             SmallBlind: 5,
             BigBlind: 10,
+            SmallBlindSeat: 1,
+            BigBlindSeat: 2,
+            ButtonSeat: 6,
             Participants: [
-                new IntegrationEventParticipant("SmallBlind", "SmallBlind", 1000),
-                new IntegrationEventParticipant("BigBlind", "BigBlind", 1000),
-                new IntegrationEventParticipant("Button", "Button", 1000)
+                new IntegrationEventParticipant("SmallBlind", 1, 1000),
+                new IntegrationEventParticipant("BigBlind", 2, 1000),
+                new IntegrationEventParticipant("Button", 6, 1000)
             ],
             TableUid: Guid.NewGuid(),
             HandUid: Guid.NewGuid(),

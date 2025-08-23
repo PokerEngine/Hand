@@ -3,16 +3,16 @@ namespace Domain.ValueObject;
 public readonly struct Participant
 {
     public readonly Nickname Nickname;
-    public readonly Position Position;
+    public readonly Seat Seat;
     public readonly Chips Stake;
 
-    public Participant(Nickname nickname, Position position, Chips stake)
+    public Participant(Nickname nickname, Seat seat, Chips stake)
     {
         Nickname = nickname;
-        Position = position;
+        Seat = seat;
         Stake = stake;
     }
 
     public override string ToString() =>
-        $"{Nickname}, {Position}, {Stake}";
+        $"{Nickname}, {Seat}, {Stake}";
 }

@@ -37,8 +37,7 @@ public class StandardDeckTest
     {
         var deck = new StandardDeck();
 
-        CardSet cards;
-        var exc = Assert.Throws<InvalidOperationException>(() => cards = deck.ExtractRandomCards(53, _randomizer));
+        var exc = Assert.Throws<InvalidOperationException>(() => deck.ExtractRandomCards(53, _randomizer));
 
         Assert.Equal("The deck does not contain enough cards", exc.Message);
     }
@@ -67,8 +66,7 @@ public class StandardDeckTest
         var deck = new StandardDeck();
         deck.ExtractCertainCards(new CardSet([Card.AceOfDiamonds, Card.DeuceOfClubs]));
 
-        CardSet cards;
-        var exc = Assert.Throws<InvalidOperationException>(() => cards = deck.ExtractCertainCards(new CardSet([Card.AceOfDiamonds])));
+        var exc = Assert.Throws<InvalidOperationException>(() => deck.ExtractCertainCards(new CardSet([Card.AceOfDiamonds])));
 
         Assert.Equal("The deck does not contain the given cards", exc.Message);
     }

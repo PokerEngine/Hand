@@ -34,13 +34,8 @@ public class BlindPostingDealer : IDealer
         IEventBus eventBus
     )
     {
-        Player player;
-
-        try
-        {
-            player = table.GetPlayerByPosition(Position.SmallBlind);
-        }
-        catch (ArgumentException)
+        var player = table.GetPlayerOnSmallBlind();
+        if (player == null)
         {
             return;
         }
@@ -62,13 +57,8 @@ public class BlindPostingDealer : IDealer
         IEventBus eventBus
     )
     {
-        Player player;
-
-        try
-        {
-            player = table.GetPlayerByPosition(Position.BigBlind);
-        }
-        catch (ArgumentException)
+        var player = table.GetPlayerOnSmallBlind();
+        if (player == null)
         {
             return;
         }

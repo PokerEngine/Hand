@@ -10,20 +10,48 @@ public class SixMaxTableTest
     {
         var playerSb = CreatePlayer(
             nickname: "SmallBlind",
-            position: Position.SmallBlind
+            seat: 1
         );
         var playerBb = CreatePlayer(
             nickname: "BigBlind",
-            position: Position.BigBlind
+            seat: 2
         );
         var playerBu = CreatePlayer(
             nickname: "Button",
-            position: Position.Button
+            seat: 6
         );
 
-        var table = new SixMaxTable([playerBu, playerSb, playerBb]);
+        var table = new SixMaxTable(
+            smallBlindSeat: playerSb.Seat,
+            bigBlindSeat: playerBb.Seat,
+            buttonSeat: playerBu.Seat,
+            players: [playerBu, playerSb, playerBb]
+        );
 
         Assert.Equal(3, table.Count);
+        Assert.Empty(table.BoardCards);
+    }
+
+    [Fact]
+    public void TestInitializationHeadsUp()
+    {
+        var playerSb = CreatePlayer(
+            nickname: "SmallBlind",
+            seat: 1
+        );
+        var playerBb = CreatePlayer(
+            nickname: "BigBlind",
+            seat: 2
+        );
+
+        var table = new SixMaxTable(
+            smallBlindSeat: playerSb.Seat,
+            bigBlindSeat: playerBb.Seat,
+            buttonSeat: playerSb.Seat,
+            players: [playerSb, playerBb]
+        );
+
+        Assert.Equal(2, table.Count);
         Assert.Empty(table.BoardCards);
     }
 
@@ -32,33 +60,51 @@ public class SixMaxTableTest
     {
         var playerA = CreatePlayer(
             nickname: "Alpha",
-            position: Position.SmallBlind
+            seat: 1
         );
         var playerB = CreatePlayer(
             nickname: "Alpha",
-            position: Position.BigBlind
+            seat: 2
         );
 
-        SixMaxTable table;
-        var exc = Assert.Throws<ArgumentException>(() => table = new SixMaxTable([playerA, playerB]));
+        var exc = Assert.Throws<ArgumentException>(() => new SixMaxTable([playerA, playerB], new Seat(1), new Seat(2), new Seat(1)));
         Assert.StartsWith("The table must contain players with unique nicknames", exc.Message);
     }
 
     [Fact]
-    public void TestInitializationWithDuplicatedPositions()
+    public void TestInitializationWithDuplicatedSeats()
     {
         var playerA = CreatePlayer(
             nickname: "Alpha",
-            position: Position.BigBlind
+            seat: 1
         );
         var playerB = CreatePlayer(
             nickname: "Beta",
-            position: Position.BigBlind
+            seat: 1
         );
 
-        SixMaxTable table;
-        var exc = Assert.Throws<ArgumentException>(() => table = new SixMaxTable([playerA, playerB]));
-        Assert.StartsWith("The table must contain players with unique positions", exc.Message);
+        var exc = Assert.Throws<ArgumentException>(() => new SixMaxTable([playerA, playerB], new Seat(1), new Seat(2), new Seat(1)));
+        Assert.StartsWith("The table must contain players with unique seats", exc.Message);
+    }
+
+    [Fact]
+    public void TestInitializationWithNotAllowedSeats()
+    {
+        var playerSb = CreatePlayer(
+            nickname: "SmallBlind",
+            seat: 1
+        );
+        var playerBb = CreatePlayer(
+            nickname: "BigBlind",
+            seat: 2
+        );
+        var playerWrong = CreatePlayer(
+            nickname: "Wrong",
+            seat: 9
+        );
+
+        var exc = Assert.Throws<ArgumentOutOfRangeException>(() => new SixMaxTable([playerSb, playerBb, playerWrong], new Seat(1), new Seat(2), new Seat(6)));
+        Assert.StartsWith("The table supports seats till #6", exc.Message);
     }
 
     [Fact]
@@ -66,12 +112,34 @@ public class SixMaxTableTest
     {
         var playerBb = CreatePlayer(
             nickname: "BigBlind",
-            position: Position.BigBlind
+            seat: 1
         );
 
-        SixMaxTable table;
-        var exc = Assert.Throws<ArgumentException>(() => table = new SixMaxTable([playerBb]));
+        var exc = Assert.Throws<ArgumentException>(() => new SixMaxTable([playerBb], new Seat(1), new Seat(1), new Seat(1)));
         Assert.StartsWith("The table must contain at least 2 players", exc.Message);
+    }
+
+    [Fact]
+    public void TestInitializationWithoutSmallBlind()
+    {
+        var playerBb = CreatePlayer(
+            nickname: "BigBlind",
+            seat: 1
+        );
+        var playerBu = CreatePlayer(
+            nickname: "Button",
+            seat: 6
+        );
+
+        var table = new SixMaxTable(
+            smallBlindSeat: new Seat(2),
+            bigBlindSeat: new Seat(1),
+            buttonSeat: new Seat(6),
+            players: [playerBb, playerBu]
+        );
+
+        Assert.Equal(2, table.Count);
+        Assert.Empty(table.BoardCards);
     }
 
     [Fact]
@@ -79,37 +147,70 @@ public class SixMaxTableTest
     {
         var playerSb = CreatePlayer(
             nickname: "SmallBlind",
-            position: Position.SmallBlind
+            seat: 1
         );
         var playerBu = CreatePlayer(
             nickname: "Button",
-            position: Position.Button
+            seat: 6
         );
 
-        SixMaxTable table;
-        var exc = Assert.Throws<ArgumentException>(() => table = new SixMaxTable([playerSb, playerBu]));
+        var exc = Assert.Throws<ArgumentException>(() => new SixMaxTable([playerSb, playerBu], new Seat(1), new Seat(2), new Seat(6)));
         Assert.StartsWith("The table must contain a player on the big blind", exc.Message);
     }
 
     [Fact]
-    public void TestInitializationWithNotAllowedPositions()
+    public void TestInitializationWithoutButton()
     {
         var playerSb = CreatePlayer(
             nickname: "SmallBlind",
-            position: Position.SmallBlind
+            seat: 2
         );
         var playerBb = CreatePlayer(
             nickname: "BigBlind",
-            position: Position.BigBlind
-        );
-        var playerUtg1 = CreatePlayer(
-            nickname: "UnderTheGun1",
-            position: Position.UnderTheGun1
+            seat: 1
         );
 
-        SixMaxTable table;
-        var exc = Assert.Throws<ArgumentException>(() => table = new SixMaxTable([playerSb, playerBb, playerUtg1]));
-        Assert.StartsWith("The table must contain players with allowed positions", exc.Message);
+        var table = new SixMaxTable(
+            smallBlindSeat: new Seat(1),
+            bigBlindSeat: new Seat(2),
+            buttonSeat: new Seat(6),
+            players: [playerSb, playerBb]
+        );
+
+        Assert.Equal(2, table.Count);
+        Assert.Empty(table.BoardCards);
+    }
+
+    [Fact]
+    public void TestInitializationWithSameSmallAndBigBlind()
+    {
+        var playerSb = CreatePlayer(
+            nickname: "SmallBlind",
+            seat: 1
+        );
+        var playerBb = CreatePlayer(
+            nickname: "BigBlind",
+            seat: 2
+        );
+
+        var exc = Assert.Throws<ArgumentException>(() => new SixMaxTable([playerSb, playerBb], new Seat(2), new Seat(2), new Seat(1)));
+        Assert.StartsWith("The table must contain different players on the big and small blinds", exc.Message);
+    }
+
+    [Fact]
+    public void TestInitializationWithSameBigBlindAndButton()
+    {
+        var playerSb = CreatePlayer(
+            nickname: "SmallBlind",
+            seat: 1
+        );
+        var playerBb = CreatePlayer(
+            nickname: "BigBlind",
+            seat: 2
+        );
+
+        var exc = Assert.Throws<ArgumentException>(() => new SixMaxTable([playerSb, playerBb], new Seat(1), new Seat(2), new Seat(2)));
+        Assert.StartsWith("The table must contain different players on the big blind and button", exc.Message);
     }
 
     [Fact]
@@ -117,14 +218,19 @@ public class SixMaxTableTest
     {
         var playerSb = CreatePlayer(
             nickname: "SmallBlind",
-            position: Position.SmallBlind
+            seat: 1
         );
         var playerBb = CreatePlayer(
             nickname: "BigBlind",
-            position: Position.BigBlind
+            seat: 2
         );
 
-        var table = CreateTable([playerSb, playerBb]);
+        var table = CreateTable(
+            players: [playerSb, playerBb],
+            smallBlindSeat: 1,
+            bigBlindSeat: 2,
+            buttonSeat: 1
+        );
 
         Assert.Equal(playerSb, table.GetPlayerByNickname(playerSb.Nickname));
         Assert.Equal(playerBb, table.GetPlayerByNickname(playerBb.Nickname));
@@ -135,55 +241,132 @@ public class SixMaxTableTest
     {
         var playerSb = CreatePlayer(
             nickname: "SmallBlind",
-            position: Position.SmallBlind
+            seat: 1
         );
         var playerBb = CreatePlayer(
             nickname: "BigBlind",
-            position: Position.BigBlind
+            seat: 2
         );
 
-        var table = CreateTable([playerSb, playerBb]);
+        var table = CreateTable(
+            players: [playerSb, playerBb],
+            smallBlindSeat: 1,
+            bigBlindSeat: 2,
+            buttonSeat: 1
+        );
 
-        Player player;
-        var exc = Assert.Throws<ArgumentException>(() => player = table.GetPlayerByNickname(new Nickname("Button")));
+        var exc = Assert.Throws<ArgumentException>(() => table.GetPlayerByNickname(new Nickname("Wrong")));
         Assert.StartsWith("A player with the given nickname is not found at the table", exc.Message);
     }
 
     [Fact]
-    public void TestGetPlayerByPosition()
+    public void TestGetPlayerOnSmallBlind()
     {
         var playerSb = CreatePlayer(
             nickname: "SmallBlind",
-            position: Position.SmallBlind
+            seat: 1
         );
         var playerBb = CreatePlayer(
             nickname: "BigBlind",
-            position: Position.BigBlind
+            seat: 2
         );
 
-        var table = CreateTable([playerSb, playerBb]);
+        var table = CreateTable(
+            players: [playerSb, playerBb],
+            smallBlindSeat: 1,
+            bigBlindSeat: 2,
+            buttonSeat: 1
+        );
 
-        Assert.Equal(playerSb, table.GetPlayerByPosition(Position.SmallBlind));
-        Assert.Equal(playerBb, table.GetPlayerByPosition(Position.BigBlind));
+        Assert.Equal(playerSb, table.GetPlayerOnSmallBlind());
     }
 
     [Fact]
-    public void TestGetPlayerByPositionWhenNotFound()
+    public void TestGetPlayerOnSmallBlindWhenMissed()
+    {
+        var playerBb = CreatePlayer(
+            nickname: "BigBlind",
+            seat: 1
+        );
+        var playerBu = CreatePlayer(
+            nickname: "Button",
+            seat: 6
+        );
+
+        var table = CreateTable(
+            players: [playerBb, playerBu],
+            smallBlindSeat: 2,
+            bigBlindSeat: 1,
+            buttonSeat: 6
+        );
+
+        Assert.Null(table.GetPlayerOnSmallBlind());
+    }
+
+    [Fact]
+    public void TestGetPlayerOnBigBlind()
     {
         var playerSb = CreatePlayer(
             nickname: "SmallBlind",
-            position: Position.SmallBlind
+            seat: 1
         );
         var playerBb = CreatePlayer(
             nickname: "BigBlind",
-            position: Position.BigBlind
+            seat: 2
         );
 
-        var table = CreateTable([playerSb, playerBb]);
+        var table = CreateTable(
+            players: [playerSb, playerBb],
+            smallBlindSeat: 1,
+            bigBlindSeat: 2,
+            buttonSeat: 1
+        );
 
-        Player player;
-        var exc = Assert.Throws<ArgumentException>(() => player = table.GetPlayerByPosition(Position.Button));
-        Assert.StartsWith("A player on the given position is not found at the table", exc.Message);
+        Assert.Equal(playerBb, table.GetPlayerOnBigBlind());
+    }
+
+    [Fact]
+    public void TestGetPlayerOnButton()
+    {
+        var playerSb = CreatePlayer(
+            nickname: "SmallBlind",
+            seat: 1
+        );
+        var playerBb = CreatePlayer(
+            nickname: "BigBlind",
+            seat: 2
+        );
+
+        var table = CreateTable(
+            players: [playerSb, playerBb],
+            smallBlindSeat: 1,
+            bigBlindSeat: 2,
+            buttonSeat: 1
+        );
+
+        Assert.Equal(playerSb, table.GetPlayerOnButton());
+    }
+
+    [Fact]
+    public void TestGetPlayerOnButtonWhenMissed()
+    {
+        var playerSb = CreatePlayer(
+            nickname: "SmallBlind",
+            seat: 2
+        );
+        var playerBb = CreatePlayer(
+            nickname: "BigBlind",
+            seat: 1
+        );
+
+        var table = CreateTable(
+            players: [playerSb, playerBb],
+            smallBlindSeat: 1,
+            bigBlindSeat: 2,
+            buttonSeat: 6
+        );
+
+        Assert.Null(table.GetPlayerOnButton());
     }
 
     [Fact]
@@ -191,11 +374,11 @@ public class SixMaxTableTest
     {
         var playerSb = CreatePlayer(
             nickname: "SmallBlind",
-            position: Position.SmallBlind
+            seat: 1
         );
         var playerBb = CreatePlayer(
             nickname: "BigBlind",
-            position: Position.BigBlind
+            seat: 2
         );
 
         var table = CreateTable([playerSb, playerBb]);
@@ -214,20 +397,20 @@ public class SixMaxTableTest
     {
         var playerSb = CreatePlayer(
             nickname: "SmallBlind",
-            position: Position.SmallBlind
+            seat: 2
         );
         var playerBb = CreatePlayer(
             nickname: "BigBlind",
-            position: Position.BigBlind
+            seat: 3
         );
         var playerBu = CreatePlayer(
             nickname: "Button",
-            position: Position.Button
+            seat: 1
         );
-        List<Player> players = [playerSb, playerBb, playerBu];
 
-        var table = CreateTable(players);
+        var table = CreateTable([playerSb, playerBb, playerBu]);
 
+        var players = new List<Player> { playerBu, playerSb, playerBb };
         var i = 0;
         foreach (var player in table)
         {
@@ -241,33 +424,48 @@ public class SixMaxTableTest
     {
         var playerSb = CreatePlayer(
             nickname: "SmallBlind",
-            position: Position.SmallBlind
+            seat: 1
         );
         var playerBb = CreatePlayer(
             nickname: "BigBlind",
-            position: Position.BigBlind
+            seat: 2
         );
         var playerBu = CreatePlayer(
             nickname: "Button",
-            position: Position.Button
+            seat: 3
         );
 
-        var table = new SixMaxTable([playerBu, playerSb, playerBb]);
+        var table = new SixMaxTable(
+            smallBlindSeat: new Seat(1),
+            bigBlindSeat: new Seat(2),
+            buttonSeat: new Seat(3),
+            players: [playerSb, playerBb, playerBu]
+        );
         table.TakeBoardCards(new CardSet([Card.AceOfSpades, Card.DeuceOfClubs, Card.AceOfClubs]));
 
         Assert.Equal($"SixMaxTable: 3 player(s), {table.BoardCards}", $"{table}");
     }
 
-    private BaseTable CreateTable(IEnumerable<Player> players)
+    private BaseTable CreateTable(
+        IEnumerable<Player> players,
+        int smallBlindSeat = 1,
+        int bigBlindSeat = 2,
+        int buttonSeat = 3
+    )
     {
-        return new SixMaxTable(players);
+        return new SixMaxTable(
+            smallBlindSeat: new Seat(smallBlindSeat),
+            bigBlindSeat: new Seat(bigBlindSeat),
+            buttonSeat: new Seat(buttonSeat),
+            players: players
+        );
     }
 
-    private Player CreatePlayer(string nickname, Position position, int stake = 1000)
+    private Player CreatePlayer(string nickname, int seat, int stake = 1000)
     {
         return new Player(
             nickname: new Nickname(nickname),
-            position: position,
+            seat: new Seat(seat),
             stake: new Chips(stake)
         );
     }

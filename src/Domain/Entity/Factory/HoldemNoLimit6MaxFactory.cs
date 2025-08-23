@@ -5,10 +5,20 @@ namespace Domain.Entity.Factory;
 
 public class HoldemNoLimit6MaxFactory : IFactory
 {
-    public virtual BaseTable GetTable(IEnumerable<Participant> participants)
+    public virtual BaseTable GetTable(
+        IEnumerable<Participant> participants,
+        Seat smallBlindSeat,
+        Seat bigBlindSeat,
+        Seat buttonSeat
+    )
     {
         var players = participants.Select(GetPlayer);
-        return new SixMaxTable(players);
+        return new SixMaxTable(
+            players: players,
+            smallBlindSeat: smallBlindSeat,
+            bigBlindSeat: bigBlindSeat,
+            buttonSeat: buttonSeat
+        );
     }
 
     public BasePot GetPot(Chips smallBlind, Chips bigBlind)
@@ -41,7 +51,7 @@ public class HoldemNoLimit6MaxFactory : IFactory
     {
         return new Player(
             nickname: participant.Nickname,
-            position: participant.Position,
+            seat: participant.Seat,
             stake: participant.Stake
         );
     }

@@ -23,7 +23,7 @@ public class NoLimitPotTest
     {
         var playerSb = CreatePlayer(
             nickname: "SmallBlind",
-            position: Position.SmallBlind
+            seat: 1
         );
         var pot = CreatePot();
 
@@ -41,7 +41,7 @@ public class NoLimitPotTest
     {
         var playerSb = CreatePlayer(
             nickname: "SmallBlind",
-            position: Position.SmallBlind,
+            seat: 1,
             stake: 2
         );
         var pot = CreatePot();
@@ -62,7 +62,7 @@ public class NoLimitPotTest
     {
         var playerSb = CreatePlayer(
             nickname: "SmallBlind",
-            position: Position.SmallBlind
+            seat: 1
         );
         var pot = CreatePot();
 
@@ -81,11 +81,11 @@ public class NoLimitPotTest
     {
         var playerSb = CreatePlayer(
             nickname: "SmallBlind",
-            position: Position.SmallBlind
+            seat: 1
         );
         var playerBb = CreatePlayer(
             nickname: "BigBlind",
-            position: Position.BigBlind
+            seat: 2
         );
         var pot = CreatePot();
         pot.PostSmallBlind(playerSb, new Chips(5));
@@ -104,11 +104,11 @@ public class NoLimitPotTest
     {
         var playerSb = CreatePlayer(
             nickname: "SmallBlind",
-            position: Position.SmallBlind
+            seat: 1
         );
         var playerBb = CreatePlayer(
             nickname: "BigBlind",
-            position: Position.BigBlind,
+            seat: 2,
             stake: 2
         );
         var pot = CreatePot();
@@ -128,7 +128,7 @@ public class NoLimitPotTest
     {
         var playerBb = CreatePlayer(
             nickname: "BigBlind",
-            position: Position.BigBlind
+            seat: 2
         );
         var pot = CreatePot();
 
@@ -148,11 +148,11 @@ public class NoLimitPotTest
     {
         var playerSb = CreatePlayer(
             nickname: "SmallBlind",
-            position: Position.SmallBlind
+            seat: 1
         );
         var playerBb = CreatePlayer(
             nickname: "BigBlind",
-            position: Position.BigBlind
+            seat: 2
         );
         var pot = CreatePot();
         pot.PostSmallBlind(playerSb, new Chips(5));
@@ -172,11 +172,11 @@ public class NoLimitPotTest
     {
         var playerSb = CreatePlayer(
             nickname: "SmallBlind",
-            position: Position.SmallBlind
+            seat: 1
         );
         var playerBb = CreatePlayer(
             nickname: "BigBlind",
-            position: Position.BigBlind
+            seat: 2
         );
         var pot = CreatePot();
         playerSb.Connect();
@@ -209,11 +209,11 @@ public class NoLimitPotTest
     {
         var playerSb = CreatePlayer(
             nickname: "SmallBlind",
-            position: Position.SmallBlind
+            seat: 1
         );
         var playerBb = CreatePlayer(
             nickname: "BigBlind",
-            position: Position.BigBlind
+            seat: 2
         );
         var pot = CreatePot();
         playerSb.Connect();
@@ -239,11 +239,11 @@ public class NoLimitPotTest
     {
         var playerSb = CreatePlayer(
             nickname: "SmallBlind",
-            position: Position.SmallBlind
+            seat: 1
         );
         var playerBb = CreatePlayer(
             nickname: "BigBlind",
-            position: Position.BigBlind
+            seat: 2
         );
         var pot = CreatePot();
         playerSb.Connect();
@@ -275,11 +275,11 @@ public class NoLimitPotTest
     {
         var playerSb = CreatePlayer(
             nickname: "SmallBlind",
-            position: Position.SmallBlind
+            seat: 1
         );
         var playerBb = CreatePlayer(
             nickname: "BigBlind",
-            position: Position.BigBlind
+            seat: 2
         );
         var pot = CreatePot();
         playerSb.Connect();
@@ -312,11 +312,11 @@ public class NoLimitPotTest
     {
         var playerSb = CreatePlayer(
             nickname: "SmallBlind",
-            position: Position.SmallBlind
+            seat: 1
         );
         var playerBb = CreatePlayer(
             nickname: "BigBlind",
-            position: Position.BigBlind
+            seat: 2
         );
         var pot = CreatePot();
         playerSb.Connect();
@@ -342,11 +342,11 @@ public class NoLimitPotTest
     {
         var playerSb = CreatePlayer(
             nickname: "SmallBlind",
-            position: Position.SmallBlind
+            seat: 1
         );
         var playerBb = CreatePlayer(
             nickname: "BigBlind",
-            position: Position.BigBlind
+            seat: 2
         );
         var pot = CreatePot();
         playerSb.Connect();
@@ -378,11 +378,11 @@ public class NoLimitPotTest
     {
         var playerSb = CreatePlayer(
             nickname: "SmallBlind",
-            position: Position.SmallBlind
+            seat: 1
         );
         var playerBb = CreatePlayer(
             nickname: "BigBlind",
-            position: Position.BigBlind
+            seat: 2
         );
         var pot = CreatePot();
         playerSb.Connect();
@@ -408,11 +408,11 @@ public class NoLimitPotTest
     {
         var playerSb = CreatePlayer(
             nickname: "SmallBlind",
-            position: Position.SmallBlind
+            seat: 1
         );
         var playerBb = CreatePlayer(
             nickname: "BigBlind",
-            position: Position.BigBlind
+            seat: 2
         );
         var pot = CreatePot();
         playerSb.Connect();
@@ -451,11 +451,11 @@ public class NoLimitPotTest
     {
         var playerSb = CreatePlayer(
             nickname: "SmallBlind",
-            position: Position.SmallBlind
+            seat: 1
         );
         var playerBb = CreatePlayer(
             nickname: "BigBlind",
-            position: Position.BigBlind,
+            seat: 2,
             stake: 19
         );
         var pot = CreatePot();
@@ -488,11 +488,11 @@ public class NoLimitPotTest
     {
         var playerSb = CreatePlayer(
             nickname: "SmallBlind",
-            position: Position.SmallBlind
+            seat: 1
         );
         var playerBb = CreatePlayer(
             nickname: "BigBlind",
-            position: Position.BigBlind
+            seat: 2
         );
         var pot = CreatePot();
         playerSb.Connect();
@@ -518,11 +518,11 @@ public class NoLimitPotTest
     {
         var playerSb = CreatePlayer(
             nickname: "SmallBlind",
-            position: Position.SmallBlind
+            seat: 1
         );
         var playerBb = CreatePlayer(
             nickname: "BigBlind",
-            position: Position.BigBlind
+            seat: 2
         );
         var pot = CreatePot();
         playerSb.Connect();
@@ -556,11 +556,11 @@ public class NoLimitPotTest
     {
         var playerSb = CreatePlayer(
             nickname: "SmallBlind",
-            position: Position.SmallBlind
+            seat: 1
         );
         var playerBb = CreatePlayer(
             nickname: "BigBlind",
-            position: Position.BigBlind
+            seat: 2
         );
         var pot = CreatePot();
         playerSb.Connect();
@@ -592,12 +592,12 @@ public class NoLimitPotTest
     {
         var playerSb = CreatePlayer(
             nickname: "SmallBlind",
-            position: Position.SmallBlind,
+            seat: 1,
             stake: 9
         );
         var playerBb = CreatePlayer(
             nickname: "BigBlind",
-            position: Position.BigBlind
+            seat: 2
         );
         var pot = CreatePot();
         playerSb.Connect();
@@ -627,11 +627,11 @@ public class NoLimitPotTest
     {
         var playerSb = CreatePlayer(
             nickname: "SmallBlind",
-            position: Position.SmallBlind
+            seat: 1
         );
         var playerBb = CreatePlayer(
             nickname: "BigBlind",
-            position: Position.BigBlind
+            seat: 2
         );
         var pot = CreatePot();
         playerSb.Connect();
@@ -671,12 +671,12 @@ public class NoLimitPotTest
     {
         var playerSb = CreatePlayer(
             nickname: "SmallBlind",
-            position: Position.SmallBlind,
+            seat: 1,
             stake: 19
         );
         var playerBb = CreatePlayer(
             nickname: "BigBlind",
-            position: Position.BigBlind
+            seat: 2
         );
         var pot = CreatePot();
         playerSb.Connect();
@@ -716,11 +716,11 @@ public class NoLimitPotTest
     {
         var playerSb = CreatePlayer(
             nickname: "SmallBlind",
-            position: Position.SmallBlind
+            seat: 1
         );
         var playerBb = CreatePlayer(
             nickname: "BigBlind",
-            position: Position.BigBlind
+            seat: 2
         );
         var pot = CreatePot();
         playerSb.Connect();
@@ -746,11 +746,11 @@ public class NoLimitPotTest
     {
         var playerSb = CreatePlayer(
             nickname: "SmallBlind",
-            position: Position.SmallBlind
+            seat: 1
         );
         var playerBb = CreatePlayer(
             nickname: "BigBlind",
-            position: Position.BigBlind
+            seat: 2
         );
         var pot = CreatePot();
         playerSb.Connect();
@@ -790,11 +790,11 @@ public class NoLimitPotTest
     {
         var playerSb = CreatePlayer(
             nickname: "SmallBlind",
-            position: Position.SmallBlind
+            seat: 1
         );
         var playerBb = CreatePlayer(
             nickname: "BigBlind",
-            position: Position.BigBlind
+            seat: 2
         );
         var pot = CreatePot();
         playerSb.Connect();
@@ -826,11 +826,11 @@ public class NoLimitPotTest
     {
         var playerSb = CreatePlayer(
             nickname: "SmallBlind",
-            position: Position.SmallBlind
+            seat: 1
         );
         var playerBb = CreatePlayer(
             nickname: "BigBlind",
-            position: Position.BigBlind
+            seat: 2
         );
         var pot = CreatePot();
         playerSb.Connect();
@@ -862,11 +862,11 @@ public class NoLimitPotTest
     {
         var playerSb = CreatePlayer(
             nickname: "SmallBlind",
-            position: Position.SmallBlind
+            seat: 1
         );
         var playerBb = CreatePlayer(
             nickname: "BigBlind",
-            position: Position.BigBlind,
+            seat: 2,
             stake: 19
         );
         var pot = CreatePot();
@@ -898,12 +898,12 @@ public class NoLimitPotTest
     {
         var playerSb = CreatePlayer(
             nickname: "SmallBlind",
-            position: Position.SmallBlind,
+            seat: 1,
             stake: 19
         );
         var playerBb = CreatePlayer(
             nickname: "BigBlind",
-            position: Position.BigBlind
+            seat: 2
         );
         var pot = CreatePot();
         playerSb.Connect();
@@ -935,16 +935,16 @@ public class NoLimitPotTest
     {
         var playerSb = CreatePlayer(
             nickname: "SmallBlind",
-            position: Position.SmallBlind,
+            seat: 1,
             stake: 40
         );
         var playerBb = CreatePlayer(
             nickname: "BigBlind",
-            position: Position.BigBlind
+            seat: 2
         );
         var playerBu = CreatePlayer(
             nickname: "Button",
-            position: Position.Button
+            seat: 6
         );
         var pot = CreatePot();
         playerSb.Connect();
@@ -994,16 +994,16 @@ public class NoLimitPotTest
     {
         var playerSb = CreatePlayer(
             nickname: "SmallBlind",
-            position: Position.SmallBlind,
+            seat: 1,
             stake: 39
         );
         var playerBb = CreatePlayer(
             nickname: "BigBlind",
-            position: Position.BigBlind
+            seat: 2
         );
         var playerBu = CreatePlayer(
             nickname: "Button",
-            position: Position.Button
+            seat: 6
         );
         var pot = CreatePot();
         playerSb.Connect();
@@ -1043,16 +1043,16 @@ public class NoLimitPotTest
     {
         var playerSb = CreatePlayer(
             nickname: "SmallBlind",
-            position: Position.SmallBlind,
+            seat: 1,
             stake: 39
         );
         var playerBb = CreatePlayer(
             nickname: "BigBlind",
-            position: Position.BigBlind
+            seat: 2
         );
         var playerBu = CreatePlayer(
             nickname: "Button",
-            position: Position.Button
+            seat: 6
         );
         var pot = CreatePot();
         playerSb.Connect();
@@ -1102,15 +1102,15 @@ public class NoLimitPotTest
     {
         var playerSb = CreatePlayer(
             nickname: "SmallBlind",
-            position: Position.SmallBlind
+            seat: 1
         );
         var playerBb = CreatePlayer(
             nickname: "BigBlind",
-            position: Position.BigBlind
+            seat: 2
         );
         var playerBu = CreatePlayer(
             nickname: "Button",
-            position: Position.Button
+            seat: 6
         );
         var pot = CreatePot();
         playerSb.Connect();
@@ -1154,17 +1154,17 @@ public class NoLimitPotTest
     {
         var playerSb = CreatePlayer(
             nickname: "SmallBlind",
-            position: Position.SmallBlind,
+            seat: 1,
             stake: 100
         );
         var playerBb = CreatePlayer(
             nickname: "BigBlind",
-            position: Position.BigBlind,
+            seat: 2,
             stake: 200
         );
         var playerBu = CreatePlayer(
             nickname: "Button",
-            position: Position.Button,
+            seat: 6,
             stake: 600
         );
         var pot = CreatePot();
@@ -1204,15 +1204,15 @@ public class NoLimitPotTest
     {
         var playerSb = CreatePlayer(
             nickname: "SmallBlind",
-            position: Position.SmallBlind
+            seat: 1
         );
         var playerBb = CreatePlayer(
             nickname: "BigBlind",
-            position: Position.BigBlind
+            seat: 2
         );
         var playerBu = CreatePlayer(
             nickname: "Button",
-            position: Position.Button
+            seat: 6
         );
         var pot = CreatePot();
         playerSb.Connect();
@@ -1244,17 +1244,17 @@ public class NoLimitPotTest
     {
         var playerSb = CreatePlayer(
             nickname: "SmallBlind",
-            position: Position.SmallBlind,
+            seat: 1,
             stake: 500
         );
         var playerBb = CreatePlayer(
             nickname: "BigBlind",
-            position: Position.BigBlind,
+            seat: 2,
             stake: 250
         );
         var playerBu = CreatePlayer(
             nickname: "Button",
-            position: Position.Button
+            seat: 6
         );
         var pot = CreatePot();
         playerSb.Connect();
@@ -1289,17 +1289,17 @@ public class NoLimitPotTest
     {
         var playerSb = CreatePlayer(
             nickname: "SmallBlind",
-            position: Position.SmallBlind,
+            seat: 1,
             stake: 500
         );
         var playerBb = CreatePlayer(
             nickname: "BigBlind",
-            position: Position.BigBlind,
+            seat: 2,
             stake: 250
         );
         var playerBu = CreatePlayer(
             nickname: "Button",
-            position: Position.Button
+            seat: 6
         );
         var pot = CreatePot();
         playerSb.Connect();
@@ -1341,17 +1341,17 @@ public class NoLimitPotTest
     {
         var playerSb = CreatePlayer(
             nickname: "SmallBlind",
-            position: Position.SmallBlind,
+            seat: 1,
             stake: 500
         );
         var playerBb = CreatePlayer(
             nickname: "BigBlind",
-            position: Position.BigBlind,
+            seat: 2,
             stake: 250
         );
         var playerBu = CreatePlayer(
             nickname: "Button",
-            position: Position.Button
+            seat: 6
         );
         var pot = CreatePot();
         playerSb.Connect();
@@ -1391,15 +1391,15 @@ public class NoLimitPotTest
     {
         var playerSb = CreatePlayer(
             nickname: "SmallBlind",
-            position: Position.SmallBlind
+            seat: 1
         );
         var playerBb = CreatePlayer(
             nickname: "BigBlind",
-            position: Position.BigBlind
+            seat: 2
         );
         var playerBu = CreatePlayer(
             nickname: "Button",
-            position: Position.Button
+            seat: 6
         );
         var pot = CreatePot();
         playerSb.Connect();
@@ -1427,15 +1427,15 @@ public class NoLimitPotTest
     {
         var playerSb = CreatePlayer(
             nickname: "SmallBlind",
-            position: Position.SmallBlind
+            seat: 1
         );
         var playerBb = CreatePlayer(
             nickname: "BigBlind",
-            position: Position.BigBlind
+            seat: 2
         );
         var playerBu = CreatePlayer(
             nickname: "Button",
-            position: Position.Button
+            seat: 6
         );
         var pot = CreatePot();
         playerSb.Connect();
@@ -1461,15 +1461,15 @@ public class NoLimitPotTest
     {
         var playerSb = CreatePlayer(
             nickname: "SmallBlind",
-            position: Position.SmallBlind
+            seat: 1
         );
         var playerBb = CreatePlayer(
             nickname: "BigBlind",
-            position: Position.BigBlind
+            seat: 2
         );
         var playerBu = CreatePlayer(
             nickname: "Button",
-            position: Position.Button
+            seat: 6
         );
         var pot = CreatePot();
         playerSb.Connect();
@@ -1504,15 +1504,15 @@ public class NoLimitPotTest
     {
         var playerSb = CreatePlayer(
             nickname: "SmallBlind",
-            position: Position.SmallBlind
+            seat: 1
         );
         var playerBb = CreatePlayer(
             nickname: "BigBlind",
-            position: Position.BigBlind
+            seat: 2
         );
         var playerBu = CreatePlayer(
             nickname: "Button",
-            position: Position.Button,
+            seat: 6,
             stake: 999  // The poorest player takes the remainder
         );
         var pot = CreatePot();
@@ -1549,16 +1549,16 @@ public class NoLimitPotTest
     {
         var playerSb = CreatePlayer(
             nickname: "SmallBlind",
-            position: Position.SmallBlind,
+            seat: 1,
             stake: 100
         );
         var playerBb = CreatePlayer(
             nickname: "BigBlind",
-            position: Position.BigBlind
+            seat: 2
         );
         var playerBu = CreatePlayer(
             nickname: "Button",
-            position: Position.Button
+            seat: 6
         );
         var pot = CreatePot();
         playerSb.Connect();
@@ -1609,47 +1609,47 @@ public class NoLimitPotTest
     {
         var playerSb = CreatePlayer(
             nickname: "SmallBlind",
-            position: Position.SmallBlind,
+            seat: 1,
             stake: 100
         );
         var playerBb = CreatePlayer(
             nickname: "BigBlind",
-            position: Position.BigBlind,
+            seat: 2,
             stake: 200
         );
         var playerUtg1 = CreatePlayer(
             nickname: "UnderTheGun1",
-            position: Position.UnderTheGun1,
+            seat: 3,
             stake: 300
         );
         var playerUtg2 = CreatePlayer(
             nickname: "UnderTheGun2",
-            position: Position.UnderTheGun2,
+            seat: 4,
             stake: 400
         );
         var playerUtg3 = CreatePlayer(
             nickname: "UnderTheGun3",
-            position: Position.UnderTheGun3,
+            seat: 5,
             stake: 500
         );
         var playerEp = CreatePlayer(
             nickname: "Early",
-            position: Position.Early,
+            seat: 6,
             stake: 600
         );
         var playerMp = CreatePlayer(
             nickname: "Middle",
-            position: Position.Middle,
+            seat: 7,
             stake: 700
         );
         var playerCo = CreatePlayer(
             nickname: "CutOff",
-            position: Position.CutOff,
+            seat: 8,
             stake: 800
         );
         var playerBu = CreatePlayer(
             nickname: "Button",
-            position: Position.Button,
+            seat: 9,
             stake: 900
         );
         var pot = CreatePot();
@@ -1824,15 +1824,15 @@ public class NoLimitPotTest
     {
         var playerSb = CreatePlayer(
             nickname: "SmallBlind",
-            position: Position.SmallBlind
+            seat: 1
         );
         var playerBb = CreatePlayer(
             nickname: "BigBlind",
-            position: Position.BigBlind
+            seat: 2
         );
         var playerBu = CreatePlayer(
             nickname: "Button",
-            position: Position.Button
+            seat: 6
         );
         var pot = CreatePot();
         playerSb.Connect();
@@ -1867,9 +1867,18 @@ public class NoLimitPotTest
     [Fact]
     public void TestRepresentation()
     {
-        var playerSb = CreatePlayer("SmallBlind", Position.SmallBlind);
-        var playerBb = CreatePlayer("BigBlind", Position.BigBlind);
-        var playerBu = CreatePlayer("Button", Position.Button);
+        var playerSb = CreatePlayer(
+            nickname: "SmallBlind",
+            seat: 1
+        );
+        var playerBb = CreatePlayer(
+            nickname: "BigBlind",
+            seat: 2
+        );
+        var playerBu = CreatePlayer(
+            nickname: "Button",
+            seat: 6
+        );
         playerSb.Connect();
         playerBb.Connect();
         playerBu.Connect();
@@ -1891,11 +1900,11 @@ public class NoLimitPotTest
         return new NoLimitPot(new Chips(smallBlind), new Chips(bigBlind));
     }
 
-    private Player CreatePlayer(string nickname, Position position, int stake = 1000)
+    private Player CreatePlayer(string nickname, int seat, int stake = 1000)
     {
         return new Player(
             nickname: new Nickname(nickname),
-            position: position,
+            seat: new Seat(seat),
             stake: new Chips(stake)
         );
     }

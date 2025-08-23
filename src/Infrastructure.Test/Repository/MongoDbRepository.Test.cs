@@ -38,10 +38,13 @@ public class MongoDbRepositoryTest : IClassFixture<MongoDbFixture>, IDisposable
             Game: Game.HoldemNoLimit6Max,
             SmallBlind: new Chips(5),
             BigBlind: new Chips(10),
+            SmallBlindSeat: new Seat(1),
+            BigBlindSeat: new Seat(2),
+            ButtonSeat: new Seat(6),
             Participants: [
-                new Participant(nickname: new Nickname("SmallBlind"), position: Position.SmallBlind, stake: new Chips(1000)),
-                new Participant(nickname: new Nickname("BigBlind"), position: Position.BigBlind, stake: new Chips(900)),
-                new Participant(nickname: new Nickname("Button"), position: Position.Button, stake: new Chips(800)),
+                new Participant(new Nickname("SmallBlind"), new Seat(1), new Chips(1000)),
+                new Participant(new Nickname("BigBlind"), new Seat(2), new Chips(900)),
+                new Participant(new Nickname("Button"), new Seat(6), new Chips(800)),
             ],
             OccuredAt: now
         );

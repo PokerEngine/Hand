@@ -25,8 +25,8 @@ public class RabbitMqIntegrationEventBusTest : IClassFixture<RabbitMqFixture>, I
             "Event",
             123,
             ImmutableList.Create(
-                new IntegrationEventParticipant("SmallBlind", "SmallBlind", 1000),
-                new IntegrationEventParticipant("BigBlind", "BigBlind", 1000)
+                new IntegrationEventParticipant("SmallBlind", 1, 1000),
+                new IntegrationEventParticipant("BigBlind", 2, 1000)
             ),
             Guid.NewGuid(),
             Guid.NewGuid(),

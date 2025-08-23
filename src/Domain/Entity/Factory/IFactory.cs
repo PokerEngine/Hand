@@ -5,11 +5,16 @@ namespace Domain.Entity.Factory;
 
 public interface IFactory
 {
-    public BaseTable GetTable(IEnumerable<Participant> participants);
+    BaseTable GetTable(
+        IEnumerable<Participant> participants,
+        Seat smallBlindSeat,
+        Seat bigBlindSeat,
+        Seat buttonSeat
+    );
 
-    public BasePot GetPot(Chips smallBlind, Chips bigBlind);
+    BasePot GetPot(Chips smallBlind, Chips bigBlind);
 
-    public BaseDeck GetDeck();
+    BaseDeck GetDeck();
 
-    public IList<IDealer> GetDealers();
+    IList<IDealer> GetDealers();
 }

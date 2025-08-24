@@ -58,7 +58,7 @@ public class BoardCardsDealingDealer : IDealer
         table.TakeBoardCards(cards);
 
         var @event = new BoardCardsAreDealtEvent(
-            Cards: cards,
+            Cards: table.BoardCards,
             OccuredAt: DateTime.Now
         );
         eventBus.Publish(@event);

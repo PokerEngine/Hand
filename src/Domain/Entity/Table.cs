@@ -6,9 +6,9 @@ namespace Domain.Entity;
 public abstract class BaseTable : IEnumerable<Player>
 {
     private readonly Player?[] _players;
-    private readonly Seat _smallBlindSeat;
-    private readonly Seat _bigBlindSeat;
-    private readonly Seat _buttonSeat;
+    public readonly Seat SmallBlindSeat;
+    public readonly Seat BigBlindSeat;
+    public readonly Seat ButtonSeat;
 
     public CardSet BoardCards { get; private set; }
     public int Count => _players.Count(x => x != null);
@@ -22,9 +22,9 @@ public abstract class BaseTable : IEnumerable<Player>
     )
     {
         _players = new Player?[maxSeat];
-        _bigBlindSeat = bigBlindSeat;
-        _smallBlindSeat = smallBlindSeat;
-        _buttonSeat = buttonSeat;
+        BigBlindSeat = bigBlindSeat;
+        SmallBlindSeat = smallBlindSeat;
+        ButtonSeat = buttonSeat;
 
         BoardCards = new CardSet();
 
@@ -55,17 +55,17 @@ public abstract class BaseTable : IEnumerable<Player>
             throw new ArgumentException("The table must contain at least 2 players", nameof(players));
         }
 
-        if (_players[_bigBlindSeat - 1] == null)
+        if (_players[BigBlindSeat - 1] == null)
         {
             throw new ArgumentException("The table must contain a player on the big blind", nameof(players));
         }
 
-        if (_smallBlindSeat == _bigBlindSeat)
+        if (SmallBlindSeat == BigBlindSeat)
         {
             throw new ArgumentException("The table must contain different players on the big and small blinds", nameof(smallBlindSeat));
         }
 
-        if (_buttonSeat == _bigBlindSeat)
+        if (ButtonSeat == BigBlindSeat)
         {
             throw new ArgumentException("The table must contain different players on the big blind and button", nameof(buttonSeat));
         }
@@ -86,22 +86,41 @@ public abstract class BaseTable : IEnumerable<Player>
 
     public Player? GetPlayerOnSmallBlind()
     {
-        return GetPlayerOnSeat(_smallBlindSeat);
+        return GetPlayerOnSeat(SmallBlindSeat);
     }
 
     public Player? GetPlayerOnBigBlind()
     {
-        return GetPlayerOnSeat(_bigBlindSeat);
+        return GetPlayerOnSeat(BigBlindSeat);
     }
 
     public Player? GetPlayerOnButton()
     {
-        return GetPlayerOnSeat(_buttonSeat);
+        return GetPlayerOnSeat(ButtonSeat);
     }
 
     private Player? GetPlayerOnSeat(Seat seat)
     {
         return _players[seat - 1];
+    }
+
+    public IEnumerable<Player> GetPlayersStartingFromSeat(Seat seat)
+    {
+        var startIdx = seat - 1;
+        for (var i = 0; i < _players.Length; i++)
+        {
+            var idx = (startIdx + i) % _players.Length;
+            var player = _players[idx];
+            if (player != null)
+            {
+                yield return player;
+            }
+        }
+    }
+
+    public bool IsHeadsUp()
+    {
+        return Count == 2;
     }
 
     public void TakeBoardCards(CardSet boardCards)
@@ -111,8 +130,9 @@ public abstract class BaseTable : IEnumerable<Player>
 
     public IEnumerator<Player> GetEnumerator()
     {
-        foreach (var player in _players)
+        for (var i = 0; i < _players.Length; i++)
         {
+            var player = _players[i];
             if (player != null)
             {
                 yield return player;

@@ -57,7 +57,7 @@ public class BlindPostingDealer : IDealer
         IEventBus eventBus
     )
     {
-        var player = table.GetPlayerOnSmallBlind();
+        var player = table.GetPlayerOnBigBlind();
         if (player == null)
         {
             return;

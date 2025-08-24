@@ -48,7 +48,8 @@ public class HoleCardsDealingDealer : IDealer
 
     private IList<Player> GetPlayersForDealing(BaseTable table)
     {
-        return table.Where(x => !x.IsFolded).ToList();
+        var startSeat = table.SmallBlindSeat;
+        return table.GetPlayersStartingFromSeat(startSeat).Where(x => !x.IsFolded).ToList();
     }
 
     private bool HasEnoughPlayersForDealing(IList<Player> players)
@@ -68,7 +69,7 @@ public class HoleCardsDealingDealer : IDealer
 
         var @event = new HoleCardsAreDealtEvent(
             Nickname: player.Nickname,
-            Cards: cards,
+            Cards: player.HoleCards,
             OccuredAt: DateTime.Now
         );
         eventBus.Publish(@event);

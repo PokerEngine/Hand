@@ -21,12 +21,13 @@ public class TradingDealer : IDealer
         var startEvent = new StageIsStartedEvent(OccuredAt: DateTime.Now);
         eventBus.Publish(startEvent);
 
-        if (HasEnoughPlayersForTrading(table))
+        var players = GetPlayersForTrading(table);
+        if (HasEnoughPlayersForTrading(players))
         {
-            var previousPlayer = GetPreviousPlayer(table: table, pot: pot);
+            var previousPlayer = GetPreviousPlayer(table, pot);
             RequestDecisionOrFinish(
                 previousPlayer: previousPlayer,
-                table: table,
+                players: players,
                 pot: pot,
                 eventBus: eventBus
             );
@@ -77,8 +78,9 @@ public class TradingDealer : IDealer
         IEventBus eventBus
     )
     {
-        var previousPlayer = GetPreviousPlayer(table: table, pot: pot);
-        var expectedPlayer = GetNextPlayerForTrading(table: table, previousPlayer: previousPlayer);
+        var players = GetPlayersForTrading(table);
+        var previousPlayer = GetPreviousPlayer(table, pot);
+        var expectedPlayer = GetNextPlayerForTrading(players, previousPlayer);
         if (expectedPlayer == null || expectedPlayer.Nickname != nickname)
         {
             throw new InvalidOperationException("The player cannot commit a decision for now");
@@ -95,21 +97,22 @@ public class TradingDealer : IDealer
         eventBus.Publish(@event);
 
         RequestDecisionOrFinish(
+            players: players,
             previousPlayer: player,
-            table: table,
             pot: pot,
             eventBus: eventBus
         );
     }
 
-    private bool HasEnoughPlayersForTrading(BaseTable table)
-    {
-        return GetPlayersForTrading(table).Count > 1;
-    }
-
     private IList<Player> GetPlayersForTrading(BaseTable table)
     {
-        return table.Where(x => !x.IsFolded && !x.IsAllIn).ToList();
+        var startSeat = table.IsHeadsUp() ? table.BigBlindSeat : table.SmallBlindSeat;
+        return table.GetPlayersStartingFromSeat(startSeat).Where(x => !x.IsFolded && !x.IsAllIn).ToList();
+    }
+
+    private bool HasEnoughPlayersForTrading(IList<Player> players)
+    {
+        return players.Count > 1;
     }
 
     private Player? GetPreviousPlayer(BaseTable table, BasePot pot)
@@ -121,9 +124,8 @@ public class TradingDealer : IDealer
         return table.GetPlayerByNickname((Nickname)pot.LastDecisionNickname);
     }
 
-    private Player? GetNextPlayerForTrading(BaseTable table, Player? previousPlayer)
+    private Player? GetNextPlayerForTrading(IList<Player> players, Player? previousPlayer)
     {
-        var players = GetPlayersForTrading(table);
         var previousIdx = previousPlayer == null ? -1 : players.IndexOf(previousPlayer);
         var nextIdx = previousIdx + 1;
 
@@ -151,13 +153,13 @@ public class TradingDealer : IDealer
     }
 
     private void RequestDecisionOrFinish(
+        IList<Player> players,
         Player? previousPlayer,
-        BaseTable table,
         BasePot pot,
         IEventBus eventBus
     )
     {
-        var nextPlayer = GetNextPlayerForTrading(table: table, previousPlayer: previousPlayer);
+        var nextPlayer = GetNextPlayerForTrading(players, previousPlayer);
         if (nextPlayer == null || !pot.DecisionIsAvailable(nextPlayer))
         {
             Finish(

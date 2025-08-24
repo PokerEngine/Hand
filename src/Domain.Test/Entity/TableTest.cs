@@ -29,6 +29,7 @@ public class SixMaxTableTest
         );
 
         Assert.Equal(3, table.Count);
+        Assert.False(table.IsHeadsUp());
         Assert.Empty(table.BoardCards);
     }
 
@@ -52,6 +53,7 @@ public class SixMaxTableTest
         );
 
         Assert.Equal(2, table.Count);
+        Assert.True(table.IsHeadsUp());
         Assert.Empty(table.BoardCards);
     }
 
@@ -401,22 +403,27 @@ public class SixMaxTableTest
         );
         var playerBb = CreatePlayer(
             nickname: "BigBlind",
-            seat: 3
+            seat: 4
+        );
+        var playerCo = CreatePlayer(
+            nickname: "CutOff",
+            seat: 6
         );
         var playerBu = CreatePlayer(
             nickname: "Button",
             seat: 1
         );
 
-        var table = CreateTable([playerSb, playerBb, playerBu]);
+        var table = CreateTable([playerSb, playerBb, playerCo, playerBu], 2, 4, 1);
 
-        var players = new List<Player> { playerBu, playerSb, playerBb };
+        var expectedPlayers = new List<Player> { playerBu, playerSb, playerBb, playerCo };
         var i = 0;
         foreach (var player in table)
         {
-            Assert.Equal(player, players[i]);
+            Assert.Equal(expectedPlayers[i], player);
             i++;
         }
+        Assert.Equal(expectedPlayers.Count, i);
     }
 
     [Fact]

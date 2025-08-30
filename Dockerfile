@@ -16,6 +16,6 @@ RUN set -x && \
     cmake -DCMAKE_BUILD_TYPE=Release -S \. -B build && \
     cmake --build build --target all test -j 4
 
-WORKDIR /usr/local/project
+WORKDIR /usr/local/hand
 
 CMD ["dotnet", "watch", "--project", "src/Infrastructure", "run"]

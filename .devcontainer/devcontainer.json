@@ -1,8 +1,8 @@
 {
     "name": "Hand",
-    "dockerComposeFile": "docker-compose.devcontainer.yml",
+    "dockerComposeFile": "../docker-compose.yaml",
     "service": "hand",
-    "workspaceFolder": "/usr/local/project",
+    "workspaceFolder": "/usr/local/hand",
     "forwardPorts": [27017, 5672],
     "features": {},
     "customizations": {

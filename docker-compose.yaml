@@ -4,7 +4,7 @@ services:
             context: .
             dockerfile: Dockerfile
         volumes:
-            - .:/usr/local/project
+            - .:/usr/local/hand
         environment:
             DOTNET_ENVIRONMENT: Development
             MongoDB__Host: mongodb

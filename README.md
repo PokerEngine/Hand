@@ -8,6 +8,17 @@ A microservice which is responsible for playing a separate hand independently on
 - Install Docker Compose Plugin: https://docs.docker.com/compose/install/linux/
 
 ### How to run the project?
+Add the `.env` file to the root folder with the following content:
+```env
+MONGODB_USERNAME=...
+MONGODB_PASSWORD=...
+MONGODB_DATABASE=...
+
+RABBITMQ_USERNAME=...
+RABBITMQ_PASSWORD=...
+```
+
+Then run the following command:
 ```shell
 docker compose up
 ```

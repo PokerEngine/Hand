@@ -32,5 +32,5 @@ docker compose run --rm hand dotnet test src/Infrastructure.Test --filter "Fully
 docker compose run --rm hand dotnet format
 ```
 
-### How to set up dev container in Rider?
-TODO
+### TODO
+- Arrange showdown right after players go all in

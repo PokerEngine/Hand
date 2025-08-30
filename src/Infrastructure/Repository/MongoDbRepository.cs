@@ -219,13 +219,13 @@ internal record BigBlindIsPostedDocument : BaseDocument
 internal record HoleCardsAreDealtDocument : BaseDocument
 {
     public required string Nickname { get; init; }
-    public required ImmutableList<string> Cards { get; init; }
+    public required string Cards { get; init; }
 }
 
 [BsonIgnoreExtraElements]
 internal record BoardCardsAreDealtDocument : BaseDocument
 {
-    public required ImmutableList<string> Cards { get; init; }
+    public required string Cards { get; init; }
 }
 
 [BsonIgnoreExtraElements]
@@ -274,7 +274,7 @@ internal record WinAtShowdownIsCommittedDocument : BaseDocument
 internal record HoleCardsAreShownDocument : BaseDocument
 {
     public required string Nickname { get; init; }
-    public required ImmutableList<string> Cards { get; init; }
+    public required string Cards { get; init; }
     public required ComboType ComboType { get; init; }
     public required int ComboWeight { get; init; }
 }
@@ -307,21 +307,18 @@ internal class EventDocumentMapper
     {
         List<Participant> participants = [];
 
-        foreach (var (nn, st, sk) in document.Participants)
+        foreach (var (nickname, seat, stake) in document.Participants)
         {
-            var nickname = new Nickname(nn);
-            var seat = new Seat(st);
-            var stake = new Chips(sk);
             participants.Add(new Participant(nickname, seat, stake));
         }
 
         return new HandIsCreatedEvent(
             Game: document.Game,
-            SmallBlind: new Chips(document.SmallBlind),
-            BigBlind: new Chips(document.BigBlind),
-            SmallBlindSeat: new Seat(document.SmallBlindSeat),
-            BigBlindSeat: new Seat(document.BigBlindSeat),
-            ButtonSeat: new Seat(document.ButtonSeat),
+            SmallBlind: document.SmallBlind,
+            BigBlind: document.BigBlind,
+            SmallBlindSeat: document.SmallBlindSeat,
+            BigBlindSeat: document.BigBlindSeat,
+            ButtonSeat: document.ButtonSeat,
             Participants: participants.ToImmutableList(),
             OccuredAt: document.OccuredAt
         );
@@ -404,7 +401,7 @@ internal class EventDocumentMapper
     public PlayerConnectedEvent ToEvent(PlayerConnectedDocument document)
     {
         return new PlayerConnectedEvent(
-            Nickname: new Nickname(document.Nickname),
+            Nickname: document.Nickname,
             OccuredAt: document.OccuredAt
         );
     }
@@ -422,7 +419,7 @@ internal class EventDocumentMapper
     public PlayerDisconnectedEvent ToEvent(PlayerDisconnectedDocument document)
     {
         return new PlayerDisconnectedEvent(
-            Nickname: new Nickname(document.Nickname),
+            Nickname: document.Nickname,
             OccuredAt: document.OccuredAt
         );
     }
@@ -441,8 +438,8 @@ internal class EventDocumentMapper
     public SmallBlindIsPostedEvent ToEvent(SmallBlindIsPostedDocument document)
     {
         return new SmallBlindIsPostedEvent(
-            Nickname: new Nickname(document.Nickname),
-            Amount: new Chips(document.Amount),
+            Nickname: document.Nickname,
+            Amount: document.Amount,
             OccuredAt: document.OccuredAt
         );
     }
@@ -461,8 +458,8 @@ internal class EventDocumentMapper
     public BigBlindIsPostedEvent ToEvent(BigBlindIsPostedDocument document)
     {
         return new BigBlindIsPostedEvent(
-            Nickname: new Nickname(document.Nickname),
-            Amount: new Chips(document.Amount),
+            Nickname: document.Nickname,
+            Amount: document.Amount,
             OccuredAt: document.OccuredAt
         );
     }
@@ -472,7 +469,7 @@ internal class EventDocumentMapper
         return new HoleCardsAreDealtDocument
         {
             Nickname = @event.Nickname,
-            Cards = @event.Cards.Select(x => x.ToString()).ToImmutableList(),
+            Cards = @event.Cards.ToString(),
             OccuredAt = @event.OccuredAt,
             HandUid = handUid
         };
@@ -481,8 +478,8 @@ internal class EventDocumentMapper
     public HoleCardsAreDealtEvent ToEvent(HoleCardsAreDealtDocument document)
     {
         return new HoleCardsAreDealtEvent(
-            Nickname: new Nickname(document.Nickname),
-            Cards: new CardSet(document.Cards.Select(Card.FromString)),
+            Nickname: document.Nickname,
+            Cards: CardSet.FromString(document.Cards),
             OccuredAt: document.OccuredAt
         );
     }
@@ -491,7 +488,7 @@ internal class EventDocumentMapper
     {
         return new BoardCardsAreDealtDocument
         {
-            Cards = @event.Cards.Select(x => x.ToString()).ToImmutableList(),
+            Cards = @event.Cards.ToString(),
             OccuredAt = @event.OccuredAt,
             HandUid = handUid
         };
@@ -500,7 +497,7 @@ internal class EventDocumentMapper
     public BoardCardsAreDealtEvent ToEvent(BoardCardsAreDealtDocument document)
     {
         return new BoardCardsAreDealtEvent(
-            Cards: new CardSet(document.Cards.Select(Card.FromString)),
+            Cards: CardSet.FromString(document.Cards),
             OccuredAt: document.OccuredAt
         );
     }
@@ -525,14 +522,14 @@ internal class EventDocumentMapper
     public DecisionIsRequestedEvent ToEvent(DecisionIsRequestedDocument document)
     {
         return new DecisionIsRequestedEvent(
-            Nickname: new Nickname(document.Nickname),
+            Nickname: document.Nickname,
             FoldIsAvailable: document.FoldIsAvailable,
             CheckIsAvailable: document.CheckIsAvailable,
             CallIsAvailable: document.CallIsAvailable,
-            CallToAmount: new Chips(document.CallToAmount),
+            CallToAmount: document.CallToAmount,
             RaiseIsAvailable: document.RaiseIsAvailable,
-            MinRaiseToAmount: new Chips(document.MinRaiseToAmount),
-            MaxRaiseToAmount: new Chips(document.MaxRaiseToAmount),
+            MinRaiseToAmount: document.MinRaiseToAmount,
+            MaxRaiseToAmount: document.MaxRaiseToAmount,
             OccuredAt: document.OccuredAt
         );
     }
@@ -552,8 +549,8 @@ internal class EventDocumentMapper
     public DecisionIsCommittedEvent ToEvent(DecisionIsCommittedDocument document)
     {
         return new DecisionIsCommittedEvent(
-            Nickname: new Nickname(document.Nickname),
-            Decision: new Decision(document.DecisionType, new Chips(document.DecisionAmount)),
+            Nickname: document.Nickname,
+            Decision: new Decision(document.DecisionType, document.DecisionAmount),
             OccuredAt: document.OccuredAt
         );
     }
@@ -572,8 +569,8 @@ internal class EventDocumentMapper
     public RefundIsCommittedEvent ToEvent(RefundIsCommittedDocument document)
     {
         return new RefundIsCommittedEvent(
-            Nickname: new Nickname(document.Nickname),
-            Amount: new Chips(document.Amount),
+            Nickname: document.Nickname,
+            Amount: document.Amount,
             OccuredAt: document.OccuredAt
         );
     }
@@ -592,8 +589,8 @@ internal class EventDocumentMapper
     public WinWithoutShowdownIsCommittedEvent ToEvent(WinWithoutShowdownIsCommittedDocument document)
     {
         return new WinWithoutShowdownIsCommittedEvent(
-            Nickname: new Nickname(document.Nickname),
-            Amount: new Chips(document.Amount),
+            Nickname: document.Nickname,
+            Amount: document.Amount,
             OccuredAt: document.OccuredAt
         );
     }
@@ -612,8 +609,8 @@ internal class EventDocumentMapper
     public WinAtShowdownIsCommittedEvent ToEvent(WinAtShowdownIsCommittedDocument document)
     {
         return new WinAtShowdownIsCommittedEvent(
-            SidePot: new SidePot(document.SidePot.ToDictionary(x => new Nickname(x.Key), x => new Chips(x.Value))),
-            WinPot: new SidePot(document.WinPot.ToDictionary(x => new Nickname(x.Key), x => new Chips(x.Value))),
+            SidePot: new SidePot(document.SidePot.ToDictionary(x => (Nickname)x.Key, x => (Chips)x.Value)),
+            WinPot: new SidePot(document.WinPot.ToDictionary(x => (Nickname)x.Key, x => (Chips)x.Value)),
             OccuredAt: document.OccuredAt
         );
     }
@@ -631,7 +628,7 @@ internal class EventDocumentMapper
     public HoleCardsAreMuckedEvent ToEvent(HoleCardsAreMuckedDocument document)
     {
         return new HoleCardsAreMuckedEvent(
-            Nickname: new Nickname(document.Nickname),
+            Nickname: document.Nickname,
             OccuredAt: document.OccuredAt
         );
     }
@@ -641,7 +638,7 @@ internal class EventDocumentMapper
         return new HoleCardsAreShownDocument
         {
             Nickname = @event.Nickname,
-            Cards = @event.Cards.Select(x => x.ToString()).ToImmutableList(),
+            Cards = @event.Cards.ToString(),
             ComboType = @event.Combo.Type,
             ComboWeight = @event.Combo.Weight,
             OccuredAt = @event.OccuredAt,
@@ -652,8 +649,8 @@ internal class EventDocumentMapper
     public HoleCardsAreShownEvent ToEvent(HoleCardsAreShownDocument document)
     {
         return new HoleCardsAreShownEvent(
-            Nickname: new Nickname(document.Nickname),
-            Cards: new CardSet(document.Cards.Select(Card.FromString)),
+            Nickname: document.Nickname,
+            Cards: CardSet.FromString(document.Cards),
             Combo: new Combo(document.ComboType, document.ComboWeight),
             OccuredAt: document.OccuredAt
         );

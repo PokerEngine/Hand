@@ -24,7 +24,7 @@ public readonly struct IntegrationEventQueue : IEquatable<IntegrationEventQueue>
     public static implicit operator string(IntegrationEventQueue a)
         => a._name;
 
-    public static explicit operator IntegrationEventQueue(string a)
+    public static implicit operator IntegrationEventQueue(string a)
         => new(a);
 
     public static bool operator ==(IntegrationEventQueue a, IntegrationEventQueue b)

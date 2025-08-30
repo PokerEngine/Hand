@@ -17,7 +17,7 @@ public readonly struct Seat : IComparable<Seat>, IEquatable<Seat>
     public static implicit operator int(Seat a)
         => a._number;
 
-    public static explicit operator Seat(int a)
+    public static implicit operator Seat(int a)
         => new(a);
 
     public static bool operator ==(Seat a, Seat b)

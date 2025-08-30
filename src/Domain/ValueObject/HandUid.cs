@@ -12,7 +12,7 @@ public readonly struct HandUid : IEquatable<HandUid>
     public static implicit operator Guid(HandUid a)
         => a._guid;
 
-    public static explicit operator HandUid(Guid a)
+    public static implicit operator HandUid(Guid a)
         => new(a);
 
     public static bool operator ==(HandUid a, HandUid b)

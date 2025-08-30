@@ -37,7 +37,7 @@ public readonly struct Nickname : IComparable<Nickname>, IEquatable<Nickname>
     public static implicit operator string(Nickname a)
         => a._name;
 
-    public static explicit operator Nickname(string a)
+    public static implicit operator Nickname(string a)
         => new(a);
 
     public static bool operator ==(Nickname a, Nickname b)

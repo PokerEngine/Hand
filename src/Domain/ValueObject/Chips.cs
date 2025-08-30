@@ -28,7 +28,7 @@ public readonly struct Chips : IMinMaxValue<Chips>, IComparable<Chips>, IEquatab
     public static implicit operator int(Chips a)
         => a._amount;
 
-    public static explicit operator Chips(int a)
+    public static implicit operator Chips(int a)
         => new(a);
 
     public static Chips operator +(Chips a)

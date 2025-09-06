@@ -3,6 +3,7 @@
     "dockerComposeFile": "../docker-compose.yaml",
     "service": "hand",
     "workspaceFolder": "/usr/local/hand",
+    "postCreateCommand": "git config --global --add safe.directory /usr/local/hand",
     "forwardPorts": [27017, 5672],
     "features": {},
     "customizations": {

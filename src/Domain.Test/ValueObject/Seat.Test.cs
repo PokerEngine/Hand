@@ -15,17 +15,18 @@ public class SeatTest
     }
 
     [Theory]
-    [InlineData(0)]
     [InlineData(-5)]
+    [InlineData(0)]
+    [InlineData(10)]
     public void TestInitializationWithInvalidNumber(int number)
     {
         Seat seat;
 
         var exc = Assert.Throws<ArgumentOutOfRangeException>(() => seat = new Seat(number));
-        Assert.StartsWith("Seat must be greater or equal to one", exc.Message);
+        Assert.StartsWith("Seat must be between 1 and 9", exc.Message);
 
         exc = Assert.Throws<ArgumentOutOfRangeException>(() => seat = (Seat)(number));
-        Assert.StartsWith("Seat must be greater or equal to one", exc.Message);
+        Assert.StartsWith("Seat must be between 1 and 9", exc.Message);
     }
 
     [Fact]

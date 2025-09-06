@@ -10,7 +10,7 @@ public class TradingDealer : IDealer
 {
     public void Start(
         Game game,
-        BaseTable table,
+        Table table,
         BasePot pot,
         BaseDeck deck,
         IRandomizer randomizer,
@@ -42,7 +42,7 @@ public class TradingDealer : IDealer
     public void Handle(
         BaseEvent @event,
         Game game,
-        BaseTable table,
+        Table table,
         BasePot pot,
         BaseDeck deck,
         IRandomizer randomizer,
@@ -70,7 +70,7 @@ public class TradingDealer : IDealer
         Nickname nickname,
         Decision decision,
         Game game,
-        BaseTable table,
+        Table table,
         BasePot pot,
         BaseDeck deck,
         IRandomizer randomizer,
@@ -104,7 +104,7 @@ public class TradingDealer : IDealer
         );
     }
 
-    private IList<Player> GetPlayersForTrading(BaseTable table)
+    private IList<Player> GetPlayersForTrading(Table table)
     {
         var startSeat = table.IsHeadsUp() ? table.BigBlindSeat : table.SmallBlindSeat;
         return table.GetPlayersStartingFromSeat(startSeat).Where(x => !x.IsFolded && !x.IsAllIn).ToList();
@@ -115,7 +115,7 @@ public class TradingDealer : IDealer
         return players.Count > 1;
     }
 
-    private Player? GetPreviousPlayer(BaseTable table, BasePot pot)
+    private Player? GetPreviousPlayer(Table table, BasePot pot)
     {
         if (pot.LastDecisionNickname == null)
         {

@@ -3,7 +3,7 @@ using Domain.ValueObject;
 
 namespace Domain.Test.Entity;
 
-public class SixMaxTableTest
+public class TableTest
 {
     [Fact]
     public void TestInitialization()
@@ -21,7 +21,8 @@ public class SixMaxTableTest
             seat: 6
         );
 
-        var table = new SixMaxTable(
+        var table = new Table(
+            maxSeat: new Seat(6),
             smallBlindSeat: playerSb.Seat,
             bigBlindSeat: playerBb.Seat,
             buttonSeat: playerBu.Seat,
@@ -45,7 +46,8 @@ public class SixMaxTableTest
             seat: 2
         );
 
-        var table = new SixMaxTable(
+        var table = new Table(
+            maxSeat: new Seat(6),
             smallBlindSeat: playerSb.Seat,
             bigBlindSeat: playerBb.Seat,
             buttonSeat: playerSb.Seat,
@@ -69,7 +71,16 @@ public class SixMaxTableTest
             seat: 2
         );
 
-        var exc = Assert.Throws<ArgumentException>(() => new SixMaxTable([playerA, playerB], new Seat(1), new Seat(2), new Seat(1)));
+        var exc = Assert.Throws<ArgumentException>(() =>
+        {
+            new Table(
+                players: [playerA, playerB],
+                maxSeat: new Seat(6),
+                smallBlindSeat: new Seat(1),
+                bigBlindSeat: new Seat(2),
+                buttonSeat: new Seat(1)
+            );
+        });
         Assert.StartsWith("The table must contain players with unique nicknames", exc.Message);
     }
 
@@ -85,7 +96,16 @@ public class SixMaxTableTest
             seat: 1
         );
 
-        var exc = Assert.Throws<ArgumentException>(() => new SixMaxTable([playerA, playerB], new Seat(1), new Seat(2), new Seat(1)));
+        var exc = Assert.Throws<ArgumentException>(() =>
+        {
+            new Table(
+                players: [playerA, playerB],
+                maxSeat: new Seat(6),
+                smallBlindSeat: new Seat(1),
+                bigBlindSeat: new Seat(2),
+                buttonSeat: new Seat(1)
+            );
+        });
         Assert.StartsWith("The table must contain players with unique seats", exc.Message);
     }
 
@@ -105,7 +125,16 @@ public class SixMaxTableTest
             seat: 9
         );
 
-        var exc = Assert.Throws<ArgumentOutOfRangeException>(() => new SixMaxTable([playerSb, playerBb, playerWrong], new Seat(1), new Seat(2), new Seat(6)));
+        var exc = Assert.Throws<ArgumentOutOfRangeException>(() =>
+        {
+            new Table(
+                players: [playerSb, playerBb, playerWrong],
+                maxSeat: new Seat(6),
+                smallBlindSeat: new Seat(1),
+                bigBlindSeat: new Seat(2),
+                buttonSeat: new Seat(6)
+            );
+        });
         Assert.StartsWith("The table supports seats till #6", exc.Message);
     }
 
@@ -117,7 +146,16 @@ public class SixMaxTableTest
             seat: 1
         );
 
-        var exc = Assert.Throws<ArgumentException>(() => new SixMaxTable([playerBb], new Seat(1), new Seat(1), new Seat(1)));
+        var exc = Assert.Throws<ArgumentException>(() =>
+        {
+            new Table(
+                players: [playerBb],
+                maxSeat: new Seat(6),
+                smallBlindSeat: new Seat(1),
+                bigBlindSeat: new Seat(1),
+                buttonSeat: new Seat(1)
+            );
+        });
         Assert.StartsWith("The table must contain at least 2 players", exc.Message);
     }
 
@@ -133,7 +171,8 @@ public class SixMaxTableTest
             seat: 6
         );
 
-        var table = new SixMaxTable(
+        var table = new Table(
+            maxSeat: new Seat(6),
             smallBlindSeat: new Seat(2),
             bigBlindSeat: new Seat(1),
             buttonSeat: new Seat(6),
@@ -156,7 +195,16 @@ public class SixMaxTableTest
             seat: 6
         );
 
-        var exc = Assert.Throws<ArgumentException>(() => new SixMaxTable([playerSb, playerBu], new Seat(1), new Seat(2), new Seat(6)));
+        var exc = Assert.Throws<ArgumentException>(() =>
+        {
+            new Table(
+                players: [playerSb, playerBu],
+                maxSeat: new Seat(6),
+                smallBlindSeat: new Seat(1),
+                bigBlindSeat: new Seat(2),
+                buttonSeat: new Seat(6)
+            );
+        });
         Assert.StartsWith("The table must contain a player on the big blind", exc.Message);
     }
 
@@ -172,11 +220,12 @@ public class SixMaxTableTest
             seat: 1
         );
 
-        var table = new SixMaxTable(
+        var table = new Table(
+            players: [playerSb, playerBb],
+            maxSeat: new Seat(6),
             smallBlindSeat: new Seat(1),
             bigBlindSeat: new Seat(2),
-            buttonSeat: new Seat(6),
-            players: [playerSb, playerBb]
+            buttonSeat: new Seat(6)
         );
 
         Assert.Equal(2, table.Count);
@@ -195,7 +244,16 @@ public class SixMaxTableTest
             seat: 2
         );
 
-        var exc = Assert.Throws<ArgumentException>(() => new SixMaxTable([playerSb, playerBb], new Seat(2), new Seat(2), new Seat(1)));
+        var exc = Assert.Throws<ArgumentException>(() =>
+        {
+            new Table(
+                players: [playerSb, playerBb],
+                maxSeat: new Seat(6),
+                smallBlindSeat: new Seat(2),
+                bigBlindSeat: new Seat(2),
+                buttonSeat: new Seat(1)
+            );
+        });
         Assert.StartsWith("The table must contain different players on the big and small blinds", exc.Message);
     }
 
@@ -211,7 +269,16 @@ public class SixMaxTableTest
             seat: 2
         );
 
-        var exc = Assert.Throws<ArgumentException>(() => new SixMaxTable([playerSb, playerBb], new Seat(1), new Seat(2), new Seat(2)));
+        var exc = Assert.Throws<ArgumentException>(() =>
+        {
+            new Table(
+                players: [playerSb, playerBb],
+                maxSeat: new Seat(6),
+                smallBlindSeat: new Seat(1),
+                bigBlindSeat: new Seat(2),
+                buttonSeat: new Seat(2)
+            );
+        });
         Assert.StartsWith("The table must contain different players on the big blind and button", exc.Message);
     }
 
@@ -414,7 +481,12 @@ public class SixMaxTableTest
             seat: 1
         );
 
-        var table = CreateTable([playerSb, playerBb, playerCo, playerBu], 2, 4, 1);
+        var table = CreateTable(
+            players: [playerSb, playerBb, playerCo, playerBu],
+            smallBlindSeat: 2,
+            bigBlindSeat: 4,
+            buttonSeat: 1
+        );
 
         var expectedPlayers = new List<Player> { playerBu, playerSb, playerBb, playerCo };
         var i = 0;
@@ -442,29 +514,32 @@ public class SixMaxTableTest
             seat: 3
         );
 
-        var table = new SixMaxTable(
+        var table = new Table(
+            players: [playerSb, playerBb, playerBu],
+            maxSeat: new Seat(6),
             smallBlindSeat: new Seat(1),
             bigBlindSeat: new Seat(2),
-            buttonSeat: new Seat(3),
-            players: [playerSb, playerBb, playerBu]
+            buttonSeat: new Seat(3)
         );
         table.TakeBoardCards(new CardSet([Card.AceOfSpades, Card.DeuceOfClubs, Card.AceOfClubs]));
 
-        Assert.Equal($"SixMaxTable: 3 player(s), {table.BoardCards}", $"{table}");
+        Assert.Equal($"Table: 3 player(s), {table.BoardCards}", $"{table}");
     }
 
-    private BaseTable CreateTable(
+    private Table CreateTable(
         IEnumerable<Player> players,
+        int maxSeat = 6,
         int smallBlindSeat = 1,
         int bigBlindSeat = 2,
         int buttonSeat = 3
     )
     {
-        return new SixMaxTable(
+        return new Table(
+            players: players,
+            maxSeat: new Seat(maxSeat),
             smallBlindSeat: new Seat(smallBlindSeat),
             bigBlindSeat: new Seat(bigBlindSeat),
-            buttonSeat: new Seat(buttonSeat),
-            players: players
+            buttonSeat: new Seat(buttonSeat)
         );
     }
 

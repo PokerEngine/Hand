@@ -10,7 +10,7 @@ public interface IDealer
 {
     void Start(
         Game game,
-        BaseTable table,
+        Table table,
         BasePot pot,
         BaseDeck deck,
         IRandomizer randomizer,
@@ -21,7 +21,7 @@ public interface IDealer
     void Handle(
         BaseEvent @event,
         Game game,
-        BaseTable table,
+        Table table,
         BasePot pot,
         BaseDeck deck,
         IRandomizer randomizer,
@@ -32,7 +32,7 @@ public interface IDealer
         Nickname nickname,
         Decision decision,
         Game game,
-        BaseTable table,
+        Table table,
         BasePot pot,
         BaseDeck deck,
         IRandomizer randomizer,

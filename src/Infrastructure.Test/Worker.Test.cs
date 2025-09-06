@@ -28,17 +28,19 @@ public class TestHandIsCreatedIntegrationEventHandler : IIntegrationEventHandler
 
 public class WorkerTest : IClassFixture<MongoDbFixture>, IClassFixture<RabbitMqFixture>, IDisposable
 {
-    private readonly MongoDbFixture _dbFixture;
+    private readonly MongoDbFixture _mongoDbFixture;
+    private readonly RabbitMqFixture _rabbitMqFixture;
 
-    public WorkerTest(MongoDbFixture dbFixture)
+    public WorkerTest(MongoDbFixture mongoDbFixture, RabbitMqFixture rabbitMqFixture)
     {
-        _dbFixture = dbFixture;
-        _dbFixture.Database.CreateCollection("events");
+        _mongoDbFixture = mongoDbFixture;
+        _mongoDbFixture.Database.CreateCollection("events");
+        _rabbitMqFixture = rabbitMqFixture;
     }
 
     public void Dispose()
     {
-        _dbFixture.Database.DropCollection("events");
+        _mongoDbFixture.Database.DropCollection("events");
     }
 
     [Fact]
@@ -57,9 +59,10 @@ public class WorkerTest : IClassFixture<MongoDbFixture>, IClassFixture<RabbitMqF
         await integrationEventBus.Subscribe(testHandIsCreatedHandler, new IntegrationEventQueue("hand.hand-created"));
 
         var handCreateEvent = new HandCreateIntegrationEvent(
-            Game: "HoldemNoLimit6Max",
+            Game: "HoldemNoLimit",
             SmallBlind: 5,
             BigBlind: 10,
+            MaxSeat: 6,
             SmallBlindSeat: 1,
             BigBlindSeat: 2,
             ButtonSeat: 6,

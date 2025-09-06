@@ -5,8 +5,9 @@ namespace Domain.Entity.Factory;
 
 public interface IFactory
 {
-    BaseTable GetTable(
+    Table GetTable(
         IEnumerable<Participant> participants,
+        Seat maxSeat,
         Seat smallBlindSeat,
         Seat bigBlindSeat,
         Seat buttonSeat

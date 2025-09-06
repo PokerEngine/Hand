@@ -34,6 +34,7 @@ public class HandCreateIntegrationEventHandler : IIntegrationEventHandler<HandCr
         var handUid = new HandUid(integrationEvent.HandUid);
         var smallBlind = new Chips(integrationEvent.SmallBlind);
         var bigBlind = new Chips(integrationEvent.BigBlind);
+        var maxSeat = new Seat(integrationEvent.MaxSeat);
         var smallBlindSeat = new Seat(integrationEvent.SmallBlindSeat);
         var bigBlindSeat = new Seat(integrationEvent.BigBlindSeat);
         var buttonSeat = new Seat(integrationEvent.ButtonSeat);
@@ -49,6 +50,7 @@ public class HandCreateIntegrationEventHandler : IIntegrationEventHandler<HandCr
             game: game,
             smallBlind: smallBlind,
             bigBlind: bigBlind,
+            maxSeat: maxSeat,
             smallBlindSeat: smallBlindSeat,
             bigBlindSeat: bigBlindSeat,
             buttonSeat: buttonSeat,

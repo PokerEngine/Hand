@@ -171,6 +171,7 @@ internal record HandIsCreatedDocument : BaseDocument
     public required Game Game { get; init; }
     public required int SmallBlind { get; init; }
     public required int BigBlind { get; init; }
+    public required int MaxSeat { get; init; }
     public required int SmallBlindSeat { get; init; }
     public required int BigBlindSeat { get; init; }
     public required int ButtonSeat { get; init; }
@@ -294,6 +295,7 @@ internal class EventDocumentMapper
             Game = @event.Game,
             SmallBlind = @event.SmallBlind,
             BigBlind = @event.BigBlind,
+            MaxSeat = @event.MaxSeat,
             SmallBlindSeat = @event.SmallBlindSeat,
             BigBlindSeat = @event.BigBlindSeat,
             ButtonSeat = @event.ButtonSeat,
@@ -316,6 +318,7 @@ internal class EventDocumentMapper
             Game: document.Game,
             SmallBlind: document.SmallBlind,
             BigBlind: document.BigBlind,
+            MaxSeat: document.MaxSeat,
             SmallBlindSeat: document.SmallBlindSeat,
             BigBlindSeat: document.BigBlindSeat,
             ButtonSeat: document.ButtonSeat,

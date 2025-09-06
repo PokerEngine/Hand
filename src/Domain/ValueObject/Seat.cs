@@ -6,9 +6,9 @@ public readonly struct Seat : IComparable<Seat>, IEquatable<Seat>
 
     public Seat(int number)
     {
-        if (number < 1)
+        if (number < 1 || number > 9)
         {
-            throw new ArgumentOutOfRangeException(nameof(number), number, "Seat must be greater or equal to one");
+            throw new ArgumentOutOfRangeException(nameof(number), number, "Seat must be between 1 and 9");
         }
 
         _number = number;

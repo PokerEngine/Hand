@@ -20,6 +20,7 @@ public record HandCreateIntegrationEvent(
     string Game,
     int SmallBlind,
     int BigBlind,
+    int MaxSeat,
     int SmallBlindSeat,
     int BigBlindSeat,
     int ButtonSeat,
@@ -36,6 +37,7 @@ public record HandCreateIntegrationEvent(
                && Game == other.Game
                && SmallBlind == other.SmallBlind
                && BigBlind == other.BigBlind
+               && MaxSeat == other.MaxSeat
                && SmallBlindSeat == other.SmallBlindSeat
                && BigBlindSeat == other.BigBlindSeat
                && ButtonSeat == other.ButtonSeat
@@ -51,6 +53,7 @@ public record HandCreateIntegrationEvent(
         hash.Add(Game);
         hash.Add(SmallBlind);
         hash.Add(BigBlind);
+        hash.Add(MaxSeat);
         hash.Add(SmallBlindSeat);
         hash.Add(BigBlindSeat);
         hash.Add(ButtonSeat);
@@ -97,6 +100,7 @@ public record HandIsCreatedIntegrationEvent(
     string Game,
     int SmallBlind,
     int BigBlind,
+    int MaxSeat,
     int SmallBlindSeat,
     int BigBlindSeat,
     int ButtonSeat,
@@ -113,6 +117,7 @@ public record HandIsCreatedIntegrationEvent(
                && Game == other.Game
                && SmallBlind == other.SmallBlind
                && BigBlind == other.BigBlind
+               && MaxSeat == other.MaxSeat
                && SmallBlindSeat == other.SmallBlindSeat
                && BigBlindSeat == other.BigBlindSeat
                && ButtonSeat == other.ButtonSeat
@@ -128,6 +133,7 @@ public record HandIsCreatedIntegrationEvent(
         hash.Add(Game);
         hash.Add(SmallBlind);
         hash.Add(BigBlind);
+        hash.Add(MaxSeat);
         hash.Add(SmallBlindSeat);
         hash.Add(BigBlindSeat);
         hash.Add(ButtonSeat);

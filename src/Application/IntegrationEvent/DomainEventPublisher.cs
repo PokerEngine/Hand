@@ -36,6 +36,7 @@ public class DomainEventPublisher
             Game: @event.Game.ToString(),
             SmallBlind: @event.SmallBlind,
             BigBlind: @event.BigBlind,
+            MaxSeat: @event.MaxSeat,
             SmallBlindSeat: @event.SmallBlindSeat,
             BigBlindSeat: @event.BigBlindSeat,
             ButtonSeat: @event.ButtonSeat,

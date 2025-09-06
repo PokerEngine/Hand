@@ -11,6 +11,7 @@ public record HandIsCreatedEvent(
     Game Game,
     Chips SmallBlind,
     Chips BigBlind,
+    Seat MaxSeat,
     Seat SmallBlindSeat,
     Seat BigBlindSeat,
     Seat ButtonSeat,
@@ -25,6 +26,7 @@ public record HandIsCreatedEvent(
                && Game == other.Game
                && SmallBlind == other.SmallBlind
                && BigBlind == other.BigBlind
+               && MaxSeat == other.MaxSeat
                && SmallBlindSeat == other.SmallBlindSeat
                && BigBlindSeat == other.BigBlindSeat
                && ButtonSeat == other.ButtonSeat
@@ -38,6 +40,7 @@ public record HandIsCreatedEvent(
         hash.Add(Game);
         hash.Add(SmallBlind);
         hash.Add(BigBlind);
+        hash.Add(MaxSeat);
         hash.Add(SmallBlindSeat);
         hash.Add(BigBlindSeat);
         hash.Add(ButtonSeat);

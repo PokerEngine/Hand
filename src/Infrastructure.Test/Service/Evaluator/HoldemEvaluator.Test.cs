@@ -16,7 +16,7 @@ public class HoldemEvaluatorTest
         var boardCards = new CardSet([Card.NineOfClubs, Card.SevenOfClubs, Card.SixOfDiamonds, Card.FiveOfHearts, Card.TreyOfDiamonds]);
         var holeCards = new CardSet([Card.AceOfSpades, Card.DeuceOfClubs]);
 
-        var combo = _evaluator.Evaluate(Game.HoldemNoLimit6Max, boardCards, holeCards);
+        var combo = _evaluator.Evaluate(Game.HoldemNoLimit, boardCards, holeCards);
 
         Assert.Equal(ComboType.HighCard, combo.Type);
     }
@@ -27,7 +27,7 @@ public class HoldemEvaluatorTest
         var boardCards = new CardSet([Card.NineOfClubs, Card.SevenOfClubs, Card.SixOfDiamonds, Card.FiveOfHearts, Card.TreyOfDiamonds]);
         var holeCards = new CardSet([Card.SevenOfHearts, Card.DeuceOfClubs, Card.KingOfSpades, Card.TenOfDiamonds]);
 
-        var combo = _evaluator.Evaluate(Game.HoldemNoLimit6Max, boardCards, holeCards);
+        var combo = _evaluator.Evaluate(Game.HoldemNoLimit, boardCards, holeCards);
 
         Assert.Equal(ComboType.OnePair, combo.Type);
     }
@@ -38,7 +38,7 @@ public class HoldemEvaluatorTest
         var boardCards = new CardSet([Card.AceOfClubs, Card.SevenOfClubs, Card.SixOfDiamonds, Card.FiveOfHearts, Card.DeuceOfDiamonds]);
         var holeCards = new CardSet([Card.AceOfSpades, Card.DeuceOfClubs]);
 
-        var combo = _evaluator.Evaluate(Game.HoldemNoLimit6Max, boardCards, holeCards);
+        var combo = _evaluator.Evaluate(Game.HoldemNoLimit, boardCards, holeCards);
 
         Assert.Equal(ComboType.TwoPair, combo.Type);
     }
@@ -49,7 +49,7 @@ public class HoldemEvaluatorTest
         var boardCards = new CardSet([Card.NineOfClubs, Card.SevenOfClubs, Card.SixOfDiamonds, Card.DeuceOfHearts, Card.DeuceOfDiamonds]);
         var holeCards = new CardSet([Card.AceOfSpades, Card.DeuceOfClubs]);
 
-        var combo = _evaluator.Evaluate(Game.HoldemNoLimit6Max, boardCards, holeCards);
+        var combo = _evaluator.Evaluate(Game.HoldemNoLimit, boardCards, holeCards);
 
         Assert.Equal(ComboType.Trips, combo.Type);
     }
@@ -60,7 +60,7 @@ public class HoldemEvaluatorTest
         var boardCards = new CardSet([Card.NineOfClubs, Card.SevenOfClubs, Card.FiveOfDiamonds, Card.FourOfDiamonds, Card.TreyOfDiamonds]);
         var holeCards = new CardSet([Card.AceOfSpades, Card.DeuceOfClubs]);
 
-        var combo = _evaluator.Evaluate(Game.HoldemNoLimit6Max, boardCards, holeCards);
+        var combo = _evaluator.Evaluate(Game.HoldemNoLimit, boardCards, holeCards);
 
         Assert.Equal(ComboType.Straight, combo.Type);
     }
@@ -71,7 +71,7 @@ public class HoldemEvaluatorTest
         var boardCards = new CardSet([Card.NineOfClubs, Card.SevenOfClubs, Card.FiveOfDiamonds, Card.FourOfDiamonds, Card.TreyOfClubs]);
         var holeCards = new CardSet([Card.AceOfClubs, Card.DeuceOfClubs]);
 
-        var combo = _evaluator.Evaluate(Game.HoldemNoLimit6Max, boardCards, holeCards);
+        var combo = _evaluator.Evaluate(Game.HoldemNoLimit, boardCards, holeCards);
 
         Assert.Equal(ComboType.Flush, combo.Type);
     }
@@ -82,7 +82,7 @@ public class HoldemEvaluatorTest
         var boardCards = new CardSet([Card.AceOfClubs, Card.SevenOfClubs, Card.SixOfDiamonds, Card.DeuceOfHearts, Card.DeuceOfDiamonds]);
         var holeCards = new CardSet([Card.AceOfSpades, Card.DeuceOfClubs]);
 
-        var combo = _evaluator.Evaluate(Game.HoldemNoLimit6Max, boardCards, holeCards);
+        var combo = _evaluator.Evaluate(Game.HoldemNoLimit, boardCards, holeCards);
 
         Assert.Equal(ComboType.FullHouse, combo.Type);
     }
@@ -93,7 +93,7 @@ public class HoldemEvaluatorTest
         var boardCards = new CardSet([Card.AceOfClubs, Card.SevenOfClubs, Card.SixOfDiamonds, Card.DeuceOfHearts, Card.DeuceOfDiamonds]);
         var holeCards = new CardSet([Card.DeuceOfSpades, Card.DeuceOfClubs]);
 
-        var combo = _evaluator.Evaluate(Game.HoldemNoLimit6Max, boardCards, holeCards);
+        var combo = _evaluator.Evaluate(Game.HoldemNoLimit, boardCards, holeCards);
 
         Assert.Equal(ComboType.Quads, combo.Type);
     }
@@ -104,7 +104,7 @@ public class HoldemEvaluatorTest
         var boardCards = new CardSet([Card.NineOfClubs, Card.SevenOfClubs, Card.FiveOfClubs, Card.FourOfClubs, Card.TreyOfClubs]);
         var holeCards = new CardSet([Card.AceOfClubs, Card.DeuceOfClubs]);
 
-        var combo = _evaluator.Evaluate(Game.HoldemNoLimit6Max, boardCards, holeCards);
+        var combo = _evaluator.Evaluate(Game.HoldemNoLimit, boardCards, holeCards);
 
         Assert.Equal(ComboType.StraightFlush, combo.Type);
     }

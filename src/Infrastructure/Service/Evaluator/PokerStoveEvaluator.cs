@@ -11,10 +11,8 @@ public class PokerStoveEvaluator : IEvaluator
 
     private static readonly Dictionary<Game, string> GameMapping = new()
     {
-        { Game.HoldemNoLimit6Max, "h" },
-        { Game.HoldemNoLimit9Max, "h" },
-        { Game.OmahaPotLimit6Max, "O" },
-        { Game.OmahaPotLimit9Max, "O" },
+        { Game.HoldemNoLimit, "h" },
+        { Game.OmahaPotLimit, "O" },
     };
     private static readonly Dictionary<string, ComboType> ComboTypeMapping = new()
     {

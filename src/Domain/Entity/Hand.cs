@@ -12,7 +12,7 @@ public class Hand
 {
     public readonly HandUid Uid;
     public readonly Game Game;
-    public readonly BaseTable Table;
+    public readonly Table Table;
     public readonly BasePot Pot;
     public readonly BaseDeck Deck;
     private readonly IRandomizer _randomizer;
@@ -25,7 +25,7 @@ public class Hand
     private Hand(
         HandUid uid,
         Game game,
-        BaseTable table,
+        Table table,
         BasePot pot,
         BaseDeck deck,
         IRandomizer randomizer,
@@ -49,6 +49,7 @@ public class Hand
         Game game,
         Chips smallBlind,
         Chips bigBlind,
+        Seat maxSeat,
         Seat smallBlindSeat,
         Seat bigBlindSeat,
         Seat buttonSeat,
@@ -64,6 +65,7 @@ public class Hand
             game: game,
             table: factory.GetTable(
                 participants: participants,
+                maxSeat: maxSeat,
                 smallBlindSeat: smallBlindSeat,
                 bigBlindSeat: bigBlindSeat,
                 buttonSeat: buttonSeat
@@ -82,6 +84,7 @@ public class Hand
             Game: game,
             SmallBlind: smallBlind,
             BigBlind: bigBlind,
+            MaxSeat: maxSeat,
             SmallBlindSeat: smallBlindSeat,
             BigBlindSeat: bigBlindSeat,
             ButtonSeat: buttonSeat,
@@ -113,6 +116,7 @@ public class Hand
             game: createdEvent.Game,
             smallBlind: createdEvent.SmallBlind,
             bigBlind: createdEvent.BigBlind,
+            maxSeat: createdEvent.MaxSeat,
             smallBlindSeat: createdEvent.SmallBlindSeat,
             bigBlindSeat: createdEvent.BigBlindSeat,
             buttonSeat: createdEvent.ButtonSeat,

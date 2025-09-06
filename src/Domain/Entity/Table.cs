@@ -3,9 +3,10 @@ using System.Collections;
 
 namespace Domain.Entity;
 
-public abstract class BaseTable : IEnumerable<Player>
+public class Table : IEnumerable<Player>
 {
     private readonly Player?[] _players;
+    public readonly Seat MaxSeat;
     public readonly Seat SmallBlindSeat;
     public readonly Seat BigBlindSeat;
     public readonly Seat ButtonSeat;
@@ -13,7 +14,7 @@ public abstract class BaseTable : IEnumerable<Player>
     public CardSet BoardCards { get; private set; }
     public int Count => _players.Count(x => x != null);
 
-    protected BaseTable(
+    public Table(
         IEnumerable<Player> players,
         Seat maxSeat,
         Seat smallBlindSeat,
@@ -22,6 +23,7 @@ public abstract class BaseTable : IEnumerable<Player>
     )
     {
         _players = new Player?[maxSeat];
+        MaxSeat = maxSeat;
         BigBlindSeat = bigBlindSeat;
         SmallBlindSeat = smallBlindSeat;
         ButtonSeat = buttonSeat;
@@ -145,24 +147,4 @@ public abstract class BaseTable : IEnumerable<Player>
 
     public override string ToString()
         => $"{GetType().Name}: {Count} player(s), {BoardCards}";
-}
-
-public class SixMaxTable : BaseTable
-{
-    public SixMaxTable(
-        IEnumerable<Player> players,
-        Seat smallBlindSeat,
-        Seat bigBlindSeat,
-        Seat buttonSeat
-    ) : base(players, new Seat(6), smallBlindSeat, bigBlindSeat, buttonSeat) { }
-}
-
-public class NineMaxTable : BaseTable
-{
-    public NineMaxTable(
-        IEnumerable<Player> players,
-        Seat smallBlindSeat,
-        Seat bigBlindSeat,
-        Seat buttonSeat
-    ) : base(players, new Seat(9), smallBlindSeat, bigBlindSeat, buttonSeat) { }
 }

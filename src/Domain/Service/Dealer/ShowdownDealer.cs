@@ -10,7 +10,7 @@ public class ShowdownDealer : IDealer
 {
     public void Start(
         Game game,
-        BaseTable table,
+        Table table,
         BasePot pot,
         BaseDeck deck,
         IRandomizer randomizer,
@@ -53,7 +53,7 @@ public class ShowdownDealer : IDealer
         eventBus.Publish(finishEvent);
     }
 
-    private IList<Player> GetPlayersForShowdown(BaseTable table)
+    private IList<Player> GetPlayersForShowdown(Table table)
     {
         return table.Where(x => !x.IsFolded).ToList();
     }
@@ -112,7 +112,7 @@ public class ShowdownDealer : IDealer
     private void WinAtShowdown(
         Game game,
         IList<Player> players,
-        BaseTable table,
+        Table table,
         BasePot pot,
         IEvaluator evaluator,
         IEventBus eventBus
@@ -154,7 +154,7 @@ public class ShowdownDealer : IDealer
     public void Handle(
         BaseEvent @event,
         Game game,
-        BaseTable table,
+        Table table,
         BasePot pot,
         BaseDeck deck,
         IRandomizer randomizer,
@@ -190,7 +190,7 @@ public class ShowdownDealer : IDealer
         Nickname nickname,
         Decision decision,
         Game game,
-        BaseTable table,
+        Table table,
         BasePot pot,
         BaseDeck deck,
         IRandomizer randomizer,

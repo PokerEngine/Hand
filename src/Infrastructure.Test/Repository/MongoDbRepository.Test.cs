@@ -35,9 +35,10 @@ public class MongoDbRepositoryTest : IClassFixture<MongoDbFixture>, IDisposable
         var handUid = new HandUid(Guid.NewGuid());
 
         var @event = new HandIsCreatedEvent(
-            Game: Game.HoldemNoLimit6Max,
+            Game: Game.HoldemNoLimit,
             SmallBlind: new Chips(5),
             BigBlind: new Chips(10),
+            MaxSeat: new Seat(6),
             SmallBlindSeat: new Seat(1),
             BigBlindSeat: new Seat(2),
             ButtonSeat: new Seat(6),

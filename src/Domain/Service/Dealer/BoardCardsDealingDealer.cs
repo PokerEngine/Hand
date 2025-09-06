@@ -17,7 +17,7 @@ public class BoardCardsDealingDealer : IDealer
 
     public void Start(
         Game game,
-        BaseTable table,
+        Table table,
         BasePot pot,
         BaseDeck deck,
         IRandomizer randomizer,
@@ -42,13 +42,13 @@ public class BoardCardsDealingDealer : IDealer
         eventBus.Publish(finishEvent);
     }
 
-    private bool HasEnoughPlayersForDealing(BaseTable table)
+    private bool HasEnoughPlayersForDealing(Table table)
     {
         return table.Count(x => !x.IsFolded) > 1;
     }
 
     private void DealBoardCards(
-        BaseTable table,
+        Table table,
         BaseDeck deck,
         IRandomizer randomizer,
         IEventBus eventBus
@@ -67,7 +67,7 @@ public class BoardCardsDealingDealer : IDealer
     public void Handle(
         BaseEvent @event,
         Game game,
-        BaseTable table,
+        Table table,
         BasePot pot,
         BaseDeck deck,
         IRandomizer randomizer,
@@ -92,7 +92,7 @@ public class BoardCardsDealingDealer : IDealer
         Nickname nickname,
         Decision decision,
         Game game,
-        BaseTable table,
+        Table table,
         BasePot pot,
         BaseDeck deck,
         IRandomizer randomizer,

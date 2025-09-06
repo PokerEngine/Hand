@@ -6,7 +6,6 @@ COPY ./lib/pokerstove-ext/src/programs/ps-recognize /usr/local/lib/pokerstove/sr
 RUN set -x && \
     apt-get update && \
     apt-get install -y \
-        git \
         build-essential \
         libboost-all-dev \
         cmake && \

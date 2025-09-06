@@ -3,9 +3,9 @@ namespace Domain.Event;
 
 public interface IEventBus
 {
-    public void Subscribe<T>(Action<T> listener) where T : BaseEvent;
-    public void Unsubscribe<T>(Action<T> listener) where T : BaseEvent;
-    public void Publish<T>(T @event) where T : BaseEvent;
+    void Subscribe<T>(Action<T> listener) where T : BaseEvent;
+    void Unsubscribe<T>(Action<T> listener) where T : BaseEvent;
+    void Publish<T>(T @event) where T : BaseEvent;
 }
 
 public class EventBus : IEventBus

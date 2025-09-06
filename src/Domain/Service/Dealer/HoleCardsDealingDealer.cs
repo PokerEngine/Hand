@@ -17,7 +17,7 @@ public class HoleCardsDealingDealer : IDealer
 
     public void Start(
         Game game,
-        BaseTable table,
+        Table table,
         BasePot pot,
         BaseDeck deck,
         IRandomizer randomizer,
@@ -46,7 +46,7 @@ public class HoleCardsDealingDealer : IDealer
         eventBus.Publish(finishEvent);
     }
 
-    private IList<Player> GetPlayersForDealing(BaseTable table)
+    private IList<Player> GetPlayersForDealing(Table table)
     {
         var startSeat = table.SmallBlindSeat;
         return table.GetPlayersStartingFromSeat(startSeat).Where(x => !x.IsFolded).ToList();
@@ -78,7 +78,7 @@ public class HoleCardsDealingDealer : IDealer
     public void Handle(
         BaseEvent @event,
         Game game,
-        BaseTable table,
+        Table table,
         BasePot pot,
         BaseDeck deck,
         IRandomizer randomizer,
@@ -103,7 +103,7 @@ public class HoleCardsDealingDealer : IDealer
         Nickname nickname,
         Decision decision,
         Game game,
-        BaseTable table,
+        Table table,
         BasePot pot,
         BaseDeck deck,
         IRandomizer randomizer,

@@ -10,7 +10,7 @@ public class BlindPostingDealer : IDealer
 {
     public void Start(
         Game game,
-        BaseTable table,
+        Table table,
         BasePot pot,
         BaseDeck deck,
         IRandomizer randomizer,
@@ -29,7 +29,7 @@ public class BlindPostingDealer : IDealer
     }
 
     private void PostSmallBlind(
-        BaseTable table,
+        Table table,
         BasePot pot,
         IEventBus eventBus
     )
@@ -52,7 +52,7 @@ public class BlindPostingDealer : IDealer
     }
 
     private void PostBigBlind(
-        BaseTable table,
+        Table table,
         BasePot pot,
         IEventBus eventBus
     )
@@ -77,7 +77,7 @@ public class BlindPostingDealer : IDealer
     public void Handle(
         BaseEvent @event,
         Game game,
-        BaseTable table,
+        Table table,
         BasePot pot,
         BaseDeck deck,
         IRandomizer randomizer,
@@ -105,7 +105,7 @@ public class BlindPostingDealer : IDealer
         Nickname nickname,
         Decision decision,
         Game game,
-        BaseTable table,
+        Table table,
         BasePot pot,
         BaseDeck deck,
         IRandomizer randomizer,

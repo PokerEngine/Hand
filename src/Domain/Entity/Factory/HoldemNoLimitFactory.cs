@@ -3,18 +3,20 @@ using Domain.ValueObject;
 
 namespace Domain.Entity.Factory;
 
-public class HoldemNoLimit6MaxFactory : IFactory
+public class HoldemNoLimitFactory : IFactory
 {
-    public virtual BaseTable GetTable(
+    public virtual Table GetTable(
         IEnumerable<Participant> participants,
+        Seat maxSeat,
         Seat smallBlindSeat,
         Seat bigBlindSeat,
         Seat buttonSeat
     )
     {
         var players = participants.Select(GetPlayer);
-        return new SixMaxTable(
+        return new Table(
             players: players,
+            maxSeat: maxSeat,
             smallBlindSeat: smallBlindSeat,
             bigBlindSeat: bigBlindSeat,
             buttonSeat: buttonSeat

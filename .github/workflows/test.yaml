@@ -25,7 +25,7 @@ jobs:
       - name: Build
         run: dotnet build --no-restore --configuration Release
 
-      - name: Run tests
+      - name: Run unit tests
         run: dotnet test src/Domain.Test --configuration Release --no-build --verbosity normal
 
   test-integration:
@@ -49,11 +49,13 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v5
+        with:
+          submodules: recursive
 
       - name: Build image
         run: docker build . --tag test-integration --file ./ci/Dockerfile
 
-      - name: Run tests
+      - name: Run integration tests
         env:
           MongoDB__Host: mongodb
           MongoDB__Port: 27017

@@ -6,21 +6,21 @@ public class Player : IEquatable<Player>
 {
     public Nickname Nickname { get; }
     public Seat Seat { get; }
-    public Chips Stake { get; private set; }
+    public Chips Stack { get; private set; }
     public CardSet HoleCards { get; private set; }
     public bool IsConnected { get; private set; }
     public bool IsFolded { get; private set; }
 
     public bool IsAllIn
     {
-        get => !Stake;
+        get => !Stack;
     }
 
-    public Player(Nickname nickname, Seat seat, Chips stake)
+    public Player(Nickname nickname, Seat seat, Chips stack)
     {
         Nickname = nickname;
         Seat = seat;
-        Stake = stake;
+        Stack = stack;
         HoleCards = new CardSet();
         IsConnected = false;
         IsFolded = false;
@@ -105,12 +105,12 @@ public class Player : IEquatable<Player>
         {
             throw new InvalidOperationException("The player has already been all in");
         }
-        if (Stake < amount)
+        if (Stack < amount)
         {
-            throw new InvalidOperationException("The player cannot bet more amount than his stake");
+            throw new InvalidOperationException("The player cannot bet more amount than his stack");
         }
 
-        Stake -= amount;
+        Stack -= amount;
     }
 
     public void Post(Chips amount)
@@ -124,12 +124,12 @@ public class Player : IEquatable<Player>
         {
             throw new InvalidOperationException("The player has already been all in");
         }
-        if (Stake < amount)
+        if (Stack < amount)
         {
-            throw new InvalidOperationException("The player cannot post more amount than his stake");
+            throw new InvalidOperationException("The player cannot post more amount than his stack");
         }
 
-        Stake -= amount;
+        Stack -= amount;
     }
 
     public void Win(Chips amount)
@@ -139,7 +139,7 @@ public class Player : IEquatable<Player>
             throw new InvalidOperationException("The player has already folded");
         }
 
-        Stake += amount;
+        Stack += amount;
     }
 
     public void Refund(Chips amount)
@@ -149,7 +149,7 @@ public class Player : IEquatable<Player>
             throw new InvalidOperationException("The player has already folded");
         }
 
-        Stake += amount;
+        Stack += amount;
     }
 
     public bool Equals(Player? other)
@@ -163,5 +163,5 @@ public class Player : IEquatable<Player>
     }
 
     public override string ToString()
-        => $"{Nickname}, {Seat}, {Stake}, {HoleCards}";
+        => $"{Nickname}, {Seat}, {Stack}, {HoleCards}";
 }

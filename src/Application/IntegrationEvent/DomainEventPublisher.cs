@@ -258,7 +258,7 @@ public class DomainEventPublisher
         return new IntegrationEventParticipant(
             Nickname: participant.Nickname,
             Seat: participant.Seat,
-            Stake: participant.Stake
+            Stack: participant.Stack
         );
     }
 }

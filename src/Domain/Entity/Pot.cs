@@ -132,14 +132,14 @@ public abstract class BasePot
 
     public Chips GetCallToAmount(Player player)
     {
-        var playerAmount = GetCurrentPostedAmount(player) + player.Stake;
+        var playerAmount = GetCurrentPostedAmount(player) + player.Stack;
         var currentMaxAmount = GetCurrentMaxAmount(player);
         return currentMaxAmount < playerAmount ? currentMaxAmount : playerAmount;
     }
 
     public Chips GetMinRaiseToAmount(Player player)
     {
-        var playerAmount = GetCurrentPostedAmount(player) + player.Stake;
+        var playerAmount = GetCurrentPostedAmount(player) + player.Stack;
         var amount = GetCurrentMaxAmount(player) + _lastRaiseStep;
         return amount < playerAmount ? amount : playerAmount;
     }
@@ -162,7 +162,7 @@ public abstract class BasePot
         var winPot = new SidePot();
         var oneChip = new Chips(1);
 
-        foreach (var player in players.OrderBy(x => x.Stake))
+        foreach (var player in players.OrderBy(x => x.Stack))
         {
             winPot = winPot.Add(player.Nickname, quotient);
 
@@ -396,7 +396,7 @@ public abstract class BasePot
 
     private void ValidatePostBlind(Player player, Chips amount, Chips blind)
     {
-        var expectedAmount = (blind <= player.Stake) ? blind : player.Stake;
+        var expectedAmount = (blind <= player.Stack) ? blind : player.Stack;
         if (amount != expectedAmount)
         {
             throw new InvalidOperationException($"The player must post {expectedAmount}");
@@ -576,7 +576,7 @@ public class NoLimitPot : BasePot
 
     public override Chips GetMaxRaiseToAmount(Player player)
     {
-        return GetCurrentPostedAmount(player) + player.Stake;
+        return GetCurrentPostedAmount(player) + player.Stack;
     }
 
     public override string ToString()
@@ -596,7 +596,7 @@ public class PotLimitPot : BasePot
         var totalAmountAfterCall = GetTotalAmount() + currentMaxAmount - currentPostedAmount;
         var maxAmount = currentMaxAmount + totalAmountAfterCall;
         var amount = currentMaxAmount + maxAmount;
-        var playerAmount = currentPostedAmount + player.Stake;
+        var playerAmount = currentPostedAmount + player.Stack;
         return amount < playerAmount ? amount : playerAmount;
     }
 }

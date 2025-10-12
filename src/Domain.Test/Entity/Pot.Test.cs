@@ -32,7 +32,7 @@ public class NoLimitPotTest
         Assert.Equal(new Nickname("SmallBlind"), pot.LastDecisionNickname);
         Assert.Equal(new Chips(5), pot.GetTotalAmount());
         Assert.Equal(new Chips(5), pot.GetCurrentPostedAmount(playerSb));
-        Assert.Equal(playerSb.Stake, new Chips(995));
+        Assert.Equal(playerSb.Stack, new Chips(995));
         Assert.False(playerSb.IsFolded);
     }
 
@@ -42,7 +42,7 @@ public class NoLimitPotTest
         var playerSb = CreatePlayer(
             nickname: "SmallBlind",
             seat: 1,
-            stake: 2
+            stack: 2
         );
         var pot = CreatePot();
 
@@ -51,7 +51,7 @@ public class NoLimitPotTest
         Assert.Equal(new Nickname("SmallBlind"), pot.LastDecisionNickname);
         Assert.Equal(new Chips(2), pot.GetTotalAmount());
         Assert.Equal(new Chips(2), pot.GetCurrentPostedAmount(playerSb));
-        Assert.Equal(playerSb.Stake, new Chips(0));
+        Assert.Equal(playerSb.Stack, new Chips(0));
         Assert.False(playerSb.IsFolded);
     }
 
@@ -72,7 +72,7 @@ public class NoLimitPotTest
         Assert.Null(pot.LastDecisionNickname);
         Assert.Equal(new Chips(0), pot.GetTotalAmount());
         Assert.Equal(new Chips(0), pot.GetCurrentPostedAmount(playerSb));
-        Assert.Equal(playerSb.Stake, new Chips(1000));
+        Assert.Equal(playerSb.Stack, new Chips(1000));
         Assert.False(playerSb.IsFolded);
     }
 
@@ -95,7 +95,7 @@ public class NoLimitPotTest
         Assert.Equal(new Nickname("BigBlind"), pot.LastDecisionNickname);
         Assert.Equal(new Chips(15), pot.GetTotalAmount());
         Assert.Equal(new Chips(10), pot.GetCurrentPostedAmount(playerBb));
-        Assert.Equal(playerBb.Stake, new Chips(990));
+        Assert.Equal(playerBb.Stack, new Chips(990));
         Assert.False(playerBb.IsFolded);
     }
 
@@ -109,7 +109,7 @@ public class NoLimitPotTest
         var playerBb = CreatePlayer(
             nickname: "BigBlind",
             seat: 2,
-            stake: 2
+            stack: 2
         );
         var pot = CreatePot();
         pot.PostSmallBlind(playerSb, new Chips(5));
@@ -119,7 +119,7 @@ public class NoLimitPotTest
         Assert.Equal(new Nickname("BigBlind"), pot.LastDecisionNickname);
         Assert.Equal(new Chips(7), pot.GetTotalAmount());
         Assert.Equal(new Chips(2), pot.GetCurrentPostedAmount(playerBb));
-        Assert.Equal(playerBb.Stake, new Chips(0));
+        Assert.Equal(playerBb.Stack, new Chips(0));
         Assert.False(playerBb.IsFolded);
     }
 
@@ -137,7 +137,7 @@ public class NoLimitPotTest
         Assert.Equal(new Nickname("BigBlind"), pot.LastDecisionNickname);
         Assert.Equal(new Chips(10), pot.GetTotalAmount());
         Assert.Equal(new Chips(10), pot.GetCurrentPostedAmount(playerBb));
-        Assert.Equal(playerBb.Stake, new Chips(990));
+        Assert.Equal(playerBb.Stack, new Chips(990));
         Assert.False(playerBb.IsFolded);
     }
 
@@ -163,7 +163,7 @@ public class NoLimitPotTest
         Assert.Equal(new Nickname("SmallBlind"), pot.LastDecisionNickname);
         Assert.Equal(new Chips(5), pot.GetTotalAmount());
         Assert.Equal(new Chips(0), pot.GetCurrentPostedAmount(playerBb));
-        Assert.Equal(playerBb.Stake, new Chips(1000));
+        Assert.Equal(playerBb.Stack, new Chips(1000));
         Assert.False(playerBb.IsFolded);
     }
 
@@ -200,7 +200,7 @@ public class NoLimitPotTest
         Assert.Equal(new Nickname("SmallBlind"), pot.LastDecisionNickname);
         Assert.Equal(new Chips(15), pot.GetTotalAmount());
         Assert.Equal(new Chips(0), pot.GetCurrentPostedAmount(playerSb));
-        Assert.Equal(playerSb.Stake, new Chips(995));
+        Assert.Equal(playerSb.Stack, new Chips(995));
         Assert.True(playerSb.IsFolded);
     }
 
@@ -230,7 +230,7 @@ public class NoLimitPotTest
         Assert.Equal(new Nickname("SmallBlind"), pot.LastDecisionNickname);
         Assert.Equal(new Chips(15), pot.GetTotalAmount());
         Assert.Equal(new Chips(10), pot.GetCurrentPostedAmount(playerBb));
-        Assert.Equal(playerBb.Stake, new Chips(990));
+        Assert.Equal(playerBb.Stack, new Chips(990));
         Assert.False(playerBb.IsFolded);
     }
 
@@ -266,7 +266,7 @@ public class NoLimitPotTest
         Assert.Equal(new Nickname("SmallBlind"), pot.LastDecisionNickname);
         Assert.Equal(new Chips(20), pot.GetTotalAmount());
         Assert.Equal(new Chips(10), pot.GetCurrentPostedAmount(playerBb));
-        Assert.Equal(playerBb.Stake, new Chips(990));
+        Assert.Equal(playerBb.Stack, new Chips(990));
         Assert.False(playerBb.IsFolded);
     }
 
@@ -303,7 +303,7 @@ public class NoLimitPotTest
         Assert.Equal(new Nickname("BigBlind"), pot.LastDecisionNickname);
         Assert.Equal(new Chips(20), pot.GetTotalAmount());
         Assert.Equal(new Chips(10), pot.GetCurrentPostedAmount(playerBb));
-        Assert.Equal(playerBb.Stake, new Chips(990));
+        Assert.Equal(playerBb.Stack, new Chips(990));
         Assert.False(playerBb.IsFolded);
     }
 
@@ -333,7 +333,7 @@ public class NoLimitPotTest
         Assert.Equal(new Nickname("SmallBlind"), pot.LastDecisionNickname);
         Assert.Equal(new Chips(15), pot.GetTotalAmount());
         Assert.Equal(new Chips(10), pot.GetCurrentPostedAmount(playerBb));
-        Assert.Equal(playerBb.Stake, new Chips(990));
+        Assert.Equal(playerBb.Stack, new Chips(990));
         Assert.False(playerBb.IsFolded);
     }
 
@@ -369,7 +369,7 @@ public class NoLimitPotTest
         Assert.Equal(new Nickname("BigBlind"), pot.LastDecisionNickname);
         Assert.Equal(new Chips(15), pot.GetTotalAmount());
         Assert.Equal(new Chips(5), pot.GetCurrentPostedAmount(playerSb));
-        Assert.Equal(playerSb.Stake, new Chips(995));
+        Assert.Equal(playerSb.Stack, new Chips(995));
         Assert.False(playerSb.IsFolded);
     }
 
@@ -399,7 +399,7 @@ public class NoLimitPotTest
         Assert.Equal(new Nickname("SmallBlind"), pot.LastDecisionNickname);
         Assert.Equal(new Chips(20), pot.GetTotalAmount());
         Assert.Equal(new Chips(10), pot.GetCurrentPostedAmount(playerSb));
-        Assert.Equal(playerSb.Stake, new Chips(990));
+        Assert.Equal(playerSb.Stack, new Chips(990));
         Assert.False(playerSb.IsFolded);
     }
 
@@ -442,7 +442,7 @@ public class NoLimitPotTest
         Assert.Equal(new Nickname("SmallBlind"), pot.LastDecisionNickname);
         Assert.Equal(new Chips(20), pot.GetTotalAmount());
         Assert.Equal(new Chips(10), pot.GetCurrentPostedAmount(playerSb));
-        Assert.Equal(playerSb.Stake, new Chips(990));
+        Assert.Equal(playerSb.Stack, new Chips(990));
         Assert.False(playerSb.IsFolded);
     }
 
@@ -456,7 +456,7 @@ public class NoLimitPotTest
         var playerBb = CreatePlayer(
             nickname: "BigBlind",
             seat: 2,
-            stake: 19
+            stack: 19
         );
         var pot = CreatePot();
         playerSb.Connect();
@@ -479,7 +479,7 @@ public class NoLimitPotTest
         Assert.Equal(new Nickname("BigBlind"), pot.LastDecisionNickname);
         Assert.Equal(new Chips(39), pot.GetTotalAmount());
         Assert.Equal(new Chips(19), pot.GetCurrentPostedAmount(playerBb));
-        Assert.Equal(playerBb.Stake, new Chips(0));
+        Assert.Equal(playerBb.Stack, new Chips(0));
         Assert.False(playerBb.IsFolded);
     }
 
@@ -509,7 +509,7 @@ public class NoLimitPotTest
         Assert.Equal(new Nickname("SmallBlind"), pot.LastDecisionNickname);
         Assert.Equal(new Chips(15), pot.GetTotalAmount());
         Assert.Equal(new Chips(10), pot.GetCurrentPostedAmount(playerBb));
-        Assert.Equal(playerBb.Stake, new Chips(990));
+        Assert.Equal(playerBb.Stack, new Chips(990));
         Assert.False(playerBb.IsFolded);
     }
 
@@ -545,7 +545,7 @@ public class NoLimitPotTest
         Assert.Equal(new Nickname("SmallBlind"), pot.LastDecisionNickname);
         Assert.Equal(new Chips(20), pot.GetTotalAmount());
         Assert.Equal(new Chips(10), pot.GetCurrentPostedAmount(playerBb));
-        Assert.Equal(playerBb.Stake, new Chips(990));
+        Assert.Equal(playerBb.Stack, new Chips(990));
         Assert.False(playerBb.IsFolded);
     }
 
@@ -583,7 +583,7 @@ public class NoLimitPotTest
         Assert.Equal(new Nickname("BigBlind"), pot.LastDecisionNickname);
         Assert.Equal(new Chips(15), pot.GetTotalAmount());
         Assert.Equal(new Chips(5), pot.GetCurrentPostedAmount(playerSb));
-        Assert.Equal(playerSb.Stake, new Chips(995));
+        Assert.Equal(playerSb.Stack, new Chips(995));
         Assert.False(playerSb.IsFolded);
     }
 
@@ -593,7 +593,7 @@ public class NoLimitPotTest
         var playerSb = CreatePlayer(
             nickname: "SmallBlind",
             seat: 1,
-            stake: 9
+            stack: 9
         );
         var playerBb = CreatePlayer(
             nickname: "BigBlind",
@@ -618,7 +618,7 @@ public class NoLimitPotTest
         Assert.Equal(new Nickname("BigBlind"), pot.LastDecisionNickname);
         Assert.Equal(new Chips(15), pot.GetTotalAmount());
         Assert.Equal(new Chips(5), pot.GetCurrentPostedAmount(playerSb));
-        Assert.Equal(playerSb.Stake, new Chips(4));
+        Assert.Equal(playerSb.Stack, new Chips(4));
         Assert.False(playerSb.IsFolded);
     }
 
@@ -662,7 +662,7 @@ public class NoLimitPotTest
         Assert.Equal(new Nickname("SmallBlind"), pot.LastDecisionNickname);
         Assert.Equal(new Chips(30), pot.GetTotalAmount());
         Assert.Equal(new Chips(20), pot.GetCurrentPostedAmount(playerSb));
-        Assert.Equal(playerSb.Stake, new Chips(980));
+        Assert.Equal(playerSb.Stack, new Chips(980));
         Assert.False(playerSb.IsFolded);
     }
 
@@ -672,7 +672,7 @@ public class NoLimitPotTest
         var playerSb = CreatePlayer(
             nickname: "SmallBlind",
             seat: 1,
-            stake: 19
+            stack: 19
         );
         var playerBb = CreatePlayer(
             nickname: "BigBlind",
@@ -707,7 +707,7 @@ public class NoLimitPotTest
         Assert.Equal(new Nickname("SmallBlind"), pot.LastDecisionNickname);
         Assert.Equal(new Chips(29), pot.GetTotalAmount());
         Assert.Equal(new Chips(19), pot.GetCurrentPostedAmount(playerSb));
-        Assert.Equal(playerSb.Stake, new Chips(0));
+        Assert.Equal(playerSb.Stack, new Chips(0));
         Assert.False(playerSb.IsFolded);
     }
 
@@ -737,7 +737,7 @@ public class NoLimitPotTest
         Assert.Equal(new Nickname("SmallBlind"), pot.LastDecisionNickname);
         Assert.Equal(new Chips(15), pot.GetTotalAmount());
         Assert.Equal(new Chips(10), pot.GetCurrentPostedAmount(playerBb));
-        Assert.Equal(playerBb.Stake, new Chips(990));
+        Assert.Equal(playerBb.Stack, new Chips(990));
         Assert.False(playerBb.IsFolded);
     }
 
@@ -781,7 +781,7 @@ public class NoLimitPotTest
         Assert.Equal(new Nickname("BigBlind"), pot.LastDecisionNickname);
         Assert.Equal(new Chips(30), pot.GetTotalAmount());
         Assert.Equal(new Chips(20), pot.GetCurrentPostedAmount(playerBb));
-        Assert.Equal(playerBb.Stake, new Chips(980));
+        Assert.Equal(playerBb.Stack, new Chips(980));
         Assert.False(playerBb.IsFolded);
     }
 
@@ -817,7 +817,7 @@ public class NoLimitPotTest
         Assert.Equal(new Nickname("BigBlind"), pot.LastDecisionNickname);
         Assert.Equal(new Chips(15), pot.GetTotalAmount());
         Assert.Equal(new Chips(5), pot.GetCurrentPostedAmount(playerSb));
-        Assert.Equal(playerSb.Stake, new Chips(995));
+        Assert.Equal(playerSb.Stack, new Chips(995));
         Assert.False(playerSb.IsFolded);
     }
 
@@ -853,7 +853,7 @@ public class NoLimitPotTest
         Assert.Equal(new Nickname("BigBlind"), pot.LastDecisionNickname);
         Assert.Equal(new Chips(15), pot.GetTotalAmount());
         Assert.Equal(new Chips(5), pot.GetCurrentPostedAmount(playerSb));
-        Assert.Equal(playerSb.Stake, new Chips(995));
+        Assert.Equal(playerSb.Stack, new Chips(995));
         Assert.False(playerSb.IsFolded);
     }
 
@@ -867,7 +867,7 @@ public class NoLimitPotTest
         var playerBb = CreatePlayer(
             nickname: "BigBlind",
             seat: 2,
-            stake: 19
+            stack: 19
         );
         var pot = CreatePot();
         playerSb.Connect();
@@ -889,7 +889,7 @@ public class NoLimitPotTest
         Assert.Equal(new Nickname("SmallBlind"), pot.LastDecisionNickname);
         Assert.Equal(new Chips(30), pot.GetTotalAmount());
         Assert.Equal(new Chips(10), pot.GetCurrentPostedAmount(playerBb));
-        Assert.Equal(playerBb.Stake, new Chips(9));
+        Assert.Equal(playerBb.Stack, new Chips(9));
         Assert.False(playerBb.IsFolded);
     }
 
@@ -899,7 +899,7 @@ public class NoLimitPotTest
         var playerSb = CreatePlayer(
             nickname: "SmallBlind",
             seat: 1,
-            stake: 19
+            stack: 19
         );
         var playerBb = CreatePlayer(
             nickname: "BigBlind",
@@ -926,7 +926,7 @@ public class NoLimitPotTest
         Assert.Equal(new Nickname("BigBlind"), pot.LastDecisionNickname);
         Assert.Equal(new Chips(15), pot.GetTotalAmount());
         Assert.Equal(new Chips(5), pot.GetCurrentPostedAmount(playerSb));
-        Assert.Equal(playerSb.Stake, new Chips(14));
+        Assert.Equal(playerSb.Stack, new Chips(14));
         Assert.False(playerSb.IsFolded);
     }
 
@@ -936,7 +936,7 @@ public class NoLimitPotTest
         var playerSb = CreatePlayer(
             nickname: "SmallBlind",
             seat: 1,
-            stake: 40
+            stack: 40
         );
         var playerBb = CreatePlayer(
             nickname: "BigBlind",
@@ -981,11 +981,11 @@ public class NoLimitPotTest
         Assert.Equal(new Chips(40), pot.GetCurrentPostedAmount(playerSb));
         Assert.Equal(new Chips(40), pot.GetCurrentPostedAmount(playerBb));
         Assert.Equal(new Chips(55), pot.GetCurrentPostedAmount(playerBu));
-        Assert.Equal(playerSb.Stake, new Chips(0));
+        Assert.Equal(playerSb.Stack, new Chips(0));
         Assert.False(playerSb.IsFolded);
-        Assert.Equal(playerBb.Stake, new Chips(960));
+        Assert.Equal(playerBb.Stack, new Chips(960));
         Assert.False(playerBb.IsFolded);
-        Assert.Equal(playerBu.Stake, new Chips(945));
+        Assert.Equal(playerBu.Stack, new Chips(945));
         Assert.False(playerBu.IsFolded);
     }
 
@@ -995,7 +995,7 @@ public class NoLimitPotTest
         var playerSb = CreatePlayer(
             nickname: "SmallBlind",
             seat: 1,
-            stake: 39
+            stack: 39
         );
         var playerBb = CreatePlayer(
             nickname: "BigBlind",
@@ -1030,11 +1030,11 @@ public class NoLimitPotTest
         Assert.Equal(new Chips(39), pot.GetCurrentPostedAmount(playerSb));
         Assert.Equal(new Chips(39), pot.GetCurrentPostedAmount(playerBb));
         Assert.Equal(new Chips(25), pot.GetCurrentPostedAmount(playerBu));
-        Assert.Equal(playerSb.Stake, new Chips(0));
+        Assert.Equal(playerSb.Stack, new Chips(0));
         Assert.False(playerSb.IsFolded);
-        Assert.Equal(playerBb.Stake, new Chips(961));
+        Assert.Equal(playerBb.Stack, new Chips(961));
         Assert.False(playerBb.IsFolded);
-        Assert.Equal(playerBu.Stake, new Chips(975));
+        Assert.Equal(playerBu.Stack, new Chips(975));
         Assert.False(playerBu.IsFolded);
     }
 
@@ -1044,7 +1044,7 @@ public class NoLimitPotTest
         var playerSb = CreatePlayer(
             nickname: "SmallBlind",
             seat: 1,
-            stake: 39
+            stack: 39
         );
         var playerBb = CreatePlayer(
             nickname: "BigBlind",
@@ -1089,11 +1089,11 @@ public class NoLimitPotTest
         Assert.Equal(new Chips(39), pot.GetCurrentPostedAmount(playerSb));
         Assert.Equal(new Chips(54), pot.GetCurrentPostedAmount(playerBb));
         Assert.Equal(new Chips(69), pot.GetCurrentPostedAmount(playerBu));
-        Assert.Equal(playerSb.Stake, new Chips(0));
+        Assert.Equal(playerSb.Stack, new Chips(0));
         Assert.False(playerSb.IsFolded);
-        Assert.Equal(playerBb.Stake, new Chips(946));
+        Assert.Equal(playerBb.Stack, new Chips(946));
         Assert.False(playerBb.IsFolded);
-        Assert.Equal(playerBu.Stake, new Chips(931));
+        Assert.Equal(playerBu.Stack, new Chips(931));
         Assert.False(playerBu.IsFolded);
     }
 
@@ -1155,17 +1155,17 @@ public class NoLimitPotTest
         var playerSb = CreatePlayer(
             nickname: "SmallBlind",
             seat: 1,
-            stake: 100
+            stack: 100
         );
         var playerBb = CreatePlayer(
             nickname: "BigBlind",
             seat: 2,
-            stake: 200
+            stack: 200
         );
         var playerBu = CreatePlayer(
             nickname: "Button",
             seat: 6,
-            stake: 600
+            stack: 600
         );
         var pot = CreatePot();
         playerSb.Connect();
@@ -1236,7 +1236,7 @@ public class NoLimitPotTest
         Assert.Equal(new Chips(25), pot.GetPreviousPostedAmount(playerSb));
         Assert.Equal(new Chips(60), pot.GetTotalAmount());
 
-        Assert.Equal(new Chips(975), playerSb.Stake);
+        Assert.Equal(new Chips(975), playerSb.Stack);
     }
 
     [Fact]
@@ -1245,12 +1245,12 @@ public class NoLimitPotTest
         var playerSb = CreatePlayer(
             nickname: "SmallBlind",
             seat: 1,
-            stake: 500
+            stack: 500
         );
         var playerBb = CreatePlayer(
             nickname: "BigBlind",
             seat: 2,
-            stake: 250
+            stack: 250
         );
         var playerBu = CreatePlayer(
             nickname: "Button",
@@ -1290,12 +1290,12 @@ public class NoLimitPotTest
         var playerSb = CreatePlayer(
             nickname: "SmallBlind",
             seat: 1,
-            stake: 500
+            stack: 500
         );
         var playerBb = CreatePlayer(
             nickname: "BigBlind",
             seat: 2,
-            stake: 250
+            stack: 250
         );
         var playerBu = CreatePlayer(
             nickname: "Button",
@@ -1342,12 +1342,12 @@ public class NoLimitPotTest
         var playerSb = CreatePlayer(
             nickname: "SmallBlind",
             seat: 1,
-            stake: 500
+            stack: 500
         );
         var playerBb = CreatePlayer(
             nickname: "BigBlind",
             seat: 2,
-            stake: 250
+            stack: 250
         );
         var playerBu = CreatePlayer(
             nickname: "Button",
@@ -1417,7 +1417,7 @@ public class NoLimitPotTest
         pot.CommitWinWithoutShowdown(playerSb, new Chips(60));
 
         Assert.Equal(new Chips(0), pot.GetTotalAmount());
-        Assert.Equal(new Chips(1035), playerSb.Stake);
+        Assert.Equal(new Chips(1035), playerSb.Stack);
     }
 
     [Theory]
@@ -1495,8 +1495,8 @@ public class NoLimitPotTest
         pot.CommitWinAtShowdown([playerBu], sidePot, winPot);
 
         Assert.Equal(new Chips(0), pot.GetTotalAmount());
-        Assert.Equal(new Chips(880), playerSb.Stake);
-        Assert.Equal(new Chips(1130), playerBu.Stake);
+        Assert.Equal(new Chips(880), playerSb.Stack);
+        Assert.Equal(new Chips(1130), playerBu.Stack);
     }
 
     [Fact]
@@ -1513,7 +1513,7 @@ public class NoLimitPotTest
         var playerBu = CreatePlayer(
             nickname: "Button",
             seat: 6,
-            stake: 999  // The poorest player takes the remainder
+            stack: 999  // The poorest player takes the remainder
         );
         var pot = CreatePot();
         playerSb.Connect();
@@ -1540,8 +1540,8 @@ public class NoLimitPotTest
         pot.CommitWinAtShowdown([playerBb, playerBu], sidePot, winPot);
 
         Assert.Equal(new Chips(0), pot.GetTotalAmount());
-        Assert.Equal(new Chips(1002), playerBb.Stake);
-        Assert.Equal(new Chips(1002), playerBu.Stake);
+        Assert.Equal(new Chips(1002), playerBb.Stack);
+        Assert.Equal(new Chips(1002), playerBu.Stack);
     }
 
     [Fact]
@@ -1550,7 +1550,7 @@ public class NoLimitPotTest
         var playerSb = CreatePlayer(
             nickname: "SmallBlind",
             seat: 1,
-            stake: 100
+            stack: 100
         );
         var playerBb = CreatePlayer(
             nickname: "BigBlind",
@@ -1584,9 +1584,9 @@ public class NoLimitPotTest
         pot.CommitWinAtShowdown([playerSb], sidePot, winPot);
 
         Assert.Equal(new Chips(280), pot.GetTotalAmount());
-        Assert.Equal(new Chips(300), playerSb.Stake);
-        Assert.Equal(new Chips(760), playerBb.Stake);
-        Assert.Equal(new Chips(760), playerBu.Stake);
+        Assert.Equal(new Chips(300), playerSb.Stack);
+        Assert.Equal(new Chips(760), playerBb.Stack);
+        Assert.Equal(new Chips(760), playerBu.Stack);
 
         sidePot = new SidePot([
             new KeyValuePair<Nickname, Chips>(playerBb.Nickname, new Chips(140)),
@@ -1599,9 +1599,9 @@ public class NoLimitPotTest
         pot.CommitWinAtShowdown([playerBb], sidePot, winPot);
 
         Assert.Equal(new Chips(0), pot.GetTotalAmount());
-        Assert.Equal(new Chips(300), playerSb.Stake);
-        Assert.Equal(new Chips(1040), playerBb.Stake);
-        Assert.Equal(new Chips(760), playerBu.Stake);
+        Assert.Equal(new Chips(300), playerSb.Stack);
+        Assert.Equal(new Chips(1040), playerBb.Stack);
+        Assert.Equal(new Chips(760), playerBu.Stack);
     }
 
     [Fact]
@@ -1610,47 +1610,47 @@ public class NoLimitPotTest
         var playerSb = CreatePlayer(
             nickname: "SmallBlind",
             seat: 1,
-            stake: 100
+            stack: 100
         );
         var playerBb = CreatePlayer(
             nickname: "BigBlind",
             seat: 2,
-            stake: 200
+            stack: 200
         );
         var playerUtg1 = CreatePlayer(
             nickname: "UnderTheGun1",
             seat: 3,
-            stake: 300
+            stack: 300
         );
         var playerUtg2 = CreatePlayer(
             nickname: "UnderTheGun2",
             seat: 4,
-            stake: 400
+            stack: 400
         );
         var playerUtg3 = CreatePlayer(
             nickname: "UnderTheGun3",
             seat: 5,
-            stake: 500
+            stack: 500
         );
         var playerEp = CreatePlayer(
             nickname: "Early",
             seat: 6,
-            stake: 600
+            stack: 600
         );
         var playerMp = CreatePlayer(
             nickname: "Middle",
             seat: 7,
-            stake: 700
+            stack: 700
         );
         var playerCo = CreatePlayer(
             nickname: "CutOff",
             seat: 8,
-            stake: 800
+            stack: 800
         );
         var playerBu = CreatePlayer(
             nickname: "Button",
             seat: 9,
-            stake: 900
+            stack: 900
         );
         var pot = CreatePot();
         playerSb.Connect();
@@ -1694,7 +1694,7 @@ public class NoLimitPotTest
         pot.CommitWinAtShowdown([playerSb], sidePot, winPot);
 
         Assert.Equal(new Chips(3500), pot.GetTotalAmount());
-        Assert.Equal(new Chips(900), playerSb.Stake);
+        Assert.Equal(new Chips(900), playerSb.Stack);
 
         sidePot = new SidePot([
             new KeyValuePair<Nickname, Chips>(playerBb.Nickname, new Chips(100)),
@@ -1715,9 +1715,9 @@ public class NoLimitPotTest
         pot.CommitWinAtShowdown([playerBb, playerUtg1, playerUtg2], sidePot, winPot);
 
         Assert.Equal(new Chips(2700), pot.GetTotalAmount());
-        Assert.Equal(new Chips(267), playerBb.Stake);
-        Assert.Equal(new Chips(267), playerUtg1.Stake);
-        Assert.Equal(new Chips(266), playerUtg2.Stake);
+        Assert.Equal(new Chips(267), playerBb.Stack);
+        Assert.Equal(new Chips(267), playerUtg1.Stack);
+        Assert.Equal(new Chips(266), playerUtg2.Stack);
 
         sidePot = new SidePot([
             new KeyValuePair<Nickname, Chips>(playerUtg1.Nickname, new Chips(100)),
@@ -1736,8 +1736,8 @@ public class NoLimitPotTest
         pot.CommitWinAtShowdown([playerUtg1, playerUtg2], sidePot, winPot);
 
         Assert.Equal(new Chips(2000), pot.GetTotalAmount());
-        Assert.Equal(new Chips(617), playerUtg1.Stake);
-        Assert.Equal(new Chips(616), playerUtg2.Stake);
+        Assert.Equal(new Chips(617), playerUtg1.Stack);
+        Assert.Equal(new Chips(616), playerUtg2.Stack);
 
         sidePot = new SidePot([
             new KeyValuePair<Nickname, Chips>(playerUtg2.Nickname, new Chips(100)),
@@ -1754,7 +1754,7 @@ public class NoLimitPotTest
         pot.CommitWinAtShowdown([playerUtg2], sidePot, winPot);
 
         Assert.Equal(new Chips(1400), pot.GetTotalAmount());
-        Assert.Equal(new Chips(1216), playerUtg2.Stake);
+        Assert.Equal(new Chips(1216), playerUtg2.Stack);
 
         sidePot = new SidePot([
             new KeyValuePair<Nickname, Chips>(playerUtg3.Nickname, new Chips(100)),
@@ -1770,7 +1770,7 @@ public class NoLimitPotTest
         pot.CommitWinAtShowdown([playerUtg3], sidePot, winPot);
 
         Assert.Equal(new Chips(900), pot.GetTotalAmount());
-        Assert.Equal(new Chips(500), playerUtg3.Stake);
+        Assert.Equal(new Chips(500), playerUtg3.Stack);
 
         sidePot = new SidePot([
             new KeyValuePair<Nickname, Chips>(playerEp.Nickname, new Chips(100)),
@@ -1785,7 +1785,7 @@ public class NoLimitPotTest
         pot.CommitWinAtShowdown([playerEp], sidePot, winPot);
 
         Assert.Equal(new Chips(500), pot.GetTotalAmount());
-        Assert.Equal(new Chips(400), playerEp.Stake);
+        Assert.Equal(new Chips(400), playerEp.Stack);
 
         sidePot = new SidePot([
             new KeyValuePair<Nickname, Chips>(playerMp.Nickname, new Chips(100)),
@@ -1800,8 +1800,8 @@ public class NoLimitPotTest
         pot.CommitWinAtShowdown([playerMp, playerCo], sidePot, winPot);
 
         Assert.Equal(new Chips(200), pot.GetTotalAmount());
-        Assert.Equal(new Chips(150), playerMp.Stake);
-        Assert.Equal(new Chips(150), playerCo.Stake);
+        Assert.Equal(new Chips(150), playerMp.Stack);
+        Assert.Equal(new Chips(150), playerCo.Stack);
 
         sidePot = new SidePot([
             new KeyValuePair<Nickname, Chips>(playerCo.Nickname, new Chips(100)),
@@ -1814,7 +1814,7 @@ public class NoLimitPotTest
         pot.CommitWinAtShowdown([playerCo], sidePot, winPot);
 
         Assert.Equal(new Chips(0), pot.GetTotalAmount());
-        Assert.Equal(new Chips(350), playerCo.Stake);
+        Assert.Equal(new Chips(350), playerCo.Stack);
     }
 
     [Theory]
@@ -1900,12 +1900,12 @@ public class NoLimitPotTest
         return new NoLimitPot(new Chips(smallBlind), new Chips(bigBlind));
     }
 
-    private Player CreatePlayer(string nickname, int seat, int stake = 1000)
+    private Player CreatePlayer(string nickname, int seat, int stack = 1000)
     {
         return new Player(
             nickname: new Nickname(nickname),
             seat: new Seat(seat),
-            stake: new Chips(stake)
+            stack: new Chips(stack)
         );
     }
 }

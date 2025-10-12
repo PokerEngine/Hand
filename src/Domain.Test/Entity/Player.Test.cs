@@ -11,12 +11,12 @@ public class PlayerTest
         var player = new Player(
             nickname: new Nickname("BigBlind"),
             seat: new Seat(1),
-            stake: new Chips(1000)
+            stack: new Chips(1000)
         );
 
         Assert.Equal(new Nickname("BigBlind"), player.Nickname);
         Assert.Equal(new Seat(1), player.Seat);
-        Assert.Equal(new Chips(1000), player.Stake);
+        Assert.Equal(new Chips(1000), player.Stack);
         Assert.Empty(player.HoleCards);
         Assert.False(player.IsConnected);
         Assert.False(player.IsFolded);
@@ -102,7 +102,7 @@ public class PlayerTest
         player.Fold();
 
         Assert.True(player.IsFolded);
-        Assert.Equal(new Chips(1000), player.Stake);
+        Assert.Equal(new Chips(1000), player.Stack);
     }
 
     [Fact]
@@ -116,7 +116,7 @@ public class PlayerTest
 
         Assert.Equal("The player has already folded", exc.Message);
         Assert.True(player.IsFolded);
-        Assert.Equal(new Chips(1000), player.Stake);
+        Assert.Equal(new Chips(1000), player.Stack);
     }
 
     [Fact]
@@ -124,13 +124,13 @@ public class PlayerTest
     {
         var player = CreatePlayer();
         player.Connect();
-        player.Bet(player.Stake);
+        player.Bet(player.Stack);
 
         var exc = Assert.Throws<InvalidOperationException>(() => player.Fold());
 
         Assert.Equal("The player has already been all in", exc.Message);
         Assert.False(player.IsFolded);
-        Assert.Equal(new Chips(0), player.Stake);
+        Assert.Equal(new Chips(0), player.Stack);
     }
 
     [Fact]
@@ -142,7 +142,7 @@ public class PlayerTest
         player.Check();
 
         Assert.False(player.IsFolded);
-        Assert.Equal(new Chips(1000), player.Stake);
+        Assert.Equal(new Chips(1000), player.Stack);
     }
 
     [Fact]
@@ -156,7 +156,7 @@ public class PlayerTest
 
         Assert.Equal("The player has already folded", exc.Message);
         Assert.True(player.IsFolded);
-        Assert.Equal(new Chips(1000), player.Stake);
+        Assert.Equal(new Chips(1000), player.Stack);
     }
 
     [Fact]
@@ -168,7 +168,7 @@ public class PlayerTest
 
         Assert.Equal("The player has not connected yet", exc.Message);
         Assert.False(player.IsFolded);
-        Assert.Equal(new Chips(1000), player.Stake);
+        Assert.Equal(new Chips(1000), player.Stack);
     }
 
     [Fact]
@@ -176,13 +176,13 @@ public class PlayerTest
     {
         var player = CreatePlayer();
         player.Connect();
-        player.Bet(player.Stake);
+        player.Bet(player.Stack);
 
         var exc = Assert.Throws<InvalidOperationException>(() => player.Check());
 
         Assert.Equal("The player has already been all in", exc.Message);
         Assert.False(player.IsFolded);
-        Assert.Equal(new Chips(0), player.Stake);
+        Assert.Equal(new Chips(0), player.Stack);
     }
 
     [Fact]
@@ -194,7 +194,7 @@ public class PlayerTest
         player.Bet(new Chips(25));
 
         Assert.False(player.IsFolded);
-        Assert.Equal(new Chips(975), player.Stake);
+        Assert.Equal(new Chips(975), player.Stack);
         Assert.False(player.IsAllIn);
     }
 
@@ -204,10 +204,10 @@ public class PlayerTest
         var player = CreatePlayer();
         player.Connect();
 
-        player.Bet(player.Stake);
+        player.Bet(player.Stack);
 
         Assert.False(player.IsFolded);
-        Assert.Equal(new Chips(0), player.Stake);
+        Assert.Equal(new Chips(0), player.Stack);
         Assert.True(player.IsAllIn);
     }
 
@@ -222,7 +222,7 @@ public class PlayerTest
 
         Assert.Equal("The player has already folded", exc.Message);
         Assert.True(player.IsFolded);
-        Assert.Equal(new Chips(1000), player.Stake);
+        Assert.Equal(new Chips(1000), player.Stack);
         Assert.False(player.IsAllIn);
     }
 
@@ -235,7 +235,7 @@ public class PlayerTest
 
         Assert.Equal("The player has not connected yet", exc.Message);
         Assert.False(player.IsFolded);
-        Assert.Equal(new Chips(1000), player.Stake);
+        Assert.Equal(new Chips(1000), player.Stack);
         Assert.False(player.IsAllIn);
     }
 
@@ -244,26 +244,26 @@ public class PlayerTest
     {
         var player = CreatePlayer();
         player.Connect();
-        player.Bet(player.Stake);
+        player.Bet(player.Stack);
 
         var exc = Assert.Throws<InvalidOperationException>(() => player.Bet(new Chips(25)));
 
         Assert.Equal("The player has already been all in", exc.Message);
         Assert.False(player.IsFolded);
-        Assert.Equal(new Chips(0), player.Stake);
+        Assert.Equal(new Chips(0), player.Stack);
     }
 
     [Fact]
-    public void TestBetWhenNotEnoughStake()
+    public void TestBetWhenNotEnoughStack()
     {
         var player = CreatePlayer();
         player.Connect();
 
         var exc = Assert.Throws<InvalidOperationException>(() => player.Bet(new Chips(1025)));
 
-        Assert.Equal("The player cannot bet more amount than his stake", exc.Message);
+        Assert.Equal("The player cannot bet more amount than his stack", exc.Message);
         Assert.False(player.IsFolded);
-        Assert.Equal(new Chips(1000), player.Stake);
+        Assert.Equal(new Chips(1000), player.Stack);
         Assert.False(player.IsAllIn);
     }
 
@@ -276,7 +276,7 @@ public class PlayerTest
         player.Post(new Chips(25));
 
         Assert.False(player.IsFolded);
-        Assert.Equal(new Chips(975), player.Stake);
+        Assert.Equal(new Chips(975), player.Stack);
         Assert.False(player.IsAllIn);
     }
 
@@ -288,7 +288,7 @@ public class PlayerTest
         player.Post(new Chips(25));
 
         Assert.False(player.IsFolded);
-        Assert.Equal(new Chips(975), player.Stake);
+        Assert.Equal(new Chips(975), player.Stack);
         Assert.False(player.IsAllIn);
     }
 
@@ -301,7 +301,7 @@ public class PlayerTest
         player.Post(new Chips(1000));
 
         Assert.False(player.IsFolded);
-        Assert.Equal(new Chips(0), player.Stake);
+        Assert.Equal(new Chips(0), player.Stack);
         Assert.True(player.IsAllIn);
     }
 
@@ -316,7 +316,7 @@ public class PlayerTest
 
         Assert.Equal("The player has already folded", exc.Message);
         Assert.True(player.IsFolded);
-        Assert.Equal(new Chips(1000), player.Stake);
+        Assert.Equal(new Chips(1000), player.Stack);
         Assert.False(player.IsAllIn);
     }
 
@@ -325,26 +325,26 @@ public class PlayerTest
     {
         var player = CreatePlayer();
         player.Connect();
-        player.Post(player.Stake);
+        player.Post(player.Stack);
 
         var exc = Assert.Throws<InvalidOperationException>(() => player.Post(new Chips(25)));
 
         Assert.Equal("The player has already been all in", exc.Message);
         Assert.False(player.IsFolded);
-        Assert.Equal(new Chips(0), player.Stake);
+        Assert.Equal(new Chips(0), player.Stack);
     }
 
     [Fact]
-    public void TestPostWhenNotEnoughStake()
+    public void TestPostWhenNotEnoughStack()
     {
         var player = CreatePlayer();
         player.Connect();
 
         var exc = Assert.Throws<InvalidOperationException>(() => player.Post(new Chips(1025)));
 
-        Assert.Equal("The player cannot post more amount than his stake", exc.Message);
+        Assert.Equal("The player cannot post more amount than his stack", exc.Message);
         Assert.False(player.IsFolded);
-        Assert.Equal(new Chips(1000), player.Stake);
+        Assert.Equal(new Chips(1000), player.Stack);
         Assert.False(player.IsAllIn);
     }
 
@@ -357,7 +357,7 @@ public class PlayerTest
         player.Win(new Chips(25));
 
         Assert.False(player.IsFolded);
-        Assert.Equal(new Chips(1025), player.Stake);
+        Assert.Equal(new Chips(1025), player.Stack);
     }
 
     [Fact]
@@ -368,7 +368,7 @@ public class PlayerTest
         player.Win(new Chips(25));
 
         Assert.False(player.IsFolded);
-        Assert.Equal(new Chips(1025), player.Stake);
+        Assert.Equal(new Chips(1025), player.Stack);
     }
 
     [Fact]
@@ -382,7 +382,7 @@ public class PlayerTest
 
         Assert.Equal("The player has already folded", exc.Message);
         Assert.True(player.IsFolded);
-        Assert.Equal(new Chips(1000), player.Stake);
+        Assert.Equal(new Chips(1000), player.Stack);
     }
 
     [Fact]
@@ -394,7 +394,7 @@ public class PlayerTest
         player.Refund(new Chips(25));
 
         Assert.False(player.IsFolded);
-        Assert.Equal(new Chips(1025), player.Stake);
+        Assert.Equal(new Chips(1025), player.Stack);
     }
 
     [Fact]
@@ -405,7 +405,7 @@ public class PlayerTest
         player.Refund(new Chips(25));
 
         Assert.False(player.IsFolded);
-        Assert.Equal(new Chips(1025), player.Stake);
+        Assert.Equal(new Chips(1025), player.Stack);
     }
 
     [Fact]
@@ -419,7 +419,7 @@ public class PlayerTest
 
         Assert.Equal("The player has already folded", exc.Message);
         Assert.True(player.IsFolded);
-        Assert.Equal(new Chips(1000), player.Stake);
+        Assert.Equal(new Chips(1000), player.Stack);
     }
 
     [Fact]
@@ -428,19 +428,19 @@ public class PlayerTest
         var player = new Player(
             nickname: new Nickname("BigBlind"),
             seat: new Seat(1),
-            stake: new Chips(1000)
+            stack: new Chips(1000)
         );
         player.TakeHoleCards(new CardSet([Card.AceOfSpades, Card.DeuceOfClubs]));
 
-        Assert.Equal($"{player.Nickname}, {player.Seat}, {player.Stake}, {player.HoleCards}", $"{player}");
+        Assert.Equal($"{player.Nickname}, {player.Seat}, {player.Stack}, {player.HoleCards}", $"{player}");
     }
 
-    private Player CreatePlayer(string nickname = "BigBlind", int seat = 1, int stake = 1000)
+    private Player CreatePlayer(string nickname = "BigBlind", int seat = 1, int stack = 1000)
     {
         return new Player(
             nickname: new Nickname(nickname),
             seat: new Seat(seat),
-            stake: new Chips(stake)
+            stack: new Chips(stack)
         );
     }
 }

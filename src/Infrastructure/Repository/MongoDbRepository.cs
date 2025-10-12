@@ -299,7 +299,7 @@ internal class EventDocumentMapper
             SmallBlindSeat = @event.SmallBlindSeat,
             BigBlindSeat = @event.BigBlindSeat,
             ButtonSeat = @event.ButtonSeat,
-            Participants = @event.Participants.Select(x => ((string)x.Nickname, (int)x.Seat, (int)x.Stake)).ToImmutableList(),
+            Participants = @event.Participants.Select(x => ((string)x.Nickname, (int)x.Seat, (int)x.Stack)).ToImmutableList(),
             OccuredAt = @event.OccuredAt,
             HandUid = handUid
         };
@@ -309,9 +309,9 @@ internal class EventDocumentMapper
     {
         List<Participant> participants = [];
 
-        foreach (var (nickname, seat, stake) in document.Participants)
+        foreach (var (nickname, seat, stack) in document.Participants)
         {
-            participants.Add(new Participant(nickname, seat, stake));
+            participants.Add(new Participant(nickname, seat, stack));
         }
 
         return new HandIsCreatedEvent(

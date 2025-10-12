@@ -54,7 +54,7 @@ public class HoldemNoLimitFactory : IFactory
         return new Player(
             nickname: participant.Nickname,
             seat: participant.Seat,
-            stake: participant.Stake
+            stack: participant.Stack
         );
     }
 }

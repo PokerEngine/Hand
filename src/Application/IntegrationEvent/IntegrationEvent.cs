@@ -5,7 +5,7 @@ namespace Application.IntegrationEvent;
 public record IntegrationEventParticipant(
     string Nickname,
     int Seat,
-    int Stake
+    int Stack
 );
 
 public interface IIntegrationEvent

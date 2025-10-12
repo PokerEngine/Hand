@@ -19,32 +19,32 @@ public class HoldemNoLimit6MaxHandTest
         var participantSb = new Participant(
             nickname: new Nickname("SmallBlind"),
             seat: new Seat(1),
-            stake: new Chips(1000)
+            stack: new Chips(1000)
         );
         var participantBb = new Participant(
             nickname: new Nickname("BigBlind"),
             seat: new Seat(2),
-            stake: new Chips(900)
+            stack: new Chips(900)
         );
         var participantEp = new Participant(
             nickname: new Nickname("Early"),
             seat: new Seat(3),
-            stake: new Chips(800)
+            stack: new Chips(800)
         );
         var participantMp = new Participant(
             nickname: new Nickname("Middle"),
             seat: new Seat(4),
-            stake: new Chips(700)
+            stack: new Chips(700)
         );
         var participantCo = new Participant(
             nickname: new Nickname("CutOff"),
             seat: new Seat(5),
-            stake: new Chips(600)
+            stack: new Chips(600)
         );
         var participantBu = new Participant(
             nickname: new Nickname("Button"),
             seat: new Seat(6),
-            stake: new Chips(500)
+            stack: new Chips(500)
         );
         var eventBus = new EventBus();
 
@@ -93,17 +93,17 @@ public class HoldemNoLimit6MaxHandTest
         var participantSb = new Participant(
             nickname: new Nickname("SmallBlind"),
             seat: new Seat(1),
-            stake: new Chips(1000)
+            stack: new Chips(1000)
         );
         var participantBb = new Participant(
             nickname: new Nickname("BigBlind"),
             seat: new Seat(2),
-            stake: new Chips(900)
+            stack: new Chips(900)
         );
         var participantBu = new Participant(
             nickname: new Nickname("Button"),
             seat: new Seat(6),
-            stake: new Chips(800)
+            stack: new Chips(800)
         );
 
         var events = new List<BaseEvent>
@@ -358,15 +358,15 @@ public class HoldemNoLimit6MaxHandTest
         var playerBu = hand.Table.GetPlayerByNickname(participantBu.Nickname);
 
         Assert.Equal(new CardSet([Card.TreyOfClubs, Card.NineOfClubs]), playerSb.HoleCards);
-        Assert.Equal(new Chips(995), playerSb.Stake);
+        Assert.Equal(new Chips(995), playerSb.Stack);
         Assert.True(playerSb.IsFolded);
 
         Assert.Equal(new CardSet([Card.QueenOfClubs, Card.TenOfDiamonds]), playerBb.HoleCards);
-        Assert.Equal(new Chips(875), playerBb.Stake);
+        Assert.Equal(new Chips(875), playerBb.Stack);
         Assert.True(playerBb.IsFolded);
 
         Assert.Equal(new CardSet([Card.SevenOfSpades, Card.EightOfSpades]), playerBu.HoleCards);
-        Assert.Equal(new Chips(830), playerBu.Stake);
+        Assert.Equal(new Chips(830), playerBu.Stack);
         Assert.False(playerBu.IsFolded);
     }
 
@@ -685,12 +685,12 @@ public class HoldemNoLimit6MaxHandTest
         );
     }
 
-    private Participant CreateParticipant(string nickname, int seat, int stake = 1000)
+    private Participant CreateParticipant(string nickname, int seat, int stack = 1000)
     {
         return new Participant(
             nickname: new Nickname(nickname),
             seat: new Seat(seat),
-            stake: new Chips(stake)
+            stack: new Chips(stack)
         );
     }
 }
@@ -707,47 +707,47 @@ public class HoldemNoLimit9MaxHandTest
         var participantSb = new Participant(
             nickname: new Nickname("SmallBlind"),
             seat: new Seat(1),
-            stake: new Chips(1000)
+            stack: new Chips(1000)
         );
         var participantBb = new Participant(
             nickname: new Nickname("BigBlind"),
             seat: new Seat(2),
-            stake: new Chips(900)
+            stack: new Chips(900)
         );
         var participantUtg1 = new Participant(
             nickname: new Nickname("UnderTheGun1"),
             seat: new Seat(3),
-            stake: new Chips(800)
+            stack: new Chips(800)
         );
         var participantUtg2 = new Participant(
             nickname: new Nickname("UnderTheGun2"),
             seat: new Seat(4),
-            stake: new Chips(700)
+            stack: new Chips(700)
         );
         var participantUtg3 = new Participant(
             nickname: new Nickname("UnderTheGun3"),
             seat: new Seat(5),
-            stake: new Chips(600)
+            stack: new Chips(600)
         );
         var participantEp = new Participant(
             nickname: new Nickname("Early"),
             seat: new Seat(6),
-            stake: new Chips(500)
+            stack: new Chips(500)
         );
         var participantMp = new Participant(
             nickname: new Nickname("Middle"),
             seat: new Seat(7),
-            stake: new Chips(400)
+            stack: new Chips(400)
         );
         var participantCo = new Participant(
             nickname: new Nickname("CutOff"),
             seat: new Seat(8),
-            stake: new Chips(300)
+            stack: new Chips(300)
         );
         var participantBu = new Participant(
             nickname: new Nickname("Button"),
             seat: new Seat(9),
-            stake: new Chips(200)
+            stack: new Chips(200)
         );
         var eventBus = new EventBus();
 
@@ -805,32 +805,32 @@ public class OmahaPotLimit6MaxHandTest
         var participantSb = new Participant(
             nickname: new Nickname("SmallBlind"),
             seat: new Seat(1),
-            stake: new Chips(1000)
+            stack: new Chips(1000)
         );
         var participantBb = new Participant(
             nickname: new Nickname("BigBlind"),
             seat: new Seat(2),
-            stake: new Chips(900)
+            stack: new Chips(900)
         );
         var participantEp = new Participant(
             nickname: new Nickname("Early"),
             seat: new Seat(3),
-            stake: new Chips(800)
+            stack: new Chips(800)
         );
         var participantMp = new Participant(
             nickname: new Nickname("Middle"),
             seat: new Seat(4),
-            stake: new Chips(700)
+            stack: new Chips(700)
         );
         var participantCo = new Participant(
             nickname: new Nickname("CutOff"),
             seat: new Seat(5),
-            stake: new Chips(600)
+            stack: new Chips(600)
         );
         var participantBu = new Participant(
             nickname: new Nickname("Button"),
             seat: new Seat(6),
-            stake: new Chips(500)
+            stack: new Chips(500)
         );
         var eventBus = new EventBus();
 
@@ -885,47 +885,47 @@ public class OmahaPotLimit9MaxHandTest
         var participantSb = new Participant(
             nickname: new Nickname("SmallBlind"),
             seat: new Seat(1),
-            stake: new Chips(1000)
+            stack: new Chips(1000)
         );
         var participantBb = new Participant(
             nickname: new Nickname("BigBlind"),
             seat: new Seat(2),
-            stake: new Chips(900)
+            stack: new Chips(900)
         );
         var participantUtg1 = new Participant(
             nickname: new Nickname("UnderTheGun1"),
             seat: new Seat(3),
-            stake: new Chips(800)
+            stack: new Chips(800)
         );
         var participantUtg2 = new Participant(
             nickname: new Nickname("UnderTheGun2"),
             seat: new Seat(4),
-            stake: new Chips(700)
+            stack: new Chips(700)
         );
         var participantUtg3 = new Participant(
             nickname: new Nickname("UnderTheGun3"),
             seat: new Seat(5),
-            stake: new Chips(600)
+            stack: new Chips(600)
         );
         var participantEp = new Participant(
             nickname: new Nickname("Early"),
             seat: new Seat(6),
-            stake: new Chips(500)
+            stack: new Chips(500)
         );
         var participantMp = new Participant(
             nickname: new Nickname("Middle"),
             seat: new Seat(7),
-            stake: new Chips(400)
+            stack: new Chips(400)
         );
         var participantCo = new Participant(
             nickname: new Nickname("CutOff"),
             seat: new Seat(8),
-            stake: new Chips(300)
+            stack: new Chips(300)
         );
         var participantBu = new Participant(
             nickname: new Nickname("Button"),
             seat: new Seat(9),
-            stake: new Chips(200)
+            stack: new Chips(200)
         );
         var eventBus = new EventBus();
 

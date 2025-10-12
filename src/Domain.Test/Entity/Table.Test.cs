@@ -543,12 +543,12 @@ public class TableTest
         );
     }
 
-    private Player CreatePlayer(string nickname, int seat, int stake = 1000)
+    private Player CreatePlayer(string nickname, int seat, int stack = 1000)
     {
         return new Player(
             nickname: new Nickname(nickname),
             seat: new Seat(seat),
-            stake: new Chips(stake)
+            stack: new Chips(stack)
         );
     }
 }

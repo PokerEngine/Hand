@@ -87,7 +87,7 @@ public class HandCreateIntegrationEventHandler : IIntegrationEventHandler<HandCr
         return new Participant(
             nickname: new Nickname(value.Nickname),
             seat: new Seat(value.Seat),
-            stake: new Chips(value.Stake)
+            stack: new Chips(value.Stack)
         );
     }
 }

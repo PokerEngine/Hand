@@ -56,15 +56,17 @@ jobs:
         run: docker build . --tag test-integration --file ./ci/Dockerfile
 
       - name: Run integration tests
-        env:
-          MongoDB__Host: mongodb
-          MongoDB__Port: 27017
-          MongoDB__Username: hand
-          MongoDB__Password: hand
-          MongoDB__Database: hand
-          RabbitMQ__Host: rabbitmq
-          RabbitMQ__Port: 5672
-          RabbitMQ__Username: hand
-          RabbitMQ__Password: hand
         run: |
-          docker run --rm test-integration bash -c "dotnet test src/Infrastructure.Test --settings src/Infrastructure.Test/test.runsettings --configuration Release --no-build --verbosity normal"
+          docker run --rm \
+            --network host \
+            --env MongoDB__Host=mongodb \
+            --env MongoDB__Port=27017 \
+            --env MongoDB__Username=hand \
+            --env MongoDB__Password=hand \
+            --env MongoDB__Database=hand \
+            --env RabbitMQ__Host=rabbitmq \
+            --env RabbitMQ__Port=5672 \
+            --env RabbitMQ__Username=hand \
+            --env RabbitMQ__Password=hand \
+            test-integration \
+            bash -c "dotnet test src/Infrastructure.Test --settings src/Infrastructure.Test/test.runsettings --configuration Release --no-build --verbosity normal"

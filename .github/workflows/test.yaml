@@ -66,4 +66,5 @@ jobs:
           RabbitMQ__Port: 5672
           RabbitMQ__Username: hand
           RabbitMQ__Password: hand
-        run: docker run --rm test-integration bash -c "dotnet test src/Infrastructure.Test --configuration Release --no-build --verbosity normal"
+        run: |
+          docker run --rm test-integration bash -c "dotnet test src/Infrastructure.Test --settings src/Infrastructure.Test/test.runsettings --configuration Release --no-build --verbosity normal"

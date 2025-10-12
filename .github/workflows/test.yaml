@@ -35,14 +35,14 @@ jobs:
     services:
       mongodb:
         image: mongo:8
-        environment:
+        env:
           MONGO_INITDB_ROOT_USERNAME: hand
           MONGO_INITDB_ROOT_PASSWORD: hand
           MONGO_INITDB_DATABASE: hand
 
       rabbitmq:
         image: rabbitmq:4-management
-        environment:
+        env:
           RABBITMQ_DEFAULT_USER: hand
           RABBITMQ_DEFAULT_PASS: hand
 

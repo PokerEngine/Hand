@@ -48,8 +48,8 @@ public class HoldemNoLimit6MaxHandTest
         );
         var eventBus = new EventBus();
 
-        var events = new List<HandIsCreatedEvent>();
-        var listener = (HandIsCreatedEvent @event) => events.Add(@event);
+        var events = new List<BaseEvent>();
+        var listener = (BaseEvent @event) => events.Add(@event);
         eventBus.Subscribe(listener);
 
         var hand = Hand.FromScratch(
@@ -74,16 +74,17 @@ public class HoldemNoLimit6MaxHandTest
         Assert.IsType<StandardDeck>(hand.Deck);
 
         Assert.Single(events);
-        Assert.Equal(Game.HoldemNoLimit, events[0].Game);
-        Assert.Equal(new Chips(5), events[0].SmallBlind);
-        Assert.Equal(new Chips(10), events[0].BigBlind);
-        Assert.Equal(6, events[0].Participants.Count);
-        Assert.Equal(participantSb, events[0].Participants[0]);
-        Assert.Equal(participantBb, events[0].Participants[1]);
-        Assert.Equal(participantEp, events[0].Participants[2]);
-        Assert.Equal(participantMp, events[0].Participants[3]);
-        Assert.Equal(participantCo, events[0].Participants[4]);
-        Assert.Equal(participantBu, events[0].Participants[5]);
+        var @event = Assert.IsType<HandIsCreatedEvent>(events[0]);
+        Assert.Equal(Game.HoldemNoLimit, @event.Game);
+        Assert.Equal(new Chips(5), @event.SmallBlind);
+        Assert.Equal(new Chips(10), @event.BigBlind);
+        Assert.Equal(6, @event.Participants.Count);
+        Assert.Equal(participantSb, @event.Participants[0]);
+        Assert.Equal(participantBb, @event.Participants[1]);
+        Assert.Equal(participantEp, @event.Participants[2]);
+        Assert.Equal(participantMp, @event.Participants[3]);
+        Assert.Equal(participantCo, @event.Participants[4]);
+        Assert.Equal(participantBu, @event.Participants[5]);
     }
 
     [Fact]
@@ -391,8 +392,8 @@ public class HoldemNoLimit6MaxHandTest
             participants: [participantSb, participantBb, participantBu]
         );
 
-        var events = new List<PlayerConnectedEvent>();
-        var listener = (PlayerConnectedEvent @event) => events.Add(@event);
+        var events = new List<BaseEvent>();
+        var listener = (BaseEvent @event) => events.Add(@event);
         eventBus.Subscribe(listener);
 
         hand.ConnectPlayer(
@@ -401,7 +402,8 @@ public class HoldemNoLimit6MaxHandTest
         );
 
         Assert.Single(events);
-        Assert.Equal(new Nickname("SmallBlind"), events[0].Nickname);
+        var @event = Assert.IsType<PlayerConnectedEvent>(events[0]);
+        Assert.Equal(new Nickname("SmallBlind"), @event.Nickname);
     }
 
     [Fact]
@@ -425,8 +427,8 @@ public class HoldemNoLimit6MaxHandTest
             participants: [participantSb, participantBb, participantBu]
         );
 
-        var events = new List<PlayerDisconnectedEvent>();
-        var listener = (PlayerDisconnectedEvent @event) => events.Add(@event);
+        var events = new List<BaseEvent>();
+        var listener = (BaseEvent @event) => events.Add(@event);
         eventBus.Subscribe(listener);
 
         hand.ConnectPlayer(
@@ -439,8 +441,9 @@ public class HoldemNoLimit6MaxHandTest
             eventBus: eventBus
         );
 
-        Assert.Single(events);
-        Assert.Equal(new Nickname("SmallBlind"), events[0].Nickname);
+        Assert.Equal(2, events.Count);
+        var @event = Assert.IsType<PlayerDisconnectedEvent>(events[1]);
+        Assert.Equal(new Nickname("SmallBlind"), @event.Nickname);
     }
 
     [Fact]
@@ -468,11 +471,14 @@ public class HoldemNoLimit6MaxHandTest
         );
 
         var events = new List<BaseEvent>();
-        var decisionRequestEvents = new List<DecisionIsRequestedEvent>();
-        var listener = (BaseEvent @event) => events.Add(@event);
-        var decisionRequestListener = (DecisionIsRequestedEvent @event) => decisionRequestEvents.Add(@event);
+        var listener = (BaseEvent @event) =>
+        {
+            if (@event is not (HandIsCreatedEvent or HandIsStartedEvent or HandIsFinishedEvent or PlayerConnectedEvent or StageIsStartedEvent or StageIsFinishedEvent))
+            {
+                events.Add(@event);
+            }
+        };
         eventBus.Subscribe(listener);
-        eventBus.Subscribe(decisionRequestListener);
 
         hand.ConnectPlayer(
             nickname: new Nickname("SmallBlind"),
@@ -489,19 +495,24 @@ public class HoldemNoLimit6MaxHandTest
 
         hand.Start(eventBus);
 
-        Assert.Equal(15, events.Count);
-        Assert.IsType<SmallBlindIsPostedEvent>(events[5]);
-        Assert.Equal(new Nickname("SmallBlind"), ((SmallBlindIsPostedEvent)events[5]).Nickname);
-        Assert.IsType<BigBlindIsPostedEvent>(events[6]);
-        Assert.Equal(new Nickname("BigBlind"), ((BigBlindIsPostedEvent)events[6]).Nickname);
-        Assert.IsType<HoleCardsAreDealtEvent>(events[9]);
-        Assert.Equal(new Nickname("SmallBlind"), ((HoleCardsAreDealtEvent)events[9]).Nickname);
-        Assert.IsType<HoleCardsAreDealtEvent>(events[10]);
-        Assert.Equal(new Nickname("BigBlind"), ((HoleCardsAreDealtEvent)events[10]).Nickname);
-        Assert.IsType<HoleCardsAreDealtEvent>(events[11]);
-        Assert.Equal(new Nickname("Button"), ((HoleCardsAreDealtEvent)events[11]).Nickname);
-        Assert.Single(decisionRequestEvents);
-        Assert.Equal(new Nickname("Button"), decisionRequestEvents[0].Nickname);
+        Assert.Equal(6, events.Count);
+        var event1 = Assert.IsType<SmallBlindIsPostedEvent>(events[0]);
+        Assert.Equal(new Nickname("SmallBlind"), event1.Nickname);
+        Assert.Equal(new Chips(5), event1.Amount);
+        var event2 = Assert.IsType<BigBlindIsPostedEvent>(events[1]);
+        Assert.Equal(new Nickname("BigBlind"), event2.Nickname);
+        Assert.Equal(new Chips(10), event2.Amount);
+        var event3 = Assert.IsType<HoleCardsAreDealtEvent>(events[2]);
+        Assert.Equal(new Nickname("SmallBlind"), event3.Nickname);
+        Assert.Equal(2, event3.Cards.Count);
+        var event4 = Assert.IsType<HoleCardsAreDealtEvent>(events[3]);
+        Assert.Equal(new Nickname("BigBlind"), event4.Nickname);
+        Assert.Equal(2, event4.Cards.Count);
+        var event5 = Assert.IsType<HoleCardsAreDealtEvent>(events[4]);
+        Assert.Equal(new Nickname("Button"), event5.Nickname);
+        Assert.Equal(2, event5.Cards.Count);
+        var event6 = Assert.IsType<DecisionIsRequestedEvent>(events[5]);
+        Assert.Equal(new Nickname("Button"), event6.Nickname);
 
         hand.CommitDecision(
             nickname: new Nickname("Button"),
@@ -509,9 +520,11 @@ public class HoldemNoLimit6MaxHandTest
             eventBus: eventBus
         );
 
-        Assert.Equal(17, events.Count);
-        Assert.Equal(2, decisionRequestEvents.Count);
-        Assert.Equal(new Nickname("SmallBlind"), decisionRequestEvents[1].Nickname);
+        Assert.Equal(8, events.Count);
+        var event7 = Assert.IsType<DecisionIsCommittedEvent>(events[6]);
+        Assert.Equal(new Nickname("Button"), event7.Nickname);
+        var event8 = Assert.IsType<DecisionIsRequestedEvent>(events[7]);
+        Assert.Equal(new Nickname("SmallBlind"), event8.Nickname);
 
         hand.CommitDecision(
             nickname: new Nickname("SmallBlind"),
@@ -519,9 +532,11 @@ public class HoldemNoLimit6MaxHandTest
             eventBus: eventBus
         );
 
-        Assert.Equal(19, events.Count);
-        Assert.Equal(3, decisionRequestEvents.Count);
-        Assert.Equal(new Nickname("BigBlind"), decisionRequestEvents[2].Nickname);
+        Assert.Equal(10, events.Count);
+        var event9 = Assert.IsType<DecisionIsCommittedEvent>(events[8]);
+        Assert.Equal(new Nickname("SmallBlind"), event9.Nickname);
+        var event10 = Assert.IsType<DecisionIsRequestedEvent>(events[9]);
+        Assert.Equal(new Nickname("BigBlind"), event10.Nickname);
 
         hand.CommitDecision(
             nickname: new Nickname("BigBlind"),
@@ -529,10 +544,13 @@ public class HoldemNoLimit6MaxHandTest
             eventBus: eventBus
         );
 
-        Assert.Equal(26, events.Count);
-        Assert.IsType<BoardCardsAreDealtEvent>(events[22]);
-        Assert.Equal(4, decisionRequestEvents.Count);
-        Assert.Equal(new Nickname("BigBlind"), decisionRequestEvents[3].Nickname);
+        Assert.Equal(13, events.Count);
+        var event11 = Assert.IsType<DecisionIsCommittedEvent>(events[10]);
+        Assert.Equal(new Nickname("BigBlind"), event11.Nickname);
+        var event12 = Assert.IsType<BoardCardsAreDealtEvent>(events[11]);
+        Assert.Equal(3, event12.Cards.Count);
+        var event13 = Assert.IsType<DecisionIsRequestedEvent>(events[12]);
+        Assert.Equal(new Nickname("BigBlind"), event13.Nickname);
 
         hand.CommitDecision(
             nickname: new Nickname("BigBlind"),
@@ -540,9 +558,11 @@ public class HoldemNoLimit6MaxHandTest
             eventBus: eventBus
         );
 
-        Assert.Equal(28, events.Count);
-        Assert.Equal(5, decisionRequestEvents.Count);
-        Assert.Equal(new Nickname("Button"), decisionRequestEvents[4].Nickname);
+        Assert.Equal(15, events.Count);
+        var event14 = Assert.IsType<DecisionIsCommittedEvent>(events[13]);
+        Assert.Equal(new Nickname("BigBlind"), event14.Nickname);
+        var event15 = Assert.IsType<DecisionIsRequestedEvent>(events[14]);
+        Assert.Equal(new Nickname("Button"), event15.Nickname);
 
         hand.CommitDecision(
             nickname: new Nickname("Button"),
@@ -550,9 +570,11 @@ public class HoldemNoLimit6MaxHandTest
             eventBus: eventBus
         );
 
-        Assert.Equal(30, events.Count);
-        Assert.Equal(6, decisionRequestEvents.Count);
-        Assert.Equal(new Nickname("BigBlind"), decisionRequestEvents[5].Nickname);
+        Assert.Equal(17, events.Count);
+        var event16 = Assert.IsType<DecisionIsCommittedEvent>(events[15]);
+        Assert.Equal(new Nickname("Button"), event16.Nickname);
+        var event17 = Assert.IsType<DecisionIsRequestedEvent>(events[16]);
+        Assert.Equal(new Nickname("BigBlind"), event17.Nickname);
 
         hand.CommitDecision(
             nickname: new Nickname("BigBlind"),
@@ -560,7 +582,17 @@ public class HoldemNoLimit6MaxHandTest
             eventBus: eventBus
         );
 
-        Assert.Equal(46, events.Count);
+        Assert.Equal(21, events.Count);
+        var event18 = Assert.IsType<DecisionIsCommittedEvent>(events[17]);
+        Assert.Equal(new Nickname("BigBlind"), event18.Nickname);
+        var event19 = Assert.IsType<RefundIsCommittedEvent>(events[18]);
+        Assert.Equal(new Nickname("Button"), event19.Nickname);
+        Assert.Equal(new Chips(15), event19.Amount);
+        var event20 = Assert.IsType<HoleCardsAreMuckedEvent>(events[19]);
+        Assert.Equal(new Nickname("Button"), event20.Nickname);
+        var event21 = Assert.IsType<WinWithoutShowdownIsCommittedEvent>(events[20]);
+        Assert.Equal(new Nickname("Button"), event20.Nickname);
+        Assert.Equal(new Chips(55), event21.Amount);
     }
 
     [Fact]
@@ -584,11 +616,14 @@ public class HoldemNoLimit6MaxHandTest
         );
 
         var events = new List<BaseEvent>();
-        var decisionRequestEvents = new List<DecisionIsRequestedEvent>();
-        var listener = (BaseEvent @event) => events.Add(@event);
-        var decisionRequestListener = (DecisionIsRequestedEvent @event) => decisionRequestEvents.Add(@event);
+        var listener = (BaseEvent @event) =>
+        {
+            if (@event is not (HandIsCreatedEvent or HandIsStartedEvent or HandIsFinishedEvent or PlayerConnectedEvent or StageIsStartedEvent or StageIsFinishedEvent))
+            {
+                events.Add(@event);
+            }
+        };
         eventBus.Subscribe(listener);
-        eventBus.Subscribe(decisionRequestListener);
 
         hand.ConnectPlayer(
             nickname: new Nickname("SmallBlind"),
@@ -601,13 +636,21 @@ public class HoldemNoLimit6MaxHandTest
 
         hand.Start(eventBus);
 
-        Assert.IsType<HoleCardsAreDealtEvent>(events[8]);
-        Assert.Equal(new Nickname("SmallBlind"), ((HoleCardsAreDealtEvent)events[8]).Nickname);
-        Assert.IsType<HoleCardsAreDealtEvent>(events[9]);
-        Assert.Equal(new Nickname("BigBlind"), ((HoleCardsAreDealtEvent)events[9]).Nickname);
-        Assert.Equal(13, events.Count);
-        Assert.Single(decisionRequestEvents);
-        Assert.Equal(new Nickname("SmallBlind"), decisionRequestEvents[0].Nickname);
+        Assert.Equal(5, events.Count);
+        var event1 = Assert.IsType<SmallBlindIsPostedEvent>(events[0]);
+        Assert.Equal(new Nickname("SmallBlind"), event1.Nickname);
+        Assert.Equal(new Chips(5), event1.Amount);
+        var event2 = Assert.IsType<BigBlindIsPostedEvent>(events[1]);
+        Assert.Equal(new Nickname("BigBlind"), event2.Nickname);
+        Assert.Equal(new Chips(10), event2.Amount);
+        var event3 = Assert.IsType<HoleCardsAreDealtEvent>(events[2]);
+        Assert.Equal(new Nickname("SmallBlind"), event3.Nickname);
+        Assert.Equal(2, event3.Cards.Count);
+        var event4 = Assert.IsType<HoleCardsAreDealtEvent>(events[3]);
+        Assert.Equal(new Nickname("BigBlind"), event4.Nickname);
+        Assert.Equal(2, event4.Cards.Count);
+        var event5 = Assert.IsType<DecisionIsRequestedEvent>(events[4]);
+        Assert.Equal(new Nickname("SmallBlind"), event5.Nickname);
 
         hand.CommitDecision(
             nickname: new Nickname("SmallBlind"),
@@ -615,9 +658,11 @@ public class HoldemNoLimit6MaxHandTest
             eventBus: eventBus
         );
 
-        Assert.Equal(15, events.Count);
-        Assert.Equal(2, decisionRequestEvents.Count);
-        Assert.Equal(new Nickname("BigBlind"), decisionRequestEvents[1].Nickname);
+        Assert.Equal(7, events.Count);
+        var event6 = Assert.IsType<DecisionIsCommittedEvent>(events[5]);
+        Assert.Equal(new Nickname("SmallBlind"), event6.Nickname);
+        var event7 = Assert.IsType<DecisionIsRequestedEvent>(events[6]);
+        Assert.Equal(new Nickname("BigBlind"), event7.Nickname);
 
         hand.CommitDecision(
             nickname: new Nickname("BigBlind"),
@@ -625,10 +670,13 @@ public class HoldemNoLimit6MaxHandTest
             eventBus: eventBus
         );
 
-        Assert.Equal(22, events.Count);
-        Assert.IsType<BoardCardsAreDealtEvent>(events[18]);
-        Assert.Equal(3, decisionRequestEvents.Count);
-        Assert.Equal(new Nickname("BigBlind"), decisionRequestEvents[2].Nickname);
+        Assert.Equal(10, events.Count);
+        var event8 = Assert.IsType<DecisionIsCommittedEvent>(events[7]);
+        Assert.Equal(new Nickname("BigBlind"), event8.Nickname);
+        var event9 = Assert.IsType<BoardCardsAreDealtEvent>(events[8]);
+        Assert.Equal(3, event9.Cards.Count);
+        var event10 = Assert.IsType<DecisionIsRequestedEvent>(events[9]);
+        Assert.Equal(new Nickname("BigBlind"), event10.Nickname);
 
         hand.CommitDecision(
             nickname: new Nickname("BigBlind"),
@@ -636,9 +684,11 @@ public class HoldemNoLimit6MaxHandTest
             eventBus: eventBus
         );
 
-        Assert.Equal(24, events.Count);
-        Assert.Equal(4, decisionRequestEvents.Count);
-        Assert.Equal(new Nickname("SmallBlind"), decisionRequestEvents[3].Nickname);
+        Assert.Equal(12, events.Count);
+        var event11 = Assert.IsType<DecisionIsCommittedEvent>(events[10]);
+        Assert.Equal(new Nickname("BigBlind"), event11.Nickname);
+        var event12 = Assert.IsType<DecisionIsRequestedEvent>(events[11]);
+        Assert.Equal(new Nickname("SmallBlind"), event12.Nickname);
 
         hand.CommitDecision(
             nickname: new Nickname("SmallBlind"),
@@ -646,9 +696,11 @@ public class HoldemNoLimit6MaxHandTest
             eventBus: eventBus
         );
 
-        Assert.Equal(26, events.Count);
-        Assert.Equal(5, decisionRequestEvents.Count);
-        Assert.Equal(new Nickname("BigBlind"), decisionRequestEvents[4].Nickname);
+        Assert.Equal(14, events.Count);
+        var event13 = Assert.IsType<DecisionIsCommittedEvent>(events[12]);
+        Assert.Equal(new Nickname("SmallBlind"), event13.Nickname);
+        var event14 = Assert.IsType<DecisionIsRequestedEvent>(events[13]);
+        Assert.Equal(new Nickname("BigBlind"), event14.Nickname);
 
         hand.CommitDecision(
             nickname: new Nickname("BigBlind"),
@@ -656,7 +708,17 @@ public class HoldemNoLimit6MaxHandTest
             eventBus: eventBus
         );
 
-        Assert.Equal(42, events.Count);
+        Assert.Equal(18, events.Count);
+        var event15 = Assert.IsType<DecisionIsCommittedEvent>(events[14]);
+        Assert.Equal(new Nickname("BigBlind"), event15.Nickname);
+        var event16 = Assert.IsType<RefundIsCommittedEvent>(events[15]);
+        Assert.Equal(new Nickname("SmallBlind"), event16.Nickname);
+        Assert.Equal(new Chips(15), event16.Amount);
+        var event17 = Assert.IsType<HoleCardsAreMuckedEvent>(events[16]);
+        Assert.Equal(new Nickname("SmallBlind"), event17.Nickname);
+        var event18 = Assert.IsType<WinWithoutShowdownIsCommittedEvent>(events[17]);
+        Assert.Equal(new Nickname("SmallBlind"), event18.Nickname);
+        Assert.Equal(new Chips(50), event18.Amount);
     }
 
     private Hand CreateHand(

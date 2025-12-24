@@ -17,7 +17,7 @@ public class RabbitMqIntegrationEventBusTest : IClassFixture<RabbitMqFixture>, I
     public RabbitMqIntegrationEventBusTest(RabbitMqFixture rabbitMqFixture)
     {
         var logger = NullLogger<RabbitMqIntegrationEventBus>.Instance;
-        _eventBus = new RabbitMqIntegrationEventBus(rabbitMqFixture.Configuration, logger);
+        _eventBus = new RabbitMqIntegrationEventBus(rabbitMqFixture.Options, logger);
         _eventBus.Connect().GetAwaiter().GetResult();
 
         _testHandler = new TestIntegrationEventHandler();
@@ -37,7 +37,6 @@ public class RabbitMqIntegrationEventBusTest : IClassFixture<RabbitMqFixture>, I
     public void Dispose()
     {
         _testHandler.Events.Clear();
-        _eventBus.Disconnect().GetAwaiter().GetResult();
     }
 
     [Fact]

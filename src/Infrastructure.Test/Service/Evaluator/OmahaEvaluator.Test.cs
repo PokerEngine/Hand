@@ -83,7 +83,10 @@ public class OmahaEvaluatorTest
             .AddJsonFile("appsettings.Test.json", optional: true)
             .AddEnvironmentVariables()
             .Build();
+
+        var opt = configuration.GetSection(PokerStoveEvaluatorOptions.SectionName).Get<PokerStoveEvaluatorOptions>();
+        var options = Microsoft.Extensions.Options.Options.Create(opt);
         var logger = NullLogger<PokerStoveEvaluator>.Instance;
-        return new PokerStoveEvaluator(configuration, logger);
+        return new PokerStoveEvaluator(options, logger);
     }
 }

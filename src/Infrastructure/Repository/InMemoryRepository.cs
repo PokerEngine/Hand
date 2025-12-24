@@ -4,50 +4,12 @@ using Domain.ValueObject;
 
 namespace Infrastructure.Repository;
 
-public class InMemoryRepository : IRepository
+public class InMemoryRepository(ILogger<InMemoryRepository> logger) : IRepository
 {
-    private readonly ILogger<InMemoryRepository> _logger;
-    private readonly Dictionary<HandUid, List<BaseEvent>> _mapping = new();
-    private bool _isConnected;
+    private readonly Dictionary<HandUid, List<IEvent>> _mapping = new();
 
-    public InMemoryRepository(ILogger<InMemoryRepository> logger)
+    public async Task<List<IEvent>> GetEvents(HandUid handUid)
     {
-        _logger = logger;
-    }
-
-    public async Task Connect()
-    {
-        if (_isConnected)
-        {
-            throw new InvalidOperationException("Already connected");
-        }
-
-        _isConnected = true;
-        await Task.CompletedTask;
-
-        _logger.LogInformation("Connected");
-    }
-
-    public async Task Disconnect()
-    {
-        if (!_isConnected)
-        {
-            throw new InvalidOperationException("Not connected");
-        }
-
-        _isConnected = false;
-        await Task.CompletedTask;
-
-        _logger.LogInformation("Disconnected");
-    }
-
-    public async Task<IList<BaseEvent>> GetEvents(HandUid handUid)
-    {
-        if (!_isConnected)
-        {
-            throw new InvalidOperationException("Not connected");
-        }
-
         if (!_mapping.TryGetValue(handUid, out var events))
         {
             events = [];
@@ -55,17 +17,12 @@ public class InMemoryRepository : IRepository
 
         await Task.CompletedTask;
 
-        _logger.LogInformation("{eventCount} events are got for {handUid}", events.Count, handUid);
+        logger.LogInformation("{Count} events are got for {HandUid}", events.Count, handUid);
         return events;
     }
 
-    public async Task AddEvents(HandUid handUid, IList<BaseEvent> events)
+    public async Task AddEvents(HandUid handUid, List<IEvent> events)
     {
-        if (!_isConnected)
-        {
-            throw new InvalidOperationException("Not connected");
-        }
-
         if (!_mapping.TryAdd(handUid, events.ToList()))
         {
             _mapping[handUid].AddRange(events);
@@ -73,6 +30,6 @@ public class InMemoryRepository : IRepository
 
         await Task.CompletedTask;
 
-        _logger.LogInformation("{eventCount} events are added for {handUid}", events.Count, handUid);
+        logger.LogInformation("{Count} events are added for {HandUid}", events.Count, handUid);
     }
 }

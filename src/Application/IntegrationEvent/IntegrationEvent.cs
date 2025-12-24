@@ -158,20 +158,6 @@ public record HandIsFinishedIntegrationEvent(
     DateTime OccuredAt
 ) : IIntegrationEvent;
 
-public record PlayerConnectedIntegrationEvent(
-    string Nickname,
-    Guid TableUid,
-    Guid HandUid,
-    DateTime OccuredAt
-) : IIntegrationEvent;
-
-public record PlayerDisconnectedIntegrationEvent(
-    string Nickname,
-    Guid TableUid,
-    Guid HandUid,
-    DateTime OccuredAt
-) : IIntegrationEvent;
-
 public record BlindIsPostedIntegrationEvent(
     string Nickname,
     int Amount,

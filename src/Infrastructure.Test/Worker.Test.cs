@@ -108,15 +108,15 @@ public class WorkerTest : IClassFixture<MongoDbFixture>, IClassFixture<RabbitMqF
             {
                 services.AddHostedService<Worker>();
 
-                services.Configure<RabbitMqOptions>(configuration.GetSection("RabbitMQ"));
+                services.Configure<RabbitMqIntegrationEventBusOptions>(configuration.GetSection(RabbitMqIntegrationEventBusOptions.SectionName));
                 services.AddSingleton<IIntegrationEventBus, RabbitMqIntegrationEventBus>();
 
-                services.Configure<MongoDbOptions>(configuration.GetSection("MongoDB"));
+                services.Configure<MongoDbRepositoryOptions>(configuration.GetSection(MongoDbRepositoryOptions.SectionName));
                 services.AddSingleton<IRepository, MongoDbRepository>();
 
                 services.AddSingleton<IRandomizer, BuiltInRandomizer>();
 
-                services.Configure<PokerStoveOptions>(configuration.GetSection("PokerStove"));
+                services.Configure<PokerStoveEvaluatorOptions>(configuration.GetSection(PokerStoveEvaluatorOptions.SectionName));
                 services.AddSingleton<IEvaluator, PokerStoveEvaluator>();
             }).Build();
     }

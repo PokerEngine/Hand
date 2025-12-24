@@ -1,149 +1,157 @@
 using Domain.ValueObject;
-using System.Collections.Immutable;
 
 namespace Domain.Event;
 
-public abstract record BaseEvent(
-    DateTime OccuredAt
-);
-
-public record HandIsCreatedEvent(
-    Game Game,
-    Chips SmallBlind,
-    Chips BigBlind,
-    Seat MaxSeat,
-    Seat SmallBlindSeat,
-    Seat BigBlindSeat,
-    Seat ButtonSeat,
-    ImmutableList<Participant> Participants,
-    DateTime OccuredAt
-) : BaseEvent(OccuredAt)
+public interface IEvent
 {
-    public virtual bool Equals(HandIsCreatedEvent? other)
+    DateTime OccuredAt { init; get; }
+}
+
+public record struct HandIsCreatedEvent : IEvent
+{
+    public required Game Game { get; init; }
+    public required Seat MaxSeat { get; init; }
+    public required Chips SmallBlind { get; init; }
+    public required Chips BigBlind { get; init; }
+    public required Seat SmallBlindSeat { get; init; }
+    public required Seat BigBlindSeat { get; init; }
+    public required Seat ButtonSeat { get; init; }
+    public required List<Participant> Participants { get; init; }
+    public required DateTime OccuredAt { get; init; }
+
+    public bool Equals(HandIsCreatedEvent other)
     {
-        // We override it to check participants equality by value
-        return other is not null
-               && Game == other.Game
-               && SmallBlind == other.SmallBlind
-               && BigBlind == other.BigBlind
-               && MaxSeat == other.MaxSeat
-               && SmallBlindSeat == other.SmallBlindSeat
-               && BigBlindSeat == other.BigBlindSeat
-               && ButtonSeat == other.ButtonSeat
-               && Participants.SequenceEqual(other.Participants)
-               && OccuredAt == other.OccuredAt;
+        return Game.Equals(other.Game)
+               && MaxSeat.Equals(other.MaxSeat)
+               && SmallBlind.Equals(other.SmallBlind)
+               && BigBlind.Equals(other.BigBlind)
+               && SmallBlindSeat.Equals(other.SmallBlindSeat)
+               && BigBlindSeat.Equals(other.BigBlindSeat)
+               && ButtonSeat.Equals(other.ButtonSeat)
+               && OccuredAt.Equals(other.OccuredAt)
+               && Participants.SequenceEqual(other.Participants);
     }
 
     public override int GetHashCode()
     {
         var hash = new HashCode();
+
         hash.Add(Game);
+        hash.Add(MaxSeat);
         hash.Add(SmallBlind);
         hash.Add(BigBlind);
-        hash.Add(MaxSeat);
         hash.Add(SmallBlindSeat);
         hash.Add(BigBlindSeat);
         hash.Add(ButtonSeat);
-        foreach (var p in Participants)
-            hash.Add(p);
         hash.Add(OccuredAt);
+
+        foreach (var participant in Participants)
+        {
+            hash.Add(participant);
+        }
+
         return hash.ToHashCode();
     }
 }
 
-public record HandIsStartedEvent(
-    DateTime OccuredAt
-) : BaseEvent(OccuredAt);
+public record struct HandIsStartedEvent : IEvent
+{
+    public required DateTime OccuredAt { get; init; }
+}
 
-public record HandIsFinishedEvent(
-    DateTime OccuredAt
-) : BaseEvent(OccuredAt);
+public record struct HandIsFinishedEvent : IEvent
+{
+    public required DateTime OccuredAt { get; init; }
+}
 
-public record StageIsStartedEvent(
-    DateTime OccuredAt
-) : BaseEvent(OccuredAt);
+public record struct StageIsStartedEvent : IEvent
+{
+    public required DateTime OccuredAt { get; init; }
+}
 
-public record StageIsFinishedEvent(
-    DateTime OccuredAt
-) : BaseEvent(OccuredAt);
+public record struct StageIsFinishedEvent : IEvent
+{
+    public required DateTime OccuredAt { get; init; }
+}
 
-public record PlayerConnectedEvent(
-    Nickname Nickname,
-    DateTime OccuredAt
-) : BaseEvent(OccuredAt);
+public record struct SmallBlindIsPostedEvent : IEvent
+{
+    public required Nickname Nickname { get; init; }
+    public required Chips Amount { get; init; }
+    public required DateTime OccuredAt { get; init; }
+}
 
-public record PlayerDisconnectedEvent(
-    Nickname Nickname,
-    DateTime OccuredAt
-) : BaseEvent(OccuredAt);
+public record struct BigBlindIsPostedEvent : IEvent
+{
+    public required Nickname Nickname { get; init; }
+    public required Chips Amount { get; init; }
+    public required DateTime OccuredAt { get; init; }
+}
 
-public record SmallBlindIsPostedEvent(
-    Nickname Nickname,
-    Chips Amount,
-    DateTime OccuredAt
-) : BaseEvent(OccuredAt);
+public record struct HoleCardsAreDealtEvent : IEvent
+{
+    public required Nickname Nickname { get; init; }
+    public required CardSet Cards { get; init; }
+    public required DateTime OccuredAt { get; init; }
+}
 
-public record BigBlindIsPostedEvent(
-    Nickname Nickname,
-    Chips Amount,
-    DateTime OccuredAt
-) : BaseEvent(OccuredAt);
+public record struct BoardCardsAreDealtEvent : IEvent
+{
+    public required CardSet Cards { get; init; }
+    public required DateTime OccuredAt { get; init; }
+}
 
-public record HoleCardsAreDealtEvent(
-    Nickname Nickname,
-    CardSet Cards,
-    DateTime OccuredAt
-) : BaseEvent(OccuredAt);
+public record struct DecisionIsRequestedEvent : IEvent
+{
+    public required Nickname Nickname { get; init; }
+    public required bool FoldIsAvailable { get; init; }
+    public required bool CheckIsAvailable { get; init; }
+    public required bool CallIsAvailable { get; init; }
+    public required Chips CallToAmount { get; init; }
+    public required bool RaiseIsAvailable { get; init; }
+    public required Chips MinRaiseToAmount { get; init; }
+    public required Chips MaxRaiseToAmount { get; init; }
+    public required DateTime OccuredAt { get; init; }
+}
 
-public record BoardCardsAreDealtEvent(
-    CardSet Cards,
-    DateTime OccuredAt
-) : BaseEvent(OccuredAt);
+public record struct DecisionIsCommittedEvent : IEvent
+{
+    public required Nickname Nickname { get; init; }
+    public required Decision Decision { get; init; }
+    public required DateTime OccuredAt { get; init; }
+}
 
-public record DecisionIsRequestedEvent(
-    Nickname Nickname,
-    bool FoldIsAvailable,
-    bool CheckIsAvailable,
-    bool CallIsAvailable,
-    Chips CallToAmount,
-    bool RaiseIsAvailable,
-    Chips MinRaiseToAmount,
-    Chips MaxRaiseToAmount,
-    DateTime OccuredAt
-) : BaseEvent(OccuredAt);
+public record struct RefundIsCommittedEvent : IEvent
+{
+    public required Nickname Nickname { get; init; }
+    public required Chips Amount { get; init; }
+    public required DateTime OccuredAt { get; init; }
+}
 
-public record DecisionIsCommittedEvent(
-    Nickname Nickname,
-    Decision Decision,
-    DateTime OccuredAt
-) : BaseEvent(OccuredAt);
+public record struct WinWithoutShowdownIsCommittedEvent : IEvent
+{
+    public required Nickname Nickname { get; init; }
+    public required Chips Amount { get; init; }
+    public required DateTime OccuredAt { get; init; }
+}
 
-public record RefundIsCommittedEvent(
-    Nickname Nickname,
-    Chips Amount,
-    DateTime OccuredAt
-) : BaseEvent(OccuredAt);
+public record struct WinAtShowdownIsCommittedEvent : IEvent
+{
+    public required SidePot SidePot { get; init; }
+    public required SidePot WinPot { get; init; }
+    public required DateTime OccuredAt { get; init; }
+}
 
-public record WinWithoutShowdownIsCommittedEvent(
-    Nickname Nickname,
-    Chips Amount,
-    DateTime OccuredAt
-) : BaseEvent(OccuredAt);
+public record struct HoleCardsAreMuckedEvent : IEvent
+{
+    public required Nickname Nickname { get; init; }
+    public required DateTime OccuredAt { get; init; }
+}
 
-public record WinAtShowdownIsCommittedEvent(
-    SidePot SidePot,
-    SidePot WinPot,
-    DateTime OccuredAt
-) : BaseEvent(OccuredAt);
-
-public record HoleCardsAreMuckedEvent(
-    Nickname Nickname,
-    DateTime OccuredAt
-) : BaseEvent(OccuredAt);
-
-public record HoleCardsAreShownEvent(
-    Nickname Nickname,
-    CardSet Cards,
-    Combo Combo,
-    DateTime OccuredAt
-) : BaseEvent(OccuredAt);
+public record struct HoleCardsAreShownEvent : IEvent
+{
+    public required Nickname Nickname { get; init; }
+    public required CardSet Cards { get; init; }
+    public required Combo Combo { get; init; }
+    public required DateTime OccuredAt { get; init; }
+}

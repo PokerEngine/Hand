@@ -1,33 +1,18 @@
 using Application.Repository;
 using Domain.Entity;
-using Domain.Event;
 using Domain.Service.Evaluator;
 using Domain.Service.Randomizer;
 using Domain.ValueObject;
-using System.Collections.Immutable;
 
 namespace Application.IntegrationEvent;
 
-public class HandCreateIntegrationEventHandler : IIntegrationEventHandler<HandCreateIntegrationEvent>
+public class HandCreateIntegrationEventHandler(
+    IIntegrationEventBus integrationEventBus,
+    IRepository repository,
+    IRandomizer randomizer,
+    IEvaluator evaluator
+) : IIntegrationEventHandler<HandCreateIntegrationEvent>
 {
-    private readonly IIntegrationEventBus _integrationEventBus;
-    private readonly IRepository _repository;
-    private readonly IRandomizer _randomizer;
-    private readonly IEvaluator _evaluator;
-
-    public HandCreateIntegrationEventHandler(
-        IIntegrationEventBus integrationEventBus,
-        IRepository repository,
-        IRandomizer randomizer,
-        IEvaluator evaluator
-    )
-    {
-        _integrationEventBus = integrationEventBus;
-        _repository = repository;
-        _randomizer = randomizer;
-        _evaluator = evaluator;
-    }
-
     public async Task Handle(HandCreateIntegrationEvent integrationEvent)
     {
         var game = ParseGame(integrationEvent.Game);
@@ -38,14 +23,9 @@ public class HandCreateIntegrationEventHandler : IIntegrationEventHandler<HandCr
         var smallBlindSeat = new Seat(integrationEvent.SmallBlindSeat);
         var bigBlindSeat = new Seat(integrationEvent.BigBlindSeat);
         var buttonSeat = new Seat(integrationEvent.ButtonSeat);
-        var participants = integrationEvent.Participants.Select(ParseParticipant).ToImmutableList();
+        var participants = integrationEvent.Participants.Select(ParseParticipant).ToList();
 
-        var eventBus = new EventBus();
-        var events = new List<BaseEvent>();
-        var listener = (BaseEvent @event) => events.Add(@event);
-        eventBus.Subscribe(listener);
-
-        Hand.FromScratch(
+        var hand = Hand.FromScratch(
             uid: handUid,
             game: game,
             smallBlind: smallBlind,
@@ -55,17 +35,15 @@ public class HandCreateIntegrationEventHandler : IIntegrationEventHandler<HandCr
             bigBlindSeat: bigBlindSeat,
             buttonSeat: buttonSeat,
             participants: participants,
-            randomizer: _randomizer,
-            evaluator: _evaluator,
-            eventBus: eventBus
+            randomizer: randomizer,
+            evaluator: evaluator
         );
 
-        eventBus.Unsubscribe(listener);
-
-        await _repository.AddEvents(handUid, events);
+        var events = hand.PullEvents();
+        await repository.AddEvents(handUid, events);
 
         var publisher = new DomainEventPublisher(
-            integrationEventBus: _integrationEventBus,
+            integrationEventBus: integrationEventBus,
             tableUid: integrationEvent.TableUid,
             handUid: integrationEvent.HandUid
         );

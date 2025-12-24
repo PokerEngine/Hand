@@ -1,11 +1,10 @@
 using Application.Repository;
-using Domain;
 using Domain.Event;
 using Domain.ValueObject;
+using Microsoft.Extensions.Options;
 using MongoDB.Bson.Serialization;
 using MongoDB.Bson.Serialization.Attributes;
 using MongoDB.Driver;
-using System.Collections.Immutable;
 
 namespace Infrastructure.Repository;
 
@@ -14,27 +13,15 @@ public class MongoDbRepository : IRepository
     private readonly ILogger<MongoDbRepository> _logger;
     private readonly IMongoCollection<BaseDocument> _collection;
     private readonly EventDocumentMapper _mapper;
-    private bool _isConnected;
     private const string Collection = "events";
 
-    public MongoDbRepository(IConfiguration configuration, ILogger<MongoDbRepository> logger)
+    public MongoDbRepository(IOptions<MongoDbRepositoryOptions> options, ILogger<MongoDbRepository> logger)
     {
-        var host = configuration.GetValue<string>("MongoDB:Host") ??
-                   throw new ArgumentException("MongoDB:Host is not configured", nameof(configuration));
-        var port = configuration.GetValue<int?>("MongoDB:Port") ??
-                   throw new ArgumentException("MongoDB:Port is not configured", nameof(configuration));
-        var username = configuration.GetValue<string>("MongoDB:Username") ??
-                       throw new ArgumentException("MongoDB:Username is not configured", nameof(configuration));
-        var password = configuration.GetValue<string>("MongoDB:Password") ??
-                       throw new ArgumentException("MongoDB:Password is not configured", nameof(configuration));
-        var database = configuration.GetValue<string>("MongoDB:Database") ??
-                       throw new ArgumentException("MongoDB:Database is not configured", nameof(configuration));
-
         _logger = logger;
 
-        var url = $"mongodb://{username}:{password}@{host}:{port}";
+        var url = $"mongodb://{options.Value.Username}:{options.Value.Password}@{options.Value.Host}:{options.Value.Port}";
         var client = new MongoClient(url);
-        var db = client.GetDatabase(database);
+        var db = client.GetDatabase(options.Value.Database);
         _collection = db.GetCollection<BaseDocument>(Collection);
 
         _mapper = new EventDocumentMapper();
@@ -42,39 +29,8 @@ public class MongoDbRepository : IRepository
         RegisterClassMap();
     }
 
-    public async Task Connect()
+    public async Task<List<IEvent>> GetEvents(HandUid handUid)
     {
-        if (_isConnected)
-        {
-            throw new InvalidOperationException("Already connected");
-        }
-
-        _isConnected = true;
-        await Task.CompletedTask;
-
-        _logger.LogInformation("Connected");
-    }
-
-    public async Task Disconnect()
-    {
-        if (!_isConnected)
-        {
-            throw new InvalidOperationException("Not connected");
-        }
-
-        _isConnected = false;
-        await Task.CompletedTask;
-
-        _logger.LogInformation("Disconnected");
-    }
-
-    public async Task<IList<BaseEvent>> GetEvents(HandUid handUid)
-    {
-        if (!_isConnected)
-        {
-            throw new InvalidOperationException("Not connected");
-        }
-
         var sort = Builders<BaseDocument>.Sort.Ascending("_id");
         var findOptions = new FindOptions<BaseDocument>
         {
@@ -83,7 +39,7 @@ public class MongoDbRepository : IRepository
         var cursor = await _collection.FindAsync(e => e.HandUid == handUid, findOptions);
         var documents = await cursor.ToListAsync();
 
-        var events = new List<BaseEvent>();
+        var events = new List<IEvent>();
         foreach (var document in documents)
         {
             var @event = _mapper.ToEvent((dynamic)document);
@@ -94,13 +50,8 @@ public class MongoDbRepository : IRepository
         return events;
     }
 
-    public async Task AddEvents(HandUid handUid, IList<BaseEvent> events)
+    public async Task AddEvents(HandUid handUid, List<IEvent> events)
     {
-        if (!_isConnected)
-        {
-            throw new InvalidOperationException("Not connected");
-        }
-
         var documents = new List<BaseDocument>();
         foreach (var @event in events)
         {
@@ -159,6 +110,17 @@ public class MongoDbRepository : IRepository
     }
 }
 
+public class MongoDbRepositoryOptions
+{
+    public const string SectionName = "MongoDB";
+
+    public required string Host { get; init; }
+    public required int Port { get; init; }
+    public required string Username { get; init; }
+    public required string Password { get; init; }
+    public required string Database { get; init; }
+}
+
 internal abstract record BaseDocument
 {
     public required DateTime OccuredAt { get; init; }
@@ -175,7 +137,7 @@ internal record HandIsCreatedDocument : BaseDocument
     public required int SmallBlindSeat { get; init; }
     public required int BigBlindSeat { get; init; }
     public required int ButtonSeat { get; init; }
-    public required ImmutableList<(string, int, int)> Participants { get; init; }
+    public required List<(string, int, int)> Participants { get; init; }
 }
 
 [BsonIgnoreExtraElements]
@@ -267,8 +229,8 @@ internal record WinWithoutShowdownIsCommittedDocument : BaseDocument
 [BsonIgnoreExtraElements]
 internal record WinAtShowdownIsCommittedDocument : BaseDocument
 {
-    public required ImmutableDictionary<string, int> SidePot { get; init; }
-    public required ImmutableDictionary<string, int> WinPot { get; init; }
+    public required Dictionary<string, int> SidePot { get; init; }
+    public required Dictionary<string, int> WinPot { get; init; }
 }
 
 [BsonIgnoreExtraElements]
@@ -299,7 +261,7 @@ internal class EventDocumentMapper
             SmallBlindSeat = @event.SmallBlindSeat,
             BigBlindSeat = @event.BigBlindSeat,
             ButtonSeat = @event.ButtonSeat,
-            Participants = @event.Participants.Select(x => ((string)x.Nickname, (int)x.Seat, (int)x.Stack)).ToImmutableList(),
+            Participants = @event.Participants.Select(x => ((string)x.Nickname, (int)x.Seat, (int)x.Stack)).ToList(),
             OccuredAt = @event.OccuredAt,
             HandUid = handUid
         };
@@ -314,17 +276,18 @@ internal class EventDocumentMapper
             participants.Add(new Participant(nickname, seat, stack));
         }
 
-        return new HandIsCreatedEvent(
-            Game: document.Game,
-            SmallBlind: document.SmallBlind,
-            BigBlind: document.BigBlind,
-            MaxSeat: document.MaxSeat,
-            SmallBlindSeat: document.SmallBlindSeat,
-            BigBlindSeat: document.BigBlindSeat,
-            ButtonSeat: document.ButtonSeat,
-            Participants: participants.ToImmutableList(),
-            OccuredAt: document.OccuredAt
-        );
+        return new HandIsCreatedEvent
+        {
+            Game = document.Game,
+            SmallBlind = document.SmallBlind,
+            BigBlind = document.BigBlind,
+            MaxSeat = document.MaxSeat,
+            SmallBlindSeat = document.SmallBlindSeat,
+            BigBlindSeat = document.BigBlindSeat,
+            ButtonSeat = document.ButtonSeat,
+            Participants = participants.ToList(),
+            OccuredAt = document.OccuredAt
+        };
     }
 
     public HandIsStartedDocument ToDocument(HandIsStartedEvent @event, HandUid handUid)
@@ -338,9 +301,10 @@ internal class EventDocumentMapper
 
     public HandIsStartedEvent ToEvent(HandIsStartedDocument document)
     {
-        return new HandIsStartedEvent(
-            OccuredAt: document.OccuredAt
-        );
+        return new HandIsStartedEvent
+        {
+            OccuredAt = document.OccuredAt
+        };
     }
 
     public HandIsFinishedDocument ToDocument(HandIsFinishedEvent @event, HandUid handUid)
@@ -354,9 +318,10 @@ internal class EventDocumentMapper
 
     public HandIsFinishedEvent ToEvent(HandIsFinishedDocument document)
     {
-        return new HandIsFinishedEvent(
-            OccuredAt: document.OccuredAt
-        );
+        return new HandIsFinishedEvent
+        {
+            OccuredAt = document.OccuredAt
+        };
     }
 
     public StageIsStartedDocument ToDocument(StageIsStartedEvent @event, HandUid handUid)
@@ -370,9 +335,10 @@ internal class EventDocumentMapper
 
     public StageIsStartedEvent ToEvent(StageIsStartedDocument document)
     {
-        return new StageIsStartedEvent(
-            OccuredAt: document.OccuredAt
-        );
+        return new StageIsStartedEvent
+        {
+            OccuredAt = document.OccuredAt
+        };
     }
 
     public StageIsFinishedDocument ToDocument(StageIsFinishedEvent @event, HandUid handUid)
@@ -386,45 +352,10 @@ internal class EventDocumentMapper
 
     public StageIsFinishedEvent ToEvent(StageIsFinishedDocument document)
     {
-        return new StageIsFinishedEvent(
-            OccuredAt: document.OccuredAt
-        );
-    }
-
-    public PlayerConnectedDocument ToDocument(PlayerConnectedEvent @event, HandUid handUid)
-    {
-        return new PlayerConnectedDocument
+        return new StageIsFinishedEvent
         {
-            Nickname = @event.Nickname,
-            OccuredAt = @event.OccuredAt,
-            HandUid = handUid
+            OccuredAt = document.OccuredAt
         };
-    }
-
-    public PlayerConnectedEvent ToEvent(PlayerConnectedDocument document)
-    {
-        return new PlayerConnectedEvent(
-            Nickname: document.Nickname,
-            OccuredAt: document.OccuredAt
-        );
-    }
-
-    public PlayerDisconnectedDocument ToDocument(PlayerDisconnectedEvent @event, HandUid handUid)
-    {
-        return new PlayerDisconnectedDocument
-        {
-            Nickname = @event.Nickname,
-            OccuredAt = @event.OccuredAt,
-            HandUid = handUid
-        };
-    }
-
-    public PlayerDisconnectedEvent ToEvent(PlayerDisconnectedDocument document)
-    {
-        return new PlayerDisconnectedEvent(
-            Nickname: document.Nickname,
-            OccuredAt: document.OccuredAt
-        );
     }
 
     public SmallBlindIsPostedDocument ToDocument(SmallBlindIsPostedEvent @event, HandUid handUid)
@@ -440,11 +371,12 @@ internal class EventDocumentMapper
 
     public SmallBlindIsPostedEvent ToEvent(SmallBlindIsPostedDocument document)
     {
-        return new SmallBlindIsPostedEvent(
-            Nickname: document.Nickname,
-            Amount: document.Amount,
-            OccuredAt: document.OccuredAt
-        );
+        return new SmallBlindIsPostedEvent
+        {
+            Nickname = document.Nickname,
+            Amount = document.Amount,
+            OccuredAt = document.OccuredAt
+        };
     }
 
     public BigBlindIsPostedDocument ToDocument(BigBlindIsPostedEvent @event, HandUid handUid)
@@ -460,11 +392,12 @@ internal class EventDocumentMapper
 
     public BigBlindIsPostedEvent ToEvent(BigBlindIsPostedDocument document)
     {
-        return new BigBlindIsPostedEvent(
-            Nickname: document.Nickname,
-            Amount: document.Amount,
-            OccuredAt: document.OccuredAt
-        );
+        return new BigBlindIsPostedEvent
+        {
+            Nickname = document.Nickname,
+            Amount = document.Amount,
+            OccuredAt = document.OccuredAt
+        };
     }
 
     public HoleCardsAreDealtDocument ToDocument(HoleCardsAreDealtEvent @event, HandUid handUid)
@@ -480,11 +413,12 @@ internal class EventDocumentMapper
 
     public HoleCardsAreDealtEvent ToEvent(HoleCardsAreDealtDocument document)
     {
-        return new HoleCardsAreDealtEvent(
-            Nickname: document.Nickname,
-            Cards: CardSet.FromString(document.Cards),
-            OccuredAt: document.OccuredAt
-        );
+        return new HoleCardsAreDealtEvent
+        {
+            Nickname = document.Nickname,
+            Cards = CardSet.FromString(document.Cards),
+            OccuredAt = document.OccuredAt
+        };
     }
 
     public BoardCardsAreDealtDocument ToDocument(BoardCardsAreDealtEvent @event, HandUid handUid)
@@ -499,10 +433,11 @@ internal class EventDocumentMapper
 
     public BoardCardsAreDealtEvent ToEvent(BoardCardsAreDealtDocument document)
     {
-        return new BoardCardsAreDealtEvent(
-            Cards: CardSet.FromString(document.Cards),
-            OccuredAt: document.OccuredAt
-        );
+        return new BoardCardsAreDealtEvent
+        {
+            Cards = CardSet.FromString(document.Cards),
+            OccuredAt = document.OccuredAt
+        };
     }
 
     public DecisionIsRequestedDocument ToDocument(DecisionIsRequestedEvent @event, HandUid handUid)
@@ -524,17 +459,18 @@ internal class EventDocumentMapper
 
     public DecisionIsRequestedEvent ToEvent(DecisionIsRequestedDocument document)
     {
-        return new DecisionIsRequestedEvent(
-            Nickname: document.Nickname,
-            FoldIsAvailable: document.FoldIsAvailable,
-            CheckIsAvailable: document.CheckIsAvailable,
-            CallIsAvailable: document.CallIsAvailable,
-            CallToAmount: document.CallToAmount,
-            RaiseIsAvailable: document.RaiseIsAvailable,
-            MinRaiseToAmount: document.MinRaiseToAmount,
-            MaxRaiseToAmount: document.MaxRaiseToAmount,
-            OccuredAt: document.OccuredAt
-        );
+        return new DecisionIsRequestedEvent
+        {
+            Nickname = document.Nickname,
+            FoldIsAvailable = document.FoldIsAvailable,
+            CheckIsAvailable = document.CheckIsAvailable,
+            CallIsAvailable = document.CallIsAvailable,
+            CallToAmount = document.CallToAmount,
+            RaiseIsAvailable = document.RaiseIsAvailable,
+            MinRaiseToAmount = document.MinRaiseToAmount,
+            MaxRaiseToAmount = document.MaxRaiseToAmount,
+            OccuredAt = document.OccuredAt
+        };
     }
 
     public DecisionIsCommittedDocument ToDocument(DecisionIsCommittedEvent @event, HandUid handUid)
@@ -551,11 +487,12 @@ internal class EventDocumentMapper
 
     public DecisionIsCommittedEvent ToEvent(DecisionIsCommittedDocument document)
     {
-        return new DecisionIsCommittedEvent(
-            Nickname: document.Nickname,
-            Decision: new Decision(document.DecisionType, document.DecisionAmount),
-            OccuredAt: document.OccuredAt
-        );
+        return new DecisionIsCommittedEvent
+        {
+            Nickname = document.Nickname,
+            Decision = new Decision(document.DecisionType, document.DecisionAmount),
+            OccuredAt = document.OccuredAt
+        };
     }
 
     public RefundIsCommittedDocument ToDocument(RefundIsCommittedEvent @event, HandUid handUid)
@@ -571,11 +508,12 @@ internal class EventDocumentMapper
 
     public RefundIsCommittedEvent ToEvent(RefundIsCommittedDocument document)
     {
-        return new RefundIsCommittedEvent(
-            Nickname: document.Nickname,
-            Amount: document.Amount,
-            OccuredAt: document.OccuredAt
-        );
+        return new RefundIsCommittedEvent
+        {
+            Nickname = document.Nickname,
+            Amount = document.Amount,
+            OccuredAt = document.OccuredAt
+        };
     }
 
     public WinWithoutShowdownIsCommittedDocument ToDocument(WinWithoutShowdownIsCommittedEvent @event, HandUid handUid)
@@ -591,19 +529,20 @@ internal class EventDocumentMapper
 
     public WinWithoutShowdownIsCommittedEvent ToEvent(WinWithoutShowdownIsCommittedDocument document)
     {
-        return new WinWithoutShowdownIsCommittedEvent(
-            Nickname: document.Nickname,
-            Amount: document.Amount,
-            OccuredAt: document.OccuredAt
-        );
+        return new WinWithoutShowdownIsCommittedEvent
+        {
+            Nickname = document.Nickname,
+            Amount = document.Amount,
+            OccuredAt = document.OccuredAt
+        };
     }
 
     public WinAtShowdownIsCommittedDocument ToDocument(WinAtShowdownIsCommittedEvent @event, HandUid handUid)
     {
         return new WinAtShowdownIsCommittedDocument
         {
-            SidePot = @event.SidePot.ToImmutableDictionary(x => (string)x.Key, x => (int)x.Value),
-            WinPot = @event.WinPot.ToImmutableDictionary(x => (string)x.Key, x => (int)x.Value),
+            SidePot = @event.SidePot.ToDictionary(x => (string)x.Key, x => (int)x.Value),
+            WinPot = @event.WinPot.ToDictionary(x => (string)x.Key, x => (int)x.Value),
             OccuredAt = @event.OccuredAt,
             HandUid = handUid
         };
@@ -611,11 +550,12 @@ internal class EventDocumentMapper
 
     public WinAtShowdownIsCommittedEvent ToEvent(WinAtShowdownIsCommittedDocument document)
     {
-        return new WinAtShowdownIsCommittedEvent(
-            SidePot: new SidePot(document.SidePot.ToDictionary(x => (Nickname)x.Key, x => (Chips)x.Value)),
-            WinPot: new SidePot(document.WinPot.ToDictionary(x => (Nickname)x.Key, x => (Chips)x.Value)),
-            OccuredAt: document.OccuredAt
-        );
+        return new WinAtShowdownIsCommittedEvent
+        {
+            SidePot = new SidePot(document.SidePot.ToDictionary(x => (Nickname)x.Key, x => (Chips)x.Value)),
+            WinPot = new SidePot(document.WinPot.ToDictionary(x => (Nickname)x.Key, x => (Chips)x.Value)),
+            OccuredAt = document.OccuredAt
+        };
     }
 
     public HoleCardsAreMuckedDocument ToDocument(HoleCardsAreMuckedEvent @event, HandUid handUid)
@@ -630,10 +570,11 @@ internal class EventDocumentMapper
 
     public HoleCardsAreMuckedEvent ToEvent(HoleCardsAreMuckedDocument document)
     {
-        return new HoleCardsAreMuckedEvent(
-            Nickname: document.Nickname,
-            OccuredAt: document.OccuredAt
-        );
+        return new HoleCardsAreMuckedEvent
+        {
+            Nickname = document.Nickname,
+            OccuredAt = document.OccuredAt
+        };
     }
 
     public HoleCardsAreShownDocument ToDocument(HoleCardsAreShownEvent @event, HandUid handUid)
@@ -651,15 +592,16 @@ internal class EventDocumentMapper
 
     public HoleCardsAreShownEvent ToEvent(HoleCardsAreShownDocument document)
     {
-        return new HoleCardsAreShownEvent(
-            Nickname: document.Nickname,
-            Cards: CardSet.FromString(document.Cards),
-            Combo: new Combo(document.ComboType, document.ComboWeight),
-            OccuredAt: document.OccuredAt
-        );
+        return new HoleCardsAreShownEvent
+        {
+            Nickname = document.Nickname,
+            Cards = CardSet.FromString(document.Cards),
+            Combo = new Combo(document.ComboType, document.ComboWeight),
+            OccuredAt = document.OccuredAt
+        };
     }
 
-    public BaseDocument ToDocument(BaseEvent @event, HandUid handUid)
+    public BaseDocument ToDocument(IEvent @event, HandUid handUid)
     {
         throw new NotImplementedException($"Mapper is not implemented for {@event.GetType().Name}");
     }

@@ -80,7 +80,7 @@ public abstract class BasePot
         player.Win(amount);
     }
 
-    public void CommitWinAtShowdown(IList<Player> players, SidePot sidePot, SidePot winPot)
+    public void CommitWinAtShowdown(List<Player> players, SidePot sidePot, SidePot winPot)
     {
         ValidateWinAtShowdown(players, sidePot, winPot);
 
@@ -153,7 +153,7 @@ public abstract class BasePot
         return postedAmount > amount ? postedAmount - amount : new Chips(0);
     }
 
-    public SidePot GetWinPot(IList<Player> players, SidePot sidePot)
+    public SidePot GetWinPot(List<Player> players, SidePot sidePot)
     {
         // More than 1 players means that they should split the pot
         var quotient = sidePot.Amount / players.Count;
@@ -177,12 +177,12 @@ public abstract class BasePot
         return winPot;
     }
 
-    public IList<SidePot> GetSidePots(IList<Player> players)
+    public List<SidePot> GetSidePots(List<Player> players)
     {
         return GetSidePots(players.Select(x => x.Nickname).ToList());
     }
 
-    private IList<SidePot> GetSidePots(IEnumerable<Nickname> nicknames)
+    private List<SidePot> GetSidePots(IEnumerable<Nickname> nicknames)
     {
         var remainingPot = _previousSidePot.Merge(_currentSidePot);
         var sortedNicknames = nicknames.OrderBy(x => remainingPot.Get(x)).ThenBy(x => x).ToList();
@@ -519,7 +519,7 @@ public abstract class BasePot
         }
     }
 
-    private void ValidateWinAtShowdown(IList<Player> players, SidePot sidePot, SidePot winPot)
+    private void ValidateWinAtShowdown(List<Player> players, SidePot sidePot, SidePot winPot)
     {
         var expectedWinPot = GetWinPot(players, sidePot);
         if (expectedWinPot.Amount != winPot.Amount)

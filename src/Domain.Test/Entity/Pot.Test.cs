@@ -179,8 +179,6 @@ public class NoLimitPotTest
             seat: 2
         );
         var pot = CreatePot();
-        playerSb.Connect();
-        playerBb.Connect();
         pot.PostSmallBlind(playerSb, new Chips(5));
         pot.PostBigBlind(playerBb, new Chips(10));
 
@@ -216,8 +214,6 @@ public class NoLimitPotTest
             seat: 2
         );
         var pot = CreatePot();
-        playerSb.Connect();
-        playerBb.Connect();
         pot.PostSmallBlind(playerSb, new Chips(5));
         pot.PostBigBlind(playerBb, new Chips(10));
         pot.CommitDecision(playerSb, new Decision(DecisionType.Fold, new Chips(0)));
@@ -246,8 +242,6 @@ public class NoLimitPotTest
             seat: 2
         );
         var pot = CreatePot();
-        playerSb.Connect();
-        playerBb.Connect();
         pot.PostSmallBlind(playerSb, new Chips(5));
         pot.PostBigBlind(playerBb, new Chips(10));
         pot.CommitDecision(playerSb, new Decision(DecisionType.CallTo, new Chips(10)));
@@ -282,8 +276,6 @@ public class NoLimitPotTest
             seat: 2
         );
         var pot = CreatePot();
-        playerSb.Connect();
-        playerBb.Connect();
         pot.PostSmallBlind(playerSb, new Chips(5));
         pot.PostBigBlind(playerBb, new Chips(10));
         pot.CommitDecision(playerSb, new Decision(DecisionType.CallTo, new Chips(10)));
@@ -319,8 +311,6 @@ public class NoLimitPotTest
             seat: 2
         );
         var pot = CreatePot();
-        playerSb.Connect();
-        playerBb.Connect();
         pot.PostSmallBlind(playerSb, new Chips(5));
         pot.PostBigBlind(playerBb, new Chips(10));
         pot.CommitDecision(playerSb, new Decision(DecisionType.Fold, new Chips(0)));
@@ -349,8 +339,6 @@ public class NoLimitPotTest
             seat: 2
         );
         var pot = CreatePot();
-        playerSb.Connect();
-        playerBb.Connect();
         pot.PostSmallBlind(playerSb, new Chips(5));
         pot.PostBigBlind(playerBb, new Chips(10));
 
@@ -385,8 +373,6 @@ public class NoLimitPotTest
             seat: 2
         );
         var pot = CreatePot();
-        playerSb.Connect();
-        playerBb.Connect();
         pot.PostSmallBlind(playerSb, new Chips(5));
         pot.PostBigBlind(playerBb, new Chips(10));
         pot.CommitDecision(playerSb, new Decision(DecisionType.CallTo, new Chips(10)));
@@ -415,8 +401,6 @@ public class NoLimitPotTest
             seat: 2
         );
         var pot = CreatePot();
-        playerSb.Connect();
-        playerBb.Connect();
         pot.PostSmallBlind(playerSb, new Chips(5));
         pot.PostBigBlind(playerBb, new Chips(10));
 
@@ -459,8 +443,6 @@ public class NoLimitPotTest
             stack: 19
         );
         var pot = CreatePot();
-        playerSb.Connect();
-        playerBb.Connect();
         pot.PostSmallBlind(playerSb, new Chips(5));
         pot.PostBigBlind(playerBb, new Chips(10));
         pot.CommitDecision(playerSb, new Decision(DecisionType.RaiseTo, new Chips(20)));
@@ -495,8 +477,6 @@ public class NoLimitPotTest
             seat: 2
         );
         var pot = CreatePot();
-        playerSb.Connect();
-        playerBb.Connect();
         pot.PostSmallBlind(playerSb, new Chips(5));
         pot.PostBigBlind(playerBb, new Chips(10));
         pot.CommitDecision(playerSb, new Decision(DecisionType.Fold, new Chips(0)));
@@ -525,8 +505,6 @@ public class NoLimitPotTest
             seat: 2
         );
         var pot = CreatePot();
-        playerSb.Connect();
-        playerBb.Connect();
         pot.PostSmallBlind(playerSb, new Chips(5));
         pot.PostBigBlind(playerBb, new Chips(10));
         pot.CommitDecision(playerSb, new Decision(DecisionType.CallTo, new Chips(10)));
@@ -563,8 +541,6 @@ public class NoLimitPotTest
             seat: 2
         );
         var pot = CreatePot();
-        playerSb.Connect();
-        playerBb.Connect();
         pot.PostSmallBlind(playerSb, new Chips(5));
         pot.PostBigBlind(playerBb, new Chips(10));
 
@@ -600,8 +576,6 @@ public class NoLimitPotTest
             seat: 2
         );
         var pot = CreatePot();
-        playerSb.Connect();
-        playerBb.Connect();
         pot.PostSmallBlind(playerSb, new Chips(5));
         pot.PostBigBlind(playerBb, new Chips(10));
 
@@ -634,8 +608,6 @@ public class NoLimitPotTest
             seat: 2
         );
         var pot = CreatePot();
-        playerSb.Connect();
-        playerBb.Connect();
         pot.PostSmallBlind(playerSb, new Chips(5));
         pot.PostBigBlind(playerBb, new Chips(10));
 
@@ -679,8 +651,6 @@ public class NoLimitPotTest
             seat: 2
         );
         var pot = CreatePot();
-        playerSb.Connect();
-        playerBb.Connect();
         pot.PostSmallBlind(playerSb, new Chips(5));
         pot.PostBigBlind(playerBb, new Chips(10));
 
@@ -723,8 +693,6 @@ public class NoLimitPotTest
             seat: 2
         );
         var pot = CreatePot();
-        playerSb.Connect();
-        playerBb.Connect();
         pot.PostSmallBlind(playerSb, new Chips(5));
         pot.PostBigBlind(playerBb, new Chips(10));
         pot.CommitDecision(playerSb, new Decision(DecisionType.Fold, new Chips(0)));
@@ -753,8 +721,6 @@ public class NoLimitPotTest
             seat: 2
         );
         var pot = CreatePot();
-        playerSb.Connect();
-        playerBb.Connect();
         pot.PostSmallBlind(playerSb, new Chips(5));
         pot.PostBigBlind(playerBb, new Chips(10));
         pot.CommitDecision(playerSb, new Decision(DecisionType.CallTo, new Chips(10)));
@@ -797,8 +763,6 @@ public class NoLimitPotTest
             seat: 2
         );
         var pot = CreatePot();
-        playerSb.Connect();
-        playerBb.Connect();
         pot.PostSmallBlind(playerSb, new Chips(5));
         pot.PostBigBlind(playerBb, new Chips(10));
 
@@ -833,8 +797,6 @@ public class NoLimitPotTest
             seat: 2
         );
         var pot = CreatePot();
-        playerSb.Connect();
-        playerBb.Connect();
         pot.PostSmallBlind(playerSb, new Chips(5));
         pot.PostBigBlind(playerBb, new Chips(10));
 
@@ -870,8 +832,6 @@ public class NoLimitPotTest
             stack: 19
         );
         var pot = CreatePot();
-        playerSb.Connect();
-        playerBb.Connect();
         pot.PostSmallBlind(playerSb, new Chips(5));
         pot.PostBigBlind(playerBb, new Chips(10));
         pot.CommitDecision(playerSb, new Decision(DecisionType.RaiseTo, new Chips(20)));
@@ -906,8 +866,6 @@ public class NoLimitPotTest
             seat: 2
         );
         var pot = CreatePot();
-        playerSb.Connect();
-        playerBb.Connect();
         pot.PostSmallBlind(playerSb, new Chips(5));
         pot.PostBigBlind(playerBb, new Chips(10));
 
@@ -947,9 +905,6 @@ public class NoLimitPotTest
             seat: 6
         );
         var pot = CreatePot();
-        playerSb.Connect();
-        playerBb.Connect();
-        playerBu.Connect();
         pot.PostSmallBlind(playerSb, new Chips(5));
         pot.PostBigBlind(playerBb, new Chips(10));
         pot.CommitDecision(playerBu, new Decision(DecisionType.RaiseTo, new Chips(25)));
@@ -1006,9 +961,6 @@ public class NoLimitPotTest
             seat: 6
         );
         var pot = CreatePot();
-        playerSb.Connect();
-        playerBb.Connect();
-        playerBu.Connect();
         pot.PostSmallBlind(playerSb, new Chips(5));
         pot.PostBigBlind(playerBb, new Chips(10));
         pot.CommitDecision(playerBu, new Decision(DecisionType.RaiseTo, new Chips(25)));
@@ -1055,9 +1007,6 @@ public class NoLimitPotTest
             seat: 6
         );
         var pot = CreatePot();
-        playerSb.Connect();
-        playerBb.Connect();
-        playerBu.Connect();
         pot.PostSmallBlind(playerSb, new Chips(5));
         pot.PostBigBlind(playerBb, new Chips(10));
         pot.CommitDecision(playerBu, new Decision(DecisionType.RaiseTo, new Chips(25)));
@@ -1113,9 +1062,6 @@ public class NoLimitPotTest
             seat: 6
         );
         var pot = CreatePot();
-        playerSb.Connect();
-        playerBb.Connect();
-        playerBu.Connect();
         pot.PostSmallBlind(playerSb, new Chips(5));
         pot.PostBigBlind(playerBb, new Chips(10));
         pot.CommitDecision(playerBu, new Decision(DecisionType.RaiseTo, new Chips(25)));
@@ -1168,9 +1114,6 @@ public class NoLimitPotTest
             stack: 600
         );
         var pot = CreatePot();
-        playerSb.Connect();
-        playerBb.Connect();
-        playerBu.Connect();
         pot.PostSmallBlind(playerSb, new Chips(5));
         pot.PostBigBlind(playerBb, new Chips(10));
         pot.CommitDecision(playerBu, new Decision(DecisionType.RaiseTo, new Chips(300)));
@@ -1215,9 +1158,6 @@ public class NoLimitPotTest
             seat: 6
         );
         var pot = CreatePot();
-        playerSb.Connect();
-        playerBb.Connect();
-        playerBu.Connect();
         pot.PostSmallBlind(playerSb, new Chips(5));
         pot.PostBigBlind(playerBb, new Chips(10));
         pot.CommitDecision(playerBu, new Decision(DecisionType.RaiseTo, new Chips(25)));
@@ -1257,9 +1197,6 @@ public class NoLimitPotTest
             seat: 6
         );
         var pot = CreatePot();
-        playerSb.Connect();
-        playerBb.Connect();
-        playerBu.Connect();
         pot.PostSmallBlind(playerSb, new Chips(5));
         pot.PostBigBlind(playerBb, new Chips(10));
         pot.CommitDecision(playerBu, new Decision(DecisionType.RaiseTo, new Chips(25)));
@@ -1302,9 +1239,6 @@ public class NoLimitPotTest
             seat: 6
         );
         var pot = CreatePot();
-        playerSb.Connect();
-        playerBb.Connect();
-        playerBu.Connect();
         pot.PostSmallBlind(playerSb, new Chips(5));
         pot.PostBigBlind(playerBb, new Chips(10));
         pot.CommitDecision(playerBu, new Decision(DecisionType.RaiseTo, new Chips(25)));
@@ -1354,9 +1288,6 @@ public class NoLimitPotTest
             seat: 6
         );
         var pot = CreatePot();
-        playerSb.Connect();
-        playerBb.Connect();
-        playerBu.Connect();
         pot.PostSmallBlind(playerSb, new Chips(5));
         pot.PostBigBlind(playerBb, new Chips(10));
         pot.CommitDecision(playerBu, new Decision(DecisionType.RaiseTo, new Chips(25)));
@@ -1402,9 +1333,6 @@ public class NoLimitPotTest
             seat: 6
         );
         var pot = CreatePot();
-        playerSb.Connect();
-        playerBb.Connect();
-        playerBu.Connect();
         pot.PostSmallBlind(playerSb, new Chips(5));
         pot.PostBigBlind(playerBb, new Chips(10));
         pot.CommitDecision(playerBu, new Decision(DecisionType.RaiseTo, new Chips(25)));
@@ -1438,9 +1366,6 @@ public class NoLimitPotTest
             seat: 6
         );
         var pot = CreatePot();
-        playerSb.Connect();
-        playerBb.Connect();
-        playerBu.Connect();
         pot.PostSmallBlind(playerSb, new Chips(5));
         pot.PostBigBlind(playerBb, new Chips(10));
         pot.CommitDecision(playerBu, new Decision(DecisionType.RaiseTo, new Chips(25)));
@@ -1472,9 +1397,6 @@ public class NoLimitPotTest
             seat: 6
         );
         var pot = CreatePot();
-        playerSb.Connect();
-        playerBb.Connect();
-        playerBu.Connect();
         pot.PostSmallBlind(playerSb, new Chips(5));
         pot.PostBigBlind(playerBb, new Chips(10));
         pot.CommitDecision(playerBu, new Decision(DecisionType.RaiseTo, new Chips(25)));
@@ -1516,9 +1438,6 @@ public class NoLimitPotTest
             stack: 999  // The poorest player takes the remainder
         );
         var pot = CreatePot();
-        playerSb.Connect();
-        playerBb.Connect();
-        playerBu.Connect();
         pot.PostSmallBlind(playerSb, new Chips(5));
         pot.PostBigBlind(playerBb, new Chips(10));
         pot.CommitDecision(playerBu, new Decision(DecisionType.RaiseTo, new Chips(25)));
@@ -1561,9 +1480,6 @@ public class NoLimitPotTest
             seat: 6
         );
         var pot = CreatePot();
-        playerSb.Connect();
-        playerBb.Connect();
-        playerBu.Connect();
         pot.PostSmallBlind(playerSb, new Chips(5));
         pot.PostBigBlind(playerBb, new Chips(10));
         pot.CommitDecision(playerBu, new Decision(DecisionType.RaiseTo, new Chips(25)));
@@ -1653,15 +1569,6 @@ public class NoLimitPotTest
             stack: 900
         );
         var pot = CreatePot();
-        playerSb.Connect();
-        playerBb.Connect();
-        playerUtg1.Connect();
-        playerUtg2.Connect();
-        playerUtg3.Connect();
-        playerEp.Connect();
-        playerMp.Connect();
-        playerCo.Connect();
-        playerBu.Connect();
         pot.PostSmallBlind(playerSb, new Chips(5));
         pot.PostBigBlind(playerBb, new Chips(10));
         pot.CommitDecision(playerUtg1, new Decision(DecisionType.RaiseTo, new Chips(300)));
@@ -1835,9 +1742,6 @@ public class NoLimitPotTest
             seat: 6
         );
         var pot = CreatePot();
-        playerSb.Connect();
-        playerBb.Connect();
-        playerBu.Connect();
         pot.PostSmallBlind(playerSb, new Chips(5));
         pot.PostBigBlind(playerBb, new Chips(10));
         pot.CommitDecision(playerBu, new Decision(DecisionType.RaiseTo, new Chips(25)));
@@ -1879,9 +1783,6 @@ public class NoLimitPotTest
             nickname: "Button",
             seat: 6
         );
-        playerSb.Connect();
-        playerBb.Connect();
-        playerBu.Connect();
 
         var pot = new NoLimitPot(
             smallBlind: new Chips(5),

@@ -8,39 +8,39 @@ namespace Domain.Service.Dealer;
 
 public class TradingDealer : IDealer
 {
-    public void Start(
+    public IEnumerable<IEvent> Start(
         Game game,
         Table table,
         BasePot pot,
         BaseDeck deck,
         IRandomizer randomizer,
-        IEvaluator evaluator,
-        IEventBus eventBus
+        IEvaluator evaluator
     )
     {
-        var startEvent = new StageIsStartedEvent(OccuredAt: DateTime.Now);
-        eventBus.Publish(startEvent);
+        var startEvent = new StageIsStartedEvent
+        {
+            OccuredAt = DateTime.Now
+        };
+        yield return startEvent;
 
         var players = GetPlayersForTrading(table);
         if (HasEnoughPlayersForTrading(players))
         {
             var previousPlayer = GetPreviousPlayer(table, pot);
-            RequestDecisionOrFinish(
-                previousPlayer: previousPlayer,
-                players: players,
-                pot: pot,
-                eventBus: eventBus
-            );
+            yield return RequestDecisionOrFinish(players, previousPlayer, pot);
         }
         else
         {
-            var finishEvent = new StageIsFinishedEvent(OccuredAt: DateTime.Now);
-            eventBus.Publish(finishEvent);
+            var finishEvent = new StageIsFinishedEvent
+            {
+                OccuredAt = DateTime.Now
+            };
+            yield return finishEvent;
         }
     }
 
     public void Handle(
-        BaseEvent @event,
+        IEvent @event,
         Game game,
         Table table,
         BasePot pot,
@@ -66,7 +66,7 @@ public class TradingDealer : IDealer
         }
     }
 
-    public void CommitDecision(
+    public IEnumerable<IEvent> CommitDecision(
         Nickname nickname,
         Decision decision,
         Game game,
@@ -74,8 +74,7 @@ public class TradingDealer : IDealer
         BasePot pot,
         BaseDeck deck,
         IRandomizer randomizer,
-        IEvaluator evaluator,
-        IEventBus eventBus
+        IEvaluator evaluator
     )
     {
         var players = GetPlayersForTrading(table);
@@ -89,28 +88,24 @@ public class TradingDealer : IDealer
         var player = table.GetPlayerByNickname(nickname);
         pot.CommitDecision(player, decision);
 
-        var @event = new DecisionIsCommittedEvent(
-            Nickname: nickname,
-            Decision: decision,
-            OccuredAt: DateTime.Now
-        );
-        eventBus.Publish(@event);
+        var @event = new DecisionIsCommittedEvent
+        {
+            Nickname = nickname,
+            Decision = decision,
+            OccuredAt = DateTime.Now
+        };
+        yield return @event;
 
-        RequestDecisionOrFinish(
-            players: players,
-            previousPlayer: player,
-            pot: pot,
-            eventBus: eventBus
-        );
+        yield return RequestDecisionOrFinish(players, player, pot);
     }
 
-    private IList<Player> GetPlayersForTrading(Table table)
+    private List<Player> GetPlayersForTrading(Table table)
     {
         var startSeat = table.IsHeadsUp() ? table.BigBlindSeat : table.SmallBlindSeat;
         return table.GetPlayersStartingFromSeat(startSeat).Where(x => !x.IsFolded && !x.IsAllIn).ToList();
     }
 
-    private bool HasEnoughPlayersForTrading(IList<Player> players)
+    private bool HasEnoughPlayersForTrading(List<Player> players)
     {
         return players.Count > 1;
     }
@@ -124,7 +119,7 @@ public class TradingDealer : IDealer
         return table.GetPlayerByNickname((Nickname)pot.LastDecisionNickname);
     }
 
-    private Player? GetNextPlayerForTrading(IList<Player> players, Player? previousPlayer)
+    private Player? GetNextPlayerForTrading(List<Player> players, Player? previousPlayer)
     {
         var previousIdx = previousPlayer == null ? -1 : players.IndexOf(previousPlayer);
         var nextIdx = previousIdx + 1;
@@ -152,70 +147,60 @@ public class TradingDealer : IDealer
         return null;
     }
 
-    private void RequestDecisionOrFinish(
-        IList<Player> players,
+    private IEvent RequestDecisionOrFinish(
+        List<Player> players,
         Player? previousPlayer,
-        BasePot pot,
-        IEventBus eventBus
+        BasePot pot
     )
     {
         var nextPlayer = GetNextPlayerForTrading(players, previousPlayer);
         if (nextPlayer == null || !pot.DecisionIsAvailable(nextPlayer))
         {
-            Finish(
-                pot: pot,
-                eventBus: eventBus
-            );
+
+            return Finish(pot);
         }
         else
         {
-            RequestDecision(
-                nextPlayer: nextPlayer,
-                pot: pot,
-                eventBus: eventBus
-            );
+            return RequestDecision(nextPlayer, pot);
         }
     }
 
-    private void Finish(
-        BasePot pot,
-        IEventBus eventBus
-    )
+    private StageIsFinishedEvent Finish(BasePot pot)
     {
         pot.FinishStage();
 
-        var finishEvent = new StageIsFinishedEvent(OccuredAt: DateTime.Now);
-        eventBus.Publish(finishEvent);
+        var @event = new StageIsFinishedEvent
+        {
+            OccuredAt = DateTime.Now
+        };
+        return @event;
     }
 
-    private void RequestDecision(
-        Player nextPlayer,
-        BasePot pot,
-        IEventBus eventBus
-    )
+    private DecisionIsRequestedEvent RequestDecision(Player player, BasePot pot)
     {
-        var foldIsAvailable = pot.FoldIsAvailable(nextPlayer);
+        var foldIsAvailable = pot.FoldIsAvailable(player);
 
-        var checkIsAvailable = pot.CheckIsAvailable(nextPlayer);
+        var checkIsAvailable = pot.CheckIsAvailable(player);
 
-        var callIsAvailable = pot.CallIsAvailable(nextPlayer);
-        Chips callToAmount = callIsAvailable ? pot.GetCallToAmount(nextPlayer) : new Chips(0);
+        var callIsAvailable = pot.CallIsAvailable(player);
+        Chips callToAmount = callIsAvailable ? pot.GetCallToAmount(player) : new Chips(0);
 
-        var raiseIsAvailable = pot.RaiseIsAvailable(nextPlayer);
-        Chips minRaiseToAmount = raiseIsAvailable ? pot.GetMinRaiseToAmount(nextPlayer) : new Chips(0);
-        Chips maxRaiseToAmount = raiseIsAvailable ? pot.GetMaxRaiseToAmount(nextPlayer) : new Chips(0);
+        var raiseIsAvailable = pot.RaiseIsAvailable(player);
+        Chips minRaiseToAmount = raiseIsAvailable ? pot.GetMinRaiseToAmount(player) : new Chips(0);
+        Chips maxRaiseToAmount = raiseIsAvailable ? pot.GetMaxRaiseToAmount(player) : new Chips(0);
 
-        var @event = new DecisionIsRequestedEvent(
-            Nickname: nextPlayer.Nickname,
-            FoldIsAvailable: foldIsAvailable,
-            CheckIsAvailable: checkIsAvailable,
-            CallIsAvailable: callIsAvailable,
-            CallToAmount: callToAmount,
-            RaiseIsAvailable: raiseIsAvailable,
-            MinRaiseToAmount: minRaiseToAmount,
-            MaxRaiseToAmount: maxRaiseToAmount,
-            OccuredAt: DateTime.Now
-        );
-        eventBus.Publish(@event);
+        var @event = new DecisionIsRequestedEvent
+        {
+            Nickname = player.Nickname,
+            FoldIsAvailable = foldIsAvailable,
+            CheckIsAvailable = checkIsAvailable,
+            CallIsAvailable = callIsAvailable,
+            CallToAmount = callToAmount,
+            RaiseIsAvailable = raiseIsAvailable,
+            MinRaiseToAmount = minRaiseToAmount,
+            MaxRaiseToAmount = maxRaiseToAmount,
+            OccuredAt = DateTime.Now
+        };
+        return @event;
     }
 }

@@ -6,40 +6,33 @@ using Domain.ValueObject;
 
 namespace Domain.Service.Dealer;
 
-public class BoardCardsDealingDealer : IDealer
+public class BoardCardsDealingDealer(int count) : IDealer
 {
-    private int _count;
-
-    public BoardCardsDealingDealer(int count)
-    {
-        _count = count;
-    }
-
-    public void Start(
+    public IEnumerable<IEvent> Start(
         Game game,
         Table table,
         BasePot pot,
         BaseDeck deck,
         IRandomizer randomizer,
-        IEvaluator evaluator,
-        IEventBus eventBus
+        IEvaluator evaluator
     )
     {
-        var startEvent = new StageIsStartedEvent(OccuredAt: DateTime.Now);
-        eventBus.Publish(startEvent);
+        var startEvent = new StageIsStartedEvent
+        {
+            OccuredAt = DateTime.Now
+        };
+        yield return startEvent;
 
         if (HasEnoughPlayersForDealing(table))
         {
-            DealBoardCards(
-                table: table,
-                deck: deck,
-                randomizer: randomizer,
-                eventBus: eventBus
-            );
+            yield return DealBoardCards(table, deck, randomizer);
         }
 
-        var finishEvent = new StageIsFinishedEvent(OccuredAt: DateTime.Now);
-        eventBus.Publish(finishEvent);
+        var finishEvent = new StageIsFinishedEvent
+        {
+            OccuredAt = DateTime.Now
+        };
+        yield return finishEvent;
     }
 
     private bool HasEnoughPlayersForDealing(Table table)
@@ -47,25 +40,21 @@ public class BoardCardsDealingDealer : IDealer
         return table.Count(x => !x.IsFolded) > 1;
     }
 
-    private void DealBoardCards(
-        Table table,
-        BaseDeck deck,
-        IRandomizer randomizer,
-        IEventBus eventBus
-    )
+    private BoardCardsAreDealtEvent DealBoardCards(Table table, BaseDeck deck, IRandomizer randomizer)
     {
-        var cards = deck.ExtractRandomCards(_count, randomizer);
+        var cards = deck.ExtractRandomCards(count, randomizer);
         table.TakeBoardCards(cards);
 
-        var @event = new BoardCardsAreDealtEvent(
-            Cards: table.BoardCards,
-            OccuredAt: DateTime.Now
-        );
-        eventBus.Publish(@event);
+        var @event = new BoardCardsAreDealtEvent
+        {
+            Cards = table.BoardCards,
+            OccuredAt = DateTime.Now
+        };
+        return @event;
     }
 
     public void Handle(
-        BaseEvent @event,
+        IEvent @event,
         Game game,
         Table table,
         BasePot pot,
@@ -88,7 +77,7 @@ public class BoardCardsDealingDealer : IDealer
         }
     }
 
-    public void CommitDecision(
+    public IEnumerable<IEvent> CommitDecision(
         Nickname nickname,
         Decision decision,
         Game game,
@@ -96,8 +85,7 @@ public class BoardCardsDealingDealer : IDealer
         BasePot pot,
         BaseDeck deck,
         IRandomizer randomizer,
-        IEvaluator evaluator,
-        IEventBus eventBus
+        IEvaluator evaluator
     )
     {
         throw new InvalidOperationException("The player cannot commit a decision during this stage");

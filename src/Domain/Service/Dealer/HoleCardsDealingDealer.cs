@@ -6,77 +6,66 @@ using Domain.ValueObject;
 
 namespace Domain.Service.Dealer;
 
-public class HoleCardsDealingDealer : IDealer
+public class HoleCardsDealingDealer(int count) : IDealer
 {
-    private int _count;
-
-    public HoleCardsDealingDealer(int count)
-    {
-        _count = count;
-    }
-
-    public void Start(
+    public IEnumerable<IEvent> Start(
         Game game,
         Table table,
         BasePot pot,
         BaseDeck deck,
         IRandomizer randomizer,
-        IEvaluator evaluator,
-        IEventBus eventBus
+        IEvaluator evaluator
     )
     {
-        var startEvent = new StageIsStartedEvent(OccuredAt: DateTime.Now);
-        eventBus.Publish(startEvent);
+        var startEvent = new StageIsStartedEvent
+        {
+            OccuredAt = DateTime.Now
+        };
+        yield return startEvent;
 
         var players = GetPlayersForDealing(table);
         if (HasEnoughPlayersForDealing(players))
         {
             foreach (var player in players)
             {
-                DealHoleCards(
-                    player: player,
-                    deck: deck,
-                    randomizer: randomizer,
-                    eventBus: eventBus
-                );
+                yield return DealHoleCards(player, deck, randomizer);
             }
         }
 
-        var finishEvent = new StageIsFinishedEvent(OccuredAt: DateTime.Now);
-        eventBus.Publish(finishEvent);
+        var finishEvent = new StageIsFinishedEvent
+        {
+            OccuredAt = DateTime.Now
+        };
+        yield return finishEvent;
     }
 
-    private IList<Player> GetPlayersForDealing(Table table)
+    private List<Player> GetPlayersForDealing(Table table)
     {
         var startSeat = table.SmallBlindSeat;
         return table.GetPlayersStartingFromSeat(startSeat).Where(x => !x.IsFolded).ToList();
     }
 
-    private bool HasEnoughPlayersForDealing(IList<Player> players)
+    private bool HasEnoughPlayersForDealing(List<Player> players)
     {
         return players.Count > 1;
     }
 
-    private void DealHoleCards(
-        Player player,
-        BaseDeck deck,
-        IRandomizer randomizer,
-        IEventBus eventBus
-    )
+    private HoleCardsAreDealtEvent DealHoleCards(Player player, BaseDeck deck, IRandomizer randomizer)
     {
-        var cards = deck.ExtractRandomCards(_count, randomizer);
+        var cards = deck.ExtractRandomCards(count, randomizer);
         player.TakeHoleCards(cards);
 
-        var @event = new HoleCardsAreDealtEvent(
-            Nickname: player.Nickname,
-            Cards: player.HoleCards,
-            OccuredAt: DateTime.Now
-        );
-        eventBus.Publish(@event);
+        var @event = new HoleCardsAreDealtEvent
+        {
+            Nickname = player.Nickname,
+            Cards = player.HoleCards,
+            OccuredAt = DateTime.Now
+        };
+        return @event;
     }
 
     public void Handle(
-        BaseEvent @event,
+        IEvent @event,
         Game game,
         Table table,
         BasePot pot,
@@ -99,7 +88,7 @@ public class HoleCardsDealingDealer : IDealer
         }
     }
 
-    public void CommitDecision(
+    public IEnumerable<IEvent> CommitDecision(
         Nickname nickname,
         Decision decision,
         Game game,
@@ -107,8 +96,7 @@ public class HoleCardsDealingDealer : IDealer
         BasePot pot,
         BaseDeck deck,
         IRandomizer randomizer,
-        IEvaluator evaluator,
-        IEventBus eventBus
+        IEvaluator evaluator
     )
     {
         throw new InvalidOperationException("The player cannot commit a decision during this stage");

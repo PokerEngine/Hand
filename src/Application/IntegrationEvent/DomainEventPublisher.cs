@@ -21,7 +21,7 @@ public class DomainEventPublisher
         _handUid = handUid;
     }
 
-    public async Task Publish(IEnumerable<BaseEvent> events)
+    public async Task Publish(IEnumerable<IEvent> events)
     {
         foreach (var @event in events)
         {
@@ -63,30 +63,6 @@ public class DomainEventPublisher
     {
         var queue = new IntegrationEventQueue("hand.hand-finished");
         var integrationEvent = new HandIsFinishedIntegrationEvent(
-            HandUid: _handUid,
-            TableUid: _tableUid,
-            OccuredAt: @event.OccuredAt
-        );
-        await _integrationEventBus.Publish(integrationEvent, queue);
-    }
-
-    private async Task PublishEvent(PlayerConnectedEvent @event)
-    {
-        var queue = new IntegrationEventQueue("hand.player-connected");
-        var integrationEvent = new PlayerConnectedIntegrationEvent(
-            Nickname: @event.Nickname,
-            HandUid: _handUid,
-            TableUid: _tableUid,
-            OccuredAt: @event.OccuredAt
-        );
-        await _integrationEventBus.Publish(integrationEvent, queue);
-    }
-
-    private async Task PublishEvent(PlayerDisconnectedEvent @event)
-    {
-        var queue = new IntegrationEventQueue("hand.player-disconnected");
-        var integrationEvent = new PlayerDisconnectedIntegrationEvent(
-            Nickname: @event.Nickname,
             HandUid: _handUid,
             TableUid: _tableUid,
             OccuredAt: @event.OccuredAt

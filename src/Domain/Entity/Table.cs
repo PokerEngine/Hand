@@ -12,6 +12,7 @@ public class Table : IEnumerable<Player>
     public readonly Seat ButtonSeat;
 
     public CardSet BoardCards { get; private set; }
+    public IEnumerable<Player> Players => _players.OfType<Player>();
     public int Count => _players.Count(x => x != null);
 
     public Table(
@@ -132,13 +133,9 @@ public class Table : IEnumerable<Player>
 
     public IEnumerator<Player> GetEnumerator()
     {
-        for (var i = 0; i < _players.Length; i++)
+        foreach (var player in Players)
         {
-            var player = _players[i];
-            if (player != null)
-            {
-                yield return player;
-            }
+            yield return player;
         }
     }
 

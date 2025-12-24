@@ -17,5 +17,5 @@ public interface IFactory
 
     BaseDeck GetDeck();
 
-    IList<IDealer> GetDealers();
+    List<IDealer> GetDealers();
 }

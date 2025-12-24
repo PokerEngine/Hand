@@ -1,32 +1,18 @@
 using Application.Repository;
 using Domain.Entity;
-using Domain.Event;
 using Domain.Service.Evaluator;
 using Domain.Service.Randomizer;
 using Domain.ValueObject;
 
 namespace Application.IntegrationEvent;
 
-public class DecisionCommitIntegrationEventHandler : IIntegrationEventHandler<DecisionCommitIntegrationEvent>
+public class DecisionCommitIntegrationEventHandler(
+    IIntegrationEventBus integrationEventBus,
+    IRepository repository,
+    IRandomizer randomizer,
+    IEvaluator evaluator
+) : IIntegrationEventHandler<DecisionCommitIntegrationEvent>
 {
-    private readonly IIntegrationEventBus _integrationEventBus;
-    private readonly IRepository _repository;
-    private readonly IRandomizer _randomizer;
-    private readonly IEvaluator _evaluator;
-
-    public DecisionCommitIntegrationEventHandler(
-        IIntegrationEventBus integrationEventBus,
-        IRepository repository,
-        IRandomizer randomizer,
-        IEvaluator evaluator
-    )
-    {
-        _integrationEventBus = integrationEventBus;
-        _repository = repository;
-        _randomizer = randomizer;
-        _evaluator = evaluator;
-    }
-
     public async Task Handle(DecisionCommitIntegrationEvent integrationEvent)
     {
         var handUid = new HandUid(integrationEvent.HandUid);
@@ -38,28 +24,18 @@ public class DecisionCommitIntegrationEventHandler : IIntegrationEventHandler<De
 
         var hand = Hand.FromEvents(
             uid: handUid,
-            randomizer: _randomizer,
-            evaluator: _evaluator,
-            events: await _repository.GetEvents(handUid)
+            randomizer: randomizer,
+            evaluator: evaluator,
+            events: await repository.GetEvents(handUid)
         );
 
-        var eventBus = new EventBus();
-        var events = new List<BaseEvent>();
-        var listener = (BaseEvent @event) => events.Add(@event);
-        eventBus.Subscribe(listener);
+        hand.CommitDecision(nickname, decision);
 
-        hand.CommitDecision(
-            nickname: nickname,
-            decision: decision,
-            eventBus: eventBus
-        );
-
-        eventBus.Unsubscribe(listener);
-
-        await _repository.AddEvents(handUid, events);
+        var events = hand.PullEvents();
+        await repository.AddEvents(handUid, events);
 
         var publisher = new DomainEventPublisher(
-            integrationEventBus: _integrationEventBus,
+            integrationEventBus: integrationEventBus,
             tableUid: integrationEvent.TableUid,
             handUid: integrationEvent.HandUid
         );

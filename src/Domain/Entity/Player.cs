@@ -8,7 +8,7 @@ public class Player : IEquatable<Player>
     public Seat Seat { get; }
     public Chips Stack { get; private set; }
     public CardSet HoleCards { get; private set; }
-    public bool IsConnected { get; private set; }
+    public bool IsDisconnected { get; private set; }
     public bool IsFolded { get; private set; }
 
     public bool IsAllIn
@@ -22,28 +22,8 @@ public class Player : IEquatable<Player>
         Seat = seat;
         Stack = stack;
         HoleCards = new CardSet();
-        IsConnected = false;
+        IsDisconnected = false;
         IsFolded = false;
-    }
-
-    public void Connect()
-    {
-        if (IsConnected)
-        {
-            throw new InvalidOperationException("The player has already connected");
-        }
-
-        IsConnected = true;
-    }
-
-    public void Disconnect()
-    {
-        if (!IsConnected)
-        {
-            throw new InvalidOperationException("The player has not connected yet");
-        }
-
-        IsConnected = false;
     }
 
     public void TakeHoleCards(CardSet holeCards)
@@ -58,9 +38,9 @@ public class Player : IEquatable<Player>
 
     public void Fold()
     {
-        if (!IsConnected)
+        if (IsDisconnected)
         {
-            throw new InvalidOperationException("The player has not connected yet");
+            throw new InvalidOperationException("The player is disconnected");
         }
         if (IsFolded)
         {
@@ -76,9 +56,9 @@ public class Player : IEquatable<Player>
 
     public void Check()
     {
-        if (!IsConnected)
+        if (IsDisconnected)
         {
-            throw new InvalidOperationException("The player has not connected yet");
+            throw new InvalidOperationException("The player is disconnected");
         }
         if (IsFolded)
         {
@@ -93,9 +73,9 @@ public class Player : IEquatable<Player>
     public void Bet(Chips amount)
     {
         // Bet means that the player puts chips into the pot voluntarily
-        if (!IsConnected)
+        if (IsDisconnected)
         {
-            throw new InvalidOperationException("The player has not connected yet");
+            throw new InvalidOperationException("The player is disconnected");
         }
         if (IsFolded)
         {

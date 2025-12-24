@@ -1,14 +1,15 @@
 using Domain.Service.Evaluator;
 using Domain.ValueObject;
+using Microsoft.Extensions.Options;
 using System.Diagnostics;
 
 namespace Infrastructure.Service.Evaluator;
 
-public class PokerStoveEvaluator : IEvaluator
+public class PokerStoveEvaluator(
+    IOptions<PokerStoveEvaluatorOptions> options,
+    ILogger<PokerStoveEvaluator> logger
+) : IEvaluator
 {
-    private readonly string _path;
-    private readonly ILogger<PokerStoveEvaluator> _logger;
-
     private static readonly Dictionary<Game, string> GameMapping = new()
     {
         { Game.HoldemNoLimit, "h" },
@@ -26,13 +27,6 @@ public class PokerStoveEvaluator : IEvaluator
         {"quads", ComboType.Quads},
         {"str8 flush", ComboType.StraightFlush},
     };
-
-    public PokerStoveEvaluator(IConfiguration configuration, ILogger<PokerStoveEvaluator> logger)
-    {
-        _path = configuration.GetValue<string>("PokerStove:Path") ??
-                throw new ArgumentException("PokerStove:Path is not configured", nameof(configuration));
-        _logger = logger;
-    }
 
     public Combo Evaluate(Game game, CardSet holeCards, CardSet boardCards)
     {
@@ -53,13 +47,13 @@ public class PokerStoveEvaluator : IEvaluator
             arguments += $" --board {boardCards}";
         }
 
-        _logger.LogDebug($"Call {_path} with {arguments}", _path, arguments);
+        logger.LogDebug("Call {Path} with {arguments}", options.Value.Path, arguments);
 
         return new Process
         {
             StartInfo =
             {
-                FileName = _path,
+                FileName = options.Value.Path,
                 Arguments = arguments,
                 RedirectStandardOutput = true,
                 RedirectStandardError = true,
@@ -80,12 +74,12 @@ public class PokerStoveEvaluator : IEvaluator
 
         if (output != "")
         {
-            _logger.LogDebug($"Got output {output}", output);
+            logger.LogDebug("Got output {Output}", output);
         }
 
         if (error != "")
         {
-            _logger.LogDebug($"Got error {error}", error);
+            logger.LogError("Got error {Error}", error);
         }
 
         return (output, error);
@@ -126,4 +120,11 @@ public class PokerStoveEvaluator : IEvaluator
 
         return new Combo(type: comboType, weight: comboWeight);
     }
+}
+
+public class PokerStoveEvaluatorOptions
+{
+    public const string SectionName = "PokerStove";
+
+    public required string Path { get; set; }
 }

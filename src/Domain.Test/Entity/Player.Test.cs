@@ -18,52 +18,8 @@ public class PlayerTest
         Assert.Equal(new Seat(1), player.Seat);
         Assert.Equal(new Chips(1000), player.Stack);
         Assert.Empty(player.HoleCards);
-        Assert.False(player.IsConnected);
+        Assert.False(player.IsDisconnected);
         Assert.False(player.IsFolded);
-    }
-
-    [Fact]
-    public void TestConnect()
-    {
-        var player = CreatePlayer();
-
-        player.Connect();
-
-        Assert.True(player.IsConnected);
-    }
-
-    [Fact]
-    public void TestConnectWhenAlreadyConnected()
-    {
-        var player = CreatePlayer();
-        player.Connect();
-
-        var exc = Assert.Throws<InvalidOperationException>(() => player.Connect());
-
-        Assert.Equal("The player has already connected", exc.Message);
-        Assert.True(player.IsConnected);
-    }
-
-    [Fact]
-    public void TestDisconnect()
-    {
-        var player = CreatePlayer();
-        player.Connect();
-
-        player.Disconnect();
-
-        Assert.False(player.IsConnected);
-    }
-
-    [Fact]
-    public void TestDisconnectWhenNotConnected()
-    {
-        var player = CreatePlayer();
-
-        var exc = Assert.Throws<InvalidOperationException>(() => player.Disconnect());
-
-        Assert.Equal("The player has not connected yet", exc.Message);
-        Assert.False(player.IsConnected);
     }
 
     [Fact]
@@ -84,7 +40,6 @@ public class PlayerTest
     public void TestTakeHoleCardsWhenFolded()
     {
         var player = CreatePlayer();
-        player.Connect();
         player.Fold();
 
         var exc = Assert.Throws<InvalidOperationException>(() => player.TakeHoleCards(new CardSet([Card.KingOfHearts, Card.TreyOfDiamonds])));
@@ -97,7 +52,6 @@ public class PlayerTest
     public void TestFold()
     {
         var player = CreatePlayer();
-        player.Connect();
 
         player.Fold();
 
@@ -109,7 +63,6 @@ public class PlayerTest
     public void TestFoldWhenFolded()
     {
         var player = CreatePlayer();
-        player.Connect();
         player.Fold();
 
         var exc = Assert.Throws<InvalidOperationException>(() => player.Fold());
@@ -123,7 +76,6 @@ public class PlayerTest
     public void TestFoldWhenAllIn()
     {
         var player = CreatePlayer();
-        player.Connect();
         player.Bet(player.Stack);
 
         var exc = Assert.Throws<InvalidOperationException>(() => player.Fold());
@@ -137,7 +89,6 @@ public class PlayerTest
     public void TestCheck()
     {
         var player = CreatePlayer();
-        player.Connect();
 
         player.Check();
 
@@ -149,7 +100,6 @@ public class PlayerTest
     public void TestCheckWhenFolded()
     {
         var player = CreatePlayer();
-        player.Connect();
         player.Fold();
 
         var exc = Assert.Throws<InvalidOperationException>(() => player.Check());
@@ -160,22 +110,9 @@ public class PlayerTest
     }
 
     [Fact]
-    public void TestCheckWhenNotConnected()
-    {
-        var player = CreatePlayer();
-
-        var exc = Assert.Throws<InvalidOperationException>(() => player.Check());
-
-        Assert.Equal("The player has not connected yet", exc.Message);
-        Assert.False(player.IsFolded);
-        Assert.Equal(new Chips(1000), player.Stack);
-    }
-
-    [Fact]
     public void TestCheckWhenAllIn()
     {
         var player = CreatePlayer();
-        player.Connect();
         player.Bet(player.Stack);
 
         var exc = Assert.Throws<InvalidOperationException>(() => player.Check());
@@ -189,7 +126,6 @@ public class PlayerTest
     public void TestBet()
     {
         var player = CreatePlayer();
-        player.Connect();
 
         player.Bet(new Chips(25));
 
@@ -202,7 +138,6 @@ public class PlayerTest
     public void TestBetAllIn()
     {
         var player = CreatePlayer();
-        player.Connect();
 
         player.Bet(player.Stack);
 
@@ -215,7 +150,6 @@ public class PlayerTest
     public void TestBetWhenFolded()
     {
         var player = CreatePlayer();
-        player.Connect();
         player.Fold();
 
         var exc = Assert.Throws<InvalidOperationException>(() => player.Bet(new Chips(25)));
@@ -227,23 +161,9 @@ public class PlayerTest
     }
 
     [Fact]
-    public void TestBetWhenNotConnected()
-    {
-        var player = CreatePlayer();
-
-        var exc = Assert.Throws<InvalidOperationException>(() => player.Bet(new Chips(25)));
-
-        Assert.Equal("The player has not connected yet", exc.Message);
-        Assert.False(player.IsFolded);
-        Assert.Equal(new Chips(1000), player.Stack);
-        Assert.False(player.IsAllIn);
-    }
-
-    [Fact]
     public void TestBetWhenAllIn()
     {
         var player = CreatePlayer();
-        player.Connect();
         player.Bet(player.Stack);
 
         var exc = Assert.Throws<InvalidOperationException>(() => player.Bet(new Chips(25)));
@@ -257,7 +177,6 @@ public class PlayerTest
     public void TestBetWhenNotEnoughStack()
     {
         var player = CreatePlayer();
-        player.Connect();
 
         var exc = Assert.Throws<InvalidOperationException>(() => player.Bet(new Chips(1025)));
 
@@ -269,19 +188,6 @@ public class PlayerTest
 
     [Fact]
     public void TestPost()
-    {
-        var player = CreatePlayer();
-        player.Connect();
-
-        player.Post(new Chips(25));
-
-        Assert.False(player.IsFolded);
-        Assert.Equal(new Chips(975), player.Stack);
-        Assert.False(player.IsAllIn);
-    }
-
-    [Fact]
-    public void TestPostWhenNotConnected()
     {
         var player = CreatePlayer();
 
@@ -296,7 +202,6 @@ public class PlayerTest
     public void TestPostAllIn()
     {
         var player = CreatePlayer();
-        player.Connect();
 
         player.Post(new Chips(1000));
 
@@ -309,7 +214,6 @@ public class PlayerTest
     public void TestPostWhenFolded()
     {
         var player = CreatePlayer();
-        player.Connect();
         player.Fold();
 
         var exc = Assert.Throws<InvalidOperationException>(() => player.Post(new Chips(25)));
@@ -324,7 +228,6 @@ public class PlayerTest
     public void TestPostWhenAllIn()
     {
         var player = CreatePlayer();
-        player.Connect();
         player.Post(player.Stack);
 
         var exc = Assert.Throws<InvalidOperationException>(() => player.Post(new Chips(25)));
@@ -338,7 +241,6 @@ public class PlayerTest
     public void TestPostWhenNotEnoughStack()
     {
         var player = CreatePlayer();
-        player.Connect();
 
         var exc = Assert.Throws<InvalidOperationException>(() => player.Post(new Chips(1025)));
 
@@ -352,18 +254,6 @@ public class PlayerTest
     public void TestWin()
     {
         var player = CreatePlayer();
-        player.Connect();
-
-        player.Win(new Chips(25));
-
-        Assert.False(player.IsFolded);
-        Assert.Equal(new Chips(1025), player.Stack);
-    }
-
-    [Fact]
-    public void TestWinWhenNotConnected()
-    {
-        var player = CreatePlayer();
 
         player.Win(new Chips(25));
 
@@ -375,7 +265,6 @@ public class PlayerTest
     public void TestWinWhenFolded()
     {
         var player = CreatePlayer();
-        player.Connect();
         player.Fold();
 
         var exc = Assert.Throws<InvalidOperationException>(() => player.Win(new Chips(25)));
@@ -389,18 +278,6 @@ public class PlayerTest
     public void TestRefund()
     {
         var player = CreatePlayer();
-        player.Connect();
-
-        player.Refund(new Chips(25));
-
-        Assert.False(player.IsFolded);
-        Assert.Equal(new Chips(1025), player.Stack);
-    }
-
-    [Fact]
-    public void TestRefundWhenNotConnected()
-    {
-        var player = CreatePlayer();
 
         player.Refund(new Chips(25));
 
@@ -412,7 +289,6 @@ public class PlayerTest
     public void TestRefundWhenFolded()
     {
         var player = CreatePlayer();
-        player.Connect();
         player.Fold();
 
         var exc = Assert.Throws<InvalidOperationException>(() => player.Refund(new Chips(25)));

@@ -33,7 +33,7 @@ public class OmahaPotLimitFactory : IFactory
         return new StandardDeck();
     }
 
-    public IList<IDealer> GetDealers()
+    public List<IDealer> GetDealers()
     {
         return [
             new BlindPostingDealer(),

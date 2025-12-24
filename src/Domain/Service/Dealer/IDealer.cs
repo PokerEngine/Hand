@@ -8,18 +8,7 @@ namespace Domain.Service.Dealer;
 
 public interface IDealer
 {
-    void Start(
-        Game game,
-        Table table,
-        BasePot pot,
-        BaseDeck deck,
-        IRandomizer randomizer,
-        IEvaluator evaluator,
-        IEventBus eventBus
-    );
-
-    void Handle(
-        BaseEvent @event,
+    IEnumerable<IEvent> Start(
         Game game,
         Table table,
         BasePot pot,
@@ -28,7 +17,17 @@ public interface IDealer
         IEvaluator evaluator
     );
 
-    void CommitDecision(
+    void Handle(
+        IEvent @event,
+        Game game,
+        Table table,
+        BasePot pot,
+        BaseDeck deck,
+        IRandomizer randomizer,
+        IEvaluator evaluator
+    );
+
+    IEnumerable<IEvent> CommitDecision(
         Nickname nickname,
         Decision decision,
         Game game,
@@ -36,7 +35,6 @@ public interface IDealer
         BasePot pot,
         BaseDeck deck,
         IRandomizer randomizer,
-        IEvaluator evaluator,
-        IEventBus eventBus
+        IEvaluator evaluator
     );
 }

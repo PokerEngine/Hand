@@ -20,7 +20,7 @@ public class RabbitMqFixture : IDisposable
             .Build();
 
         var opt = configuration.GetSection(RabbitMqIntegrationEventBusOptions.SectionName).Get<RabbitMqIntegrationEventBusOptions>();
-        Options = Microsoft.Extensions.Options.Options.Create(opt);
+        Options = Microsoft.Extensions.Options.Options.Create(opt!);
 
         using var httpClient = new HttpClient
         {

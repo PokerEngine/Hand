@@ -20,7 +20,7 @@ public class MongoDbFixture : IDisposable
             .Build();
 
         var opt = configuration.GetSection(MongoDbRepositoryOptions.SectionName).Get<MongoDbRepositoryOptions>();
-        Options = Microsoft.Extensions.Options.Options.Create(opt);
+        Options = Microsoft.Extensions.Options.Options.Create(opt!);
 
         var url = $"mongodb://{Options.Value.Username}:{Options.Value.Password}@{Options.Value.Host}:{Options.Value.Port}";
         Client = new MongoClient(url);

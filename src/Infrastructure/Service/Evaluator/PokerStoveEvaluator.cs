@@ -126,5 +126,5 @@ public class PokerStoveEvaluatorOptions
 {
     public const string SectionName = "PokerStove";
 
-    public required string Path { get; set; }
+    public required string Path { get; init; }
 }

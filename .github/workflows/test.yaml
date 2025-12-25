@@ -7,44 +7,8 @@ on:
     branches: [ master ]
 
 jobs:
-  test-unit:
+  build:
     runs-on: ubuntu-latest
-
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v5
-
-      - name: Setup .NET
-        uses: actions/setup-dotnet@v5
-        with:
-          dotnet-version: '9.0.x'
-
-      - name: Restore dependencies
-        run: dotnet restore
-
-      - name: Build
-        run: dotnet build --no-restore --configuration Release
-
-      - name: Run unit tests
-        run: dotnet test src/Domain.Test --configuration Release --no-build --verbosity normal
-
-  test-integration:
-    runs-on: ubuntu-latest
-    needs: test-unit
-
-    services:
-      mongodb:
-        image: mongo:8
-        env:
-          MONGO_INITDB_ROOT_USERNAME: hand
-          MONGO_INITDB_ROOT_PASSWORD: hand
-          MONGO_INITDB_DATABASE: hand
-
-      rabbitmq:
-        image: rabbitmq:4-management
-        env:
-          RABBITMQ_DEFAULT_USER: hand
-          RABBITMQ_DEFAULT_PASS: hand
 
     steps:
       - name: Checkout repository
@@ -52,21 +16,74 @@ jobs:
         with:
           submodules: recursive
 
-      - name: Build image
-        run: docker build . --tag test-integration --file ./ci/Dockerfile
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v5
+        with:
+          dotnet-version: '9.0.x'
+
+      - name: Install native build dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y build-essential libboost-all-dev cmake
+
+      - name: Build pokerstove library
+        run: |
+          cp -r ./lib/pokerstove-ext/src/programs/ps-recognize ./lib/pokerstove/src/programs/ps-recognize
+
+          echo "add_subdirectory(ps-recognize)" >> ./lib/pokerstove/src/programs/CMakeLists.txt
+
+          cd ./lib/pokerstove
+          cmake -DCMAKE_BUILD_TYPE=Release -S . -B build
+          cmake --build build -j 4
+
+      - name: Upload pokerstove artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: pokerstove-built
+          path: ./lib/pokerstove/build
+
+  test-unit:
+    runs-on: ubuntu-latest
+    needs: build
+
+    steps:
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v5
+        with:
+          dotnet-version: '9.0.x'
+
+      - name: Checkout repository
+        uses: actions/checkout@v5
+
+      - name: Run unit tests
+        run: |
+          dotnet test src/Domain.Test/Domain.Test.csproj
+
+  test-integration:
+    runs-on: ubuntu-latest
+    needs: build
+
+    steps:
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v5
+        with:
+          dotnet-version: '9.0.x'
+
+      - name: Checkout repository
+        uses: actions/checkout@v5
+
+      - name: Download pokerstove build artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: pokerstove-built
+          path: ./artifacts/pokerstove
+
+      - name: Make pokerstove binaries executable
+        run: |
+          chmod +x ./artifacts/pokerstove/bin/*
 
       - name: Run integration tests
+        env:
+          PokerStove__Path: ${{ github.workspace }}/artifacts/pokerstove/bin/ps-recognize
         run: |
-          docker run --rm \
-            --network host \
-            --env MongoDB__Host=mongodb \
-            --env MongoDB__Port=27017 \
-            --env MongoDB__Username=hand \
-            --env MongoDB__Password=hand \
-            --env MongoDB__Database=hand \
-            --env RabbitMQ__Host=rabbitmq \
-            --env RabbitMQ__Port=5672 \
-            --env RabbitMQ__Username=hand \
-            --env RabbitMQ__Password=hand \
-            test-integration \
-            bash -c "dotnet test src/Infrastructure.Test --settings src/Infrastructure.Test/test.runsettings --configuration Release --no-build --verbosity normal"
+          dotnet test src/Infrastructure.Test/Infrastructure.Test.csproj

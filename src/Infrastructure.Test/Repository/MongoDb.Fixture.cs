@@ -1,34 +1,42 @@
 using Infrastructure.Repository;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Options;
-using MongoDB.Driver;
+using Testcontainers.MongoDb;
 
-namespace Infrastructure.Test.Fixture;
+namespace Infrastructure.Test.Repository;
 
-public class MongoDbFixture : IDisposable
+public sealed class MongoDbFixture : IAsyncLifetime
 {
-    public IOptions<MongoDbRepositoryOptions> Options { get; }
-    public IMongoClient Client { get; }
-    public IMongoDatabase Database { get; }
+    private const string Username = "guest";
+    private const string Password = "guest";
+    private const int Port = 27017;
 
-    public MongoDbFixture()
-    {
-        var configuration = new ConfigurationBuilder()
-            .AddJsonFile("appsettings.json", optional: true)
-            .AddJsonFile("appsettings.Test.json", optional: true)
-            .AddEnvironmentVariables()
+    private MongoDbContainer Container { get; } =
+        new MongoDbBuilder()
+            .WithImage("mongo:8")
+            .WithUsername(Username)
+            .WithPassword(Password)
+            .WithCleanUp(true)
             .Build();
 
-        var opt = configuration.GetSection(MongoDbRepositoryOptions.SectionName).Get<MongoDbRepositoryOptions>();
-        Options = Microsoft.Extensions.Options.Options.Create(opt!);
-
-        var url = $"mongodb://{Options.Value.Username}:{Options.Value.Password}@{Options.Value.Host}:{Options.Value.Port}";
-        Client = new MongoClient(url);
-        Database = Client.GetDatabase(Options.Value.Database);
+    public async Task InitializeAsync()
+    {
+        await Container.StartAsync();
     }
 
-    public void Dispose()
+    public async Task DisposeAsync()
     {
-        Client.DropDatabase(Options.Value.Database);
+        await Container.DisposeAsync();
+    }
+
+    public MongoDbRepositoryOptions CreateOptions()
+    {
+        var databaseName = $"test-db-{Guid.NewGuid()}";
+        return new MongoDbRepositoryOptions
+        {
+            Host = Container.Hostname,
+            Port = Container.GetMappedPublicPort(Port),
+            Username = Username,
+            Password = Password,
+            Database = databaseName
+        };
     }
 }

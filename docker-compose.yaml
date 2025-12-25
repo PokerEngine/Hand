@@ -5,6 +5,9 @@ services:
             dockerfile: Dockerfile
         volumes:
             - .:/usr/local/hand
+        ports:
+            - '5260:5260'
+            - '7053:7053'
         environment:
             DOTNET_ENVIRONMENT: Development
             MongoDB__Host: mongodb

@@ -29,7 +29,12 @@ public class MongoDbRepository : IRepository
         RegisterClassMap();
     }
 
-    public async Task<List<IEvent>> GetEvents(HandUid handUid)
+    public Task<HandUid> GetNextUidAsync()
+    {
+        return Task.FromResult(new HandUid(Guid.NewGuid()));
+    }
+
+    public async Task<List<IEvent>> GetEventsAsync(HandUid handUid)
     {
         var sort = Builders<BaseDocument>.Sort.Ascending("_id");
         var findOptions = new FindOptions<BaseDocument>
@@ -50,7 +55,7 @@ public class MongoDbRepository : IRepository
         return events;
     }
 
-    public async Task AddEvents(HandUid handUid, List<IEvent> events)
+    public async Task AddEventsAsync(HandUid handUid, List<IEvent> events)
     {
         var documents = new List<BaseDocument>();
         foreach (var @event in events)

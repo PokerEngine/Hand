@@ -5,6 +5,7 @@ namespace Application.Repository;
 
 public interface IRepository
 {
-    Task<List<IEvent>> GetEvents(HandUid handUid);
-    Task AddEvents(HandUid handUid, List<IEvent> events);
+    Task<HandUid> GetNextUidAsync();
+    Task<List<IEvent>> GetEventsAsync(HandUid handUid);
+    Task AddEventsAsync(HandUid handUid, List<IEvent> events);
 }

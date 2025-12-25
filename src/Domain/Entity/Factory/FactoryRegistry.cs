@@ -6,8 +6,8 @@ public static class FactoryRegistry
 {
     private static readonly Dictionary<Game, IFactory> Mapping = new()
     {
-        { Game.HoldemNoLimit, new HoldemNoLimitFactory() },
-        { Game.OmahaPotLimit, new OmahaPotLimitFactory() },
+        { Game.NoLimitHoldem, new NoLimitHoldemFactory() },
+        { Game.PotLimitOmaha, new PotLimitOmahaFactory() },
     };
 
     public static IFactory GetFactory(Game game)

@@ -1,35 +1,41 @@
 using Application.Repository;
 using Domain.Event;
 using Domain.ValueObject;
+using System.Collections.Concurrent;
 
 namespace Infrastructure.Repository;
 
 public class InMemoryRepository(ILogger<InMemoryRepository> logger) : IRepository
 {
-    private readonly Dictionary<HandUid, List<IEvent>> _mapping = new();
+    private readonly ConcurrentDictionary<HandUid, List<IEvent>> _mapping = new();
 
-    public async Task<List<IEvent>> GetEvents(HandUid handUid)
+    public Task<HandUid> GetNextUidAsync()
+    {
+        return Task.FromResult(new HandUid(Guid.NewGuid()));
+    }
+
+    public Task<List<IEvent>> GetEventsAsync(HandUid handUid)
     {
         if (!_mapping.TryGetValue(handUid, out var events))
         {
-            events = [];
+            throw new InvalidOperationException("The hand is not found");
         }
 
-        await Task.CompletedTask;
+        List<IEvent> snapshot;
+        lock (events)
+            snapshot = events.ToList();
 
-        logger.LogInformation("{Count} events are got for {HandUid}", events.Count, handUid);
-        return events;
+        logger.LogInformation("{Count} events are got for {HandUid}", snapshot.Count, handUid);
+        return Task.FromResult(snapshot);
     }
 
-    public async Task AddEvents(HandUid handUid, List<IEvent> events)
+    public Task AddEventsAsync(HandUid handUid, List<IEvent> events)
     {
-        if (!_mapping.TryAdd(handUid, events.ToList()))
-        {
-            _mapping[handUid].AddRange(events);
-        }
-
-        await Task.CompletedTask;
+        var items = _mapping.GetOrAdd(handUid, _ => new List<IEvent>());
+        lock (items)
+            items.AddRange(events);
 
         logger.LogInformation("{Count} events are added for {HandUid}", events.Count, handUid);
+        return Task.CompletedTask;
     }
 }

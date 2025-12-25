@@ -34,7 +34,7 @@ public class MongoDbRepositoryTest : IClassFixture<MongoDbFixture>, IDisposable
 
         var @event = new HandIsCreatedEvent
         {
-            Game = Game.HoldemNoLimit,
+            Game = Game.NoLimitHoldem,
             SmallBlind = new Chips(5),
             BigBlind = new Chips(10),
             MaxSeat = new Seat(6),
@@ -49,9 +49,9 @@ public class MongoDbRepositoryTest : IClassFixture<MongoDbFixture>, IDisposable
             OccuredAt = now
         };
 
-        await _repository.AddEvents(handUid, [@event]);
+        await _repository.AddEventsAsync(handUid, [@event]);
 
-        var events = await _repository.GetEvents(handUid);
+        var events = await _repository.GetEventsAsync(handUid);
         Assert.Single(events);
         Assert.Equal(@event, events[0]);
     }
@@ -67,9 +67,9 @@ public class MongoDbRepositoryTest : IClassFixture<MongoDbFixture>, IDisposable
             OccuredAt = now
         };
 
-        await _repository.AddEvents(handUid, [@event]);
+        await _repository.AddEventsAsync(handUid, [@event]);
 
-        var events = await _repository.GetEvents(handUid);
+        var events = await _repository.GetEventsAsync(handUid);
         Assert.Single(events);
         Assert.Equal(@event, events[0]);
     }
@@ -85,9 +85,9 @@ public class MongoDbRepositoryTest : IClassFixture<MongoDbFixture>, IDisposable
             OccuredAt = now
         };
 
-        await _repository.AddEvents(handUid, [@event]);
+        await _repository.AddEventsAsync(handUid, [@event]);
 
-        var events = await _repository.GetEvents(handUid);
+        var events = await _repository.GetEventsAsync(handUid);
         Assert.Single(events);
         Assert.Equal(@event, events[0]);
     }
@@ -103,9 +103,9 @@ public class MongoDbRepositoryTest : IClassFixture<MongoDbFixture>, IDisposable
             OccuredAt = now
         };
 
-        await _repository.AddEvents(handUid, [@event]);
+        await _repository.AddEventsAsync(handUid, [@event]);
 
-        var events = await _repository.GetEvents(handUid);
+        var events = await _repository.GetEventsAsync(handUid);
         Assert.Single(events);
         Assert.Equal(@event, events[0]);
     }
@@ -121,9 +121,9 @@ public class MongoDbRepositoryTest : IClassFixture<MongoDbFixture>, IDisposable
             OccuredAt = now
         };
 
-        await _repository.AddEvents(handUid, [@event]);
+        await _repository.AddEventsAsync(handUid, [@event]);
 
-        var events = await _repository.GetEvents(handUid);
+        var events = await _repository.GetEventsAsync(handUid);
         Assert.Single(events);
         Assert.Equal(@event, events[0]);
     }
@@ -141,9 +141,9 @@ public class MongoDbRepositoryTest : IClassFixture<MongoDbFixture>, IDisposable
             OccuredAt = now
         };
 
-        await _repository.AddEvents(handUid, [@event]);
+        await _repository.AddEventsAsync(handUid, [@event]);
 
-        var events = await _repository.GetEvents(handUid);
+        var events = await _repository.GetEventsAsync(handUid);
         Assert.Single(events);
         Assert.Equal(@event, events[0]);
     }
@@ -161,9 +161,9 @@ public class MongoDbRepositoryTest : IClassFixture<MongoDbFixture>, IDisposable
             OccuredAt = now
         };
 
-        await _repository.AddEvents(handUid, [@event]);
+        await _repository.AddEventsAsync(handUid, [@event]);
 
-        var events = await _repository.GetEvents(handUid);
+        var events = await _repository.GetEventsAsync(handUid);
         Assert.Single(events);
         Assert.Equal(@event, events[0]);
     }
@@ -181,9 +181,9 @@ public class MongoDbRepositoryTest : IClassFixture<MongoDbFixture>, IDisposable
             OccuredAt = now
         };
 
-        await _repository.AddEvents(handUid, [@event]);
+        await _repository.AddEventsAsync(handUid, [@event]);
 
-        var events = await _repository.GetEvents(handUid);
+        var events = await _repository.GetEventsAsync(handUid);
         Assert.Single(events);
         Assert.Equal(@event, events[0]);
     }
@@ -200,9 +200,9 @@ public class MongoDbRepositoryTest : IClassFixture<MongoDbFixture>, IDisposable
             OccuredAt = now
         };
 
-        await _repository.AddEvents(handUid, [@event]);
+        await _repository.AddEventsAsync(handUid, [@event]);
 
-        var events = await _repository.GetEvents(handUid);
+        var events = await _repository.GetEventsAsync(handUid);
         Assert.Single(events);
         Assert.Equal(@event, events[0]);
     }
@@ -226,9 +226,9 @@ public class MongoDbRepositoryTest : IClassFixture<MongoDbFixture>, IDisposable
             OccuredAt = now
         };
 
-        await _repository.AddEvents(handUid, [@event]);
+        await _repository.AddEventsAsync(handUid, [@event]);
 
-        var events = await _repository.GetEvents(handUid);
+        var events = await _repository.GetEventsAsync(handUid);
         Assert.Single(events);
         Assert.Equal(@event, events[0]);
     }
@@ -246,9 +246,9 @@ public class MongoDbRepositoryTest : IClassFixture<MongoDbFixture>, IDisposable
             OccuredAt = now
         };
 
-        await _repository.AddEvents(handUid, [@event]);
+        await _repository.AddEventsAsync(handUid, [@event]);
 
-        var events = await _repository.GetEvents(handUid);
+        var events = await _repository.GetEventsAsync(handUid);
         Assert.Single(events);
         Assert.Equal(@event, events[0]);
     }
@@ -266,9 +266,9 @@ public class MongoDbRepositoryTest : IClassFixture<MongoDbFixture>, IDisposable
             OccuredAt = now
         };
 
-        await _repository.AddEvents(handUid, [@event]);
+        await _repository.AddEventsAsync(handUid, [@event]);
 
-        var events = await _repository.GetEvents(handUid);
+        var events = await _repository.GetEventsAsync(handUid);
         Assert.Single(events);
         Assert.Equal(@event, events[0]);
     }
@@ -286,9 +286,9 @@ public class MongoDbRepositoryTest : IClassFixture<MongoDbFixture>, IDisposable
             OccuredAt = now
         };
 
-        await _repository.AddEvents(handUid, [@event]);
+        await _repository.AddEventsAsync(handUid, [@event]);
 
-        var events = await _repository.GetEvents(handUid);
+        var events = await _repository.GetEventsAsync(handUid);
         Assert.Single(events);
         Assert.Equal(@event, events[0]);
     }
@@ -310,9 +310,9 @@ public class MongoDbRepositoryTest : IClassFixture<MongoDbFixture>, IDisposable
             OccuredAt = now
         };
 
-        await _repository.AddEvents(handUid, [@event]);
+        await _repository.AddEventsAsync(handUid, [@event]);
 
-        var events = await _repository.GetEvents(handUid);
+        var events = await _repository.GetEventsAsync(handUid);
         Assert.Single(events);
         Assert.Equal(@event, events[0]);
     }
@@ -329,9 +329,9 @@ public class MongoDbRepositoryTest : IClassFixture<MongoDbFixture>, IDisposable
             OccuredAt = now
         };
 
-        await _repository.AddEvents(handUid, [@event]);
+        await _repository.AddEventsAsync(handUid, [@event]);
 
-        var events = await _repository.GetEvents(handUid);
+        var events = await _repository.GetEventsAsync(handUid);
         Assert.Single(events);
         Assert.Equal(@event, events[0]);
     }
@@ -350,9 +350,9 @@ public class MongoDbRepositoryTest : IClassFixture<MongoDbFixture>, IDisposable
             OccuredAt = now
         };
 
-        await _repository.AddEvents(handUid, [@event]);
+        await _repository.AddEventsAsync(handUid, [@event]);
 
-        var events = await _repository.GetEvents(handUid);
+        var events = await _repository.GetEventsAsync(handUid);
         Assert.Single(events);
         Assert.Equal(@event, events[0]);
     }

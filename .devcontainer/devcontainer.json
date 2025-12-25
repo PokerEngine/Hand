@@ -4,7 +4,7 @@
     "service": "hand",
     "workspaceFolder": "/usr/local/hand",
     "postCreateCommand": "git config --global --add safe.directory /usr/local/hand",
-    "forwardPorts": [27017, 5672],
+    "forwardPorts": [5260, 7053, 27017, 5672],
     "features": {},
     "customizations": {
         "jetbrains": {

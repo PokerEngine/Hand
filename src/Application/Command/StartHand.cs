@@ -1,0 +1,50 @@
+using Application.Event;
+using Application.Repository;
+using Domain.Entity;
+using Domain.Service.Evaluator;
+using Domain.Service.Randomizer;
+
+namespace Application.Command;
+
+public record struct StartHandCommand : ICommand
+{
+    public required Guid HandUid { get; init; }
+}
+
+public record struct StartHandResponse : ICommandResponse
+{
+    public required Guid HandUid { get; init; }
+}
+
+public class StartHandHandler(
+    IRepository repository,
+    IEventDispatcher eventDispatcher,
+    IRandomizer randomizer,
+    IEvaluator evaluator
+) : ICommandHandler<StartHandCommand, StartHandResponse>
+{
+    public async Task<StartHandResponse> HandleAsync(StartHandCommand command)
+    {
+        var hand = Hand.FromEvents(
+            uid: command.HandUid,
+            randomizer: randomizer,
+            evaluator: evaluator,
+            events: await repository.GetEventsAsync(command.HandUid)
+        );
+
+        hand.Start();
+
+        var events = hand.PullEvents();
+        await repository.AddEventsAsync(hand.Uid, events);
+
+        foreach (var @event in events)
+        {
+            await eventDispatcher.DispatchAsync(@event, hand.Uid);
+        }
+
+        return new StartHandResponse
+        {
+            HandUid = hand.Uid
+        };
+    }
+}

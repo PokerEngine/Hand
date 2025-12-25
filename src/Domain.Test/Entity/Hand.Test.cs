@@ -6,7 +6,7 @@ using Domain.ValueObject;
 
 namespace Domain.Test.Entity;
 
-public class HoldemNoLimit6MaxHandTest
+public class NoLimitHoldem6MaxHandTest
 {
     private readonly FakeRandomizer _randomizer = new();
     private readonly FakeEvaluator _evaluator = new();
@@ -48,7 +48,7 @@ public class HoldemNoLimit6MaxHandTest
 
         var hand = Hand.FromScratch(
             uid: handUid,
-            game: Game.HoldemNoLimit,
+            game: Game.NoLimitHoldem,
             smallBlind: new Chips(5),
             bigBlind: new Chips(10),
             maxSeat: new Seat(6),
@@ -61,7 +61,7 @@ public class HoldemNoLimit6MaxHandTest
         );
 
         Assert.Equal(handUid, hand.Uid);
-        Assert.Equal(Game.HoldemNoLimit, hand.Game);
+        Assert.Equal(Game.NoLimitHoldem, hand.Game);
         Assert.Equal(new Seat(6), hand.Table.MaxSeat);
         Assert.IsType<NoLimitPot>(hand.Pot);
         Assert.IsType<StandardDeck>(hand.Deck);
@@ -69,7 +69,7 @@ public class HoldemNoLimit6MaxHandTest
         var events = hand.PullEvents();
         Assert.Single(events);
         var @event = Assert.IsType<HandIsCreatedEvent>(events[0]);
-        Assert.Equal(Game.HoldemNoLimit, @event.Game);
+        Assert.Equal(Game.NoLimitHoldem, @event.Game);
         Assert.Equal(new Chips(5), @event.SmallBlind);
         Assert.Equal(new Chips(10), @event.BigBlind);
         Assert.Equal(6, @event.Participants.Count);
@@ -105,7 +105,7 @@ public class HoldemNoLimit6MaxHandTest
         {
             new HandIsCreatedEvent
             {
-                Game = Game.HoldemNoLimit,
+                Game = Game.NoLimitHoldem,
                 SmallBlind = new Chips(5),
                 BigBlind = new Chips(10),
                 MaxSeat = new Seat(6),
@@ -373,7 +373,7 @@ public class HoldemNoLimit6MaxHandTest
         );
 
         Assert.Equal(handUid, hand.Uid);
-        Assert.Equal(Game.HoldemNoLimit, hand.Game);
+        Assert.Equal(Game.NoLimitHoldem, hand.Game);
         Assert.Equal(new Seat(6), hand.Table.MaxSeat);
         Assert.IsType<NoLimitPot>(hand.Pot);
         Assert.IsType<StandardDeck>(hand.Deck);
@@ -681,7 +681,7 @@ public class HoldemNoLimit6MaxHandTest
     {
         return Hand.FromScratch(
             uid: new HandUid(Guid.NewGuid()),
-            game: Game.HoldemNoLimit,
+            game: Game.NoLimitHoldem,
             smallBlind: new Chips(smallBlind),
             bigBlind: new Chips(bigBlind),
             maxSeat: new Seat(maxSeat),
@@ -704,7 +704,7 @@ public class HoldemNoLimit6MaxHandTest
     }
 }
 
-public class HoldemNoLimit9MaxHandTest
+public class NoLimitHoldem9MaxHandTest
 {
     private readonly FakeRandomizer _randomizer = new();
     private readonly FakeEvaluator _evaluator = new();
@@ -761,7 +761,7 @@ public class HoldemNoLimit9MaxHandTest
 
         var hand = Hand.FromScratch(
             uid: handUid,
-            game: Game.HoldemNoLimit,
+            game: Game.NoLimitHoldem,
             smallBlind: new Chips(5),
             bigBlind: new Chips(10),
             maxSeat: new Seat(9),
@@ -774,7 +774,7 @@ public class HoldemNoLimit9MaxHandTest
         );
 
         Assert.Equal(handUid, hand.Uid);
-        Assert.Equal(Game.HoldemNoLimit, hand.Game);
+        Assert.Equal(Game.NoLimitHoldem, hand.Game);
         Assert.Equal(new Seat(9), hand.Table.MaxSeat);
         Assert.IsType<NoLimitPot>(hand.Pot);
         Assert.IsType<StandardDeck>(hand.Deck);
@@ -782,7 +782,7 @@ public class HoldemNoLimit9MaxHandTest
         var events = hand.PullEvents();
         Assert.Single(events);
         var @event = Assert.IsType<HandIsCreatedEvent>(events[0]);
-        Assert.Equal(Game.HoldemNoLimit, @event.Game);
+        Assert.Equal(Game.NoLimitHoldem, @event.Game);
         Assert.Equal(new Chips(5), @event.SmallBlind);
         Assert.Equal(new Chips(10), @event.BigBlind);
         Assert.Equal(9, @event.Participants.Count);
@@ -798,7 +798,7 @@ public class HoldemNoLimit9MaxHandTest
     }
 }
 
-public class OmahaPotLimit6MaxHandTest
+public class PotLimitOmaha6MaxHandTest
 {
     private readonly FakeRandomizer _randomizer = new();
     private readonly FakeEvaluator _evaluator = new();
@@ -840,7 +840,7 @@ public class OmahaPotLimit6MaxHandTest
 
         var hand = Hand.FromScratch(
             uid: handUid,
-            game: Game.OmahaPotLimit,
+            game: Game.PotLimitOmaha,
             smallBlind: new Chips(5),
             bigBlind: new Chips(10),
             maxSeat: new Seat(6),
@@ -853,7 +853,7 @@ public class OmahaPotLimit6MaxHandTest
         );
 
         Assert.Equal(handUid, hand.Uid);
-        Assert.Equal(Game.OmahaPotLimit, hand.Game);
+        Assert.Equal(Game.PotLimitOmaha, hand.Game);
         Assert.Equal(new Seat(6), hand.Table.MaxSeat);
         Assert.IsType<PotLimitPot>(hand.Pot);
         Assert.IsType<StandardDeck>(hand.Deck);
@@ -861,7 +861,7 @@ public class OmahaPotLimit6MaxHandTest
         var events = hand.PullEvents();
         Assert.Single(events);
         var @event = Assert.IsType<HandIsCreatedEvent>(events[0]);
-        Assert.Equal(Game.OmahaPotLimit, @event.Game);
+        Assert.Equal(Game.PotLimitOmaha, @event.Game);
         Assert.Equal(new Chips(5), @event.SmallBlind);
         Assert.Equal(new Chips(10), @event.BigBlind);
         Assert.Equal(6, @event.Participants.Count);
@@ -874,7 +874,7 @@ public class OmahaPotLimit6MaxHandTest
     }
 }
 
-public class OmahaPotLimit9MaxHandTest
+public class PotLimitOmaha9MaxHandTest
 {
     private readonly FakeRandomizer _randomizer = new();
     private readonly FakeEvaluator _evaluator = new();
@@ -931,7 +931,7 @@ public class OmahaPotLimit9MaxHandTest
 
         var hand = Hand.FromScratch(
             uid: handUid,
-            game: Game.OmahaPotLimit,
+            game: Game.PotLimitOmaha,
             smallBlind: new Chips(5),
             bigBlind: new Chips(10),
             maxSeat: new Seat(9),
@@ -944,7 +944,7 @@ public class OmahaPotLimit9MaxHandTest
         );
 
         Assert.Equal(handUid, hand.Uid);
-        Assert.Equal(Game.OmahaPotLimit, hand.Game);
+        Assert.Equal(Game.PotLimitOmaha, hand.Game);
         Assert.Equal(new Seat(9), hand.Table.MaxSeat);
         Assert.IsType<PotLimitPot>(hand.Pot);
         Assert.IsType<StandardDeck>(hand.Deck);
@@ -952,7 +952,7 @@ public class OmahaPotLimit9MaxHandTest
         var events = hand.PullEvents();
         Assert.Single(events);
         var @event = Assert.IsType<HandIsCreatedEvent>(events[0]);
-        Assert.Equal(Game.OmahaPotLimit, @event.Game);
+        Assert.Equal(Game.PotLimitOmaha, @event.Game);
         Assert.Equal(new Chips(5), @event.SmallBlind);
         Assert.Equal(new Chips(10), @event.BigBlind);
         Assert.Equal(9, @event.Participants.Count);

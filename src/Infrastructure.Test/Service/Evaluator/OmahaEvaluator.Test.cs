@@ -2,6 +2,7 @@ using Domain.ValueObject;
 
 namespace Infrastructure.Test.Service.Evaluator;
 
+[Trait("Category", "Integration")]
 public class OmahaEvaluatorTest : BaseEvaluatorTest
 {
     [Fact]

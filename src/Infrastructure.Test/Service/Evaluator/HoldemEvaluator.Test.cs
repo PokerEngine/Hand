@@ -2,6 +2,7 @@
 
 namespace Infrastructure.Test.Service.Evaluator;
 
+[Trait("Category", "Integration")]
 public class HoldemEvaluatorTest : BaseEvaluatorTest
 {
     [Fact]

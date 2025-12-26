@@ -7,9 +7,9 @@ namespace Infrastructure.Test.Service.Evaluator;
 
 public class BaseEvaluatorTest
 {
-    protected readonly IEvaluator Evaluator = GetEvaluator();
+    protected readonly IEvaluator Evaluator = CreateEvaluator();
 
-    private static IEvaluator GetEvaluator()
+    private static IEvaluator CreateEvaluator()
     {
         var configuration = new ConfigurationBuilder()
             .AddJsonFile("appsettings.json", optional: true)

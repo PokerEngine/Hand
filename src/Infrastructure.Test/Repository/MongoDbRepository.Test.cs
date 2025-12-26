@@ -11,8 +11,9 @@ namespace Infrastructure.Test.Repository;
 public class MongoDbRepositoryTest(MongoDbFixture fixture) : IClassFixture<MongoDbFixture>
 {
     [Fact]
-    public async Task TestHandIsCreatedEvent()
+    public async Task AddEventsAsync_WhenHandIsCreatedEvent_ShouldAdd()
     {
+        // Arrange
         var repository = CreateRepository();
         var now = GetNow();
         var handUid = new HandUid(Guid.NewGuid());
@@ -34,16 +35,19 @@ public class MongoDbRepositoryTest(MongoDbFixture fixture) : IClassFixture<Mongo
             OccuredAt = now
         };
 
+        // Act
         await repository.AddEventsAsync(handUid, [@event]);
 
+        // Assert
         var events = await repository.GetEventsAsync(handUid);
         Assert.Single(events);
         Assert.Equal(@event, events[0]);
     }
 
     [Fact]
-    public async Task TestHandIsStartedEvent()
+    public async Task AddEventsAsync_WhenHandIsStartedEvent_ShouldAdd()
     {
+        // Arrange
         var repository = CreateRepository();
         var now = GetNow();
         var handUid = new HandUid(Guid.NewGuid());
@@ -53,16 +57,19 @@ public class MongoDbRepositoryTest(MongoDbFixture fixture) : IClassFixture<Mongo
             OccuredAt = now
         };
 
+        // Act
         await repository.AddEventsAsync(handUid, [@event]);
 
+        // Assert
         var events = await repository.GetEventsAsync(handUid);
         Assert.Single(events);
         Assert.Equal(@event, events[0]);
     }
 
     [Fact]
-    public async Task TestHandIsFinishedEvent()
+    public async Task AddEventsAsync_WhenHandIsFinishedEvent_ShouldAdd()
     {
+        // Arrange
         var repository = CreateRepository();
         var now = GetNow();
         var handUid = new HandUid(Guid.NewGuid());
@@ -72,16 +79,19 @@ public class MongoDbRepositoryTest(MongoDbFixture fixture) : IClassFixture<Mongo
             OccuredAt = now
         };
 
+        // Act
         await repository.AddEventsAsync(handUid, [@event]);
 
+        // Assert
         var events = await repository.GetEventsAsync(handUid);
         Assert.Single(events);
         Assert.Equal(@event, events[0]);
     }
 
     [Fact]
-    public async Task TestStageIsStartedEvent()
+    public async Task AddEventsAsync_WhenStageIsStartedEvent_ShouldAdd()
     {
+        // Arrange
         var repository = CreateRepository();
         var now = GetNow();
         var handUid = new HandUid(Guid.NewGuid());
@@ -91,16 +101,19 @@ public class MongoDbRepositoryTest(MongoDbFixture fixture) : IClassFixture<Mongo
             OccuredAt = now
         };
 
+        // Act
         await repository.AddEventsAsync(handUid, [@event]);
 
+        // Assert
         var events = await repository.GetEventsAsync(handUid);
         Assert.Single(events);
         Assert.Equal(@event, events[0]);
     }
 
     [Fact]
-    public async Task TestStageIsFinishedEvent()
+    public async Task AddEventsAsync_WhenStageIsFinishedEvent_ShouldAdd()
     {
+        // Arrange
         var repository = CreateRepository();
         var now = GetNow();
         var handUid = new HandUid(Guid.NewGuid());
@@ -110,16 +123,19 @@ public class MongoDbRepositoryTest(MongoDbFixture fixture) : IClassFixture<Mongo
             OccuredAt = now
         };
 
+        // Act
         await repository.AddEventsAsync(handUid, [@event]);
 
+        // Assert
         var events = await repository.GetEventsAsync(handUid);
         Assert.Single(events);
         Assert.Equal(@event, events[0]);
     }
 
     [Fact]
-    public async Task TestSmallBlindIsPostedEvent()
+    public async Task AddEventsAsync_WhenSmallBlindIsPostedEvent_ShouldAdd()
     {
+        // Arrange
         var repository = CreateRepository();
         var now = GetNow();
         var handUid = new HandUid(Guid.NewGuid());
@@ -131,16 +147,19 @@ public class MongoDbRepositoryTest(MongoDbFixture fixture) : IClassFixture<Mongo
             OccuredAt = now
         };
 
+        // Act
         await repository.AddEventsAsync(handUid, [@event]);
 
+        // Assert
         var events = await repository.GetEventsAsync(handUid);
         Assert.Single(events);
         Assert.Equal(@event, events[0]);
     }
 
     [Fact]
-    public async Task TestBigBlindIsPostedEvent()
+    public async Task AddEventsAsync_WhenBigBlindIsPostedEvent_ShouldAdd()
     {
+        // Arrange
         var repository = CreateRepository();
         var now = GetNow();
         var handUid = new HandUid(Guid.NewGuid());
@@ -152,16 +171,19 @@ public class MongoDbRepositoryTest(MongoDbFixture fixture) : IClassFixture<Mongo
             OccuredAt = now
         };
 
+        // Act
         await repository.AddEventsAsync(handUid, [@event]);
 
+        // Assert
         var events = await repository.GetEventsAsync(handUid);
         Assert.Single(events);
         Assert.Equal(@event, events[0]);
     }
 
     [Fact]
-    public async Task TestHoleCardsAreDealtEvent()
+    public async Task AddEventsAsync_WhenHoleCardsAreDealtEvent_ShouldAdd()
     {
+        // Arrange
         var repository = CreateRepository();
         var now = GetNow();
         var handUid = new HandUid(Guid.NewGuid());
@@ -173,16 +195,19 @@ public class MongoDbRepositoryTest(MongoDbFixture fixture) : IClassFixture<Mongo
             OccuredAt = now
         };
 
+        // Act
         await repository.AddEventsAsync(handUid, [@event]);
 
+        // Assert
         var events = await repository.GetEventsAsync(handUid);
         Assert.Single(events);
         Assert.Equal(@event, events[0]);
     }
 
     [Fact]
-    public async Task TestBoardCardsAreDealtEvent()
+    public async Task AddEventsAsync_WhenBoardCardsAreDealtEvent_ShouldAdd()
     {
+        // Arrange
         var repository = CreateRepository();
         var now = GetNow();
         var handUid = new HandUid(Guid.NewGuid());
@@ -193,16 +218,19 @@ public class MongoDbRepositoryTest(MongoDbFixture fixture) : IClassFixture<Mongo
             OccuredAt = now
         };
 
+        // Act
         await repository.AddEventsAsync(handUid, [@event]);
 
+        // Assert
         var events = await repository.GetEventsAsync(handUid);
         Assert.Single(events);
         Assert.Equal(@event, events[0]);
     }
 
     [Fact]
-    public async Task TestDecisionIsRequestedEvent()
+    public async Task AddEventsAsync_WhenDecisionIsRequestedEvent_ShouldAdd()
     {
+        // Arrange
         var repository = CreateRepository();
         var now = GetNow();
         var handUid = new HandUid(Guid.NewGuid());
@@ -220,16 +248,19 @@ public class MongoDbRepositoryTest(MongoDbFixture fixture) : IClassFixture<Mongo
             OccuredAt = now
         };
 
+        // Act
         await repository.AddEventsAsync(handUid, [@event]);
 
+        // Assert
         var events = await repository.GetEventsAsync(handUid);
         Assert.Single(events);
         Assert.Equal(@event, events[0]);
     }
 
     [Fact]
-    public async Task TestDecisionIsCommittedEvent()
+    public async Task AddEventsAsync_WhenDecisionIsCommittedEvent_ShouldAdd()
     {
+        // Arrange
         var repository = CreateRepository();
         var now = GetNow();
         var handUid = new HandUid(Guid.NewGuid());
@@ -241,16 +272,19 @@ public class MongoDbRepositoryTest(MongoDbFixture fixture) : IClassFixture<Mongo
             OccuredAt = now
         };
 
+        // Act
         await repository.AddEventsAsync(handUid, [@event]);
 
+        // Assert
         var events = await repository.GetEventsAsync(handUid);
         Assert.Single(events);
         Assert.Equal(@event, events[0]);
     }
 
     [Fact]
-    public async Task TestRefundIsCommittedEvent()
+    public async Task AddEventsAsync_WhenRefundIsCommittedEvent_ShouldAdd()
     {
+        // Arrange
         var repository = CreateRepository();
         var now = GetNow();
         var handUid = new HandUid(Guid.NewGuid());
@@ -262,16 +296,19 @@ public class MongoDbRepositoryTest(MongoDbFixture fixture) : IClassFixture<Mongo
             OccuredAt = now
         };
 
+        // Act
         await repository.AddEventsAsync(handUid, [@event]);
 
+        // Assert
         var events = await repository.GetEventsAsync(handUid);
         Assert.Single(events);
         Assert.Equal(@event, events[0]);
     }
 
     [Fact]
-    public async Task WinWithoutShowdownIsCommittedEvent()
+    public async Task AddEventsAsync_WhenWinWithoutShowdownIsCommittedEvent_ShouldAdd()
     {
+        // Arrange
         var repository = CreateRepository();
         var now = GetNow();
         var handUid = new HandUid(Guid.NewGuid());
@@ -283,16 +320,19 @@ public class MongoDbRepositoryTest(MongoDbFixture fixture) : IClassFixture<Mongo
             OccuredAt = now
         };
 
+        // Act
         await repository.AddEventsAsync(handUid, [@event]);
 
+        // Assert
         var events = await repository.GetEventsAsync(handUid);
         Assert.Single(events);
         Assert.Equal(@event, events[0]);
     }
 
     [Fact]
-    public async Task WinAtShowdownIsCommittedEvent()
+    public async Task AddEventsAsync_WhenWinAtShowdownIsCommittedEvent_ShouldAdd()
     {
+        // Arrange
         var repository = CreateRepository();
         var now = GetNow();
         var handUid = new HandUid(Guid.NewGuid());
@@ -308,16 +348,19 @@ public class MongoDbRepositoryTest(MongoDbFixture fixture) : IClassFixture<Mongo
             OccuredAt = now
         };
 
+        // Act
         await repository.AddEventsAsync(handUid, [@event]);
 
+        // Assert
         var events = await repository.GetEventsAsync(handUid);
         Assert.Single(events);
         Assert.Equal(@event, events[0]);
     }
 
     [Fact]
-    public async Task TestHoleCardsAreMuckedEvent()
+    public async Task AddEventsAsync_WhenHoleCardsAreMuckedEvent_ShouldAdd()
     {
+        // Arrange
         var repository = CreateRepository();
         var now = GetNow();
         var handUid = new HandUid(Guid.NewGuid());
@@ -327,16 +370,19 @@ public class MongoDbRepositoryTest(MongoDbFixture fixture) : IClassFixture<Mongo
             OccuredAt = now
         };
 
+        // Act
         await repository.AddEventsAsync(handUid, [@event]);
 
+        // Assert
         var events = await repository.GetEventsAsync(handUid);
         Assert.Single(events);
         Assert.Equal(@event, events[0]);
     }
 
     [Fact]
-    public async Task TestHoleCardsAreShownEvent()
+    public async Task AddEventsAsync_WhenHoleCardsAreShownEvent_ShouldAdd()
     {
+        // Arrange
         var repository = CreateRepository();
         var now = GetNow();
         var handUid = new HandUid(Guid.NewGuid());
@@ -349,11 +395,35 @@ public class MongoDbRepositoryTest(MongoDbFixture fixture) : IClassFixture<Mongo
             OccuredAt = now
         };
 
+        // Act
         await repository.AddEventsAsync(handUid, [@event]);
 
+        // Assert
         var events = await repository.GetEventsAsync(handUid);
         Assert.Single(events);
         Assert.Equal(@event, events[0]);
+    }
+
+    [Fact]
+    public async Task AddEventsAsync_WhenUnknownEvent_ShouldThrowNotImplementedException()
+    {
+        // Arrange
+        var repository = CreateRepository();
+        var now = GetNow();
+        var handUid = new HandUid(Guid.NewGuid());
+
+        var @event = new UnknownEvent
+        {
+            OccuredAt = now
+        };
+
+        // Act
+        var exc = await Assert.ThrowsAsync<NotImplementedException>(
+            async () => await repository.AddEventsAsync(handUid, [@event])
+        );
+
+        // Assert
+        Assert.Equal("Not implemented for UnknownEvent", exc.Message);
     }
 
     private IRepository CreateRepository()
@@ -371,4 +441,9 @@ public class MongoDbRepositoryTest(MongoDbFixture fixture) : IClassFixture<Mongo
         var now = DateTime.Now;
         return new DateTime(now.Ticks - (now.Ticks % TimeSpan.TicksPerMillisecond), now.Kind);
     }
+}
+
+internal record struct UnknownEvent : IEvent
+{
+    public required DateTime OccuredAt { get; init; }
 }

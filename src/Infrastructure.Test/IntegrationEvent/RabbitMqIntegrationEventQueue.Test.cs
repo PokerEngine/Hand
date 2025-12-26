@@ -11,7 +11,7 @@ namespace Infrastructure.Test.IntegrationEvent;
 public class RabbitMqIntegrationEventQueueTest(RabbitMqFixture fixture) : IClassFixture<RabbitMqFixture>
 {
     [Fact]
-    public async Task EnqueueAsync_WhenConnectionWorks_PushesEvent()
+    public async Task EnqueueAsync_WhenConnected_ShouldPublishIntegrationEvent()
     {
         // Arrange
         var integrationEventQueue = CreateIntegrationEventQueue();

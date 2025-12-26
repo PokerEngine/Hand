@@ -13,7 +13,6 @@ public class BaseEvaluatorTest
     {
         var configuration = new ConfigurationBuilder()
             .AddJsonFile("appsettings.json", optional: true)
-            .AddJsonFile("appsettings.Test.json", optional: true)
             .AddEnvironmentVariables()
             .Build();
 

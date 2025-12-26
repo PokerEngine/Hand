@@ -99,23 +99,23 @@ public class PokerStoveEvaluator(
     {
         if (error != "")
         {
-            throw new ArgumentException("Error is caught", nameof(error));
+            throw new FormatException($"Error is caught: {error}");
         }
 
         var parts = output.Split(':').Select(x => x.Trim()).ToArray();
         if (parts.Length != 3)
         {
-            throw new ArgumentException("Invalid response", nameof(output));
+            throw new FormatException($"Invalid response: {output}");
         }
 
         if (!ComboTypeMapping.TryGetValue(parts[0], out var comboType))
         {
-            throw new ArgumentException("Invalid combo", nameof(output));
+            throw new FormatException($"Invalid combo: {output}");
         }
 
         if (!Int32.TryParse(parts[2], out var comboWeight))
         {
-            throw new ArgumentException("Invalid weight", nameof(output));
+            throw new FormatException($"Invalid weight: {output}");
         }
 
         return new Combo(type: comboType, weight: comboWeight);

@@ -154,6 +154,26 @@ public class Hand
         return hand;
     }
 
+    public State GetState()
+    {
+        var playerStates = Table.Players.Select((p) => new StatePlayer
+        {
+            Nickname = p.Nickname,
+            Seat = p.Seat,
+            Stack = p.Stack,
+            HoleCards = p.HoleCards,
+            IsFolded = p.IsFolded
+        }).ToList();
+
+        return new State
+        {
+            Players = playerStates,
+            BoardCards = Table.BoardCards,
+            CurrentSidePot = Pot.CurrentSidePot,
+            PreviousSidePot = Pot.PreviousSidePot
+        };
+    }
+
     public void Start()
     {
         var @event = new HandIsStartedEvent

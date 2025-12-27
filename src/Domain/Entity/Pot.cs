@@ -7,12 +7,12 @@ public abstract class BasePot
     public Chips SmallBlind { get; }
     public Chips BigBlind { get; }
     public Nickname? LastDecisionNickname { get; private set; }
+    public SidePot CurrentSidePot;
+    public SidePot PreviousSidePot;
 
     private Nickname? _lastRaiseNickname;
     private Chips _lastRaiseStep;
     private HashSet<Nickname> _currentDecisionCommittedNicknames;
-    private SidePot _currentSidePot;
-    private SidePot _previousSidePot;
 
     protected BasePot(Chips smallBlind, Chips bigBlind)
     {
@@ -23,8 +23,8 @@ public abstract class BasePot
         _lastRaiseNickname = null;
         _lastRaiseStep = bigBlind;
         _currentDecisionCommittedNicknames = new HashSet<Nickname>();
-        _currentSidePot = new SidePot();
-        _previousSidePot = new SidePot();
+        CurrentSidePot = new SidePot();
+        PreviousSidePot = new SidePot();
     }
 
     public void PostSmallBlind(Player player, Chips amount)
@@ -68,7 +68,7 @@ public abstract class BasePot
     {
         ValidateRefund(player, amount);
 
-        _previousSidePot = _previousSidePot.Sub(player.Nickname, amount);
+        PreviousSidePot = PreviousSidePot.Sub(player.Nickname, amount);
         player.Refund(amount);
     }
 
@@ -76,7 +76,7 @@ public abstract class BasePot
     {
         ValidateWinWithoutShowdown(player, amount);
 
-        _previousSidePot = new SidePot();
+        PreviousSidePot = new SidePot();
         player.Win(amount);
     }
 
@@ -86,7 +86,7 @@ public abstract class BasePot
 
         foreach (var (nickname, amount) in sidePot)
         {
-            _previousSidePot = _previousSidePot.Sub(nickname, amount);
+            PreviousSidePot = PreviousSidePot.Sub(nickname, amount);
         }
 
         foreach (var player in players)
@@ -103,31 +103,31 @@ public abstract class BasePot
         _lastRaiseNickname = null;
         _currentDecisionCommittedNicknames.Clear();
 
-        foreach (var (nickname, amount) in _currentSidePot)
+        foreach (var (nickname, amount) in CurrentSidePot)
         {
-            _currentSidePot = _currentSidePot.Sub(nickname, amount);
-            _previousSidePot = _previousSidePot.Add(nickname, amount);
+            CurrentSidePot = CurrentSidePot.Sub(nickname, amount);
+            PreviousSidePot = PreviousSidePot.Add(nickname, amount);
         }
     }
 
     public Chips GetTotalAmount()
     {
-        return _currentSidePot.Amount + _previousSidePot.Amount;
+        return CurrentSidePot.Amount + PreviousSidePot.Amount;
     }
 
     public Chips GetCurrentAmount()
     {
-        return _currentSidePot.Amount;
+        return CurrentSidePot.Amount;
     }
 
     public Chips GetCurrentPostedAmount(Player player)
     {
-        return _currentSidePot.Get(player.Nickname);
+        return CurrentSidePot.Get(player.Nickname);
     }
 
     public Chips GetPreviousPostedAmount(Player player)
     {
-        return _previousSidePot.Get(player.Nickname);
+        return PreviousSidePot.Get(player.Nickname);
     }
 
     public Chips GetCallToAmount(Player player)
@@ -184,7 +184,7 @@ public abstract class BasePot
 
     private List<SidePot> GetSidePots(IEnumerable<Nickname> nicknames)
     {
-        var remainingPot = _previousSidePot.Merge(_currentSidePot);
+        var remainingPot = PreviousSidePot.Merge(CurrentSidePot);
         var sortedNicknames = nicknames.OrderBy(x => remainingPot.Get(x)).ThenBy(x => x).ToList();
 
         var oneChip = new Chips(1);
@@ -301,7 +301,7 @@ public abstract class BasePot
     {
         var maxAmount = new Chips(0);
 
-        foreach (var (nickname, amount) in _currentSidePot)
+        foreach (var (nickname, amount) in CurrentSidePot)
         {
             if (nickname == player.Nickname)
             {
@@ -321,7 +321,7 @@ public abstract class BasePot
     {
         var maxAmount = new Chips(0);
 
-        foreach (var (nickname, amount) in _previousSidePot)
+        foreach (var (nickname, amount) in PreviousSidePot)
         {
             if (nickname == player.Nickname)
             {
@@ -346,8 +346,8 @@ public abstract class BasePot
         var amount = GetCurrentPostedAmount(player);
         if (amount)
         {
-            _currentSidePot = _currentSidePot.Sub(player.Nickname, amount);
-            _previousSidePot = _previousSidePot.Add(player.Nickname, amount);
+            CurrentSidePot = CurrentSidePot.Sub(player.Nickname, amount);
+            PreviousSidePot = PreviousSidePot.Add(player.Nickname, amount);
         }
 
         LastDecisionNickname = player.Nickname;
@@ -537,7 +537,7 @@ public abstract class BasePot
         var remainingAmount = amount - GetCurrentPostedAmount(player);
         player.Post(remainingAmount);
 
-        _currentSidePot = _currentSidePot.Add(player.Nickname, remainingAmount);
+        CurrentSidePot = CurrentSidePot.Add(player.Nickname, remainingAmount);
     }
 
     private void BetTo(Player player, Chips amount)
@@ -545,7 +545,7 @@ public abstract class BasePot
         var remainingAmount = amount - GetCurrentPostedAmount(player);
         player.Bet(remainingAmount);
 
-        _currentSidePot = _currentSidePot.Add(player.Nickname, remainingAmount);
+        CurrentSidePot = CurrentSidePot.Add(player.Nickname, remainingAmount);
     }
 
     private void CommitCurrentDecision(Player player)

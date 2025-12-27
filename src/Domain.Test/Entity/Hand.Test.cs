@@ -398,6 +398,71 @@ public class NoLimitHoldem6MaxHandTest
     }
 
     [Fact]
+    public void TestGetState()
+    {
+        var participantSb = CreateParticipant(
+            nickname: "SmallBlind",
+            seat: 6
+        );
+        var participantBb = CreateParticipant(
+            nickname: "BigBlind",
+            seat: 2
+        );
+        var participantBu = CreateParticipant(
+            nickname: "Button",
+            seat: 4
+        );
+
+        var hand = CreateHand(
+            participants: [participantSb, participantBb, participantBu],
+            smallBlindSeat: 6,
+            bigBlindSeat: 2,
+            buttonSeat: 4
+        );
+        hand.Start();
+        hand.CommitDecision(
+            nickname: new Nickname("Button"),
+            decision: new Decision(DecisionType.RaiseTo, new Chips(25))
+        );
+        hand.CommitDecision(
+            nickname: new Nickname("SmallBlind"),
+            decision: new Decision(DecisionType.Fold, new Chips(0))
+        );
+        hand.CommitDecision(
+            nickname: new Nickname("BigBlind"),
+            decision: new Decision(DecisionType.CallTo, new Chips(25))
+        );
+        hand.CommitDecision(
+            nickname: new Nickname("BigBlind"),
+            decision: new Decision(DecisionType.Check, new Chips(0))
+        );
+        hand.CommitDecision(
+            nickname: new Nickname("Button"),
+            decision: new Decision(DecisionType.RaiseTo, new Chips(15))
+        );
+
+        var state = hand.GetState();
+
+        Assert.Equal(3, state.Players.Count);
+        Assert.Equal(new Nickname("BigBlind"), state.Players[0].Nickname);
+        Assert.Equal(new Chips(975), state.Players[0].Stack);
+        Assert.Equal(2, state.Players[0].HoleCards.Count);
+        Assert.False(state.Players[0].IsFolded);
+        Assert.Equal(new Nickname("Button"), state.Players[1].Nickname);
+        Assert.Equal(new Chips(960), state.Players[1].Stack);
+        Assert.Equal(2, state.Players[1].HoleCards.Count);
+        Assert.False(state.Players[1].IsFolded);
+        Assert.Equal(new Nickname("SmallBlind"), state.Players[2].Nickname);
+        Assert.Equal(new Chips(995), state.Players[2].Stack);
+        Assert.Equal(2, state.Players[2].HoleCards.Count);
+        Assert.True(state.Players[2].IsFolded);
+
+        Assert.Equal(3, state.BoardCards.Count);
+        Assert.Equal(new Chips(15), state.CurrentSidePot.Amount);
+        Assert.Equal(new Chips(55), state.PreviousSidePot.Amount);
+    }
+
+    [Fact]
     public void TestFlow()
     {
         var participantSb = CreateParticipant(

@@ -11,419 +11,55 @@ namespace Infrastructure.Test.Repository;
 public class MongoDbRepositoryTest(MongoDbFixture fixture) : IClassFixture<MongoDbFixture>
 {
     [Fact]
-    public async Task AddEventsAsync_WhenHandIsCreatedEvent_ShouldAdd()
+    public async Task GetEventsAsync_WhenAdded_ShouldExtractEvents()
     {
         // Arrange
         var repository = CreateRepository();
-        var now = GetNow();
-        var handUid = new HandUid(Guid.NewGuid());
 
-        var @event = new HandIsCreatedEvent
+        var handUid = new HandUid(Guid.NewGuid());
+        var @event = new TestEvent
         {
             Game = Game.NoLimitHoldem,
-            SmallBlind = new Chips(5),
-            BigBlind = new Chips(10),
-            MaxSeat = new Seat(6),
-            SmallBlindSeat = new Seat(1),
-            BigBlindSeat = new Seat(2),
-            ButtonSeat = new Seat(6),
             Participants = [
-                new Participant(new Nickname("SmallBlind"), new Seat(1), new Chips(1000)),
-                new Participant(new Nickname("BigBlind"), new Seat(2), new Chips(900)),
-                new Participant(new Nickname("Button"), new Seat(6), new Chips(800)),
+                new Participant(new Nickname("alice"), new Seat(1), new Chips(1000)),
+                new Participant(new Nickname("bobby"), new Seat(2), new Chips(900)),
+                new Participant(new Nickname("charlie"), new Seat(6), new Chips(800)),
             ],
-            OccuredAt = now
-        };
-
-        // Act
-        await repository.AddEventsAsync(handUid, [@event]);
-
-        // Assert
-        var events = await repository.GetEventsAsync(handUid);
-        Assert.Single(events);
-        Assert.Equal(@event, events[0]);
-    }
-
-    [Fact]
-    public async Task AddEventsAsync_WhenHandIsStartedEvent_ShouldAdd()
-    {
-        // Arrange
-        var repository = CreateRepository();
-        var now = GetNow();
-        var handUid = new HandUid(Guid.NewGuid());
-
-        var @event = new HandIsStartedEvent
-        {
-            OccuredAt = now
-        };
-
-        // Act
-        await repository.AddEventsAsync(handUid, [@event]);
-
-        // Assert
-        var events = await repository.GetEventsAsync(handUid);
-        Assert.Single(events);
-        Assert.Equal(@event, events[0]);
-    }
-
-    [Fact]
-    public async Task AddEventsAsync_WhenHandIsFinishedEvent_ShouldAdd()
-    {
-        // Arrange
-        var repository = CreateRepository();
-        var now = GetNow();
-        var handUid = new HandUid(Guid.NewGuid());
-
-        var @event = new HandIsFinishedEvent
-        {
-            OccuredAt = now
-        };
-
-        // Act
-        await repository.AddEventsAsync(handUid, [@event]);
-
-        // Assert
-        var events = await repository.GetEventsAsync(handUid);
-        Assert.Single(events);
-        Assert.Equal(@event, events[0]);
-    }
-
-    [Fact]
-    public async Task AddEventsAsync_WhenStageIsStartedEvent_ShouldAdd()
-    {
-        // Arrange
-        var repository = CreateRepository();
-        var now = GetNow();
-        var handUid = new HandUid(Guid.NewGuid());
-
-        var @event = new StageIsStartedEvent
-        {
-            OccuredAt = now
-        };
-
-        // Act
-        await repository.AddEventsAsync(handUid, [@event]);
-
-        // Assert
-        var events = await repository.GetEventsAsync(handUid);
-        Assert.Single(events);
-        Assert.Equal(@event, events[0]);
-    }
-
-    [Fact]
-    public async Task AddEventsAsync_WhenStageIsFinishedEvent_ShouldAdd()
-    {
-        // Arrange
-        var repository = CreateRepository();
-        var now = GetNow();
-        var handUid = new HandUid(Guid.NewGuid());
-
-        var @event = new StageIsFinishedEvent
-        {
-            OccuredAt = now
-        };
-
-        // Act
-        await repository.AddEventsAsync(handUid, [@event]);
-
-        // Assert
-        var events = await repository.GetEventsAsync(handUid);
-        Assert.Single(events);
-        Assert.Equal(@event, events[0]);
-    }
-
-    [Fact]
-    public async Task AddEventsAsync_WhenSmallBlindIsPostedEvent_ShouldAdd()
-    {
-        // Arrange
-        var repository = CreateRepository();
-        var now = GetNow();
-        var handUid = new HandUid(Guid.NewGuid());
-
-        var @event = new SmallBlindIsPostedEvent
-        {
-            Nickname = new Nickname("SmallBlind"),
-            Amount = new Chips(5),
-            OccuredAt = now
-        };
-
-        // Act
-        await repository.AddEventsAsync(handUid, [@event]);
-
-        // Assert
-        var events = await repository.GetEventsAsync(handUid);
-        Assert.Single(events);
-        Assert.Equal(@event, events[0]);
-    }
-
-    [Fact]
-    public async Task AddEventsAsync_WhenBigBlindIsPostedEvent_ShouldAdd()
-    {
-        // Arrange
-        var repository = CreateRepository();
-        var now = GetNow();
-        var handUid = new HandUid(Guid.NewGuid());
-
-        var @event = new BigBlindIsPostedEvent
-        {
-            Nickname = new Nickname("BigBlind"),
-            Amount = new Chips(5),
-            OccuredAt = now
-        };
-
-        // Act
-        await repository.AddEventsAsync(handUid, [@event]);
-
-        // Assert
-        var events = await repository.GetEventsAsync(handUid);
-        Assert.Single(events);
-        Assert.Equal(@event, events[0]);
-    }
-
-    [Fact]
-    public async Task AddEventsAsync_WhenHoleCardsAreDealtEvent_ShouldAdd()
-    {
-        // Arrange
-        var repository = CreateRepository();
-        var now = GetNow();
-        var handUid = new HandUid(Guid.NewGuid());
-
-        var @event = new HoleCardsAreDealtEvent
-        {
-            Nickname = new Nickname("SmallBlind"),
-            Cards = new CardSet([Card.AceOfClubs, Card.AceOfDiamonds]),
-            OccuredAt = now
-        };
-
-        // Act
-        await repository.AddEventsAsync(handUid, [@event]);
-
-        // Assert
-        var events = await repository.GetEventsAsync(handUid);
-        Assert.Single(events);
-        Assert.Equal(@event, events[0]);
-    }
-
-    [Fact]
-    public async Task AddEventsAsync_WhenBoardCardsAreDealtEvent_ShouldAdd()
-    {
-        // Arrange
-        var repository = CreateRepository();
-        var now = GetNow();
-        var handUid = new HandUid(Guid.NewGuid());
-
-        var @event = new BoardCardsAreDealtEvent
-        {
-            Cards = new CardSet([Card.KingOfClubs, Card.TenOfDiamonds, Card.DeuceOfClubs]),
-            OccuredAt = now
-        };
-
-        // Act
-        await repository.AddEventsAsync(handUid, [@event]);
-
-        // Assert
-        var events = await repository.GetEventsAsync(handUid);
-        Assert.Single(events);
-        Assert.Equal(@event, events[0]);
-    }
-
-    [Fact]
-    public async Task AddEventsAsync_WhenDecisionIsRequestedEvent_ShouldAdd()
-    {
-        // Arrange
-        var repository = CreateRepository();
-        var now = GetNow();
-        var handUid = new HandUid(Guid.NewGuid());
-
-        var @event = new DecisionIsRequestedEvent
-        {
-            Nickname = new Nickname("SmallBlind"),
-            FoldIsAvailable = true,
-            CheckIsAvailable = false,
-            CallIsAvailable = true,
-            CallToAmount = new Chips(10),
-            RaiseIsAvailable = true,
-            MinRaiseToAmount = new Chips(20),
-            MaxRaiseToAmount = new Chips(1000),
-            OccuredAt = now
-        };
-
-        // Act
-        await repository.AddEventsAsync(handUid, [@event]);
-
-        // Assert
-        var events = await repository.GetEventsAsync(handUid);
-        Assert.Single(events);
-        Assert.Equal(@event, events[0]);
-    }
-
-    [Fact]
-    public async Task AddEventsAsync_WhenDecisionIsCommittedEvent_ShouldAdd()
-    {
-        // Arrange
-        var repository = CreateRepository();
-        var now = GetNow();
-        var handUid = new HandUid(Guid.NewGuid());
-
-        var @event = new DecisionIsCommittedEvent
-        {
-            Nickname = new Nickname("SmallBlind"),
+            Nickname = new Nickname("alice"),
+            Seat = new Seat(2),
+            Chips = new Chips(1000),
+            CardSet = new CardSet([Card.AceOfSpades, Card.SevenOfHearts, Card.DeuceOfDiamonds]),
             Decision = new Decision(DecisionType.RaiseTo, new Chips(30)),
-            OccuredAt = now
-        };
-
-        // Act
-        await repository.AddEventsAsync(handUid, [@event]);
-
-        // Assert
-        var events = await repository.GetEventsAsync(handUid);
-        Assert.Single(events);
-        Assert.Equal(@event, events[0]);
-    }
-
-    [Fact]
-    public async Task AddEventsAsync_WhenRefundIsCommittedEvent_ShouldAdd()
-    {
-        // Arrange
-        var repository = CreateRepository();
-        var now = GetNow();
-        var handUid = new HandUid(Guid.NewGuid());
-
-        var @event = new RefundIsCommittedEvent
-        {
-            Nickname = new Nickname("SmallBlind"),
-            Amount = new Chips(20),
-            OccuredAt = now
-        };
-
-        // Act
-        await repository.AddEventsAsync(handUid, [@event]);
-
-        // Assert
-        var events = await repository.GetEventsAsync(handUid);
-        Assert.Single(events);
-        Assert.Equal(@event, events[0]);
-    }
-
-    [Fact]
-    public async Task AddEventsAsync_WhenWinWithoutShowdownIsCommittedEvent_ShouldAdd()
-    {
-        // Arrange
-        var repository = CreateRepository();
-        var now = GetNow();
-        var handUid = new HandUid(Guid.NewGuid());
-
-        var @event = new WinWithoutShowdownIsCommittedEvent
-        {
-            Nickname = new Nickname("SmallBlind"),
-            Amount = new Chips(20),
-            OccuredAt = now
-        };
-
-        // Act
-        await repository.AddEventsAsync(handUid, [@event]);
-
-        // Assert
-        var events = await repository.GetEventsAsync(handUid);
-        Assert.Single(events);
-        Assert.Equal(@event, events[0]);
-    }
-
-    [Fact]
-    public async Task AddEventsAsync_WhenWinAtShowdownIsCommittedEvent_ShouldAdd()
-    {
-        // Arrange
-        var repository = CreateRepository();
-        var now = GetNow();
-        var handUid = new HandUid(Guid.NewGuid());
-
-        var @event = new WinAtShowdownIsCommittedEvent
-        {
-            SidePot = new SidePot
-            {
-                { new Nickname("BigBlind"), new Chips(30) },
-                { new Nickname("SmallBlind"), new Chips(30) }
-            },
-            WinPot = new SidePot { { new Nickname("BigBlind"), new Chips(60) } },
-            OccuredAt = now
-        };
-
-        // Act
-        await repository.AddEventsAsync(handUid, [@event]);
-
-        // Assert
-        var events = await repository.GetEventsAsync(handUid);
-        Assert.Single(events);
-        Assert.Equal(@event, events[0]);
-    }
-
-    [Fact]
-    public async Task AddEventsAsync_WhenHoleCardsAreMuckedEvent_ShouldAdd()
-    {
-        // Arrange
-        var repository = CreateRepository();
-        var now = GetNow();
-        var handUid = new HandUid(Guid.NewGuid());
-        var @event = new HoleCardsAreMuckedEvent
-        {
-            Nickname = new Nickname("BigBlind"),
-            OccuredAt = now
-        };
-
-        // Act
-        await repository.AddEventsAsync(handUid, [@event]);
-
-        // Assert
-        var events = await repository.GetEventsAsync(handUid);
-        Assert.Single(events);
-        Assert.Equal(@event, events[0]);
-    }
-
-    [Fact]
-    public async Task AddEventsAsync_WhenHoleCardsAreShownEvent_ShouldAdd()
-    {
-        // Arrange
-        var repository = CreateRepository();
-        var now = GetNow();
-        var handUid = new HandUid(Guid.NewGuid());
-
-        var @event = new HoleCardsAreShownEvent
-        {
-            Nickname = new Nickname("SmallBlind"),
-            Cards = new CardSet([Card.AceOfClubs, Card.AceOfDiamonds]),
             Combo = new Combo(ComboType.OnePair, 100500),
-            OccuredAt = now
+            SidePot = new SidePot([
+                new KeyValuePair<Nickname, Chips>(new Nickname("alice"), new Chips(25)),
+                new KeyValuePair<Nickname, Chips>(new Nickname("bobby"), new Chips(5)),
+                new KeyValuePair<Nickname, Chips>(new Nickname("charlie"), new Chips(10))
+            ]),
+            OccuredAt = GetNow()
         };
 
         // Act
         await repository.AddEventsAsync(handUid, [@event]);
+        var events = await repository.GetEventsAsync(handUid);
 
         // Assert
-        var events = await repository.GetEventsAsync(handUid);
         Assert.Single(events);
-        Assert.Equal(@event, events[0]);
+        var typedEvent = Assert.IsType<TestEvent>(events[0]);
+        Assert.Equal(@event, typedEvent);
     }
 
     [Fact]
-    public async Task AddEventsAsync_WhenUnknownEvent_ShouldThrowNotImplementedException()
+    public async Task GetEventsAsync_WhenNotAdded_ShouldThrowInvalidOperationException()
     {
         // Arrange
         var repository = CreateRepository();
-        var now = GetNow();
-        var handUid = new HandUid(Guid.NewGuid());
 
-        var @event = new UnknownEvent
-        {
-            OccuredAt = now
-        };
-
-        // Act
-        var exc = await Assert.ThrowsAsync<NotImplementedException>(
-            async () => await repository.AddEventsAsync(handUid, [@event])
+        // Act & Assert
+        var exc = await Assert.ThrowsAsync<InvalidOperationException>(
+            async () => await repository.GetEventsAsync(new HandUid(Guid.NewGuid()))
         );
-
-        // Assert
-        Assert.Equal("Not implemented for UnknownEvent", exc.Message);
+        Assert.Equal("The hand is not found", exc.Message);
     }
 
     private IRepository CreateRepository()
@@ -443,7 +79,54 @@ public class MongoDbRepositoryTest(MongoDbFixture fixture) : IClassFixture<Mongo
     }
 }
 
-internal record struct UnknownEvent : IEvent
+internal record struct TestEvent : IEvent
 {
+    public required Game Game { get; init; }
+    public required List<Participant> Participants { get; init; }
+    public required Nickname Nickname { get; init; }
+    public required Seat Seat { get; init; }
+    public required Chips Chips { get; init; }
+    public required CardSet CardSet { get; init; }
+    public required Decision Decision { get; init; }
+    public required Combo Combo { get; init; }
+    public required SidePot SidePot { get; init; }
     public required DateTime OccuredAt { get; init; }
+
+    public bool Equals(TestEvent other)
+    {
+        return Game.Equals(other.Game)
+               && Participants.SequenceEqual(other.Participants)
+               && Nickname.Equals(other.Nickname)
+               && Seat.Equals(other.Seat)
+               && Chips.Equals(other.Chips)
+               && CardSet.Equals(other.CardSet)
+               && Decision.Equals(other.Decision)
+               && Combo.Equals(other.Combo)
+               && SidePot.Equals(other.SidePot)
+               && OccuredAt.Equals(other.OccuredAt)
+               ;
+    }
+
+    public override int GetHashCode()
+    {
+        var hash = new HashCode();
+
+        hash.Add(Game);
+
+        foreach (var participant in Participants)
+        {
+            hash.Add(participant);
+        }
+
+        hash.Add(Nickname);
+        hash.Add(Seat);
+        hash.Add(Chips);
+        hash.Add(CardSet);
+        hash.Add(Decision);
+        hash.Add(Combo);
+        hash.Add(SidePot);
+        hash.Add(OccuredAt);
+
+        return hash.ToHashCode();
+    }
 }

@@ -2,31 +2,28 @@ using Application.Repository;
 using Domain.Event;
 using Domain.ValueObject;
 using Microsoft.Extensions.Options;
+using MongoDB.Bson;
+using MongoDB.Bson.IO;
 using MongoDB.Bson.Serialization;
 using MongoDB.Bson.Serialization.Attributes;
+using MongoDB.Bson.Serialization.Serializers;
 using MongoDB.Driver;
 
 namespace Infrastructure.Repository;
 
 public class MongoDbRepository : IRepository
 {
-    private readonly ILogger<MongoDbRepository> _logger;
-    private readonly IMongoCollection<BaseDocument> _collection;
-    private readonly EventDocumentMapper _mapper;
+    private readonly IMongoCollection<EventDocument> _collection;
     private const string Collection = "events";
 
     public MongoDbRepository(IOptions<MongoDbRepositoryOptions> options, ILogger<MongoDbRepository> logger)
     {
-        _logger = logger;
-
         var url = $"mongodb://{options.Value.Username}:{options.Value.Password}@{options.Value.Host}:{options.Value.Port}";
         var client = new MongoClient(url);
         var db = client.GetDatabase(options.Value.Database);
-        _collection = db.GetCollection<BaseDocument>(Collection);
+        _collection = db.GetCollection<EventDocument>(Collection);
 
-        _mapper = new EventDocumentMapper();
-
-        RegisterClassMap();
+        BsonSerializerConfig.Register();
     }
 
     public Task<HandUid> GetNextUidAsync()
@@ -36,82 +33,39 @@ public class MongoDbRepository : IRepository
 
     public async Task<List<IEvent>> GetEventsAsync(HandUid handUid)
     {
-        var sort = Builders<BaseDocument>.Sort.Ascending("_id");
-        var findOptions = new FindOptions<BaseDocument>
-        {
-            Sort = sort
-        };
-        var cursor = await _collection.FindAsync(e => e.HandUid == handUid, findOptions);
-        var documents = await cursor.ToListAsync();
+        var documents = await _collection
+            .Find(e => e.HandUid == handUid)
+            .SortBy(e => e.Id)
+            .ToListAsync();
 
         var events = new List<IEvent>();
+
         foreach (var document in documents)
         {
-            var @event = _mapper.ToEvent((dynamic)document);
+            var type = Type.GetType(document.Type, throwOnError: true)!;
+            var @event = (IEvent)BsonSerializer.Deserialize(document.Data, type);
             events.Add(@event);
         }
 
-        _logger.LogInformation("{eventCount} events are got for {handUid}", events.Count, handUid);
+        if (events.Count == 0)
+        {
+            throw new InvalidOperationException("The hand is not found");
+        }
+
         return events;
     }
 
     public async Task AddEventsAsync(HandUid handUid, List<IEvent> events)
     {
-        var documents = new List<BaseDocument>();
-        foreach (var @event in events)
+        var documents = events.Select(e => new EventDocument
         {
-            var document = _mapper.ToDocument((dynamic)@event, handUid);
-            documents.Add(document);
-        }
+            HandUid = handUid,
+            Type = e.GetType().AssemblyQualifiedName!,
+            OccurredAt = e.OccuredAt,
+            Data = e.ToBsonDocument(e.GetType())
+        });
 
         await _collection.InsertManyAsync(documents);
-
-        _logger.LogInformation("{eventCount} events are added for {handUid}", events.Count, handUid);
-    }
-
-    private static void RegisterClassMap()
-    {
-        if (!BsonClassMap.IsClassMapRegistered(typeof(BaseDocument)))
-        {
-            BsonClassMap.RegisterClassMap<BaseDocument>(cm =>
-            {
-                cm.AutoMap();
-                cm.SetIsRootClass(true);
-                cm.AddKnownType(typeof(HandIsCreatedDocument));
-                cm.AddKnownType(typeof(HandIsStartedDocument));
-                cm.AddKnownType(typeof(HandIsFinishedDocument));
-                cm.AddKnownType(typeof(StageIsStartedDocument));
-                cm.AddKnownType(typeof(StageIsFinishedDocument));
-                cm.AddKnownType(typeof(PlayerConnectedDocument));
-                cm.AddKnownType(typeof(PlayerDisconnectedDocument));
-                cm.AddKnownType(typeof(SmallBlindIsPostedDocument));
-                cm.AddKnownType(typeof(BigBlindIsPostedDocument));
-                cm.AddKnownType(typeof(HoleCardsAreDealtDocument));
-                cm.AddKnownType(typeof(BoardCardsAreDealtDocument));
-                cm.AddKnownType(typeof(RefundIsCommittedDocument));
-                cm.AddKnownType(typeof(WinWithoutShowdownIsCommittedDocument));
-                cm.AddKnownType(typeof(WinAtShowdownIsCommittedDocument));
-                cm.AddKnownType(typeof(HoleCardsAreMuckedDocument));
-                cm.AddKnownType(typeof(HoleCardsAreShownDocument));
-            });
-
-            BsonClassMap.RegisterClassMap<HandIsCreatedDocument>(cm => cm.AutoMap());
-            BsonClassMap.RegisterClassMap<HandIsStartedDocument>(cm => cm.AutoMap());
-            BsonClassMap.RegisterClassMap<HandIsFinishedDocument>(cm => cm.AutoMap());
-            BsonClassMap.RegisterClassMap<StageIsStartedDocument>(cm => cm.AutoMap());
-            BsonClassMap.RegisterClassMap<StageIsFinishedDocument>(cm => cm.AutoMap());
-            BsonClassMap.RegisterClassMap<PlayerConnectedDocument>(cm => cm.AutoMap());
-            BsonClassMap.RegisterClassMap<PlayerDisconnectedDocument>(cm => cm.AutoMap());
-            BsonClassMap.RegisterClassMap<SmallBlindIsPostedDocument>(cm => cm.AutoMap());
-            BsonClassMap.RegisterClassMap<BigBlindIsPostedDocument>(cm => cm.AutoMap());
-            BsonClassMap.RegisterClassMap<HoleCardsAreDealtDocument>(cm => cm.AutoMap());
-            BsonClassMap.RegisterClassMap<BoardCardsAreDealtDocument>(cm => cm.AutoMap());
-            BsonClassMap.RegisterClassMap<RefundIsCommittedDocument>(cm => cm.AutoMap());
-            BsonClassMap.RegisterClassMap<WinWithoutShowdownIsCommittedDocument>(cm => cm.AutoMap());
-            BsonClassMap.RegisterClassMap<WinAtShowdownIsCommittedDocument>(cm => cm.AutoMap());
-            BsonClassMap.RegisterClassMap<HoleCardsAreMuckedDocument>(cm => cm.AutoMap());
-            BsonClassMap.RegisterClassMap<HoleCardsAreShownDocument>(cm => cm.AutoMap());
-        }
     }
 }
 
@@ -126,493 +80,211 @@ public class MongoDbRepositoryOptions
     public required string Database { get; init; }
 }
 
-internal abstract record BaseDocument
+internal sealed class EventDocument
 {
-    public required DateTime OccuredAt { get; init; }
+    [BsonId]
+    public ObjectId Id { get; init; }
+
     public required HandUid HandUid { get; init; }
+    public required string Type { get; init; }
+    public required BsonDocument Data { get; init; }
+    public required DateTime OccurredAt { get; init; }
 }
 
-[BsonIgnoreExtraElements]
-internal record HandIsCreatedDocument : BaseDocument
+internal static class BsonSerializerConfig
 {
-    public required Game Game { get; init; }
-    public required int SmallBlind { get; init; }
-    public required int BigBlind { get; init; }
-    public required int MaxSeat { get; init; }
-    public required int SmallBlindSeat { get; init; }
-    public required int BigBlindSeat { get; init; }
-    public required int ButtonSeat { get; init; }
-    public required List<(string, int, int)> Participants { get; init; }
-}
-
-[BsonIgnoreExtraElements]
-internal record HandIsStartedDocument : BaseDocument;
-
-[BsonIgnoreExtraElements]
-internal record HandIsFinishedDocument : BaseDocument;
-
-[BsonIgnoreExtraElements]
-internal record StageIsStartedDocument : BaseDocument;
-
-[BsonIgnoreExtraElements]
-internal record StageIsFinishedDocument : BaseDocument;
-
-[BsonIgnoreExtraElements]
-internal record PlayerConnectedDocument : BaseDocument
-{
-    public required string Nickname { get; init; }
-}
-
-[BsonIgnoreExtraElements]
-internal record PlayerDisconnectedDocument : BaseDocument
-{
-    public required string Nickname { get; init; }
-}
-
-[BsonIgnoreExtraElements]
-internal record SmallBlindIsPostedDocument : BaseDocument
-{
-    public required string Nickname { get; init; }
-    public required int Amount { get; init; }
-}
-
-[BsonIgnoreExtraElements]
-internal record BigBlindIsPostedDocument : BaseDocument
-{
-    public required string Nickname { get; init; }
-    public required int Amount { get; init; }
-}
-
-[BsonIgnoreExtraElements]
-internal record HoleCardsAreDealtDocument : BaseDocument
-{
-    public required string Nickname { get; init; }
-    public required string Cards { get; init; }
-}
-
-[BsonIgnoreExtraElements]
-internal record BoardCardsAreDealtDocument : BaseDocument
-{
-    public required string Cards { get; init; }
-}
-
-[BsonIgnoreExtraElements]
-internal record DecisionIsRequestedDocument : BaseDocument
-{
-    public required string Nickname { get; init; }
-    public required bool FoldIsAvailable { get; init; }
-    public required bool CheckIsAvailable { get; init; }
-    public required bool CallIsAvailable { get; init; }
-    public required int CallToAmount { get; init; }
-    public required bool RaiseIsAvailable { get; init; }
-    public required int MinRaiseToAmount { get; init; }
-    public required int MaxRaiseToAmount { get; init; }
-}
-
-[BsonIgnoreExtraElements]
-internal record DecisionIsCommittedDocument : BaseDocument
-{
-    public required string Nickname { get; init; }
-    public required DecisionType DecisionType { get; init; }
-    public required int DecisionAmount { get; init; }
-}
-
-[BsonIgnoreExtraElements]
-internal record RefundIsCommittedDocument : BaseDocument
-{
-    public required string Nickname { get; init; }
-    public required int Amount { get; init; }
-}
-
-[BsonIgnoreExtraElements]
-internal record WinWithoutShowdownIsCommittedDocument : BaseDocument
-{
-    public required string Nickname { get; init; }
-    public required int Amount { get; init; }
-}
-
-[BsonIgnoreExtraElements]
-internal record WinAtShowdownIsCommittedDocument : BaseDocument
-{
-    public required Dictionary<string, int> SidePot { get; init; }
-    public required Dictionary<string, int> WinPot { get; init; }
-}
-
-[BsonIgnoreExtraElements]
-internal record HoleCardsAreShownDocument : BaseDocument
-{
-    public required string Nickname { get; init; }
-    public required string Cards { get; init; }
-    public required ComboType ComboType { get; init; }
-    public required int ComboWeight { get; init; }
-}
-
-[BsonIgnoreExtraElements]
-internal record HoleCardsAreMuckedDocument : BaseDocument
-{
-    public required string Nickname { get; init; }
-}
-
-internal class EventDocumentMapper
-{
-    public HandIsCreatedDocument ToDocument(HandIsCreatedEvent @event, HandUid handUid)
+    public static void Register()
     {
-        return new HandIsCreatedDocument
-        {
-            Game = @event.Game,
-            SmallBlind = @event.SmallBlind,
-            BigBlind = @event.BigBlind,
-            MaxSeat = @event.MaxSeat,
-            SmallBlindSeat = @event.SmallBlindSeat,
-            BigBlindSeat = @event.BigBlindSeat,
-            ButtonSeat = @event.ButtonSeat,
-            Participants = @event.Participants.Select(x => ((string)x.Nickname, (int)x.Seat, (int)x.Stack)).ToList(),
-            OccuredAt = @event.OccuredAt,
-            HandUid = handUid
-        };
+        BsonSerializer.TryRegisterSerializer(new ParticipantSerializer());
+        BsonSerializer.TryRegisterSerializer(new NicknameSerializer());
+        BsonSerializer.TryRegisterSerializer(new SeatSerializer());
+        BsonSerializer.TryRegisterSerializer(new ChipsSerializer());
+        BsonSerializer.TryRegisterSerializer(new CardSetSerializer());
+        BsonSerializer.TryRegisterSerializer(new DecisionSerializer());
+        BsonSerializer.TryRegisterSerializer(new ComboSerializer());
+    }
+}
+
+internal sealed class ParticipantSerializer : SerializerBase<Participant>
+{
+    public override void Serialize(BsonSerializationContext context, BsonSerializationArgs args, Participant value)
+    {
+        context.Writer.WriteStartDocument();
+        context.Writer.WriteName("nickname");
+        context.Writer.WriteString(value.Nickname);
+        context.Writer.WriteName("seat");
+        context.Writer.WriteInt32(value.Seat);
+        context.Writer.WriteName("stack");
+        context.Writer.WriteInt32(value.Stack);
+        context.Writer.WriteEndDocument();
     }
 
-    public HandIsCreatedEvent ToEvent(HandIsCreatedDocument document)
+    public override Participant Deserialize(BsonDeserializationContext context, BsonDeserializationArgs args)
     {
-        List<Participant> participants = [];
+        Nickname nickname = default;
+        Seat seat = default;
+        Chips stack = default;
 
-        foreach (var (nickname, seat, stack) in document.Participants)
+        context.Reader.ReadStartDocument();
+
+        while (context.Reader.ReadBsonType() != BsonType.EndOfDocument)
         {
-            participants.Add(new Participant(nickname, seat, stack));
+            var name = context.Reader.ReadName(Utf8NameDecoder.Instance);
+
+            switch (name)
+            {
+                case "nickname":
+                    nickname = context.Reader.ReadString();
+                    break;
+
+                case "seat":
+                    seat = context.Reader.ReadInt32();
+                    break;
+
+                case "stack":
+                    stack = context.Reader.ReadInt32();
+                    break;
+
+                default:
+                    context.Reader.SkipValue();
+                    break;
+            }
         }
 
-        return new HandIsCreatedEvent
+        context.Reader.ReadEndDocument();
+
+        return new Participant(nickname, seat, stack);
+    }
+}
+
+internal sealed class NicknameSerializer : SerializerBase<Nickname>
+{
+    public override void Serialize(BsonSerializationContext context, BsonSerializationArgs args, Nickname value)
+        => context.Writer.WriteString(value);
+
+    public override Nickname Deserialize(BsonDeserializationContext context, BsonDeserializationArgs args)
+        => context.Reader.ReadString();
+}
+
+internal sealed class SeatSerializer : SerializerBase<Seat>
+{
+    public override void Serialize(BsonSerializationContext context, BsonSerializationArgs args, Seat value)
+        => context.Writer.WriteInt32(value);
+
+    public override Seat Deserialize(BsonDeserializationContext context, BsonDeserializationArgs args)
+        => context.Reader.ReadInt32();
+}
+
+internal sealed class ChipsSerializer : SerializerBase<Chips>
+{
+    public override void Serialize(BsonSerializationContext context, BsonSerializationArgs args, Chips value)
+        => context.Writer.WriteInt32(value);
+
+    public override Chips Deserialize(BsonDeserializationContext context, BsonDeserializationArgs args)
+        => context.Reader.ReadInt32();
+}
+
+internal sealed class CardSetSerializer : SerializerBase<CardSet>
+{
+    public override void Serialize(BsonSerializationContext context, BsonSerializationArgs args, CardSet value)
+        => context.Writer.WriteString(value.ToString());
+
+    public override CardSet Deserialize(BsonDeserializationContext context, BsonDeserializationArgs args)
+        => CardSet.FromString(context.Reader.ReadString());
+}
+
+internal sealed class DecisionSerializer : SerializerBase<Decision>
+{
+    public override void Serialize(BsonSerializationContext context, BsonSerializationArgs args, Decision value)
+    {
+        context.Writer.WriteStartDocument();
+        context.Writer.WriteName("type");
+        context.Writer.WriteString(value.Type.ToString());
+        context.Writer.WriteName("amount");
+        context.Writer.WriteInt32(value.Amount);
+        context.Writer.WriteEndDocument();
+    }
+
+    public override Decision Deserialize(BsonDeserializationContext context, BsonDeserializationArgs args)
+    {
+        DecisionType type = default;
+        Chips amount = default;
+
+        context.Reader.ReadStartDocument();
+
+        while (context.Reader.ReadBsonType() != BsonType.EndOfDocument)
         {
-            Game = document.Game,
-            SmallBlind = document.SmallBlind,
-            BigBlind = document.BigBlind,
-            MaxSeat = document.MaxSeat,
-            SmallBlindSeat = document.SmallBlindSeat,
-            BigBlindSeat = document.BigBlindSeat,
-            ButtonSeat = document.ButtonSeat,
-            Participants = participants.ToList(),
-            OccuredAt = document.OccuredAt
-        };
+            var name = context.Reader.ReadName(Utf8NameDecoder.Instance);
+
+            switch (name)
+            {
+                case "type":
+                    type = Enum.Parse<DecisionType>(
+                        context.Reader.ReadString(),
+                        ignoreCase: true
+                    );
+                    break;
+
+                case "amount":
+                    amount = context.Reader.ReadInt32();
+                    break;
+
+                default:
+                    context.Reader.SkipValue();
+                    break;
+            }
+        }
+
+        context.Reader.ReadEndDocument();
+
+        return new Decision(type, amount);
+    }
+}
+
+internal sealed class ComboSerializer : SerializerBase<Combo>
+{
+    public override void Serialize(BsonSerializationContext context, BsonSerializationArgs args, Combo value)
+    {
+        context.Writer.WriteStartDocument();
+        context.Writer.WriteName("type");
+        context.Writer.WriteString(value.Type.ToString());
+        context.Writer.WriteName("weight");
+        context.Writer.WriteInt32(value.Weight);
+        context.Writer.WriteEndDocument();
     }
 
-    public HandIsStartedDocument ToDocument(HandIsStartedEvent @event, HandUid handUid)
+    public override Combo Deserialize(BsonDeserializationContext context, BsonDeserializationArgs args)
     {
-        return new HandIsStartedDocument
+        ComboType type = default;
+        int weight = default;
+
+        context.Reader.ReadStartDocument();
+
+        while (context.Reader.ReadBsonType() != BsonType.EndOfDocument)
         {
-            OccuredAt = @event.OccuredAt,
-            HandUid = handUid
-        };
-    }
+            var name = context.Reader.ReadName(Utf8NameDecoder.Instance);
 
-    public HandIsStartedEvent ToEvent(HandIsStartedDocument document)
-    {
-        return new HandIsStartedEvent
-        {
-            OccuredAt = document.OccuredAt
-        };
-    }
+            switch (name)
+            {
+                case "type":
+                    type = Enum.Parse<ComboType>(
+                        context.Reader.ReadString(),
+                        ignoreCase: true
+                    );
+                    break;
 
-    public HandIsFinishedDocument ToDocument(HandIsFinishedEvent @event, HandUid handUid)
-    {
-        return new HandIsFinishedDocument
-        {
-            OccuredAt = @event.OccuredAt,
-            HandUid = handUid
-        };
-    }
+                case "weight":
+                    weight = context.Reader.ReadInt32();
+                    break;
 
-    public HandIsFinishedEvent ToEvent(HandIsFinishedDocument document)
-    {
-        return new HandIsFinishedEvent
-        {
-            OccuredAt = document.OccuredAt
-        };
-    }
+                default:
+                    context.Reader.SkipValue();
+                    break;
+            }
+        }
 
-    public StageIsStartedDocument ToDocument(StageIsStartedEvent @event, HandUid handUid)
-    {
-        return new StageIsStartedDocument
-        {
-            OccuredAt = @event.OccuredAt,
-            HandUid = handUid
-        };
-    }
+        context.Reader.ReadEndDocument();
 
-    public StageIsStartedEvent ToEvent(StageIsStartedDocument document)
-    {
-        return new StageIsStartedEvent
-        {
-            OccuredAt = document.OccuredAt
-        };
-    }
-
-    public StageIsFinishedDocument ToDocument(StageIsFinishedEvent @event, HandUid handUid)
-    {
-        return new StageIsFinishedDocument
-        {
-            OccuredAt = @event.OccuredAt,
-            HandUid = handUid
-        };
-    }
-
-    public StageIsFinishedEvent ToEvent(StageIsFinishedDocument document)
-    {
-        return new StageIsFinishedEvent
-        {
-            OccuredAt = document.OccuredAt
-        };
-    }
-
-    public SmallBlindIsPostedDocument ToDocument(SmallBlindIsPostedEvent @event, HandUid handUid)
-    {
-        return new SmallBlindIsPostedDocument
-        {
-            Nickname = @event.Nickname,
-            Amount = @event.Amount,
-            OccuredAt = @event.OccuredAt,
-            HandUid = handUid
-        };
-    }
-
-    public SmallBlindIsPostedEvent ToEvent(SmallBlindIsPostedDocument document)
-    {
-        return new SmallBlindIsPostedEvent
-        {
-            Nickname = document.Nickname,
-            Amount = document.Amount,
-            OccuredAt = document.OccuredAt
-        };
-    }
-
-    public BigBlindIsPostedDocument ToDocument(BigBlindIsPostedEvent @event, HandUid handUid)
-    {
-        return new BigBlindIsPostedDocument
-        {
-            Nickname = @event.Nickname,
-            Amount = @event.Amount,
-            OccuredAt = @event.OccuredAt,
-            HandUid = handUid
-        };
-    }
-
-    public BigBlindIsPostedEvent ToEvent(BigBlindIsPostedDocument document)
-    {
-        return new BigBlindIsPostedEvent
-        {
-            Nickname = document.Nickname,
-            Amount = document.Amount,
-            OccuredAt = document.OccuredAt
-        };
-    }
-
-    public HoleCardsAreDealtDocument ToDocument(HoleCardsAreDealtEvent @event, HandUid handUid)
-    {
-        return new HoleCardsAreDealtDocument
-        {
-            Nickname = @event.Nickname,
-            Cards = @event.Cards.ToString(),
-            OccuredAt = @event.OccuredAt,
-            HandUid = handUid
-        };
-    }
-
-    public HoleCardsAreDealtEvent ToEvent(HoleCardsAreDealtDocument document)
-    {
-        return new HoleCardsAreDealtEvent
-        {
-            Nickname = document.Nickname,
-            Cards = CardSet.FromString(document.Cards),
-            OccuredAt = document.OccuredAt
-        };
-    }
-
-    public BoardCardsAreDealtDocument ToDocument(BoardCardsAreDealtEvent @event, HandUid handUid)
-    {
-        return new BoardCardsAreDealtDocument
-        {
-            Cards = @event.Cards.ToString(),
-            OccuredAt = @event.OccuredAt,
-            HandUid = handUid
-        };
-    }
-
-    public BoardCardsAreDealtEvent ToEvent(BoardCardsAreDealtDocument document)
-    {
-        return new BoardCardsAreDealtEvent
-        {
-            Cards = CardSet.FromString(document.Cards),
-            OccuredAt = document.OccuredAt
-        };
-    }
-
-    public DecisionIsRequestedDocument ToDocument(DecisionIsRequestedEvent @event, HandUid handUid)
-    {
-        return new DecisionIsRequestedDocument
-        {
-            Nickname = @event.Nickname,
-            FoldIsAvailable = @event.FoldIsAvailable,
-            CheckIsAvailable = @event.CheckIsAvailable,
-            CallIsAvailable = @event.CallIsAvailable,
-            CallToAmount = @event.CallToAmount,
-            RaiseIsAvailable = @event.RaiseIsAvailable,
-            MinRaiseToAmount = @event.MinRaiseToAmount,
-            MaxRaiseToAmount = @event.MaxRaiseToAmount,
-            OccuredAt = @event.OccuredAt,
-            HandUid = handUid
-        };
-    }
-
-    public DecisionIsRequestedEvent ToEvent(DecisionIsRequestedDocument document)
-    {
-        return new DecisionIsRequestedEvent
-        {
-            Nickname = document.Nickname,
-            FoldIsAvailable = document.FoldIsAvailable,
-            CheckIsAvailable = document.CheckIsAvailable,
-            CallIsAvailable = document.CallIsAvailable,
-            CallToAmount = document.CallToAmount,
-            RaiseIsAvailable = document.RaiseIsAvailable,
-            MinRaiseToAmount = document.MinRaiseToAmount,
-            MaxRaiseToAmount = document.MaxRaiseToAmount,
-            OccuredAt = document.OccuredAt
-        };
-    }
-
-    public DecisionIsCommittedDocument ToDocument(DecisionIsCommittedEvent @event, HandUid handUid)
-    {
-        return new DecisionIsCommittedDocument
-        {
-            Nickname = @event.Nickname,
-            DecisionType = @event.Decision.Type,
-            DecisionAmount = @event.Decision.Amount,
-            OccuredAt = @event.OccuredAt,
-            HandUid = handUid
-        };
-    }
-
-    public DecisionIsCommittedEvent ToEvent(DecisionIsCommittedDocument document)
-    {
-        return new DecisionIsCommittedEvent
-        {
-            Nickname = document.Nickname,
-            Decision = new Decision(document.DecisionType, document.DecisionAmount),
-            OccuredAt = document.OccuredAt
-        };
-    }
-
-    public RefundIsCommittedDocument ToDocument(RefundIsCommittedEvent @event, HandUid handUid)
-    {
-        return new RefundIsCommittedDocument
-        {
-            Nickname = @event.Nickname,
-            Amount = @event.Amount,
-            OccuredAt = @event.OccuredAt,
-            HandUid = handUid
-        };
-    }
-
-    public RefundIsCommittedEvent ToEvent(RefundIsCommittedDocument document)
-    {
-        return new RefundIsCommittedEvent
-        {
-            Nickname = document.Nickname,
-            Amount = document.Amount,
-            OccuredAt = document.OccuredAt
-        };
-    }
-
-    public WinWithoutShowdownIsCommittedDocument ToDocument(WinWithoutShowdownIsCommittedEvent @event, HandUid handUid)
-    {
-        return new WinWithoutShowdownIsCommittedDocument
-        {
-            Nickname = @event.Nickname,
-            Amount = @event.Amount,
-            OccuredAt = @event.OccuredAt,
-            HandUid = handUid
-        };
-    }
-
-    public WinWithoutShowdownIsCommittedEvent ToEvent(WinWithoutShowdownIsCommittedDocument document)
-    {
-        return new WinWithoutShowdownIsCommittedEvent
-        {
-            Nickname = document.Nickname,
-            Amount = document.Amount,
-            OccuredAt = document.OccuredAt
-        };
-    }
-
-    public WinAtShowdownIsCommittedDocument ToDocument(WinAtShowdownIsCommittedEvent @event, HandUid handUid)
-    {
-        return new WinAtShowdownIsCommittedDocument
-        {
-            SidePot = @event.SidePot.ToDictionary(x => (string)x.Key, x => (int)x.Value),
-            WinPot = @event.WinPot.ToDictionary(x => (string)x.Key, x => (int)x.Value),
-            OccuredAt = @event.OccuredAt,
-            HandUid = handUid
-        };
-    }
-
-    public WinAtShowdownIsCommittedEvent ToEvent(WinAtShowdownIsCommittedDocument document)
-    {
-        return new WinAtShowdownIsCommittedEvent
-        {
-            SidePot = new SidePot(document.SidePot.ToDictionary(x => (Nickname)x.Key, x => (Chips)x.Value)),
-            WinPot = new SidePot(document.WinPot.ToDictionary(x => (Nickname)x.Key, x => (Chips)x.Value)),
-            OccuredAt = document.OccuredAt
-        };
-    }
-
-    public HoleCardsAreMuckedDocument ToDocument(HoleCardsAreMuckedEvent @event, HandUid handUid)
-    {
-        return new HoleCardsAreMuckedDocument
-        {
-            Nickname = @event.Nickname,
-            OccuredAt = @event.OccuredAt,
-            HandUid = handUid
-        };
-    }
-
-    public HoleCardsAreMuckedEvent ToEvent(HoleCardsAreMuckedDocument document)
-    {
-        return new HoleCardsAreMuckedEvent
-        {
-            Nickname = document.Nickname,
-            OccuredAt = document.OccuredAt
-        };
-    }
-
-    public HoleCardsAreShownDocument ToDocument(HoleCardsAreShownEvent @event, HandUid handUid)
-    {
-        return new HoleCardsAreShownDocument
-        {
-            Nickname = @event.Nickname,
-            Cards = @event.Cards.ToString(),
-            ComboType = @event.Combo.Type,
-            ComboWeight = @event.Combo.Weight,
-            OccuredAt = @event.OccuredAt,
-            HandUid = handUid
-        };
-    }
-
-    public HoleCardsAreShownEvent ToEvent(HoleCardsAreShownDocument document)
-    {
-        return new HoleCardsAreShownEvent
-        {
-            Nickname = document.Nickname,
-            Cards = CardSet.FromString(document.Cards),
-            Combo = new Combo(document.ComboType, document.ComboWeight),
-            OccuredAt = document.OccuredAt
-        };
-    }
-
-    public BaseDocument ToDocument(IEvent @event, HandUid handUid)
-    {
-        throw new NotImplementedException($"Not implemented for {@event.GetType().Name}");
-    }
-
-    public BaseDocument ToEvent(BaseDocument document)
-    {
-        throw new NotImplementedException($"Not implemented for {document.GetType().Name}");
+        return new Combo(type, weight);
     }
 }

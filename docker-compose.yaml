@@ -9,7 +9,7 @@ services:
             - '5260:5260'
             - '7053:7053'
         environment:
-            DOTNET_ENVIRONMENT: Development
+            ASPNETCORE_ENVIRONMENT: Development
         depends_on:
             - mongodb
 

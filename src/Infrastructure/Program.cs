@@ -31,7 +31,23 @@ public static class Bootstrapper
         builder.Services.AddSingleton<IEvaluator, PokerStoveEvaluator>();
 
         // Register repository
-        builder.Services.AddSingleton<IRepository, InMemoryRepository>();
+        builder.Services.Configure<MongoDbRepositoryOptions>(
+            builder.Configuration.GetSection(MongoDbRepositoryOptions.SectionName)
+        );
+        builder.Services.AddSingleton<IRepository, MongoDbRepository>();
+
+        // Register event queue
+        if (builder.Environment.IsDevelopment())
+        {
+            builder.Services.AddSingleton<IIntegrationEventQueue, InMemoryIntegrationEventQueue>();
+        }
+        else
+        {
+            builder.Services.Configure<RabbitMqIntegrationEventQueueOptions>(
+                builder.Configuration.GetSection(RabbitMqIntegrationEventQueueOptions.SectionName)
+            );
+            builder.Services.AddSingleton<IIntegrationEventQueue, RabbitMqIntegrationEventQueue>();
+        }
 
         // Register commands
         RegisterCommandHandler<CreateHandCommand, CreateHandHandler, CreateHandResponse>(builder.Services);
@@ -61,7 +77,6 @@ public static class Bootstrapper
         builder.Services.AddScoped<IEventDispatcher, EventDispatcher>();
 
         // Register integration events
-        builder.Services.AddSingleton<IIntegrationEventQueue, InMemoryIntegrationEventQueue>();
         builder.Services.AddScoped<IIntegrationEventPublisher, IntegrationEventPublisher>();
 
         builder.Services.AddControllers();

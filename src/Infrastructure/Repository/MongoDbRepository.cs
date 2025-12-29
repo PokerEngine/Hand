@@ -59,8 +59,8 @@ public class MongoDbRepository : IRepository
     {
         var documents = events.Select(e => new EventDocument
         {
-            HandUid = handUid,
             Type = e.GetType().AssemblyQualifiedName!,
+            HandUid = handUid,
             OccurredAt = e.OccuredAt,
             Data = e.ToBsonDocument(e.GetType())
         });
@@ -85,76 +85,35 @@ internal sealed class EventDocument
     [BsonId]
     public ObjectId Id { get; init; }
 
-    public required HandUid HandUid { get; init; }
     public required string Type { get; init; }
-    public required BsonDocument Data { get; init; }
+    public required HandUid HandUid { get; init; }
     public required DateTime OccurredAt { get; init; }
+    public required BsonDocument Data { get; init; }
 }
 
 internal static class BsonSerializerConfig
 {
     public static void Register()
     {
-        BsonSerializer.TryRegisterSerializer(new ParticipantSerializer());
+        BsonSerializer.TryRegisterSerializer(new GuidSerializer(GuidRepresentation.Standard));
+        BsonSerializer.TryRegisterSerializer(new HandUidSerializer());
         BsonSerializer.TryRegisterSerializer(new NicknameSerializer());
         BsonSerializer.TryRegisterSerializer(new SeatSerializer());
         BsonSerializer.TryRegisterSerializer(new ChipsSerializer());
         BsonSerializer.TryRegisterSerializer(new CardSetSerializer());
         BsonSerializer.TryRegisterSerializer(new DecisionSerializer());
         BsonSerializer.TryRegisterSerializer(new ComboSerializer());
+        BsonSerializer.TryRegisterSerializer(new ParticipantSerializer());
     }
 }
 
-internal sealed class ParticipantSerializer : SerializerBase<Participant>
+internal sealed class HandUidSerializer : SerializerBase<HandUid>
 {
-    public override void Serialize(BsonSerializationContext context, BsonSerializationArgs args, Participant value)
-    {
-        context.Writer.WriteStartDocument();
-        context.Writer.WriteName("nickname");
-        context.Writer.WriteString(value.Nickname);
-        context.Writer.WriteName("seat");
-        context.Writer.WriteInt32(value.Seat);
-        context.Writer.WriteName("stack");
-        context.Writer.WriteInt32(value.Stack);
-        context.Writer.WriteEndDocument();
-    }
+    public override void Serialize(BsonSerializationContext context, BsonSerializationArgs args, HandUid value)
+        => context.Writer.WriteGuid(value);
 
-    public override Participant Deserialize(BsonDeserializationContext context, BsonDeserializationArgs args)
-    {
-        Nickname nickname = default;
-        Seat seat = default;
-        Chips stack = default;
-
-        context.Reader.ReadStartDocument();
-
-        while (context.Reader.ReadBsonType() != BsonType.EndOfDocument)
-        {
-            var name = context.Reader.ReadName(Utf8NameDecoder.Instance);
-
-            switch (name)
-            {
-                case "nickname":
-                    nickname = context.Reader.ReadString();
-                    break;
-
-                case "seat":
-                    seat = context.Reader.ReadInt32();
-                    break;
-
-                case "stack":
-                    stack = context.Reader.ReadInt32();
-                    break;
-
-                default:
-                    context.Reader.SkipValue();
-                    break;
-            }
-        }
-
-        context.Reader.ReadEndDocument();
-
-        return new Participant(nickname, seat, stack);
-    }
+    public override HandUid Deserialize(BsonDeserializationContext context, BsonDeserializationArgs args)
+        => context.Reader.ReadGuid();
 }
 
 internal sealed class NicknameSerializer : SerializerBase<Nickname>
@@ -286,5 +245,57 @@ internal sealed class ComboSerializer : SerializerBase<Combo>
         context.Reader.ReadEndDocument();
 
         return new Combo(type, weight);
+    }
+}
+
+internal sealed class ParticipantSerializer : SerializerBase<Participant>
+{
+    public override void Serialize(BsonSerializationContext context, BsonSerializationArgs args, Participant value)
+    {
+        context.Writer.WriteStartDocument();
+        context.Writer.WriteName("nickname");
+        context.Writer.WriteString(value.Nickname);
+        context.Writer.WriteName("seat");
+        context.Writer.WriteInt32(value.Seat);
+        context.Writer.WriteName("stack");
+        context.Writer.WriteInt32(value.Stack);
+        context.Writer.WriteEndDocument();
+    }
+
+    public override Participant Deserialize(BsonDeserializationContext context, BsonDeserializationArgs args)
+    {
+        Nickname nickname = default;
+        Seat seat = default;
+        Chips stack = default;
+
+        context.Reader.ReadStartDocument();
+
+        while (context.Reader.ReadBsonType() != BsonType.EndOfDocument)
+        {
+            var name = context.Reader.ReadName(Utf8NameDecoder.Instance);
+
+            switch (name)
+            {
+                case "nickname":
+                    nickname = context.Reader.ReadString();
+                    break;
+
+                case "seat":
+                    seat = context.Reader.ReadInt32();
+                    break;
+
+                case "stack":
+                    stack = context.Reader.ReadInt32();
+                    break;
+
+                default:
+                    context.Reader.SkipValue();
+                    break;
+            }
+        }
+
+        context.Reader.ReadEndDocument();
+
+        return new Participant(nickname, seat, stack);
     }
 }

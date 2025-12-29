@@ -23,7 +23,7 @@ public class MongoDbRepositoryTest(MongoDbFixture fixture) : IClassFixture<Mongo
             Participants = [
                 new Participant(new Nickname("alice"), new Seat(1), new Chips(1000)),
                 new Participant(new Nickname("bobby"), new Seat(2), new Chips(900)),
-                new Participant(new Nickname("charlie"), new Seat(6), new Chips(800)),
+                new Participant(new Nickname("charlie"), new Seat(6), new Chips(800))
             ],
             Nickname = new Nickname("alice"),
             Seat = new Seat(2),
@@ -38,9 +38,9 @@ public class MongoDbRepositoryTest(MongoDbFixture fixture) : IClassFixture<Mongo
             ]),
             OccuredAt = GetNow()
         };
+        await repository.AddEventsAsync(handUid, [@event]);
 
         // Act
-        await repository.AddEventsAsync(handUid, [@event]);
         var events = await repository.GetEventsAsync(handUid);
 
         // Assert
@@ -54,6 +54,30 @@ public class MongoDbRepositoryTest(MongoDbFixture fixture) : IClassFixture<Mongo
     {
         // Arrange
         var repository = CreateRepository();
+
+        var handUid = new HandUid(Guid.NewGuid());
+        var @event = new TestEvent
+        {
+            Game = Game.NoLimitHoldem,
+            Participants = [
+                new Participant(new Nickname("alice"), new Seat(1), new Chips(1000)),
+                new Participant(new Nickname("bobby"), new Seat(2), new Chips(900)),
+                new Participant(new Nickname("charlie"), new Seat(6), new Chips(800))
+            ],
+            Nickname = new Nickname("alice"),
+            Seat = new Seat(2),
+            Chips = new Chips(1000),
+            CardSet = new CardSet([Card.AceOfSpades, Card.SevenOfHearts, Card.DeuceOfDiamonds]),
+            Decision = new Decision(DecisionType.RaiseTo, new Chips(30)),
+            Combo = new Combo(ComboType.OnePair, 100500),
+            SidePot = new SidePot([
+                new KeyValuePair<Nickname, Chips>(new Nickname("alice"), new Chips(25)),
+                new KeyValuePair<Nickname, Chips>(new Nickname("bobby"), new Chips(5)),
+                new KeyValuePair<Nickname, Chips>(new Nickname("charlie"), new Chips(10))
+            ]),
+            OccuredAt = GetNow()
+        };
+        await repository.AddEventsAsync(handUid, [@event]);
 
         // Act & Assert
         var exc = await Assert.ThrowsAsync<InvalidOperationException>(

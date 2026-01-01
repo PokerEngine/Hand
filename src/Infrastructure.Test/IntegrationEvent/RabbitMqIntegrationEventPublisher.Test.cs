@@ -30,7 +30,7 @@ public class RabbitMqIntegrationEventPublisherTest(
         var integrationEvent = new TestIntegrationEvent
         {
             HandUid = Guid.NewGuid(),
-            Name = "Test Published Event",
+            Name = "Test Published Integration Event",
             Number = 100500,
             OccuredAt = GetNow()
         };
@@ -73,7 +73,7 @@ public class RabbitMqIntegrationEventPublisherTest(
         Assert.NotNull(receivedEvent);
         Assert.Equal(integrationEvent, receivedEvent);
         Assert.Equal("application/json", received.BasicProperties.ContentType);
-        Assert.Equal(typeof(TestIntegrationEvent).AssemblyQualifiedName, received.BasicProperties.Type);
+        Assert.Equal(nameof(TestIntegrationEvent), received.BasicProperties.Type);
         Assert.Equal(
             integrationEvent.OccuredAt,
             DateTimeOffset.FromUnixTimeSeconds(received.BasicProperties.Timestamp.UnixTime).UtcDateTime

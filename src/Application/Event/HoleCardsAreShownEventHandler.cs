@@ -1,6 +1,5 @@
 using Application.IntegrationEvent;
 using Domain.Event;
-using Domain.ValueObject;
 
 namespace Application.Event;
 
@@ -13,6 +12,8 @@ public class HoleCardsAreShownEventHandler(
         var integrationEvent = new HoleCardsAreShownIntegrationEvent
         {
             HandUid = context.HandUid,
+            TableUid = context.TableUid,
+            TableType = context.TableType.ToString(),
             Nickname = @event.Nickname,
             Cards = @event.Cards.ToString(),
             ComboType = @event.Combo.Type.ToString(),
@@ -20,7 +21,7 @@ public class HoleCardsAreShownEventHandler(
             OccuredAt = @event.OccuredAt
         };
 
-        var routingKey = new IntegrationEventRoutingKey($"hand.{context.HandType.ToRoutingKey()}.hole-cards-are-shown");
+        var routingKey = new IntegrationEventRoutingKey($"hand.{context.TableType.ToRoutingKey()}.hole-cards-are-shown");
         await integrationEventPublisher.PublishAsync(integrationEvent, routingKey);
     }
 }

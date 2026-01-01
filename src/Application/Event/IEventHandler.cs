@@ -1,5 +1,4 @@
 using Domain.Event;
-using Domain.ValueObject;
 
 namespace Application.Event;
 

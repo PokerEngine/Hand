@@ -1,6 +1,6 @@
 namespace Domain.ValueObject;
 
-public enum HandType
+public enum TableType
 {
     Cash
 }

@@ -6,7 +6,8 @@ Accept: application/json
 Content-Type: application/json
 
 {
-    "type": "Cash",
+    "tableUid": "00000000-0000-0000-0000-000000000000",
+    "tableType": "Cash",
     "game": "NoLimitHoldem",
     "maxSeat": 6,
     "smallBlind": 5,
@@ -33,7 +34,7 @@ Content-Type: application/json
     ]
 }
 > {%
-    client.global.set("handUid", response.body.handUid);
+    client.global.set("handUid", response.body.uid);
 %}
 
 ### Start the hand

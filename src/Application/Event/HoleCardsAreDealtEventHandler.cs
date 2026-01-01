@@ -1,6 +1,5 @@
 using Application.IntegrationEvent;
 using Domain.Event;
-using Domain.ValueObject;
 
 namespace Application.Event;
 
@@ -13,12 +12,14 @@ public class HoleCardsAreDealtEventHandler(
         var integrationEvent = new HoleCardsAreDealtIntegrationEvent
         {
             HandUid = context.HandUid,
+            TableUid = context.TableUid,
+            TableType = context.TableType.ToString(),
             Nickname = @event.Nickname,
             Cards = @event.Cards.ToString(),
             OccuredAt = @event.OccuredAt
         };
 
-        var routingKey = new IntegrationEventRoutingKey($"hand.{context.HandType.ToRoutingKey()}.hole-cards-are-dealt");
+        var routingKey = new IntegrationEventRoutingKey($"hand.{context.TableType.ToRoutingKey()}.hole-cards-are-dealt");
         await integrationEventPublisher.PublishAsync(integrationEvent, routingKey);
     }
 }

@@ -3,7 +3,8 @@ namespace Application.IntegrationEvent;
 public record struct HandIsCreatedIntegrationEvent : IIntegrationEvent
 {
     public required Guid HandUid { get; init; }
-    public required string Type { get; init; }
+    public required Guid TableUid { get; init; }
+    public required string TableType { get; init; }
     public required string Game { get; init; }
     public required int MaxSeat { get; init; }
     public required int SmallBlind { get; init; }

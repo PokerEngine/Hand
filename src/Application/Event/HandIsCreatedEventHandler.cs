@@ -13,7 +13,8 @@ public class HandIsCreatedEventHandler(
         var integrationEvent = new HandIsCreatedIntegrationEvent
         {
             HandUid = context.HandUid,
-            Type = @event.Type.ToString(),
+            TableUid = context.TableUid,
+            TableType = context.TableType.ToString(),
             Game = @event.Game.ToString(),
             MaxSeat = @event.MaxSeat,
             SmallBlind = @event.SmallBlind,
@@ -25,7 +26,7 @@ public class HandIsCreatedEventHandler(
             OccuredAt = @event.OccuredAt
         };
 
-        var routingKey = new IntegrationEventRoutingKey($"hand.{context.HandType.ToRoutingKey()}.hand-is-created");
+        var routingKey = new IntegrationEventRoutingKey($"hand.{context.TableType.ToRoutingKey()}.hand-is-created");
         await integrationEventPublisher.PublishAsync(integrationEvent, routingKey);
     }
 

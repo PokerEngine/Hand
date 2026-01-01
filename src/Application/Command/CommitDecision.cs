@@ -46,7 +46,13 @@ public class CommitDecisionHandler(
         var events = hand.PullEvents();
         await repository.AddEventsAsync(hand.Uid, events);
 
-        var context = new EventContext { HandUid = hand.Uid, HandType = hand.Type };
+        var context = new EventContext
+        {
+            HandUid = hand.Uid,
+            TableUid = hand.TableUid,
+            TableType = hand.TableType
+        };
+
         foreach (var @event in events)
         {
             await eventDispatcher.DispatchAsync(@event, context);

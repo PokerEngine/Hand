@@ -1,6 +1,5 @@
 using Application.IntegrationEvent;
 using Domain.Event;
-using Domain.ValueObject;
 
 namespace Application.Event;
 
@@ -13,13 +12,15 @@ public class DecisionIsCommittedEventHandler(
         var integrationEvent = new DecisionIsCommittedIntegrationEvent()
         {
             HandUid = context.HandUid,
+            TableUid = context.TableUid,
+            TableType = context.TableType.ToString(),
             Nickname = @event.Nickname,
             DecisionType = @event.Decision.Type.ToString(),
             DecisionAmount = @event.Decision.Amount,
             OccuredAt = @event.OccuredAt
         };
 
-        var routingKey = new IntegrationEventRoutingKey($"hand.{context.HandType.ToRoutingKey()}.decision-is-committed");
+        var routingKey = new IntegrationEventRoutingKey($"hand.{context.TableType.ToRoutingKey()}.decision-is-committed");
         await integrationEventPublisher.PublishAsync(integrationEvent, routingKey);
     }
 }

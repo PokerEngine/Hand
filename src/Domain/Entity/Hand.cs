@@ -11,7 +11,8 @@ namespace Domain.Entity;
 public class Hand
 {
     public readonly HandUid Uid;
-    public readonly HandType Type;
+    public readonly TableUid TableUid;
+    public readonly TableType TableType;
     public readonly Game Game;
     public readonly Table Table;
     public readonly BasePot Pot;
@@ -27,7 +28,8 @@ public class Hand
 
     private Hand(
         HandUid uid,
-        HandType type,
+        TableUid tableUid,
+        TableType tableType,
         Game game,
         Table table,
         BasePot pot,
@@ -38,7 +40,8 @@ public class Hand
     )
     {
         Uid = uid;
-        Type = type;
+        TableUid = tableUid;
+        TableType = tableType;
         Game = game;
         Table = table;
         Pot = pot;
@@ -52,7 +55,8 @@ public class Hand
 
     public static Hand FromScratch(
         HandUid uid,
-        HandType type,
+        TableUid tableUid,
+        TableType tableType,
         Game game,
         Chips smallBlind,
         Chips bigBlind,
@@ -68,7 +72,8 @@ public class Hand
         var factory = FactoryRegistry.GetFactory(game);
         var hand = new Hand(
             uid: uid,
-            type: type,
+            tableUid: tableUid,
+            tableType: tableType,
             game: game,
             table: factory.GetTable(
                 participants: participants,
@@ -89,8 +94,9 @@ public class Hand
 
         var @event = new HandIsCreatedEvent
         {
+            TableUid = tableUid,
             Game = game,
-            Type = type,
+            TableType = tableType,
             SmallBlind = smallBlind,
             BigBlind = bigBlind,
             MaxSeat = maxSeat,
@@ -120,7 +126,8 @@ public class Hand
         var createdEvent = (HandIsCreatedEvent)events[0];
         var hand = FromScratch(
             uid: uid,
-            type: createdEvent.Type,
+            tableUid: createdEvent.TableUid,
+            tableType: createdEvent.TableType,
             game: createdEvent.Game,
             smallBlind: createdEvent.SmallBlind,
             bigBlind: createdEvent.BigBlind,

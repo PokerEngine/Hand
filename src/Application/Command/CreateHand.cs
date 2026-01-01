@@ -8,7 +8,8 @@ using Domain.ValueObject;
 namespace Application.Command;
 public record struct CreateHandCommand : ICommand
 {
-    public required string Type { get; init; }
+    public required Guid TableUid { get; init; }
+    public required string TableType { get; init; }
     public required string Game { get; init; }
     public required int MaxSeat { get; init; }
     public required int SmallBlind { get; init; }
@@ -21,7 +22,7 @@ public record struct CreateHandCommand : ICommand
 
 public record struct CreateHandResponse : ICommandResponse
 {
-    public required Guid HandUid { get; init; }
+    public required Guid Uid { get; init; }
 }
 
 public class CreateHandHandler(
@@ -33,12 +34,13 @@ public class CreateHandHandler(
 {
     public async Task<CreateHandResponse> HandleAsync(CreateHandCommand command)
     {
-        var type = (HandType)Enum.Parse(typeof(HandType), command.Type);
+        var tableType = (TableType)Enum.Parse(typeof(TableType), command.TableType);
         var game = (Game)Enum.Parse(typeof(Game), command.Game);
 
         var hand = Hand.FromScratch(
             uid: await repository.GetNextUidAsync(),
-            type: type,
+            tableUid: command.TableUid,
+            tableType: tableType,
             game: game,
             maxSeat: command.MaxSeat,
             smallBlind: command.SmallBlind,
@@ -54,7 +56,13 @@ public class CreateHandHandler(
         var events = hand.PullEvents();
         await repository.AddEventsAsync(hand.Uid, events);
 
-        var context = new EventContext { HandUid = hand.Uid, HandType = hand.Type };
+        var context = new EventContext
+        {
+            HandUid = hand.Uid,
+            TableUid = hand.TableUid,
+            TableType = hand.TableType
+        };
+
         foreach (var @event in events)
         {
             await eventDispatcher.DispatchAsync(@event, context);
@@ -62,7 +70,7 @@ public class CreateHandHandler(
 
         return new CreateHandResponse
         {
-            HandUid = hand.Uid
+            Uid = hand.Uid
         };
     }
 

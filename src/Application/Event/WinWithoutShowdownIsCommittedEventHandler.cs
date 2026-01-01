@@ -1,6 +1,5 @@
 using Application.IntegrationEvent;
 using Domain.Event;
-using Domain.ValueObject;
 
 namespace Application.Event;
 
@@ -13,12 +12,14 @@ public class WinWithoutShowdownIsCommittedEventHandler(
         var integrationEvent = new WinIsCommittedIntegrationEvent
         {
             HandUid = context.HandUid,
+            TableUid = context.TableUid,
+            TableType = context.TableType.ToString(),
             Nickname = @event.Nickname,
             Amount = @event.Amount,
             OccuredAt = @event.OccuredAt
         };
 
-        var routingKey = new IntegrationEventRoutingKey($"hand.{context.HandType.ToRoutingKey()}.win-without-showdown-is-committed");
+        var routingKey = new IntegrationEventRoutingKey($"hand.{context.TableType.ToRoutingKey()}.win-without-showdown-is-committed");
         await integrationEventPublisher.PublishAsync(integrationEvent, routingKey);
     }
 }

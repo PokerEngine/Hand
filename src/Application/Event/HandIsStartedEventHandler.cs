@@ -1,6 +1,5 @@
 using Application.IntegrationEvent;
 using Domain.Event;
-using Domain.ValueObject;
 
 namespace Application.Event;
 
@@ -13,10 +12,12 @@ public class HandIsStartedEventHandler(
         var integrationEvent = new HandIsStartedIntegrationEvent
         {
             HandUid = context.HandUid,
+            TableUid = context.TableUid,
+            TableType = context.TableType.ToString(),
             OccuredAt = @event.OccuredAt
         };
 
-        var routingKey = new IntegrationEventRoutingKey($"hand.{context.HandType.ToRoutingKey()}.hand-is-started");
+        var routingKey = new IntegrationEventRoutingKey($"hand.{context.TableType.ToRoutingKey()}.hand-is-started");
         await integrationEventPublisher.PublishAsync(integrationEvent, routingKey);
     }
 }

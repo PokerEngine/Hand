@@ -1,6 +1,5 @@
 using Application.IntegrationEvent;
 using Domain.Event;
-using Domain.ValueObject;
 
 namespace Application.Event;
 
@@ -13,12 +12,14 @@ public class SmallBlindIsPostedEventHandler(
         var integrationEvent = new BlindIsPostedIntegrationEvent
         {
             HandUid = context.HandUid,
+            TableUid = context.TableUid,
+            TableType = context.TableType.ToString(),
             Nickname = @event.Nickname,
             Amount = @event.Amount,
             OccuredAt = @event.OccuredAt
         };
 
-        var routingKey = new IntegrationEventRoutingKey($"hand.{context.HandType.ToRoutingKey()}.blind-is-posted");
+        var routingKey = new IntegrationEventRoutingKey($"hand.{context.TableType.ToRoutingKey()}.blind-is-posted");
         await integrationEventPublisher.PublishAsync(integrationEvent, routingKey);
     }
 }

@@ -1,6 +1,5 @@
 using Application.IntegrationEvent;
 using Domain.Event;
-using Domain.ValueObject;
 
 namespace Application.Event;
 
@@ -13,6 +12,8 @@ public class DecisionIsRequestedEventHandler(
         var integrationEvent = new DecisionIsRequestedIntegrationEvent
         {
             HandUid = context.HandUid,
+            TableUid = context.TableUid,
+            TableType = context.TableType.ToString(),
             Nickname = @event.Nickname,
             FoldIsAvailable = @event.FoldIsAvailable,
             CheckIsAvailable = @event.CheckIsAvailable,
@@ -24,7 +25,7 @@ public class DecisionIsRequestedEventHandler(
             OccuredAt = @event.OccuredAt
         };
 
-        var routingKey = new IntegrationEventRoutingKey($"hand.{context.HandType.ToRoutingKey()}.decision-is-requested");
+        var routingKey = new IntegrationEventRoutingKey($"hand.{context.TableType.ToRoutingKey()}.decision-is-requested");
         await integrationEventPublisher.PublishAsync(integrationEvent, routingKey);
     }
 }

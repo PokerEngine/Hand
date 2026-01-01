@@ -31,12 +31,12 @@ public readonly record struct IntegrationEventRoutingKey
         => _name;
 }
 
-public static class HandTypeExtensions
+public static class TableTypeExtensions
 {
-    public static string ToRoutingKey(this HandType type) =>
+    public static string ToRoutingKey(this TableType type) =>
         type switch
         {
-            HandType.Cash => "cash",
+            TableType.Cash => "cash",
             _ => throw new ArgumentOutOfRangeException(nameof(type), type, null)
         };
 }

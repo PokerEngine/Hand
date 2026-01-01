@@ -8,13 +8,14 @@ namespace Application.Query;
 
 public record struct GetHandByUidQuery : IQuery
 {
-    public required Guid HandUid { get; init; }
+    public required Guid Uid { get; init; }
 }
 
 public record struct GetHandByUidResponse : IQueryResponse
 {
-    public required Guid HandUid { get; init; }
-    public required string Type { get; init; }
+    public required Guid Uid { get; init; }
+    public required Guid TableUid { get; init; }
+    public required string TableType { get; init; }
     public required string Game { get; init; }
     public required int MaxSeat { get; init; }
     public required int SmallBlind { get; init; }
@@ -48,20 +49,21 @@ public class GetHandByUidHandler(
     IEvaluator evaluator
 ) : IQueryHandler<GetHandByUidQuery, GetHandByUidResponse>
 {
-    public async Task<GetHandByUidResponse> HandleAsync(GetHandByUidQuery command)
+    public async Task<GetHandByUidResponse> HandleAsync(GetHandByUidQuery query)
     {
         var hand = Hand.FromEvents(
-            uid: command.HandUid,
+            uid: query.Uid,
             randomizer: randomizer,
             evaluator: evaluator,
-            events: await repository.GetEventsAsync(command.HandUid)
+            events: await repository.GetEventsAsync(query.Uid)
         );
         var state = hand.GetState();
 
         return new GetHandByUidResponse
         {
-            HandUid = hand.Uid,
-            Type = hand.Type.ToString(),
+            Uid = hand.Uid,
+            TableUid = hand.TableUid,
+            TableType = hand.TableType.ToString(),
             Game = hand.Game.ToString(),
             MaxSeat = hand.Table.MaxSeat,
             SmallBlind = hand.Pot.SmallBlind,

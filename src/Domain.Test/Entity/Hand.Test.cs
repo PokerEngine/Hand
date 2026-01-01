@@ -15,6 +15,7 @@ public class NoLimitHoldem6MaxHandTest
     public void TestFromScratch()
     {
         var handUid = new HandUid(Guid.NewGuid());
+        var tableUid = new TableUid(Guid.NewGuid());
         var participantSb = new Participant(
             nickname: new Nickname("SmallBlind"),
             seat: new Seat(1),
@@ -48,7 +49,8 @@ public class NoLimitHoldem6MaxHandTest
 
         var hand = Hand.FromScratch(
             uid: handUid,
-            type: HandType.Cash,
+            tableUid: tableUid,
+            tableType: TableType.Cash,
             game: Game.NoLimitHoldem,
             smallBlind: new Chips(5),
             bigBlind: new Chips(10),
@@ -62,7 +64,8 @@ public class NoLimitHoldem6MaxHandTest
         );
 
         Assert.Equal(handUid, hand.Uid);
-        Assert.Equal(HandType.Cash, hand.Type);
+        Assert.Equal(tableUid, hand.TableUid);
+        Assert.Equal(TableType.Cash, hand.TableType);
         Assert.Equal(Game.NoLimitHoldem, hand.Game);
         Assert.Equal(new Seat(6), hand.Table.MaxSeat);
         Assert.IsType<NoLimitPot>(hand.Pot);
@@ -87,6 +90,7 @@ public class NoLimitHoldem6MaxHandTest
     public void TestFromEvents()
     {
         var handUid = new HandUid(Guid.NewGuid());
+        var tableUid = new TableUid(Guid.NewGuid());
         var participantSb = new Participant(
             nickname: new Nickname("SmallBlind"),
             seat: new Seat(1),
@@ -107,8 +111,9 @@ public class NoLimitHoldem6MaxHandTest
         {
             new HandIsCreatedEvent
             {
+                TableUid = tableUid,
                 Game = Game.NoLimitHoldem,
-                Type = HandType.Cash,
+                TableType = TableType.Cash,
                 SmallBlind = new Chips(5),
                 BigBlind = new Chips(10),
                 MaxSeat = new Seat(6),
@@ -376,6 +381,7 @@ public class NoLimitHoldem6MaxHandTest
         );
 
         Assert.Equal(handUid, hand.Uid);
+        Assert.Equal(tableUid, hand.TableUid);
         Assert.Equal(Game.NoLimitHoldem, hand.Game);
         Assert.Equal(new Seat(6), hand.Table.MaxSeat);
         Assert.IsType<NoLimitPot>(hand.Pot);
@@ -749,7 +755,8 @@ public class NoLimitHoldem6MaxHandTest
     {
         return Hand.FromScratch(
             uid: new HandUid(Guid.NewGuid()),
-            type: HandType.Cash,
+            tableUid: new TableUid(Guid.NewGuid()),
+            tableType: TableType.Cash,
             game: Game.NoLimitHoldem,
             smallBlind: new Chips(smallBlind),
             bigBlind: new Chips(bigBlind),
@@ -782,6 +789,7 @@ public class NoLimitHoldem9MaxHandTest
     public void TestFromScratch()
     {
         var handUid = new HandUid(Guid.NewGuid());
+        var tableUid = new TableUid(Guid.NewGuid());
         var participantSb = new Participant(
             nickname: new Nickname("SmallBlind"),
             seat: new Seat(1),
@@ -830,7 +838,8 @@ public class NoLimitHoldem9MaxHandTest
 
         var hand = Hand.FromScratch(
             uid: handUid,
-            type: HandType.Cash,
+            tableUid: tableUid,
+            tableType: TableType.Cash,
             game: Game.NoLimitHoldem,
             smallBlind: new Chips(5),
             bigBlind: new Chips(10),
@@ -877,6 +886,7 @@ public class PotLimitOmaha6MaxHandTest
     public void TestFromScratch()
     {
         var handUid = new HandUid(Guid.NewGuid());
+        var tableUid = new TableUid(Guid.NewGuid());
         var participantSb = new Participant(
             nickname: new Nickname("SmallBlind"),
             seat: new Seat(1),
@@ -910,7 +920,8 @@ public class PotLimitOmaha6MaxHandTest
 
         var hand = Hand.FromScratch(
             uid: handUid,
-            type: HandType.Cash,
+            tableUid: tableUid,
+            tableType: TableType.Cash,
             game: Game.PotLimitOmaha,
             smallBlind: new Chips(5),
             bigBlind: new Chips(10),
@@ -954,6 +965,7 @@ public class PotLimitOmaha9MaxHandTest
     public void TestFromScratch()
     {
         var handUid = new HandUid(Guid.NewGuid());
+        var tableUid = new TableUid(Guid.NewGuid());
         var participantSb = new Participant(
             nickname: new Nickname("SmallBlind"),
             seat: new Seat(1),
@@ -1002,7 +1014,8 @@ public class PotLimitOmaha9MaxHandTest
 
         var hand = Hand.FromScratch(
             uid: handUid,
-            type: HandType.Cash,
+            tableUid: tableUid,
+            tableType: TableType.Cash,
             game: Game.PotLimitOmaha,
             smallBlind: new Chips(5),
             bigBlind: new Chips(10),

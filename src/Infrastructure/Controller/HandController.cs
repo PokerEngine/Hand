@@ -21,7 +21,8 @@ public class HandController(
     {
         var command = new CreateHandCommand
         {
-            Type = request.Type,
+            TableUid = request.TableUid,
+            TableType = request.TableType,
             Game = request.Game,
             MaxSeat = request.MaxSeat,
             SmallBlind = request.SmallBlind,
@@ -32,7 +33,7 @@ public class HandController(
             Participants = request.Participants
         };
         var response = await commandDispatcher.DispatchAsync<CreateHandCommand, CreateHandResponse>(command);
-        return CreatedAtAction(nameof(GetHandByUid), new { uid = response.HandUid }, response);
+        return CreatedAtAction(nameof(GetHandByUid), new { uid = response.Uid }, response);
     }
 
     [HttpPost("{uid:guid}/start")]
@@ -43,7 +44,7 @@ public class HandController(
     {
         var command = new StartHandCommand
         {
-            HandUid = uid
+            Uid = uid
         };
         var response = await commandDispatcher.DispatchAsync<StartHandCommand, StartHandResponse>(command);
         return Ok(response);
@@ -72,7 +73,7 @@ public class HandController(
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> GetHandByUid(Guid uid)
     {
-        var query = new GetHandByUidQuery { HandUid = uid };
+        var query = new GetHandByUidQuery { Uid = uid };
         var response = await queryDispatcher.DispatchAsync<GetHandByUidQuery, GetHandByUidResponse>(query);
         return Ok(response);
     }
@@ -80,7 +81,8 @@ public class HandController(
 
 public record struct CreateHandRequest
 {
-    public required string Type { get; init; }
+    public required Guid TableUid { get; init; }
+    public required string TableType { get; init; }
     public required string Game { get; init; }
     public required int MaxSeat { get; init; }
     public required int SmallBlind { get; init; }

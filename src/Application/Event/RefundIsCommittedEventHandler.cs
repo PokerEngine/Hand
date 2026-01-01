@@ -8,16 +8,17 @@ public class RefundIsCommittedEventHandler(
     IIntegrationEventPublisher integrationEventPublisher
 ) : IEventHandler<RefundIsCommittedEvent>
 {
-    public async Task HandleAsync(RefundIsCommittedEvent @event, HandUid handUid)
+    public async Task HandleAsync(RefundIsCommittedEvent @event, EventContext context)
     {
         var integrationEvent = new RefundIsCommittedIntegrationEvent
         {
-            HandUid = handUid,
+            HandUid = context.HandUid,
             Nickname = @event.Nickname,
             Amount = @event.Amount,
             OccuredAt = @event.OccuredAt
         };
 
-        await integrationEventPublisher.PublishAsync(integrationEvent, "hand.refund-is-committed");
+        var routingKey = new IntegrationEventRoutingKey($"hand.{context.HandType.ToRoutingKey()}.refund-is-committed");
+        await integrationEventPublisher.PublishAsync(integrationEvent, routingKey);
     }
 }

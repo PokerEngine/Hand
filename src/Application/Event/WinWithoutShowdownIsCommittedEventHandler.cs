@@ -8,16 +8,17 @@ public class WinWithoutShowdownIsCommittedEventHandler(
     IIntegrationEventPublisher integrationEventPublisher
 ) : IEventHandler<WinWithoutShowdownIsCommittedEvent>
 {
-    public async Task HandleAsync(WinWithoutShowdownIsCommittedEvent @event, HandUid handUid)
+    public async Task HandleAsync(WinWithoutShowdownIsCommittedEvent @event, EventContext context)
     {
         var integrationEvent = new WinIsCommittedIntegrationEvent
         {
-            HandUid = handUid,
+            HandUid = context.HandUid,
             Nickname = @event.Nickname,
             Amount = @event.Amount,
             OccuredAt = @event.OccuredAt
         };
 
-        await integrationEventPublisher.PublishAsync(integrationEvent, "hand.win-without-showdown-is-committed");
+        var routingKey = new IntegrationEventRoutingKey($"hand.{context.HandType.ToRoutingKey()}.win-without-showdown-is-committed");
+        await integrationEventPublisher.PublishAsync(integrationEvent, routingKey);
     }
 }

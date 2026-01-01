@@ -8,11 +8,11 @@ public class HandIsCreatedEventHandler(
     IIntegrationEventPublisher integrationEventPublisher
 ) : IEventHandler<HandIsCreatedEvent>
 {
-    public async Task HandleAsync(HandIsCreatedEvent @event, HandUid handUid)
+    public async Task HandleAsync(HandIsCreatedEvent @event, EventContext context)
     {
         var integrationEvent = new HandIsCreatedIntegrationEvent
         {
-            HandUid = handUid,
+            HandUid = context.HandUid,
             Type = @event.Type.ToString(),
             Game = @event.Game.ToString(),
             MaxSeat = @event.MaxSeat,
@@ -25,7 +25,8 @@ public class HandIsCreatedEventHandler(
             OccuredAt = @event.OccuredAt
         };
 
-        await integrationEventPublisher.PublishAsync(integrationEvent, "hand.hand-is-created");
+        var routingKey = new IntegrationEventRoutingKey($"hand.{context.HandType.ToRoutingKey()}.hand-is-created");
+        await integrationEventPublisher.PublishAsync(integrationEvent, routingKey);
     }
 
     private ParticipantDto SerializeParticipant(Participant participant)

@@ -8,14 +8,15 @@ public class HandIsFinishedEventHandler(
     IIntegrationEventPublisher integrationEventPublisher
 ) : IEventHandler<HandIsFinishedEvent>
 {
-    public async Task HandleAsync(HandIsFinishedEvent @event, HandUid handUid)
+    public async Task HandleAsync(HandIsFinishedEvent @event, EventContext context)
     {
         var integrationEvent = new HandIsFinishedIntegrationEvent
         {
-            HandUid = handUid,
+            HandUid = context.HandUid,
             OccuredAt = @event.OccuredAt
         };
 
-        await integrationEventPublisher.PublishAsync(integrationEvent, "hand.hand-is-finished");
+        var routingKey = new IntegrationEventRoutingKey($"hand.{context.HandType.ToRoutingKey()}.hand-is-finished");
+        await integrationEventPublisher.PublishAsync(integrationEvent, routingKey);
     }
 }

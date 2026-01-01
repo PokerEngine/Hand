@@ -8,11 +8,11 @@ public class DecisionIsRequestedEventHandler(
     IIntegrationEventPublisher integrationEventPublisher
 ) : IEventHandler<DecisionIsRequestedEvent>
 {
-    public async Task HandleAsync(DecisionIsRequestedEvent @event, HandUid handUid)
+    public async Task HandleAsync(DecisionIsRequestedEvent @event, EventContext context)
     {
         var integrationEvent = new DecisionIsRequestedIntegrationEvent
         {
-            HandUid = handUid,
+            HandUid = context.HandUid,
             Nickname = @event.Nickname,
             FoldIsAvailable = @event.FoldIsAvailable,
             CheckIsAvailable = @event.CheckIsAvailable,
@@ -24,6 +24,7 @@ public class DecisionIsRequestedEventHandler(
             OccuredAt = @event.OccuredAt
         };
 
-        await integrationEventPublisher.PublishAsync(integrationEvent, "hand.decision-is-requested");
+        var routingKey = new IntegrationEventRoutingKey($"hand.{context.HandType.ToRoutingKey()}.decision-is-requested");
+        await integrationEventPublisher.PublishAsync(integrationEvent, routingKey);
     }
 }

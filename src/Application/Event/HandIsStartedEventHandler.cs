@@ -8,14 +8,15 @@ public class HandIsStartedEventHandler(
     IIntegrationEventPublisher integrationEventPublisher
 ) : IEventHandler<HandIsStartedEvent>
 {
-    public async Task HandleAsync(HandIsStartedEvent @event, HandUid handUid)
+    public async Task HandleAsync(HandIsStartedEvent @event, EventContext context)
     {
         var integrationEvent = new HandIsStartedIntegrationEvent
         {
-            HandUid = handUid,
+            HandUid = context.HandUid,
             OccuredAt = @event.OccuredAt
         };
 
-        await integrationEventPublisher.PublishAsync(integrationEvent, "hand.hand-is-started");
+        var routingKey = new IntegrationEventRoutingKey($"hand.{context.HandType.ToRoutingKey()}.hand-is-started");
+        await integrationEventPublisher.PublishAsync(integrationEvent, routingKey);
     }
 }

@@ -1,3 +1,4 @@
+using Domain.ValueObject;
 using System.Text.RegularExpressions;
 
 namespace Application.IntegrationEvent;
@@ -28,4 +29,14 @@ public readonly record struct IntegrationEventRoutingKey
 
     public override string ToString()
         => _name;
+}
+
+public static class HandTypeExtensions
+{
+    public static string ToRoutingKey(this HandType type) =>
+        type switch
+        {
+            HandType.Cash => "cash",
+            _ => throw new ArgumentOutOfRangeException(nameof(type), type, null)
+        };
 }

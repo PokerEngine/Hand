@@ -8,17 +8,18 @@ public class DecisionIsCommittedEventHandler(
     IIntegrationEventPublisher integrationEventPublisher
 ) : IEventHandler<DecisionIsCommittedEvent>
 {
-    public async Task HandleAsync(DecisionIsCommittedEvent @event, HandUid handUid)
+    public async Task HandleAsync(DecisionIsCommittedEvent @event, EventContext context)
     {
         var integrationEvent = new DecisionIsCommittedIntegrationEvent()
         {
-            HandUid = handUid,
+            HandUid = context.HandUid,
             Nickname = @event.Nickname,
             DecisionType = @event.Decision.Type.ToString(),
             DecisionAmount = @event.Decision.Amount,
             OccuredAt = @event.OccuredAt
         };
 
-        await integrationEventPublisher.PublishAsync(integrationEvent, "hand.decision-is-committed");
+        var routingKey = new IntegrationEventRoutingKey($"hand.{context.HandType.ToRoutingKey()}.decision-is-committed");
+        await integrationEventPublisher.PublishAsync(integrationEvent, routingKey);
     }
 }

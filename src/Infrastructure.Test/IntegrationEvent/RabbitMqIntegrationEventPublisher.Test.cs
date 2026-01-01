@@ -1,5 +1,6 @@
 using Application.IntegrationEvent;
 using Infrastructure.IntegrationEvent;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
@@ -135,7 +136,12 @@ public class RabbitMqIntegrationEventPublisherTest(
                 AutoDelete = false
             }
         );
-        return new RabbitMqIntegrationEventPublisher(connectionOptions, publisherOptions);
+        var loggerFactory = LoggerFactory.Create(builder =>
+        {
+            builder.SetMinimumLevel(LogLevel.Information).AddConsole();
+        });
+        var logger = loggerFactory.CreateLogger<RabbitMqIntegrationEventPublisher>();
+        return new RabbitMqIntegrationEventPublisher(connectionOptions, publisherOptions, logger);
     }
 
     private static DateTime GetNow()

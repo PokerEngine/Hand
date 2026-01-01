@@ -37,9 +37,10 @@ public class StartHandHandler(
         var events = hand.PullEvents();
         await repository.AddEventsAsync(hand.Uid, events);
 
+        var context = new EventContext { HandUid = hand.Uid, HandType = hand.Type };
         foreach (var @event in events)
         {
-            await eventDispatcher.DispatchAsync(@event, hand.Uid);
+            await eventDispatcher.DispatchAsync(@event, context);
         }
 
         return new StartHandResponse

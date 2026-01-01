@@ -1,6 +1,5 @@
 using Application.Event;
 using Domain.Event;
-using Domain.ValueObject;
 
 namespace Infrastructure.Event;
 
@@ -9,11 +8,11 @@ public class EventDispatcher(
     ILogger<EventDispatcher> logger
 ) : IEventDispatcher
 {
-    public async Task DispatchAsync(IEvent @event, HandUid handUid)
+    public async Task DispatchAsync(IEvent @event, EventContext context)
     {
         var eventType = @event.GetType();
 
-        logger.LogInformation("Dispatching {Event} of the hand {HandUid}", @event, handUid);
+        logger.LogInformation("Dispatching {Event} in {Context}", @event, context);
 
         var handlerType = typeof(IEventHandler<>).MakeGenericType(eventType);
         var handler = serviceProvider.GetService(handlerType);
@@ -29,7 +28,7 @@ public class EventDispatcher(
 
         await (Task)method.Invoke(
             handler,
-            new object[] { @event, handUid }
+            new object[] { @event, context }
         )!;
     }
 }

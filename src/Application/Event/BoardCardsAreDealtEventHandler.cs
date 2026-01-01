@@ -8,15 +8,16 @@ public class BoardCardsAreDealtEventHandler(
     IIntegrationEventPublisher integrationEventPublisher
 ) : IEventHandler<BoardCardsAreDealtEvent>
 {
-    public async Task HandleAsync(BoardCardsAreDealtEvent @event, HandUid handUid)
+    public async Task HandleAsync(BoardCardsAreDealtEvent @event, EventContext context)
     {
         var integrationEvent = new BoardCardsAreDealtIntegrationEvent
         {
-            HandUid = handUid,
+            HandUid = context.HandUid,
             Cards = @event.Cards.ToString(),
             OccuredAt = @event.OccuredAt
         };
 
-        await integrationEventPublisher.PublishAsync(integrationEvent, "hand.board-cards-are-dealt");
+        var routingKey = new IntegrationEventRoutingKey($"hand.{context.HandType.ToRoutingKey()}.board-cards-are-dealt");
+        await integrationEventPublisher.PublishAsync(integrationEvent, routingKey);
     }
 }

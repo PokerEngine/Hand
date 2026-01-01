@@ -8,15 +8,16 @@ public class HoleCardsAreMuckedEventHandler(
     IIntegrationEventPublisher integrationEventPublisher
 ) : IEventHandler<HoleCardsAreMuckedEvent>
 {
-    public async Task HandleAsync(HoleCardsAreMuckedEvent @event, HandUid handUid)
+    public async Task HandleAsync(HoleCardsAreMuckedEvent @event, EventContext context)
     {
         var integrationEvent = new HoleCardsAreMuckedIntegrationEvent()
         {
-            HandUid = handUid,
+            HandUid = context.HandUid,
             Nickname = @event.Nickname,
             OccuredAt = @event.OccuredAt
         };
 
-        await integrationEventPublisher.PublishAsync(integrationEvent, "hand.hole-cards-are-mucked");
+        var routingKey = new IntegrationEventRoutingKey($"hand.{context.HandType.ToRoutingKey()}.hole-cards-are-mucked");
+        await integrationEventPublisher.PublishAsync(integrationEvent, routingKey);
     }
 }

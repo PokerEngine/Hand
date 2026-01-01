@@ -8,11 +8,11 @@ public class HoleCardsAreShownEventHandler(
     IIntegrationEventPublisher integrationEventPublisher
 ) : IEventHandler<HoleCardsAreShownEvent>
 {
-    public async Task HandleAsync(HoleCardsAreShownEvent @event, HandUid handUid)
+    public async Task HandleAsync(HoleCardsAreShownEvent @event, EventContext context)
     {
         var integrationEvent = new HoleCardsAreShownIntegrationEvent
         {
-            HandUid = handUid,
+            HandUid = context.HandUid,
             Nickname = @event.Nickname,
             Cards = @event.Cards.ToString(),
             ComboType = @event.Combo.Type.ToString(),
@@ -20,6 +20,7 @@ public class HoleCardsAreShownEventHandler(
             OccuredAt = @event.OccuredAt
         };
 
-        await integrationEventPublisher.PublishAsync(integrationEvent, "hand.hole-cards-are-shown");
+        var routingKey = new IntegrationEventRoutingKey($"hand.{context.HandType.ToRoutingKey()}.hole-cards-are-shown");
+        await integrationEventPublisher.PublishAsync(integrationEvent, routingKey);
     }
 }

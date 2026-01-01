@@ -8,16 +8,17 @@ public class BigBlindIsPostedEventHandler(
     IIntegrationEventPublisher integrationEventPublisher
 ) : IEventHandler<BigBlindIsPostedEvent>
 {
-    public async Task HandleAsync(BigBlindIsPostedEvent @event, HandUid handUid)
+    public async Task HandleAsync(BigBlindIsPostedEvent @event, EventContext context)
     {
         var integrationEvent = new BlindIsPostedIntegrationEvent
         {
-            HandUid = handUid,
+            HandUid = context.HandUid,
             Nickname = @event.Nickname,
             Amount = @event.Amount,
             OccuredAt = @event.OccuredAt
         };
 
-        await integrationEventPublisher.PublishAsync(integrationEvent, "hand.blind-is-posted");
+        var routingKey = new IntegrationEventRoutingKey($"hand.{context.HandType.ToRoutingKey()}.blind-is-posted");
+        await integrationEventPublisher.PublishAsync(integrationEvent, routingKey);
     }
 }

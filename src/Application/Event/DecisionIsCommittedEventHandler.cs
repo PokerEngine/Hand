@@ -19,6 +19,6 @@ public class DecisionIsCommittedEventHandler(
             OccuredAt = @event.OccuredAt
         };
 
-        await integrationEventPublisher.PublishAsync(integrationEvent, IntegrationEventChannel.Hand);
+        await integrationEventPublisher.PublishAsync(integrationEvent, "hand.decision-is-committed");
     }
 }

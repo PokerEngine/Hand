@@ -1,5 +1,4 @@
 using Infrastructure.IntegrationEvent;
-using RabbitMQ.Client;
 using Testcontainers.RabbitMq;
 
 namespace Infrastructure.Test.IntegrationEvent;
@@ -27,20 +26,9 @@ public sealed class RabbitMqFixture : IAsyncLifetime
         await Container.DisposeAsync();
     }
 
-    public ConnectionFactory CreateFactory()
+    public RabbitMqConnectionOptions CreateOptions()
     {
-        return new ConnectionFactory
-        {
-            HostName = Container.Hostname,
-            Port = Container.GetMappedPublicPort(Port),
-            UserName = Username,
-            Password = Password
-        };
-    }
-
-    public RabbitMqIntegrationEventQueueOptions CreateOptions()
-    {
-        return new RabbitMqIntegrationEventQueueOptions
+        return new RabbitMqConnectionOptions
         {
             Host = Container.Hostname,
             Port = Container.GetMappedPublicPort(Port),

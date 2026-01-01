@@ -18,6 +18,6 @@ public class SmallBlindIsPostedEventHandler(
             OccuredAt = @event.OccuredAt
         };
 
-        await integrationEventPublisher.PublishAsync(integrationEvent, IntegrationEventChannel.Hand);
+        await integrationEventPublisher.PublishAsync(integrationEvent, "hand.blind-is-posted");
     }
 }

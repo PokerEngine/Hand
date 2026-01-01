@@ -1,0 +1,59 @@
+@Infrastructure_HostAddress = http://0.0.0.0:5260
+
+### Create a new hand
+POST {{Infrastructure_HostAddress}}/api/hand
+Accept: application/json
+Content-Type: application/json
+
+{
+    "game": "NoLimitHoldem",
+    "maxSeat": 6,
+    "smallBlind": 5,
+    "bigBlind": 10,
+    "smallBlindSeat": 2,
+    "bigBlindSeat": 4,
+    "buttonSeat": 6,
+    "participants": [
+        {
+            "nickname": "alice",
+            "seat": 2,
+            "stack": 1000
+        },
+        {
+            "nickname": "bobby",
+            "seat": 4,
+            "stack": 900
+        },
+        {
+            "nickname": "charlie",
+            "seat": 6,
+            "stack": 800
+        }
+    ]
+}
+> {%
+    client.global.set("handUid", response.body.handUid);
+%}
+
+### Start the hand
+POST {{Infrastructure_HostAddress}}/api/hand/{{handUid}}/start
+Accept: application/json
+Content-Type: application/json
+
+{}
+
+### Commit a decision
+POST {{Infrastructure_HostAddress}}/api/hand/{{handUid}}/commit-decision/charlie
+Accept: application/json
+Content-Type: application/json
+
+{
+    "decisionType": "RaiseTo",
+    "decisionAmount": 25
+}
+
+### Get the hand
+GET {{Infrastructure_HostAddress}}/api/hand/{{handUid}}
+Accept: application/json
+
+###

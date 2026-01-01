@@ -24,7 +24,7 @@ public class HandIsCreatedEventHandler(
             OccuredAt = @event.OccuredAt
         };
 
-        await integrationEventPublisher.PublishAsync(integrationEvent, IntegrationEventChannel.Hand);
+        await integrationEventPublisher.PublishAsync(integrationEvent, "hand.hand-is-created");
     }
 
     private ParticipantDto SerializeParticipant(Participant participant)

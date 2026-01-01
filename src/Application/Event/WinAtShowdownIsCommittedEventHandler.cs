@@ -19,7 +19,7 @@ public class WinAtShowdownIsCommittedEventHandler(
                 Amount = amount,
                 OccuredAt = @event.OccuredAt
             };
-            await integrationEventPublisher.PublishAsync(integrationEvent, IntegrationEventChannel.Hand);
+            await integrationEventPublisher.PublishAsync(integrationEvent, "hand.win-at-showdown-is-committed");
         }
     }
 }

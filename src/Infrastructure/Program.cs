@@ -36,19 +36,6 @@ public static class Bootstrapper
         );
         builder.Services.AddSingleton<IRepository, MongoDbRepository>();
 
-        // Register event queue
-        if (builder.Environment.IsDevelopment())
-        {
-            builder.Services.AddSingleton<IIntegrationEventQueue, InMemoryIntegrationEventQueue>();
-        }
-        else
-        {
-            builder.Services.Configure<RabbitMqIntegrationEventQueueOptions>(
-                builder.Configuration.GetSection(RabbitMqIntegrationEventQueueOptions.SectionName)
-            );
-            builder.Services.AddSingleton<IIntegrationEventQueue, RabbitMqIntegrationEventQueue>();
-        }
-
         // Register commands
         RegisterCommandHandler<CreateHandCommand, CreateHandHandler, CreateHandResponse>(builder.Services);
         RegisterCommandHandler<StartHandCommand, StartHandHandler, StartHandResponse>(builder.Services);
@@ -77,7 +64,13 @@ public static class Bootstrapper
         builder.Services.AddScoped<IEventDispatcher, EventDispatcher>();
 
         // Register integration events
-        builder.Services.AddScoped<IIntegrationEventPublisher, IntegrationEventPublisher>();
+        builder.Services.Configure<RabbitMqConnectionOptions>(
+            builder.Configuration.GetSection(RabbitMqConnectionOptions.SectionName)
+        );
+        builder.Services.Configure<RabbitMqIntegrationEventPublisherOptions>(
+            builder.Configuration.GetSection(RabbitMqIntegrationEventPublisherOptions.SectionName)
+        );
+        builder.Services.AddScoped<IIntegrationEventPublisher, RabbitMqIntegrationEventPublisher>();
 
         builder.Services.AddControllers();
         builder.Services.AddEndpointsApiExplorer();

@@ -17,6 +17,6 @@ public class BoardCardsAreDealtEventHandler(
             OccuredAt = @event.OccuredAt
         };
 
-        await integrationEventPublisher.PublishAsync(integrationEvent, IntegrationEventChannel.Hand);
+        await integrationEventPublisher.PublishAsync(integrationEvent, "hand.board-cards-are-dealt");
     }
 }

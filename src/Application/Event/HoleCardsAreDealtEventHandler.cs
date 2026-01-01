@@ -18,6 +18,6 @@ public class HoleCardsAreDealtEventHandler(
             OccuredAt = @event.OccuredAt
         };
 
-        await integrationEventPublisher.PublishAsync(integrationEvent, IntegrationEventChannel.Hand);
+        await integrationEventPublisher.PublishAsync(integrationEvent, "hand.hole-cards-are-dealt");
     }
 }

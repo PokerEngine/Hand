@@ -18,6 +18,6 @@ public class WinWithoutShowdownIsCommittedEventHandler(
             OccuredAt = @event.OccuredAt
         };
 
-        await integrationEventPublisher.PublishAsync(integrationEvent, IntegrationEventChannel.Hand);
+        await integrationEventPublisher.PublishAsync(integrationEvent, "hand.win-without-showdown-is-committed");
     }
 }

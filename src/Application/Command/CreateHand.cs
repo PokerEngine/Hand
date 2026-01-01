@@ -8,6 +8,7 @@ using Domain.ValueObject;
 namespace Application.Command;
 public record struct CreateHandCommand : ICommand
 {
+    public required string Type { get; init; }
     public required string Game { get; init; }
     public required int MaxSeat { get; init; }
     public required int SmallBlind { get; init; }
@@ -32,10 +33,12 @@ public class CreateHandHandler(
 {
     public async Task<CreateHandResponse> HandleAsync(CreateHandCommand command)
     {
+        var type = (HandType)Enum.Parse(typeof(HandType), command.Type);
         var game = (Game)Enum.Parse(typeof(Game), command.Game);
 
         var hand = Hand.FromScratch(
             uid: await repository.GetNextUidAsync(),
+            type: type,
             game: game,
             maxSeat: command.MaxSeat,
             smallBlind: command.SmallBlind,

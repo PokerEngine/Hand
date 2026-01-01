@@ -14,6 +14,7 @@ public record struct GetHandByUidQuery : IQuery
 public record struct GetHandByUidResponse : IQueryResponse
 {
     public required Guid HandUid { get; init; }
+    public required string Type { get; init; }
     public required string Game { get; init; }
     public required int MaxSeat { get; init; }
     public required int SmallBlind { get; init; }
@@ -60,6 +61,7 @@ public class GetHandByUidHandler(
         return new GetHandByUidResponse
         {
             HandUid = hand.Uid,
+            Type = hand.Type.ToString(),
             Game = hand.Game.ToString(),
             MaxSeat = hand.Table.MaxSeat,
             SmallBlind = hand.Pot.SmallBlind,

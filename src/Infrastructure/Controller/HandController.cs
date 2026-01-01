@@ -21,6 +21,7 @@ public class HandController(
     {
         var command = new CreateHandCommand
         {
+            Type = request.Type,
             Game = request.Game,
             MaxSeat = request.MaxSeat,
             SmallBlind = request.SmallBlind,
@@ -79,6 +80,7 @@ public class HandController(
 
 public record struct CreateHandRequest
 {
+    public required string Type { get; init; }
     public required string Game { get; init; }
     public required int MaxSeat { get; init; }
     public required int SmallBlind { get; init; }

@@ -6,6 +6,7 @@ Accept: application/json
 Content-Type: application/json
 
 {
+    "type": "Cash",
     "game": "NoLimitHoldem",
     "maxSeat": 6,
     "smallBlind": 5,

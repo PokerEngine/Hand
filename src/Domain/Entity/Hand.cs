@@ -11,6 +11,7 @@ namespace Domain.Entity;
 public class Hand
 {
     public readonly HandUid Uid;
+    public readonly HandType Type;
     public readonly Game Game;
     public readonly Table Table;
     public readonly BasePot Pot;
@@ -26,6 +27,7 @@ public class Hand
 
     private Hand(
         HandUid uid,
+        HandType type,
         Game game,
         Table table,
         BasePot pot,
@@ -36,6 +38,7 @@ public class Hand
     )
     {
         Uid = uid;
+        Type = type;
         Game = game;
         Table = table;
         Pot = pot;
@@ -49,6 +52,7 @@ public class Hand
 
     public static Hand FromScratch(
         HandUid uid,
+        HandType type,
         Game game,
         Chips smallBlind,
         Chips bigBlind,
@@ -64,6 +68,7 @@ public class Hand
         var factory = FactoryRegistry.GetFactory(game);
         var hand = new Hand(
             uid: uid,
+            type: type,
             game: game,
             table: factory.GetTable(
                 participants: participants,
@@ -85,6 +90,7 @@ public class Hand
         var @event = new HandIsCreatedEvent
         {
             Game = game,
+            Type = type,
             SmallBlind = smallBlind,
             BigBlind = bigBlind,
             MaxSeat = maxSeat,
@@ -114,6 +120,7 @@ public class Hand
         var createdEvent = (HandIsCreatedEvent)events[0];
         var hand = FromScratch(
             uid: uid,
+            type: createdEvent.Type,
             game: createdEvent.Game,
             smallBlind: createdEvent.SmallBlind,
             bigBlind: createdEvent.BigBlind,

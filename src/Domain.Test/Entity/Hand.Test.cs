@@ -48,6 +48,7 @@ public class NoLimitHoldem6MaxHandTest
 
         var hand = Hand.FromScratch(
             uid: handUid,
+            type: HandType.Cash,
             game: Game.NoLimitHoldem,
             smallBlind: new Chips(5),
             bigBlind: new Chips(10),
@@ -61,6 +62,7 @@ public class NoLimitHoldem6MaxHandTest
         );
 
         Assert.Equal(handUid, hand.Uid);
+        Assert.Equal(HandType.Cash, hand.Type);
         Assert.Equal(Game.NoLimitHoldem, hand.Game);
         Assert.Equal(new Seat(6), hand.Table.MaxSeat);
         Assert.IsType<NoLimitPot>(hand.Pot);
@@ -106,6 +108,7 @@ public class NoLimitHoldem6MaxHandTest
             new HandIsCreatedEvent
             {
                 Game = Game.NoLimitHoldem,
+                Type = HandType.Cash,
                 SmallBlind = new Chips(5),
                 BigBlind = new Chips(10),
                 MaxSeat = new Seat(6),
@@ -746,6 +749,7 @@ public class NoLimitHoldem6MaxHandTest
     {
         return Hand.FromScratch(
             uid: new HandUid(Guid.NewGuid()),
+            type: HandType.Cash,
             game: Game.NoLimitHoldem,
             smallBlind: new Chips(smallBlind),
             bigBlind: new Chips(bigBlind),
@@ -826,6 +830,7 @@ public class NoLimitHoldem9MaxHandTest
 
         var hand = Hand.FromScratch(
             uid: handUid,
+            type: HandType.Cash,
             game: Game.NoLimitHoldem,
             smallBlind: new Chips(5),
             bigBlind: new Chips(10),
@@ -905,6 +910,7 @@ public class PotLimitOmaha6MaxHandTest
 
         var hand = Hand.FromScratch(
             uid: handUid,
+            type: HandType.Cash,
             game: Game.PotLimitOmaha,
             smallBlind: new Chips(5),
             bigBlind: new Chips(10),
@@ -996,6 +1002,7 @@ public class PotLimitOmaha9MaxHandTest
 
         var hand = Hand.FromScratch(
             uid: handUid,
+            type: HandType.Cash,
             game: Game.PotLimitOmaha,
             smallBlind: new Chips(5),
             bigBlind: new Chips(10),

@@ -13,6 +13,7 @@ public class HandIsCreatedEventHandler(
         var integrationEvent = new HandIsCreatedIntegrationEvent
         {
             HandUid = handUid,
+            Type = @event.Type.ToString(),
             Game = @event.Game.ToString(),
             MaxSeat = @event.MaxSeat,
             SmallBlind = @event.SmallBlind,

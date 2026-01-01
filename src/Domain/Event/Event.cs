@@ -9,6 +9,7 @@ public interface IEvent
 
 public record struct HandIsCreatedEvent : IEvent
 {
+    public required HandType Type { get; init; }
     public required Game Game { get; init; }
     public required Seat MaxSeat { get; init; }
     public required Chips SmallBlind { get; init; }
@@ -21,7 +22,8 @@ public record struct HandIsCreatedEvent : IEvent
 
     public bool Equals(HandIsCreatedEvent other)
     {
-        return Game.Equals(other.Game)
+        return Type.Equals(other.Type)
+               && Game.Equals(other.Game)
                && MaxSeat.Equals(other.MaxSeat)
                && SmallBlind.Equals(other.SmallBlind)
                && BigBlind.Equals(other.BigBlind)
@@ -36,6 +38,7 @@ public record struct HandIsCreatedEvent : IEvent
     {
         var hash = new HashCode();
 
+        hash.Add(Type);
         hash.Add(Game);
         hash.Add(MaxSeat);
         hash.Add(SmallBlind);

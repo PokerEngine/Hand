@@ -18,7 +18,7 @@ public class WinAtShowdownIsCommittedEventHandler(
                 TableType = context.TableType.ToString(),
                 Nickname = nickname,
                 Amount = amount,
-                OccuredAt = @event.OccuredAt
+                OccurredAt = @event.OccurredAt
             };
 
             var routingKey = new IntegrationEventRoutingKey($"hand.{context.TableType.ToRoutingKey()}.win-at-showdown-is-committed");

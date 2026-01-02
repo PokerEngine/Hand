@@ -15,7 +15,7 @@ public class BoardCardsAreDealtEventHandler(
             TableUid = context.TableUid,
             TableType = context.TableType.ToString(),
             Cards = @event.Cards.ToString(),
-            OccuredAt = @event.OccuredAt
+            OccurredAt = @event.OccurredAt
         };
 
         var routingKey = new IntegrationEventRoutingKey($"hand.{context.TableType.ToRoutingKey()}.board-cards-are-dealt");

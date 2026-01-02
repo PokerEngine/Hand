@@ -14,7 +14,7 @@ public class HandIsStartedEventHandler(
             HandUid = context.HandUid,
             TableUid = context.TableUid,
             TableType = context.TableType.ToString(),
-            OccuredAt = @event.OccuredAt
+            OccurredAt = @event.OccurredAt
         };
 
         var routingKey = new IntegrationEventRoutingKey($"hand.{context.TableType.ToRoutingKey()}.hand-is-started");

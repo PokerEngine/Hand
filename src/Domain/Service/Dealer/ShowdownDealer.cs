@@ -19,7 +19,7 @@ public class ShowdownDealer : IDealer
     {
         var startEvent = new StageIsStartedEvent
         {
-            OccuredAt = DateTime.Now
+            OccurredAt = DateTime.Now
         };
         yield return startEvent;
 
@@ -56,7 +56,7 @@ public class ShowdownDealer : IDealer
 
         var finishEvent = new StageIsFinishedEvent
         {
-            OccuredAt = DateTime.Now
+            OccurredAt = DateTime.Now
         };
         yield return finishEvent;
     }
@@ -84,7 +84,7 @@ public class ShowdownDealer : IDealer
                 {
                     Nickname = player.Nickname,
                     Amount = amount,
-                    OccuredAt = DateTime.Now
+                    OccurredAt = DateTime.Now
                 };
                 yield return @event;
             }
@@ -99,7 +99,7 @@ public class ShowdownDealer : IDealer
         var muckEvent = new HoleCardsAreMuckedEvent
         {
             Nickname = player.Nickname,
-            OccuredAt = DateTime.Now
+            OccurredAt = DateTime.Now
         };
         yield return muckEvent;
 
@@ -107,7 +107,7 @@ public class ShowdownDealer : IDealer
         {
             Nickname = player.Nickname,
             Amount = amount,
-            OccuredAt = DateTime.Now
+            OccurredAt = DateTime.Now
         };
         yield return winEvent;
     }
@@ -129,7 +129,7 @@ public class ShowdownDealer : IDealer
                 Nickname = player.Nickname,
                 Cards = player.HoleCards,
                 Combo = comboMapping[player.Nickname],
-                OccuredAt = DateTime.Now
+                OccurredAt = DateTime.Now
             };
             yield return showEvent;
         }
@@ -149,7 +149,7 @@ public class ShowdownDealer : IDealer
             {
                 SidePot = sidePot,
                 WinPot = winPot,
-                OccuredAt = DateTime.Now
+                OccurredAt = DateTime.Now
             };
             yield return winEvent;
         }

@@ -7,5 +7,5 @@ public record struct WinIsCommittedIntegrationEvent : IIntegrationEvent
     public required string TableType { get; init; }
     public required string Nickname { get; init; }
     public required int Amount { get; init; }
-    public required DateTime OccuredAt { get; init; }
+    public required DateTime OccurredAt { get; init; }
 }

@@ -23,7 +23,7 @@ public class HandIsCreatedEventHandler(
             BigBlindSeat = @event.BigBlindSeat,
             ButtonSeat = @event.ButtonSeat,
             Participants = @event.Participants.Select(SerializeParticipant).ToList(),
-            OccuredAt = @event.OccuredAt
+            OccurredAt = @event.OccurredAt
         };
 
         var routingKey = new IntegrationEventRoutingKey($"hand.{context.TableType.ToRoutingKey()}.hand-is-created");

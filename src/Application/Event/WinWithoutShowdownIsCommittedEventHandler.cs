@@ -16,7 +16,7 @@ public class WinWithoutShowdownIsCommittedEventHandler(
             TableType = context.TableType.ToString(),
             Nickname = @event.Nickname,
             Amount = @event.Amount,
-            OccuredAt = @event.OccuredAt
+            OccurredAt = @event.OccurredAt
         };
 
         var routingKey = new IntegrationEventRoutingKey($"hand.{context.TableType.ToRoutingKey()}.win-without-showdown-is-committed");

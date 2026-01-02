@@ -17,7 +17,7 @@ public class DecisionIsCommittedEventHandler(
             Nickname = @event.Nickname,
             DecisionType = @event.Decision.Type.ToString(),
             DecisionAmount = @event.Decision.Amount,
-            OccuredAt = @event.OccuredAt
+            OccurredAt = @event.OccurredAt
         };
 
         var routingKey = new IntegrationEventRoutingKey($"hand.{context.TableType.ToRoutingKey()}.decision-is-committed");

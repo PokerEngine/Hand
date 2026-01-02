@@ -36,7 +36,7 @@ public class MongoDbRepositoryTest(MongoDbFixture fixture) : IClassFixture<Mongo
                 new KeyValuePair<Nickname, Chips>(new Nickname("bobby"), new Chips(5)),
                 new KeyValuePair<Nickname, Chips>(new Nickname("charlie"), new Chips(10))
             ]),
-            OccuredAt = GetNow()
+            OccurredAt = GetNow()
         };
         await repository.AddEventsAsync(handUid, [@event]);
 
@@ -75,7 +75,7 @@ public class MongoDbRepositoryTest(MongoDbFixture fixture) : IClassFixture<Mongo
                 new KeyValuePair<Nickname, Chips>(new Nickname("bobby"), new Chips(5)),
                 new KeyValuePair<Nickname, Chips>(new Nickname("charlie"), new Chips(10))
             ]),
-            OccuredAt = GetNow()
+            OccurredAt = GetNow()
         };
         await repository.AddEventsAsync(handUid, [@event]);
 
@@ -114,7 +114,7 @@ internal record struct TestEvent : IEvent
     public required Decision Decision { get; init; }
     public required Combo Combo { get; init; }
     public required SidePot SidePot { get; init; }
-    public required DateTime OccuredAt { get; init; }
+    public required DateTime OccurredAt { get; init; }
 
     public bool Equals(TestEvent other)
     {
@@ -127,7 +127,7 @@ internal record struct TestEvent : IEvent
                && Decision.Equals(other.Decision)
                && Combo.Equals(other.Combo)
                && SidePot.Equals(other.SidePot)
-               && OccuredAt.Equals(other.OccuredAt)
+               && OccurredAt.Equals(other.OccurredAt)
                ;
     }
 
@@ -149,7 +149,7 @@ internal record struct TestEvent : IEvent
         hash.Add(Decision);
         hash.Add(Combo);
         hash.Add(SidePot);
-        hash.Add(OccuredAt);
+        hash.Add(OccurredAt);
 
         return hash.ToHashCode();
     }

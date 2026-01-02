@@ -19,7 +19,7 @@ public class BoardCardsDealingDealer(int count) : IDealer
     {
         var startEvent = new StageIsStartedEvent
         {
-            OccuredAt = DateTime.Now
+            OccurredAt = DateTime.Now
         };
         yield return startEvent;
 
@@ -30,7 +30,7 @@ public class BoardCardsDealingDealer(int count) : IDealer
 
         var finishEvent = new StageIsFinishedEvent
         {
-            OccuredAt = DateTime.Now
+            OccurredAt = DateTime.Now
         };
         yield return finishEvent;
     }
@@ -48,7 +48,7 @@ public class BoardCardsDealingDealer(int count) : IDealer
         var @event = new BoardCardsAreDealtEvent
         {
             Cards = table.BoardCards,
-            OccuredAt = DateTime.Now
+            OccurredAt = DateTime.Now
         };
         return @event;
     }

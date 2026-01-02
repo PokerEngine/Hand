@@ -19,7 +19,7 @@ public class TradingDealer : IDealer
     {
         var startEvent = new StageIsStartedEvent
         {
-            OccuredAt = DateTime.Now
+            OccurredAt = DateTime.Now
         };
         yield return startEvent;
 
@@ -33,7 +33,7 @@ public class TradingDealer : IDealer
         {
             var finishEvent = new StageIsFinishedEvent
             {
-                OccuredAt = DateTime.Now
+                OccurredAt = DateTime.Now
             };
             yield return finishEvent;
         }
@@ -92,7 +92,7 @@ public class TradingDealer : IDealer
         {
             Nickname = nickname,
             Decision = decision,
-            OccuredAt = DateTime.Now
+            OccurredAt = DateTime.Now
         };
         yield return @event;
 
@@ -171,7 +171,7 @@ public class TradingDealer : IDealer
 
         var @event = new StageIsFinishedEvent
         {
-            OccuredAt = DateTime.Now
+            OccurredAt = DateTime.Now
         };
         return @event;
     }
@@ -199,7 +199,7 @@ public class TradingDealer : IDealer
             RaiseIsAvailable = raiseIsAvailable,
             MinRaiseToAmount = minRaiseToAmount,
             MaxRaiseToAmount = maxRaiseToAmount,
-            OccuredAt = DateTime.Now
+            OccurredAt = DateTime.Now
         };
         return @event;
     }

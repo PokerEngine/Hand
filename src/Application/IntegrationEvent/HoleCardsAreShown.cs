@@ -9,5 +9,5 @@ public record struct HoleCardsAreShownIntegrationEvent : IIntegrationEvent
     public required string Cards { get; init; }
     public required string ComboType { get; init; }
     public required int ComboWeight { get; init; }
-    public required DateTime OccuredAt { get; init; }
+    public required DateTime OccurredAt { get; init; }
 }

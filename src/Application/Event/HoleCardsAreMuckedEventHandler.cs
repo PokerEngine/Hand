@@ -15,7 +15,7 @@ public class HoleCardsAreMuckedEventHandler(
             TableUid = context.TableUid,
             TableType = context.TableType.ToString(),
             Nickname = @event.Nickname,
-            OccuredAt = @event.OccuredAt
+            OccurredAt = @event.OccurredAt
         };
 
         var routingKey = new IntegrationEventRoutingKey($"hand.{context.TableType.ToRoutingKey()}.hole-cards-are-mucked");

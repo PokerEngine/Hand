@@ -35,7 +35,7 @@ public class RabbitMqIntegrationEventPublisherTest(
             TableType = "Cash",
             Name = "Test Published Integration Event",
             Number = 100500,
-            OccuredAt = GetNow()
+            OccurredAt = GetNow()
         };
 
         var consumer = new AsyncEventingBasicConsumer(_channel);
@@ -78,7 +78,7 @@ public class RabbitMqIntegrationEventPublisherTest(
         Assert.Equal("application/json", received.BasicProperties.ContentType);
         Assert.Equal(nameof(TestIntegrationEvent), received.BasicProperties.Type);
         Assert.Equal(
-            integrationEvent.OccuredAt,
+            integrationEvent.OccurredAt,
             DateTimeOffset.FromUnixTimeSeconds(received.BasicProperties.Timestamp.UnixTime).UtcDateTime
         );
     }
@@ -169,5 +169,5 @@ internal record TestIntegrationEvent : IIntegrationEvent
     public required string TableType { get; init; }
     public required string Name { get; init; }
     public required int Number { get; init; }
-    public required DateTime OccuredAt { get; init; }
+    public required DateTime OccurredAt { get; init; }
 }

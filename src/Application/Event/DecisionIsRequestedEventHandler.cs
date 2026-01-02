@@ -22,7 +22,7 @@ public class DecisionIsRequestedEventHandler(
             RaiseIsAvailable = @event.RaiseIsAvailable,
             MinRaiseToAmount = @event.MinRaiseToAmount,
             MaxRaiseToAmount = @event.MaxRaiseToAmount,
-            OccuredAt = @event.OccuredAt
+            OccurredAt = @event.OccurredAt
         };
 
         var routingKey = new IntegrationEventRoutingKey($"hand.{context.TableType.ToRoutingKey()}.decision-is-requested");

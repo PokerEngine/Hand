@@ -121,61 +121,61 @@ public class NoLimitHoldem6MaxHandTest
                 BigBlindSeat = new Seat(2),
                 ButtonSeat = new Seat(6),
                 Participants = [participantSb, participantBb, participantBu],
-                OccuredAt = new DateTime(2025, 1, 1)
+                OccurredAt = new DateTime(2025, 1, 1)
             },
             new HandIsStartedEvent
             {
-                OccuredAt = new DateTime(2025, 1, 1)
+                OccurredAt = new DateTime(2025, 1, 1)
             },
             new StageIsStartedEvent
             {
-                OccuredAt = new DateTime(2025, 1, 1)
+                OccurredAt = new DateTime(2025, 1, 1)
             },
             new SmallBlindIsPostedEvent
             {
                 Nickname = participantSb.Nickname,
                 Amount = new Chips(5),
-                OccuredAt = new DateTime(2025, 1, 1)
+                OccurredAt = new DateTime(2025, 1, 1)
             },
             new BigBlindIsPostedEvent
             {
                 Nickname = participantBb.Nickname,
                 Amount = new Chips(10),
-                OccuredAt = new DateTime(2025, 1, 1)
+                OccurredAt = new DateTime(2025, 1, 1)
             },
             new StageIsFinishedEvent
             {
-                OccuredAt = new DateTime(2025, 1, 1)
+                OccurredAt = new DateTime(2025, 1, 1)
             },
             new StageIsStartedEvent
             {
-                OccuredAt = new DateTime(2025, 1, 1)
+                OccurredAt = new DateTime(2025, 1, 1)
             },
             new HoleCardsAreDealtEvent
             {
                 Nickname = participantSb.Nickname,
                 Cards = new CardSet([Card.TreyOfClubs, Card.NineOfClubs]),
-                OccuredAt = new DateTime(2025, 1, 1)
+                OccurredAt = new DateTime(2025, 1, 1)
             },
             new HoleCardsAreDealtEvent
             {
                 Nickname = participantBb.Nickname,
                 Cards = new CardSet([Card.QueenOfClubs, Card.TenOfDiamonds]),
-                OccuredAt = new DateTime(2025, 1, 1)
+                OccurredAt = new DateTime(2025, 1, 1)
             },
             new HoleCardsAreDealtEvent
             {
                 Nickname = participantBu.Nickname,
                 Cards = new CardSet([Card.SevenOfSpades, Card.EightOfSpades]),
-                OccuredAt = new DateTime(2025, 1, 1)
+                OccurredAt = new DateTime(2025, 1, 1)
             },
             new StageIsFinishedEvent
             {
-                OccuredAt = new DateTime(2025, 1, 1)
+                OccurredAt = new DateTime(2025, 1, 1)
             },
             new StageIsStartedEvent
             {
-                OccuredAt = new DateTime(2025, 1, 1)
+                OccurredAt = new DateTime(2025, 1, 1)
             },
             new DecisionIsRequestedEvent
             {
@@ -187,13 +187,13 @@ public class NoLimitHoldem6MaxHandTest
                 RaiseIsAvailable = true,
                 MinRaiseToAmount = new Chips(20),
                 MaxRaiseToAmount = new Chips(800),
-                OccuredAt = new DateTime(2025, 1, 1)
+                OccurredAt = new DateTime(2025, 1, 1)
             },
             new DecisionIsCommittedEvent
             {
                 Nickname = participantBu.Nickname,
                 Decision = new Decision(DecisionType.RaiseTo, new Chips(25)),
-                OccuredAt = new DateTime(2025, 1, 1)
+                OccurredAt = new DateTime(2025, 1, 1)
             },
             new DecisionIsRequestedEvent
             {
@@ -205,13 +205,13 @@ public class NoLimitHoldem6MaxHandTest
                 RaiseIsAvailable = true,
                 MinRaiseToAmount = new Chips(40),
                 MaxRaiseToAmount = new Chips(1000),
-                OccuredAt = new DateTime(2025, 1, 1)
+                OccurredAt = new DateTime(2025, 1, 1)
             },
             new DecisionIsCommittedEvent
             {
                 Nickname = participantSb.Nickname,
                 Decision = new Decision(DecisionType.Fold, new Chips(0)),
-                OccuredAt = new DateTime(2025, 1, 1)
+                OccurredAt = new DateTime(2025, 1, 1)
             },
             new DecisionIsRequestedEvent
             {
@@ -223,34 +223,34 @@ public class NoLimitHoldem6MaxHandTest
                 RaiseIsAvailable = true,
                 MinRaiseToAmount = new Chips(40),
                 MaxRaiseToAmount = new Chips(900),
-                OccuredAt = new DateTime(2025, 1, 1)
+                OccurredAt = new DateTime(2025, 1, 1)
             },
             new DecisionIsCommittedEvent
             {
                 Nickname = participantBb.Nickname,
                 Decision = new Decision(DecisionType.CallTo, new Chips(25)),
-                OccuredAt = new DateTime(2025, 1, 1)
+                OccurredAt = new DateTime(2025, 1, 1)
             },
             new StageIsFinishedEvent
             {
-                OccuredAt = new DateTime(2025, 1, 1)
+                OccurredAt = new DateTime(2025, 1, 1)
             },
             new StageIsStartedEvent
             {
-                OccuredAt = new DateTime(2025, 1, 1)
+                OccurredAt = new DateTime(2025, 1, 1)
             },
             new BoardCardsAreDealtEvent
             {
                 Cards = new CardSet([Card.AceOfSpades, Card.SevenOfClubs, Card.DeuceOfDiamonds]),
-                OccuredAt = new DateTime(2025, 1, 1)
+                OccurredAt = new DateTime(2025, 1, 1)
             },
             new StageIsFinishedEvent
             {
-                OccuredAt = new DateTime(2025, 1, 1)
+                OccurredAt = new DateTime(2025, 1, 1)
             },
             new StageIsStartedEvent
             {
-                OccuredAt = new DateTime(2025, 1, 1)
+                OccurredAt = new DateTime(2025, 1, 1)
             },
             new DecisionIsRequestedEvent
             {
@@ -262,13 +262,13 @@ public class NoLimitHoldem6MaxHandTest
                 RaiseIsAvailable = true,
                 MinRaiseToAmount = new Chips(10),
                 MaxRaiseToAmount = new Chips(875),
-                OccuredAt = new DateTime(2025, 1, 1)
+                OccurredAt = new DateTime(2025, 1, 1)
             },
             new DecisionIsCommittedEvent
             {
                 Nickname = participantBb.Nickname,
                 Decision = new Decision(DecisionType.Check, new Chips(0)),
-                OccuredAt = new DateTime(2025, 1, 1)
+                OccurredAt = new DateTime(2025, 1, 1)
             },
             new DecisionIsRequestedEvent
             {
@@ -280,13 +280,13 @@ public class NoLimitHoldem6MaxHandTest
                 RaiseIsAvailable = true,
                 MinRaiseToAmount = new Chips(10),
                 MaxRaiseToAmount = new Chips(775),
-                OccuredAt = new DateTime(2025, 1, 1)
+                OccurredAt = new DateTime(2025, 1, 1)
             },
             new DecisionIsCommittedEvent
             {
                 Nickname = participantBu.Nickname,
                 Decision = new Decision(DecisionType.RaiseTo, new Chips(15)),
-                OccuredAt = new DateTime(2025, 1, 1)
+                OccurredAt = new DateTime(2025, 1, 1)
             },
             new DecisionIsRequestedEvent
             {
@@ -298,78 +298,78 @@ public class NoLimitHoldem6MaxHandTest
                 RaiseIsAvailable = true,
                 MinRaiseToAmount = new Chips(30),
                 MaxRaiseToAmount = new Chips(875),
-                OccuredAt = new DateTime(2025, 1, 1)
+                OccurredAt = new DateTime(2025, 1, 1)
             },
             new DecisionIsCommittedEvent
             {
                 Nickname = participantBb.Nickname,
                 Decision = new Decision(DecisionType.Fold, new Chips(0)),
-                OccuredAt = new DateTime(2025, 1, 1)
+                OccurredAt = new DateTime(2025, 1, 1)
             },
             new StageIsFinishedEvent
             {
-                OccuredAt = new DateTime(2025, 1, 1)
+                OccurredAt = new DateTime(2025, 1, 1)
             },
             new StageIsStartedEvent
             {
-                OccuredAt = new DateTime(2025, 1, 1)
+                OccurredAt = new DateTime(2025, 1, 1)
             },
             new StageIsFinishedEvent
             {
-                OccuredAt = new DateTime(2025, 1, 1)
+                OccurredAt = new DateTime(2025, 1, 1)
             },
             new StageIsStartedEvent
             {
-                OccuredAt = new DateTime(2025, 1, 1)
+                OccurredAt = new DateTime(2025, 1, 1)
             },
             new StageIsFinishedEvent
             {
-                OccuredAt = new DateTime(2025, 1, 1)
+                OccurredAt = new DateTime(2025, 1, 1)
             },
             new StageIsStartedEvent
             {
-                OccuredAt = new DateTime(2025, 1, 1)
+                OccurredAt = new DateTime(2025, 1, 1)
             },
             new StageIsFinishedEvent
             {
-                OccuredAt = new DateTime(2025, 1, 1)
+                OccurredAt = new DateTime(2025, 1, 1)
             },
             new StageIsStartedEvent
             {
-                OccuredAt = new DateTime(2025, 1, 1)
+                OccurredAt = new DateTime(2025, 1, 1)
             },
             new StageIsFinishedEvent
             {
-                OccuredAt = new DateTime(2025, 1, 1)
+                OccurredAt = new DateTime(2025, 1, 1)
             },
             new StageIsStartedEvent
             {
-                OccuredAt = new DateTime(2025, 1, 1)
+                OccurredAt = new DateTime(2025, 1, 1)
             },
             new RefundIsCommittedEvent
             {
                 Nickname = participantBu.Nickname,
                 Amount = new Chips(15),
-                OccuredAt = new DateTime(2025, 1, 1)
+                OccurredAt = new DateTime(2025, 1, 1)
             },
             new HoleCardsAreMuckedEvent
             {
                 Nickname = participantBu.Nickname,
-                OccuredAt = new DateTime(2025, 1, 1)
+                OccurredAt = new DateTime(2025, 1, 1)
             },
             new WinWithoutShowdownIsCommittedEvent
             {
                 Nickname = participantBu.Nickname,
                 Amount = new Chips(55),
-                OccuredAt = new DateTime(2025, 1, 1)
+                OccurredAt = new DateTime(2025, 1, 1)
             },
             new StageIsFinishedEvent
             {
-                OccuredAt = new DateTime(2025, 1, 1)
+                OccurredAt = new DateTime(2025, 1, 1)
             },
             new HandIsFinishedEvent
             {
-                OccuredAt = new DateTime(2025, 1, 1)
+                OccurredAt = new DateTime(2025, 1, 1)
             }
         };
 

@@ -104,7 +104,7 @@ public class Hand
             BigBlindSeat = bigBlindSeat,
             ButtonSeat = buttonSeat,
             Participants = participants,
-            OccuredAt = DateTime.Now
+            OccurredAt = DateTime.Now
         };
         hand.AddEvent(@event);
 
@@ -192,7 +192,7 @@ public class Hand
     {
         var @event = new HandIsStartedEvent
         {
-            OccuredAt = DateTime.Now
+            OccurredAt = DateTime.Now
         };
         AddEvent(@event);
 
@@ -229,7 +229,7 @@ public class Hand
         {
             var @event = new HandIsFinishedEvent
             {
-                OccuredAt = DateTime.Now
+                OccurredAt = DateTime.Now
             };
             AddEvent(@event);
         }
@@ -262,7 +262,7 @@ public class Hand
         }
     }
 
-    # region Events
+    #region Events
 
     public List<IEvent> PullEvents()
     {
@@ -277,5 +277,5 @@ public class Hand
         _events.Add(@event);
     }
 
-    # endregion
+    #endregion
 }

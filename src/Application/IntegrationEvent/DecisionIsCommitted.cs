@@ -8,5 +8,5 @@ public record struct DecisionIsCommittedIntegrationEvent : IIntegrationEvent
     public required string Nickname { get; init; }
     public required string DecisionType { get; init; }
     public required int DecisionAmount { get; init; }
-    public required DateTime OccuredAt { get; init; }
+    public required DateTime OccurredAt { get; init; }
 }

@@ -13,5 +13,5 @@ public record struct DecisionIsRequestedIntegrationEvent : IIntegrationEvent
     public required bool RaiseIsAvailable { get; init; }
     public required int MinRaiseToAmount { get; init; }
     public required int MaxRaiseToAmount { get; init; }
-    public required DateTime OccuredAt { get; init; }
+    public required DateTime OccurredAt { get; init; }
 }

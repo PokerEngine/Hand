@@ -18,7 +18,7 @@ public class HoleCardsAreShownEventHandler(
             Cards = @event.Cards.ToString(),
             ComboType = @event.Combo.Type.ToString(),
             ComboWeight = @event.Combo.Weight,
-            OccuredAt = @event.OccuredAt
+            OccurredAt = @event.OccurredAt
         };
 
         var routingKey = new IntegrationEventRoutingKey($"hand.{context.TableType.ToRoutingKey()}.hole-cards-are-shown");

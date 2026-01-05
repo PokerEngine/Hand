@@ -186,16 +186,35 @@ public class PotTest
         var nicknameB = new Nickname("Bobby");
         pot.PostBlind(nicknameA, new Chips(5));
         pot.PostBlind(nicknameB, new Chips(10));
-        pot.PostBet(nicknameA, new Chips(20)); // Open raise to 25
+        pot.PostBet(nicknameA, new Chips(20)); // Open raise 25
 
         // Act
-        pot.PostBet(nicknameB, new Chips(90)); // 3bet to 100
+        pot.PostBet(nicknameB, new Chips(90)); // 3bet 100
 
         // Assert
         Assert.Equal(new Chips(125), pot.TotalAmount);
         Assert.Equal(nicknameB, pot.LastPostedNickname);
         Assert.Equal(nicknameB, pot.LastRaisedNickname);
         Assert.Equal(new Chips(75), pot.LastRaisedStep);
+    }
+
+    [Fact]
+    public void RefundBet_ShouldRefundBet()
+    {
+        // Arrange
+        var pot = CreatePot();
+        var nicknameA = new Nickname("Alice");
+        var nicknameB = new Nickname("Bobby");
+        pot.PostBlind(nicknameA, new Chips(5));
+        pot.PostBlind(nicknameB, new Chips(10));
+        pot.PostBet(nicknameA, new Chips(20)); // Raise 25
+
+        // Act
+        pot.RefundBet(nicknameA, new Chips(15));
+
+        // Assert
+        Assert.Equal(new Chips(20), pot.TotalAmount);
+        Assert.Equal(new Chips(10), pot.GetUncommittedAmountPostedBy(nicknameA));
     }
 
     [Fact]
@@ -207,7 +226,7 @@ public class PotTest
         var nicknameB = new Nickname("Bobby");
         pot.PostBlind(nicknameA, new Chips(5));
         pot.PostBlind(nicknameB, new Chips(10));
-        pot.PostBet(nicknameA, new Chips(20)); // Raise to 25
+        pot.PostBet(nicknameA, new Chips(20)); // Raise 25
         pot.PostBet(nicknameB, new Chips(15)); // Call
 
         // Act
@@ -220,6 +239,45 @@ public class PotTest
         Assert.Equal(new Chips(10), pot.LastRaisedStep);
         Assert.False(pot.PostedUncommittedBet(nicknameA));
         Assert.False(pot.PostedUncommittedBet(nicknameB));
+    }
+
+    [Fact]
+    public void CalculateRefund_WhenAvailable_ShouldReturnRefund()
+    {
+        // Arrange
+        var pot = CreatePot();
+        var nicknameA = new Nickname("Alice");
+        var nicknameB = new Nickname("Bobby");
+        pot.PostBlind(nicknameA, new Chips(5));
+        pot.PostBlind(nicknameB, new Chips(10));
+        pot.PostBet(nicknameA, new Chips(20)); // Raise 25
+
+        // Act
+        var (nickname, amount) = pot.CalculateRefund();
+
+        // Assert
+        Assert.Equal(nicknameA, nickname);
+        Assert.Equal(new Chips(15), amount);
+    }
+
+    [Fact]
+    public void CalculateRefund_WhenNotAvailable_ShouldReturnNull()
+    {
+        // Arrange
+        var pot = CreatePot();
+        var nicknameA = new Nickname("Alice");
+        var nicknameB = new Nickname("Bobby");
+        pot.PostBlind(nicknameA, new Chips(5));
+        pot.PostBlind(nicknameB, new Chips(10));
+        pot.PostBet(nicknameA, new Chips(20)); // Raise 25
+        pot.PostBet(nicknameB, new Chips(15)); // Call 25
+
+        // Act
+        var (nickname, amount) = pot.CalculateRefund();
+
+        // Assert
+        Assert.Null(nickname);
+        Assert.Equal(new Chips(0), amount);
     }
 
     private Pot CreatePot()

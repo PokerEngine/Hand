@@ -8,8 +8,8 @@ namespace Domain.Test.Entity;
 
 public class NoLimitHoldem6MaxHandTest
 {
-    private readonly FakeRandomizer _randomizer = new();
-    private readonly FakeEvaluator _evaluator = new();
+    private readonly StubRandomizer _randomizer = new();
+    private readonly StubEvaluator _evaluator = new();
 
     [Fact]
     public void TestFromScratch()
@@ -782,8 +782,8 @@ public class NoLimitHoldem6MaxHandTest
 
 public class NoLimitHoldem9MaxHandTest
 {
-    private readonly FakeRandomizer _randomizer = new();
-    private readonly FakeEvaluator _evaluator = new();
+    private readonly StubRandomizer _randomizer = new();
+    private readonly StubEvaluator _evaluator = new();
 
     [Fact]
     public void TestFromScratch()
@@ -879,8 +879,8 @@ public class NoLimitHoldem9MaxHandTest
 
 public class PotLimitOmaha6MaxHandTest
 {
-    private readonly FakeRandomizer _randomizer = new();
-    private readonly FakeEvaluator _evaluator = new();
+    private readonly StubRandomizer _randomizer = new();
+    private readonly StubEvaluator _evaluator = new();
 
     [Fact]
     public void TestFromScratch()
@@ -958,8 +958,8 @@ public class PotLimitOmaha6MaxHandTest
 
 public class PotLimitOmaha9MaxHandTest
 {
-    private readonly FakeRandomizer _randomizer = new();
-    private readonly FakeEvaluator _evaluator = new();
+    private readonly StubRandomizer _randomizer = new();
+    private readonly StubEvaluator _evaluator = new();
 
     [Fact]
     public void TestFromScratch()

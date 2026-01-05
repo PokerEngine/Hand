@@ -6,7 +6,7 @@ namespace Domain.Test.Entity;
 
 public class StandardDeckTest
 {
-    private readonly FakeRandomizer _randomizer = new();
+    private readonly StubRandomizer _randomizer = new();
 
     [Fact]
     public void TestInitialization()

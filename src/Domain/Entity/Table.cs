@@ -121,6 +121,27 @@ public class Table : IEnumerable<Player>
         }
     }
 
+    public IEnumerable<Player> GetPlayers(Func<Player, bool> predicate)
+    {
+        return Players.Where(predicate);
+    }
+
+    public Player? GetPlayerNextToSeat(Seat seat, Func<Player, bool> predicate)
+    {
+        var startIdx = seat < _players.Length ? (int)seat : 0;
+        for (var i = 0; i < _players.Length; i++)
+        {
+            var idx = (startIdx + i) % _players.Length;
+            var player = _players[idx];
+            if (player != null && predicate(player))
+            {
+                return player;
+            }
+        }
+
+        return null;
+    }
+
     public bool IsHeadsUp()
     {
         return Count == 2;

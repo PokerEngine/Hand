@@ -186,7 +186,7 @@ public class ShowdownDealer : IDealer
             case StageIsFinishedEvent:
                 break;
             default:
-                throw new ArgumentException("The event is not supported", nameof(@event));
+                throw new InvalidOperationException($"{@event.GetType().Name} is not supported");
         }
     }
 

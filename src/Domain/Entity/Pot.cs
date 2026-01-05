@@ -60,7 +60,7 @@ public abstract class BasePot
                 RaiseTo(player, decision.Amount);
                 break;
             default:
-                throw new ArgumentException("The decision is unknown", nameof(decision));
+                throw new InvalidOperationException($"{decision} is not supported");
         }
     }
 

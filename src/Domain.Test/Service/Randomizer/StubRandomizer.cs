@@ -2,7 +2,7 @@ using Domain.Service.Randomizer;
 
 namespace Domain.Test.Service.Randomizer;
 
-public class FakeRandomizer : IRandomizer
+public class StubRandomizer : IRandomizer
 {
     public int GetRandomNumber(int maxValue)
     {

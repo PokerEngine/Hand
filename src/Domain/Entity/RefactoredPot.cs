@@ -44,8 +44,8 @@ public class Pot
 
     public void PostBet(Nickname nickname, Chips amount)
     {
-        var playerPosted = amount + UncommittedBets.PostedBy(nickname);
-        var maxPosted = UncommittedBets.MaxPosted;
+        var playerPosted = amount + UncommittedBets.GetAmountPostedBy(nickname);
+        var maxPosted = UncommittedBets.GetMaxAmountPostedNotBy(nickname);
 
         UncommittedBets.Post(nickname, amount);
         LastPostedNickname = nickname;
@@ -56,6 +56,11 @@ public class Pot
             LastRaisedNickname = nickname;
             LastRaisedStep = playerPosted - maxPosted;
         }
+    }
+
+    public void RefundBet(Nickname nickname, Chips amount)
+    {
+        UncommittedBets.Refund(nickname, amount);
     }
 
     public void CommitBets()
@@ -69,19 +74,51 @@ public class Pot
         UncommittedBets.Clear();
     }
 
+    public Chips GetUncommittedAmountPostedBy(Nickname nickname)
+    {
+        return UncommittedBets.GetAmountPostedBy(nickname);
+    }
+
+    public Chips GetUncommittedMaxAmountPostedNotBy(Nickname nickname)
+    {
+        return UncommittedBets.GetMaxAmountPostedNotBy(nickname);
+    }
+
     public bool PostedUncommittedBet(Nickname nickname)
     {
         return PostedUncommittedBetNicknames.Contains(nickname);
     }
+
+    public (Nickname?, Chips) CalculateRefund()
+    {
+        var maxNickname = UncommittedBets.GetNicknamePostedMaxAmount();
+        if (maxNickname is null)
+        {
+            return (null, new Chips(0));
+        }
+
+        var nickname = (Nickname)maxNickname;
+        var maxAmount = UncommittedBets.GetAmountPostedBy(nickname);
+        var secondMaxAmount = UncommittedBets.GetMaxAmountPostedNotBy(nickname);
+
+        if (maxAmount > secondMaxAmount)
+        {
+            return (nickname, maxAmount - secondMaxAmount);
+        }
+
+        return (null, new Chips(0));
+    }
+
+    public override string ToString() =>
+        $"{GetType().Name}: {TotalAmount}";
 }
 
 internal class Bets
 {
     private readonly Dictionary<Nickname, Chips> _mapping = new();
     public Chips TotalAmount => _mapping.Values.Sum(x => x);
-    public Chips MaxPosted => _mapping.Count > 0 ? _mapping.Values.Max(x => x) : new Chips(0);
 
-    public Chips PostedBy(Nickname nickname)
+    public Chips GetAmountPostedBy(Nickname nickname)
     {
         if (_mapping.TryGetValue(nickname, out var amount))
         {
@@ -91,9 +128,36 @@ internal class Bets
         return new Chips(0);
     }
 
+    public Chips GetMaxAmountPostedNotBy(Nickname nickname)
+    {
+        var posted = _mapping.Where(kv => kv.Key != nickname).Select(kv => kv.Value).ToList();
+        return posted.Count > 0 ? posted.Max(x => x) : new Chips(0);
+    }
+
+    public Nickname? GetNicknamePostedMaxAmount()
+    {
+        if (_mapping.Count == 0)
+        {
+            return null;
+        }
+
+        var maxAmount = _mapping.Values.Max();
+        return _mapping.First(kv => kv.Value.Equals(maxAmount)).Key;
+    }
+
     public void Post(Nickname nickname, Chips amount)
     {
-        _mapping[nickname] = PostedBy(nickname) + amount;
+        _mapping[nickname] = GetAmountPostedBy(nickname) + amount;
+    }
+
+    public void Refund(Nickname nickname, Chips amount)
+    {
+        if (amount > GetAmountPostedBy(nickname))
+        {
+            throw new InvalidOperationException("Cannot refund more than posted");
+        }
+
+        _mapping[nickname] = GetAmountPostedBy(nickname) - amount;
     }
 
     public void MergeWith(Bets other)

@@ -143,5 +143,5 @@ public class Player : IEquatable<Player>
     }
 
     public override string ToString()
-        => $"{Nickname}, {Seat}, {Stack}, {HoleCards}";
+        => $"{GetType().Name}: {Nickname}, {Seat}, {Stack}, {HoleCards}";
 }

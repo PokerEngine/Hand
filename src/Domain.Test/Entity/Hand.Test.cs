@@ -474,24 +474,34 @@ public class NoLimitHoldem6MaxHandTest
 
         var state = hand.GetState();
 
-        Assert.Equal(3, state.Players.Count);
-        Assert.Equal(new Nickname("BigBlind"), state.Players[0].Nickname);
-        Assert.Equal(new Chips(975), state.Players[0].Stack);
-        Assert.Equal(2, state.Players[0].HoleCards.Count);
-        Assert.False(state.Players[0].IsFolded);
-        Assert.Equal(new Nickname("Button"), state.Players[1].Nickname);
-        Assert.Equal(new Chips(960), state.Players[1].Stack);
-        Assert.Equal(2, state.Players[1].HoleCards.Count);
-        Assert.Equal(new Chips(15), state.Players[1].UncommittedPotAmount);
-        Assert.False(state.Players[1].IsFolded);
-        Assert.Equal(new Nickname("SmallBlind"), state.Players[2].Nickname);
-        Assert.Equal(new Chips(995), state.Players[2].Stack);
-        Assert.Equal(new Chips(0), state.Players[2].UncommittedPotAmount);
-        Assert.Equal(2, state.Players[2].HoleCards.Count);
-        Assert.True(state.Players[2].IsFolded);
+        Assert.Equal(3, state.Table.BoardCards.Count);
+        Assert.Equal(3, state.Table.Players.Count);
+        Assert.Equal(new Nickname("BigBlind"), state.Table.Players[0].Nickname);
+        Assert.Equal(new Chips(975), state.Table.Players[0].Stack);
+        Assert.Equal(2, state.Table.Players[0].HoleCards.Count);
+        Assert.False(state.Table.Players[0].IsFolded);
+        Assert.Equal(new Nickname("Button"), state.Table.Players[1].Nickname);
+        Assert.Equal(new Chips(960), state.Table.Players[1].Stack);
+        Assert.Equal(2, state.Table.Players[1].HoleCards.Count);
+        Assert.False(state.Table.Players[1].IsFolded);
+        Assert.Equal(new Nickname("SmallBlind"), state.Table.Players[2].Nickname);
+        Assert.Equal(new Chips(995), state.Table.Players[2].Stack);
+        Assert.Equal(2, state.Table.Players[2].HoleCards.Count);
+        Assert.True(state.Table.Players[2].IsFolded);
 
-        Assert.Equal(3, state.BoardCards.Count);
-        Assert.Equal(new Chips(55), state.CommittedPotAmount);
+        Assert.Equal(new Chips(0), state.Pot.Ante);
+        Assert.Equal(3, state.Pot.CommittedBets.Count);
+        Assert.Equal(new Nickname("SmallBlind"), state.Pot.CommittedBets[0].Nickname);
+        Assert.Equal(new Chips(5), state.Pot.CommittedBets[0].Amount);
+        Assert.Equal(new Nickname("BigBlind"), state.Pot.CommittedBets[1].Nickname);
+        Assert.Equal(new Chips(25), state.Pot.CommittedBets[1].Amount);
+        Assert.Equal(new Nickname("Button"), state.Pot.CommittedBets[2].Nickname);
+        Assert.Equal(new Chips(25), state.Pot.CommittedBets[2].Amount);
+        Assert.Equal(2, state.Pot.UncommittedBets.Count);
+        Assert.Equal(new Nickname("BigBlind"), state.Pot.UncommittedBets[0].Nickname);
+        Assert.Equal(new Chips(0), state.Pot.UncommittedBets[0].Amount);
+        Assert.Equal(new Nickname("Button"), state.Pot.UncommittedBets[1].Nickname);
+        Assert.Equal(new Chips(15), state.Pot.UncommittedBets[1].Amount);
     }
 
     [Fact]

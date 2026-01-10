@@ -28,19 +28,36 @@ public record struct GetHandByUidResponse : IQueryResponse
 
 public record struct GetHandByUidStateResponse
 {
-    public required List<GetHandByUidStatePlayerResponse> Players { get; init; }
-    public required string BoardCards { get; init; }
-    public required Chips CommittedPotAmount { get; init; }
+    public required GetHandByUidTableStateResponse Table { get; init; }
+    public required GetHandByUidPotStateResponse Pot { get; init; }
 }
 
-public record struct GetHandByUidStatePlayerResponse
+public readonly struct GetHandByUidTableStateResponse
 {
-    public required string Nickname { get; init; }
+    public required List<GetHandByUidPlayerStateResponse> Players { get; init; }
+    public required string BoardCards { get; init; }
+}
+
+public readonly struct GetHandByUidPlayerStateResponse
+{
     public required int Seat { get; init; }
+    public required string Nickname { get; init; }
     public required int Stack { get; init; }
     public required string HoleCards { get; init; }
-    public required int UncommittedPotAmount { get; init; }
     public required bool IsFolded { get; init; }
+}
+
+public readonly struct GetHandByUidPotStateResponse
+{
+    public required int Ante { get; init; }
+    public required List<GetHandByUidBetStateResponse> CommittedBets { get; init; }
+    public required List<GetHandByUidBetStateResponse> UncommittedBets { get; init; }
+}
+
+public readonly struct GetHandByUidBetStateResponse
+{
+    public required string Nickname { get; init; }
+    public required int Amount { get; init; }
 }
 
 public class GetHandByUidHandler(
@@ -73,23 +90,49 @@ public class GetHandByUidHandler(
             ButtonSeat = hand.Table.Positions.Button,
             State = new GetHandByUidStateResponse
             {
-                Players = state.Players.Select(SerializePlayerState).ToList(),
-                BoardCards = state.BoardCards.ToString(),
-                CommittedPotAmount = state.CommittedPotAmount
+                Table = SerializeTableState(state.Table),
+                Pot = SerializePotState(state.Pot)
             }
         };
     }
 
-    private GetHandByUidStatePlayerResponse SerializePlayerState(StatePlayer player)
+    private GetHandByUidTableStateResponse SerializeTableState(TableState state)
     {
-        return new GetHandByUidStatePlayerResponse
+        return new GetHandByUidTableStateResponse
         {
-            Nickname = player.Nickname,
-            Seat = player.Seat,
-            Stack = player.Stack,
-            HoleCards = player.HoleCards.ToString(),
-            UncommittedPotAmount = player.UncommittedPotAmount,
-            IsFolded = player.IsFolded
+            Players = state.Players.Select(SerializePlayerState).ToList(),
+            BoardCards = state.BoardCards
+        };
+    }
+
+    private GetHandByUidPlayerStateResponse SerializePlayerState(PlayerState state)
+    {
+        return new GetHandByUidPlayerStateResponse
+        {
+            Nickname = state.Nickname,
+            Seat = state.Seat,
+            Stack = state.Stack,
+            HoleCards = state.HoleCards,
+            IsFolded = state.IsFolded
+        };
+    }
+
+    private GetHandByUidPotStateResponse SerializePotState(PotState state)
+    {
+        return new GetHandByUidPotStateResponse
+        {
+            Ante = state.Ante,
+            CommittedBets = state.CommittedBets.Select(SerializeBetState).ToList(),
+            UncommittedBets = state.UncommittedBets.Select(SerializeBetState).ToList()
+        };
+    }
+
+    private GetHandByUidBetStateResponse SerializeBetState(BetState state)
+    {
+        return new GetHandByUidBetStateResponse
+        {
+            Nickname = state.Nickname,
+            Amount = state.Amount
         };
     }
 }

@@ -73,6 +73,18 @@ public class Player
         Stack += amount;
     }
 
+    public PlayerState GetState()
+    {
+        return new PlayerState
+        {
+            Nickname = Nickname,
+            Seat = Seat,
+            Stack = Stack,
+            HoleCards = HoleCards,
+            IsFolded = IsFolded
+        };
+    }
+
     public override string ToString()
         => $"{GetType().Name}: {Nickname}, {Seat}, {Stack}, {HoleCards}";
 }

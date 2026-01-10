@@ -108,11 +108,6 @@ public class Table : IEnumerable<Player>
         }
     }
 
-    public IEnumerable<Player> GetPlayers(Func<Player, bool> predicate)
-    {
-        return Players.Where(predicate);
-    }
-
     public Player? GetPlayerNextToSeat(Seat seat, Func<Player, bool> predicate)
     {
         var startIdx = seat < _players.Length ? (int)seat : 0;
@@ -137,6 +132,15 @@ public class Table : IEnumerable<Player>
     public void TakeBoardCards(CardSet boardCards)
     {
         BoardCards += boardCards;
+    }
+
+    public TableState GetState()
+    {
+        return new TableState
+        {
+            Players = Players.Select(p => p.GetState()).ToList(),
+            BoardCards = BoardCards
+        };
     }
 
     public IEnumerator<Player> GetEnumerator()

@@ -149,21 +149,10 @@ public class Hand
 
     public State GetState()
     {
-        var playerStates = Table.Players.Select((p) => new StatePlayer
-        {
-            Nickname = p.Nickname,
-            Seat = p.Seat,
-            Stack = p.Stack,
-            HoleCards = p.HoleCards,
-            IsFolded = p.IsFolded,
-            UncommittedPotAmount = Pot.GetUncommittedAmountPostedBy(p.Nickname)
-        }).ToList();
-
         return new State
         {
-            Players = playerStates,
-            BoardCards = Table.BoardCards,
-            CommittedPotAmount = Pot.CommittedAmount
+            Table = Table.GetState(),
+            Pot = Pot.GetState()
         };
     }
 

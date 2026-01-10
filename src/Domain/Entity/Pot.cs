@@ -6,8 +6,7 @@ namespace Domain.Entity;
 public class Pot
 {
     public Chips MinBet { get; }
-
-    private Chips Ante { get; set; } = new(0);
+    public Chips Ante { get; private set; } = new(0);
     private Bets CommittedBets { get; } = new();
     private Bets UncommittedBets { get; } = new();
 
@@ -16,7 +15,6 @@ public class Pot
     public Chips LastRaisedStep { get; private set; }
     private HashSet<Nickname> PostedUncommittedBetNicknames { get; } = new();
 
-    public Chips CommittedAmount => Ante + CommittedBets.TotalAmount;
     public Chips TotalAmount => Ante + CommittedBets.TotalAmount + UncommittedBets.TotalAmount;
 
     public Pot(Chips minBet)
@@ -134,6 +132,11 @@ public class Pot
 
             foreach (var (n, a) in totalBets)
             {
+                if (a.IsZero)
+                {
+                    continue;
+                }
+
                 var amount = a < edgeAmount ? a : edgeAmount;
                 totalBets.Refund(n, amount);
                 sidePotAmount += amount;
@@ -148,6 +151,16 @@ public class Pot
 
             deadAmount = new Chips(0);
         }
+    }
+
+    public PotState GetState()
+    {
+        return new PotState
+        {
+            Ante = Ante,
+            CommittedBets = CommittedBets.Select(x => new BetState { Nickname = x.Key, Amount = x.Value }).ToList(),
+            UncommittedBets = UncommittedBets.Select(x => new BetState { Nickname = x.Key, Amount = x.Value }).ToList()
+        };
     }
 
     public override string ToString() =>
@@ -216,7 +229,7 @@ internal class Bets : IEnumerable<KeyValuePair<Nickname, Chips>>
 
     public IEnumerator<KeyValuePair<Nickname, Chips>> GetEnumerator()
     {
-        foreach (var pair in _mapping.Where(pair => !!pair.Value).OrderBy(pair => (pair.Value, pair.Key)))
+        foreach (var pair in _mapping.OrderBy(pair => (pair.Value, pair.Key)))
         {
             yield return pair;
         }

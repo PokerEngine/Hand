@@ -98,10 +98,13 @@ internal static class BsonSerializerConfig
     {
         BsonSerializer.TryRegisterSerializer(new GuidSerializer(GuidRepresentation.Standard));
         BsonSerializer.TryRegisterSerializer(new HandUidSerializer());
+        BsonSerializer.TryRegisterSerializer(new TableUidSerializer());
         BsonSerializer.TryRegisterSerializer(new NicknameSerializer());
         BsonSerializer.TryRegisterSerializer(new SeatSerializer());
         BsonSerializer.TryRegisterSerializer(new ChipsSerializer());
         BsonSerializer.TryRegisterSerializer(new CardSetSerializer());
+        BsonSerializer.TryRegisterSerializer(new RulesSerializer());
+        BsonSerializer.TryRegisterSerializer(new PositionsSerializer());
         BsonSerializer.TryRegisterSerializer(new DecisionSerializer());
         BsonSerializer.TryRegisterSerializer(new ComboSerializer());
         BsonSerializer.TryRegisterSerializer(new ParticipantSerializer());
@@ -114,6 +117,15 @@ internal sealed class HandUidSerializer : SerializerBase<HandUid>
         => context.Writer.WriteGuid(value);
 
     public override HandUid Deserialize(BsonDeserializationContext context, BsonDeserializationArgs args)
+        => context.Reader.ReadGuid();
+}
+
+internal sealed class TableUidSerializer : SerializerBase<TableUid>
+{
+    public override void Serialize(BsonSerializationContext context, BsonSerializationArgs args, TableUid value)
+        => context.Writer.WriteGuid(value);
+
+    public override TableUid Deserialize(BsonDeserializationContext context, BsonDeserializationArgs args)
         => context.Reader.ReadGuid();
 }
 
@@ -153,14 +165,151 @@ internal sealed class CardSetSerializer : SerializerBase<CardSet>
         => CardSet.FromString(context.Reader.ReadString());
 }
 
+internal sealed class RulesSerializer : SerializerBase<Rules>
+{
+    private const string GameField = "game";
+    private const string SmallBlindField = "smallBlind";
+    private const string BigBlindField = "bigBlind";
+
+    public override void Serialize(BsonSerializationContext context, BsonSerializationArgs args, Rules value)
+    {
+        context.Writer.WriteStartDocument();
+        context.Writer.WriteName(GameField);
+        context.Writer.WriteString(value.Game.ToString());
+        context.Writer.WriteName(SmallBlindField);
+        context.Writer.WriteInt32(value.SmallBlind);
+        context.Writer.WriteName(BigBlindField);
+        context.Writer.WriteInt32(value.BigBlind);
+        context.Writer.WriteEndDocument();
+    }
+
+    public override Rules Deserialize(BsonDeserializationContext context, BsonDeserializationArgs args)
+    {
+        Game game = default;
+        int smallBlind = default;
+        int bigBlind = default;
+
+        context.Reader.ReadStartDocument();
+
+        while (context.Reader.ReadBsonType() != BsonType.EndOfDocument)
+        {
+            var name = context.Reader.ReadName(Utf8NameDecoder.Instance);
+
+            switch (name)
+            {
+                case GameField:
+                    game = Enum.Parse<Game>(
+                        context.Reader.ReadString(),
+                        ignoreCase: true
+                    );
+                    break;
+
+                case SmallBlindField:
+                    smallBlind = context.Reader.ReadInt32();
+                    break;
+
+                case BigBlindField:
+                    bigBlind = context.Reader.ReadInt32();
+                    break;
+
+                default:
+                    context.Reader.SkipValue();
+                    break;
+            }
+        }
+
+        context.Reader.ReadEndDocument();
+
+        return new Rules
+        {
+            Game = game,
+            SmallBlind = smallBlind,
+            BigBlind = bigBlind
+        };
+    }
+}
+
+internal sealed class PositionsSerializer : SerializerBase<Positions>
+{
+    private const string SmallBlindField = "smallBlind";
+    private const string BigBlindField = "bigBlind";
+    private const string ButtonField = "button";
+    private const string MaxField = "max";
+
+    public override void Serialize(BsonSerializationContext context, BsonSerializationArgs args, Positions value)
+    {
+        context.Writer.WriteStartDocument();
+        context.Writer.WriteName(SmallBlindField);
+        context.Writer.WriteInt32(value.SmallBlind);
+        context.Writer.WriteName(BigBlindField);
+        context.Writer.WriteInt32(value.BigBlind);
+        context.Writer.WriteName(ButtonField);
+        context.Writer.WriteInt32(value.Button);
+        context.Writer.WriteName(MaxField);
+        context.Writer.WriteInt32(value.Max);
+        context.Writer.WriteEndDocument();
+    }
+
+    public override Positions Deserialize(BsonDeserializationContext context, BsonDeserializationArgs args)
+    {
+        int smallBlind = default;
+        int bigBlind = default;
+        int button = default;
+        int max = default;
+
+        context.Reader.ReadStartDocument();
+
+        while (context.Reader.ReadBsonType() != BsonType.EndOfDocument)
+        {
+            var name = context.Reader.ReadName(Utf8NameDecoder.Instance);
+
+            switch (name)
+            {
+                case SmallBlindField:
+                    smallBlind = context.Reader.ReadInt32();
+                    break;
+
+                case BigBlindField:
+                    bigBlind = context.Reader.ReadInt32();
+                    break;
+
+                case ButtonField:
+                    button = context.Reader.ReadInt32();
+                    break;
+
+                case MaxField:
+                    max = context.Reader.ReadInt32();
+                    break;
+
+                default:
+                    context.Reader.SkipValue();
+                    break;
+            }
+        }
+
+        context.Reader.ReadEndDocument();
+
+        return new Positions
+        {
+            SmallBlind = smallBlind,
+            BigBlind = bigBlind,
+            Button = button,
+            Max = max
+        };
+    }
+}
+
 internal sealed class DecisionSerializer : SerializerBase<Decision>
 {
+    private const string TypeField = "type";
+    private const string AmountField = "amount";
+
     public override void Serialize(BsonSerializationContext context, BsonSerializationArgs args, Decision value)
     {
         context.Writer.WriteStartDocument();
-        context.Writer.WriteName("type");
+        context.Writer.WriteName(TypeField);
         context.Writer.WriteString(value.Type.ToString());
-        context.Writer.WriteName("amount");
+        context.Writer.WriteName(AmountField);
         context.Writer.WriteInt32(value.Amount);
         context.Writer.WriteEndDocument();
     }
@@ -178,14 +327,14 @@ internal sealed class DecisionSerializer : SerializerBase<Decision>
 
             switch (name)
             {
-                case "type":
+                case TypeField:
                     type = Enum.Parse<DecisionType>(
                         context.Reader.ReadString(),
                         ignoreCase: true
                     );
                     break;
 
-                case "amount":
+                case AmountField:
                     amount = context.Reader.ReadInt32();
                     break;
 
@@ -203,12 +352,15 @@ internal sealed class DecisionSerializer : SerializerBase<Decision>
 
 internal sealed class ComboSerializer : SerializerBase<Combo>
 {
+    private const string TypeField = "type";
+    private const string WeightField = "weight";
+
     public override void Serialize(BsonSerializationContext context, BsonSerializationArgs args, Combo value)
     {
         context.Writer.WriteStartDocument();
-        context.Writer.WriteName("type");
+        context.Writer.WriteName(TypeField);
         context.Writer.WriteString(value.Type.ToString());
-        context.Writer.WriteName("weight");
+        context.Writer.WriteName(WeightField);
         context.Writer.WriteInt32(value.Weight);
         context.Writer.WriteEndDocument();
     }
@@ -226,14 +378,14 @@ internal sealed class ComboSerializer : SerializerBase<Combo>
 
             switch (name)
             {
-                case "type":
+                case TypeField:
                     type = Enum.Parse<ComboType>(
                         context.Reader.ReadString(),
                         ignoreCase: true
                     );
                     break;
 
-                case "weight":
+                case WeightField:
                     weight = context.Reader.ReadInt32();
                     break;
 
@@ -251,14 +403,18 @@ internal sealed class ComboSerializer : SerializerBase<Combo>
 
 internal sealed class ParticipantSerializer : SerializerBase<Participant>
 {
+    private const string NicknameField = "nickname";
+    private const string SeatField = "seat";
+    private const string StackField = "stack";
+
     public override void Serialize(BsonSerializationContext context, BsonSerializationArgs args, Participant value)
     {
         context.Writer.WriteStartDocument();
-        context.Writer.WriteName("nickname");
+        context.Writer.WriteName(NicknameField);
         context.Writer.WriteString(value.Nickname);
-        context.Writer.WriteName("seat");
+        context.Writer.WriteName(SeatField);
         context.Writer.WriteInt32(value.Seat);
-        context.Writer.WriteName("stack");
+        context.Writer.WriteName(StackField);
         context.Writer.WriteInt32(value.Stack);
         context.Writer.WriteEndDocument();
     }
@@ -277,15 +433,15 @@ internal sealed class ParticipantSerializer : SerializerBase<Participant>
 
             switch (name)
             {
-                case "nickname":
+                case NicknameField:
                     nickname = context.Reader.ReadString();
                     break;
 
-                case "seat":
+                case SeatField:
                     seat = context.Reader.ReadInt32();
                     break;
 
-                case "stack":
+                case StackField:
                     stack = context.Reader.ReadInt32();
                     break;
 

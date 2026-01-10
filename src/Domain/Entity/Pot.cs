@@ -111,7 +111,7 @@ public class Pot
         return (null, new Chips(0));
     }
 
-    public IEnumerable<RefactoredSidePot> CalculateSidePots(HashSet<Nickname> nicknames)
+    public IEnumerable<SidePot> CalculateSidePots(HashSet<Nickname> nicknames)
     {
         var deadAmount = Ante;
         var totalBets = new Bets();
@@ -121,7 +121,7 @@ public class Pot
         if (totalBets.TotalAmount.IsZero && !deadAmount.IsZero)
         {
             // Only ante is in the pot, should distribute between all players who didn't fold
-            yield return new RefactoredSidePot(nicknames, deadAmount);
+            yield return new SidePot(nicknames, deadAmount);
             yield break;
         }
 
@@ -144,7 +144,7 @@ public class Pot
                 }
             }
 
-            yield return new RefactoredSidePot(sidePotNicknames, sidePotAmount);
+            yield return new SidePot(sidePotNicknames, sidePotAmount);
 
             deadAmount = new Chips(0);
         }

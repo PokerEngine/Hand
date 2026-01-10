@@ -19,23 +19,30 @@ public class MongoDbRepositoryTest(MongoDbFixture fixture) : IClassFixture<Mongo
         var handUid = new HandUid(Guid.NewGuid());
         var @event = new TestEvent
         {
-            Game = Game.NoLimitHoldem,
+            Rules = new()
+            {
+                Game = Game.NoLimitHoldem,
+                SmallBlind = new Chips(5),
+                BigBlind = new Chips(10)
+            },
+            Positions = new()
+            {
+                SmallBlind = new Seat(1),
+                BigBlind = new Seat(2),
+                Button = new Seat(6),
+                Max = new Seat(6)
+            },
             Participants = [
-                new Participant(new Nickname("alice"), new Seat(1), new Chips(1000)),
-                new Participant(new Nickname("bobby"), new Seat(2), new Chips(900)),
-                new Participant(new Nickname("charlie"), new Seat(6), new Chips(800))
+                new Participant(new Nickname("Alice"), new Seat(1), new Chips(1000)),
+                new Participant(new Nickname("Bobby"), new Seat(2), new Chips(900)),
+                new Participant(new Nickname("Charlie"), new Seat(6), new Chips(800))
             ],
-            Nickname = new Nickname("alice"),
+            Nickname = new Nickname("Alice"),
             Seat = new Seat(2),
             Chips = new Chips(1000),
             CardSet = new CardSet([Card.AceOfSpades, Card.SevenOfHearts, Card.DeuceOfDiamonds]),
             Decision = new Decision(DecisionType.RaiseTo, new Chips(30)),
             Combo = new Combo(ComboType.OnePair, 100500),
-            SidePot = new SidePot([
-                new KeyValuePair<Nickname, Chips>(new Nickname("alice"), new Chips(25)),
-                new KeyValuePair<Nickname, Chips>(new Nickname("bobby"), new Chips(5)),
-                new KeyValuePair<Nickname, Chips>(new Nickname("charlie"), new Chips(10))
-            ]),
             OccurredAt = GetNow()
         };
         await repository.AddEventsAsync(handUid, [@event]);
@@ -58,23 +65,30 @@ public class MongoDbRepositoryTest(MongoDbFixture fixture) : IClassFixture<Mongo
         var handUid = new HandUid(Guid.NewGuid());
         var @event = new TestEvent
         {
-            Game = Game.NoLimitHoldem,
+            Rules = new()
+            {
+                Game = Game.NoLimitHoldem,
+                SmallBlind = new Chips(5),
+                BigBlind = new Chips(10)
+            },
+            Positions = new()
+            {
+                SmallBlind = new Seat(1),
+                BigBlind = new Seat(2),
+                Button = new Seat(6),
+                Max = new Seat(6)
+            },
             Participants = [
-                new Participant(new Nickname("alice"), new Seat(1), new Chips(1000)),
-                new Participant(new Nickname("bobby"), new Seat(2), new Chips(900)),
-                new Participant(new Nickname("charlie"), new Seat(6), new Chips(800))
+                new Participant(new Nickname("Alice"), new Seat(1), new Chips(1000)),
+                new Participant(new Nickname("Bobby"), new Seat(2), new Chips(900)),
+                new Participant(new Nickname("Charlie"), new Seat(6), new Chips(800))
             ],
-            Nickname = new Nickname("alice"),
+            Nickname = new Nickname("Alice"),
             Seat = new Seat(2),
             Chips = new Chips(1000),
             CardSet = new CardSet([Card.AceOfSpades, Card.SevenOfHearts, Card.DeuceOfDiamonds]),
             Decision = new Decision(DecisionType.RaiseTo, new Chips(30)),
             Combo = new Combo(ComboType.OnePair, 100500),
-            SidePot = new SidePot([
-                new KeyValuePair<Nickname, Chips>(new Nickname("alice"), new Chips(25)),
-                new KeyValuePair<Nickname, Chips>(new Nickname("bobby"), new Chips(5)),
-                new KeyValuePair<Nickname, Chips>(new Nickname("charlie"), new Chips(10))
-            ]),
             OccurredAt = GetNow()
         };
         await repository.AddEventsAsync(handUid, [@event]);
@@ -105,7 +119,8 @@ public class MongoDbRepositoryTest(MongoDbFixture fixture) : IClassFixture<Mongo
 
 internal record struct TestEvent : IEvent
 {
-    public required Game Game { get; init; }
+    public required Rules Rules { get; init; }
+    public required Positions Positions { get; init; }
     public required List<Participant> Participants { get; init; }
     public required Nickname Nickname { get; init; }
     public required Seat Seat { get; init; }
@@ -113,12 +128,12 @@ internal record struct TestEvent : IEvent
     public required CardSet CardSet { get; init; }
     public required Decision Decision { get; init; }
     public required Combo Combo { get; init; }
-    public required SidePot SidePot { get; init; }
     public required DateTime OccurredAt { get; init; }
 
     public bool Equals(TestEvent other)
     {
-        return Game.Equals(other.Game)
+        return Rules.Equals(other.Rules)
+               && Positions.Equals(other.Positions)
                && Participants.SequenceEqual(other.Participants)
                && Nickname.Equals(other.Nickname)
                && Seat.Equals(other.Seat)
@@ -126,16 +141,15 @@ internal record struct TestEvent : IEvent
                && CardSet.Equals(other.CardSet)
                && Decision.Equals(other.Decision)
                && Combo.Equals(other.Combo)
-               && SidePot.Equals(other.SidePot)
-               && OccurredAt.Equals(other.OccurredAt)
-               ;
+               && OccurredAt.Equals(other.OccurredAt);
     }
 
     public override int GetHashCode()
     {
         var hash = new HashCode();
 
-        hash.Add(Game);
+        hash.Add(Rules);
+        hash.Add(Positions);
 
         foreach (var participant in Participants)
         {
@@ -148,7 +162,6 @@ internal record struct TestEvent : IEvent
         hash.Add(CardSet);
         hash.Add(Decision);
         hash.Add(Combo);
-        hash.Add(SidePot);
         hash.Add(OccurredAt);
 
         return hash.ToHashCode();

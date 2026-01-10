@@ -36,6 +36,12 @@ public readonly struct CardSet : IReadOnlySet<Card>, IEquatable<CardSet>
 
     public int Count => _cards.Count;
 
+    public static implicit operator string(CardSet a)
+        => String.Join("", a._cards);
+
+    public static implicit operator CardSet(string a)
+        => FromString(a);
+
     public bool Contains(Card item)
         => _cards.Contains(item);
 

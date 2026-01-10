@@ -1,4 +1,5 @@
 using Domain.ValueObject;
+using System.Collections;
 
 namespace Domain.Entity;
 
@@ -109,11 +110,50 @@ public class Pot
         return (null, new Chips(0));
     }
 
+    public IEnumerable<RefactoredSidePot> CalculateSidePots(HashSet<Nickname> nicknames)
+    {
+        var deadAmount = Ante;
+        var totalBets = new Bets();
+        totalBets.MergeWith(CommittedBets);
+        totalBets.MergeWith(UncommittedBets);
+
+        if (totalBets.TotalAmount.IsZero && !deadAmount.IsZero)
+        {
+            // Only ante is in the pot, should distribute between all players who didn't fold
+            yield return new RefactoredSidePot(nicknames, deadAmount);
+            yield break;
+        }
+
+        while (!totalBets.TotalAmount.IsZero)
+        {
+            var sidePotNicknames = new HashSet<Nickname>();
+            var sidePotAmount = deadAmount;
+
+            var edgeAmount = nicknames.Select(n => totalBets.GetAmountPostedBy(n)).Where(a => !a.IsZero).Min();
+
+            foreach (var (n, a) in totalBets)
+            {
+                var amount = a < edgeAmount ? a : edgeAmount;
+                totalBets.Refund(n, amount);
+                sidePotAmount += amount;
+
+                if (nicknames.Contains(n))
+                {
+                    sidePotNicknames.Add(n);
+                }
+            }
+
+            yield return new RefactoredSidePot(sidePotNicknames, sidePotAmount);
+
+            deadAmount = new Chips(0);
+        }
+    }
+
     public override string ToString() =>
         $"{GetType().Name}: {TotalAmount}";
 }
 
-internal class Bets
+internal class Bets : IEnumerable<KeyValuePair<Nickname, Chips>>
 {
     private readonly Dictionary<Nickname, Chips> _mapping = new();
     public Chips TotalAmount => _mapping.Values.Sum(x => x);
@@ -172,4 +212,18 @@ internal class Bets
     {
         _mapping.Clear();
     }
+
+    public IEnumerator<KeyValuePair<Nickname, Chips>> GetEnumerator()
+    {
+        foreach (var pair in _mapping.Where(pair => !!pair.Value).OrderBy(pair => (pair.Value, pair.Key)))
+        {
+            yield return pair;
+        }
+    }
+
+    IEnumerator IEnumerable.GetEnumerator()
+        => GetEnumerator();
+
+    public override string ToString()
+        => $"{TotalAmount}: {_mapping.Keys}";
 }

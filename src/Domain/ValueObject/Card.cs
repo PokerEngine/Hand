@@ -163,6 +163,12 @@ public readonly struct Card : IEquatable<Card>, IComparable<Card>
         return card;
     }
 
+    public static implicit operator string(Card a)
+        => ReverseMapping[a];
+
+    public static implicit operator Card(string a)
+        => FromString(a);
+
     public int CompareTo(Card other)
     {
         var result = -Rank.CompareTo(other.Rank);

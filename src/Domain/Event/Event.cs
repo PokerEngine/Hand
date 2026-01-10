@@ -134,6 +134,13 @@ public record struct RefundIsCommittedEvent : IEvent
     public required DateTime OccurredAt { get; init; }
 }
 
+public record struct WinIsCommittedEvent : IEvent
+{
+    public required HashSet<Nickname> Nicknames { get; init; } // In case of splitting the pot
+    public required Chips Amount { get; init; }
+    public required DateTime OccurredAt { get; init; }
+}
+
 public record struct WinWithoutShowdownIsCommittedEvent : IEvent
 {
     public required Nickname Nickname { get; init; }

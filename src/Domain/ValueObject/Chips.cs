@@ -5,13 +5,12 @@ namespace Domain.ValueObject;
 public readonly struct Chips : IMinMaxValue<Chips>, IComparable<Chips>, IEquatable<Chips>
 {
     public static Chips MinValue
-    {
-        get => new(0);
-    }
+        => new(0);
+
     public static Chips MaxValue
-    {
-        get => new(int.MaxValue);
-    }
+        => new(int.MaxValue);
+
+    public bool IsZero => _amount == 0;
 
     private readonly int _amount;
 

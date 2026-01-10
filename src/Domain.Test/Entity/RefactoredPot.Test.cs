@@ -280,6 +280,101 @@ public class PotTest
         Assert.Equal(new Chips(0), amount);
     }
 
+    [Fact]
+    public void CalculateSidePots_NoAllIn_ShouldReturnSingle()
+    {
+        // Arrange
+        var pot = CreatePot();
+        var nicknameA = new Nickname("Alice");
+        var nicknameB = new Nickname("Bobby");
+        var nicknameC = new Nickname("Charlie");
+        pot.PostAnte(new Chips(1));
+        pot.PostAnte(new Chips(1));
+        pot.PostAnte(new Chips(1));
+        pot.PostBlind(nicknameA, new Chips(5));
+        pot.PostBlind(nicknameB, new Chips(10));
+        pot.PostBet(nicknameC, new Chips(25)); // Raise 25
+        pot.PostBet(nicknameB, new Chips(15)); // Call 25
+        pot.CommitBets();
+
+        // Act
+        var sidePots = pot.CalculateSidePots([nicknameB, nicknameC]).ToList();
+
+        // Assert
+        Assert.Single(sidePots);
+        Assert.Equal([nicknameB, nicknameC], sidePots[0].Nicknames);
+        Assert.Equal(new Chips(58), sidePots[0].Amount);
+    }
+
+    [Fact]
+    public void CalculateSidePots_WithAllIn_ShouldReturnMultiple()
+    {
+        // Arrange
+        var pot = CreatePot();
+        var nicknameA = new Nickname("Alice"); // Stack is 801
+        var nicknameB = new Nickname("Bobby"); // Stack is 901
+        var nicknameC = new Nickname("Charlie"); // Stack is 1001
+        pot.PostAnte(new Chips(1));
+        pot.PostAnte(new Chips(1));
+        pot.PostAnte(new Chips(1));
+        pot.PostBlind(nicknameA, new Chips(5));
+        pot.PostBlind(nicknameB, new Chips(10));
+        pot.PostBet(nicknameC, new Chips(25)); // Raise 25
+        pot.PostBet(nicknameA, new Chips(115)); // Raise 120
+        pot.PostBet(nicknameB, new Chips(890)); // Raise 900 (all-in)
+        pot.PostBet(nicknameC, new Chips(975)); // Raise 1000 (all-in)
+        pot.PostBet(nicknameA, new Chips(680)); // Call 800 (all-in)
+        pot.RefundBet(nicknameC, new Chips(100)); // Refund to 900
+        pot.CommitBets();
+
+        // Act
+        var sidePots = pot.CalculateSidePots([nicknameA, nicknameB, nicknameC]).ToList();
+
+        // Assert
+        Assert.Equal(2, sidePots.Count);
+        Assert.Equal([nicknameA, nicknameB, nicknameC], sidePots[0].Nicknames);
+        Assert.Equal(new Chips(2403), sidePots[0].Amount);
+        Assert.Equal([nicknameB, nicknameC], sidePots[1].Nicknames);
+        Assert.Equal(new Chips(200), sidePots[1].Amount);
+    }
+
+    [Fact]
+    public void CalculateSidePots_WithAnteOnly_ShouldReturnSingle()
+    {
+        // Arrange
+        var pot = CreatePot();
+        var nicknameA = new Nickname("Alice");
+        var nicknameB = new Nickname("Bobby");
+        var nicknameC = new Nickname("Charlie");
+        pot.PostAnte(new Chips(1));
+        pot.PostAnte(new Chips(1));
+        pot.PostAnte(new Chips(1));
+
+        // Act
+        var sidePots = pot.CalculateSidePots([nicknameA, nicknameB, nicknameC]).ToList();
+
+        // Assert
+        Assert.Single(sidePots);
+        Assert.Equal([nicknameA, nicknameB, nicknameC], sidePots[0].Nicknames);
+        Assert.Equal(new Chips(3), sidePots[0].Amount);
+    }
+
+    [Fact]
+    public void CalculateSidePots_WithEmptyPot_ShouldReturnNothing()
+    {
+        // Arrange
+        var pot = CreatePot();
+        var nicknameA = new Nickname("Alice");
+        var nicknameB = new Nickname("Bobby");
+        var nicknameC = new Nickname("Charlie");
+
+        // Act
+        var sidePots = pot.CalculateSidePots([nicknameA, nicknameB, nicknameC]).ToList();
+
+        // Assert
+        Assert.Empty(sidePots);
+    }
+
     private Pot CreatePot()
     {
         return new Pot(minBet: new Chips(10));

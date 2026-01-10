@@ -18,7 +18,6 @@ public class PlayerTest
         Assert.Equal(new Seat(1), player.Seat);
         Assert.Equal(new Chips(1000), player.Stack);
         Assert.Empty(player.HoleCards);
-        Assert.False(player.IsDisconnected);
         Assert.False(player.IsFolded);
     }
 
@@ -76,114 +75,13 @@ public class PlayerTest
     public void TestFoldWhenAllIn()
     {
         var player = CreatePlayer();
-        player.Bet(player.Stack);
+        player.Post(player.Stack);
 
         var exc = Assert.Throws<InvalidOperationException>(() => player.Fold());
 
         Assert.Equal("The player has already been all in", exc.Message);
         Assert.False(player.IsFolded);
         Assert.Equal(new Chips(0), player.Stack);
-    }
-
-    [Fact]
-    public void TestCheck()
-    {
-        var player = CreatePlayer();
-
-        player.Check();
-
-        Assert.False(player.IsFolded);
-        Assert.Equal(new Chips(1000), player.Stack);
-    }
-
-    [Fact]
-    public void TestCheckWhenFolded()
-    {
-        var player = CreatePlayer();
-        player.Fold();
-
-        var exc = Assert.Throws<InvalidOperationException>(() => player.Check());
-
-        Assert.Equal("The player has already folded", exc.Message);
-        Assert.True(player.IsFolded);
-        Assert.Equal(new Chips(1000), player.Stack);
-    }
-
-    [Fact]
-    public void TestCheckWhenAllIn()
-    {
-        var player = CreatePlayer();
-        player.Bet(player.Stack);
-
-        var exc = Assert.Throws<InvalidOperationException>(() => player.Check());
-
-        Assert.Equal("The player has already been all in", exc.Message);
-        Assert.False(player.IsFolded);
-        Assert.Equal(new Chips(0), player.Stack);
-    }
-
-    [Fact]
-    public void TestBet()
-    {
-        var player = CreatePlayer();
-
-        player.Bet(new Chips(25));
-
-        Assert.False(player.IsFolded);
-        Assert.Equal(new Chips(975), player.Stack);
-        Assert.False(player.IsAllIn);
-    }
-
-    [Fact]
-    public void TestBetAllIn()
-    {
-        var player = CreatePlayer();
-
-        player.Bet(player.Stack);
-
-        Assert.False(player.IsFolded);
-        Assert.Equal(new Chips(0), player.Stack);
-        Assert.True(player.IsAllIn);
-    }
-
-    [Fact]
-    public void TestBetWhenFolded()
-    {
-        var player = CreatePlayer();
-        player.Fold();
-
-        var exc = Assert.Throws<InvalidOperationException>(() => player.Bet(new Chips(25)));
-
-        Assert.Equal("The player has already folded", exc.Message);
-        Assert.True(player.IsFolded);
-        Assert.Equal(new Chips(1000), player.Stack);
-        Assert.False(player.IsAllIn);
-    }
-
-    [Fact]
-    public void TestBetWhenAllIn()
-    {
-        var player = CreatePlayer();
-        player.Bet(player.Stack);
-
-        var exc = Assert.Throws<InvalidOperationException>(() => player.Bet(new Chips(25)));
-
-        Assert.Equal("The player has already been all in", exc.Message);
-        Assert.False(player.IsFolded);
-        Assert.Equal(new Chips(0), player.Stack);
-    }
-
-    [Fact]
-    public void TestBetWhenNotEnoughStack()
-    {
-        var player = CreatePlayer();
-
-        var exc = Assert.Throws<InvalidOperationException>(() => player.Bet(new Chips(1025)));
-
-        Assert.Equal("The player cannot bet more amount than his stack", exc.Message);
-        Assert.False(player.IsFolded);
-        Assert.Equal(new Chips(1000), player.Stack);
-        Assert.False(player.IsAllIn);
     }
 
     [Fact]
@@ -248,30 +146,6 @@ public class PlayerTest
         Assert.False(player.IsFolded);
         Assert.Equal(new Chips(1000), player.Stack);
         Assert.False(player.IsAllIn);
-    }
-
-    [Fact]
-    public void TestWin()
-    {
-        var player = CreatePlayer();
-
-        player.Win(new Chips(25));
-
-        Assert.False(player.IsFolded);
-        Assert.Equal(new Chips(1025), player.Stack);
-    }
-
-    [Fact]
-    public void TestWinWhenFolded()
-    {
-        var player = CreatePlayer();
-        player.Fold();
-
-        var exc = Assert.Throws<InvalidOperationException>(() => player.Win(new Chips(25)));
-
-        Assert.Equal("The player has already folded", exc.Message);
-        Assert.True(player.IsFolded);
-        Assert.Equal(new Chips(1000), player.Stack);
     }
 
     [Fact]

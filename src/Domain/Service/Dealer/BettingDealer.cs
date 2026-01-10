@@ -139,9 +139,8 @@ public abstract class BaseBettingDealer : IDealer
             throw new InvalidOperationException($"The player cannot check: {reason}");
         }
 
-        player.Check();
-
         // We post zero chips for check to mark that the player has committed his decision
+        player.Post(new Chips(0));
         pot.PostBet(player.Nickname, new Chips(0));
     }
 
@@ -154,7 +153,7 @@ public abstract class BaseBettingDealer : IDealer
         }
 
         var remainingAmount = GetCallAmount(player, pot) - pot.GetUncommittedAmountPostedBy(player.Nickname);
-        player.Bet(remainingAmount);
+        player.Post(remainingAmount);
         pot.PostBet(player.Nickname, remainingAmount);
     }
 
@@ -167,7 +166,7 @@ public abstract class BaseBettingDealer : IDealer
         }
 
         var remainingAmount = amount - pot.GetUncommittedAmountPostedBy(player.Nickname);
-        player.Bet(remainingAmount);
+        player.Post(remainingAmount);
         pot.PostBet(player.Nickname, remainingAmount);
     }
 

@@ -69,7 +69,7 @@ public class NoLimitBettingDealerTest : BaseBettingDealerTest
 
         // Act
         var events = dealer.Start(
-            game: Game.NoLimitHoldem,
+            rules: CreateRules(),
             table: table,
             pot: pot,
             deck: deck,
@@ -114,7 +114,7 @@ public class NoLimitBettingDealerTest : BaseBettingDealerTest
 
         // Act
         var events = dealer.Start(
-            game: Game.NoLimitHoldem,
+            rules: CreateRules(),
             table: table,
             pot: pot,
             deck: deck,
@@ -159,7 +159,7 @@ public class NoLimitBettingDealerTest : BaseBettingDealerTest
 
         // Act
         var events = dealer.Start(
-            game: Game.NoLimitHoldem,
+            rules: CreateRules(),
             table: table,
             pot: pot,
             deck: deck,
@@ -211,7 +211,7 @@ public class NoLimitBettingDealerTest : BaseBettingDealerTest
 
         // Act
         var events = dealer.Start(
-            game: Game.NoLimitHoldem,
+            rules: CreateRules(),
             table: table,
             pot: pot,
             deck: deck,
@@ -261,7 +261,7 @@ public class NoLimitBettingDealerTest : BaseBettingDealerTest
 
         // Act
         var events = dealer.Start(
-            game: Game.NoLimitHoldem,
+            rules: CreateRules(),
             table: table,
             pot: pot,
             deck: deck,
@@ -311,7 +311,7 @@ public class NoLimitBettingDealerTest : BaseBettingDealerTest
 
         // Act
         var events = dealer.Start(
-            game: Game.NoLimitHoldem,
+            rules: CreateRules(),
             table: table,
             pot: pot,
             deck: deck,
@@ -358,12 +358,12 @@ public class NoLimitBettingDealerTest : BaseBettingDealerTest
         pot.PostBet("Charlie", 25);
         playerA.Fold();
         playerB.Fold();
-        pot.CommitBets();
         pot.RefundBet("Charlie", 15);
+        pot.CommitBets();
 
         // Act
         var events = dealer.Start(
-            game: Game.NoLimitHoldem,
+            rules: CreateRules(),
             table: table,
             pot: pot,
             deck: deck,
@@ -407,12 +407,12 @@ public class NoLimitBettingDealerTest : BaseBettingDealerTest
         pot.PostBet("Charlie", 975);
         playerA.Post(780); // Call 900 (all-in)
         pot.PostBet("Alice", 780);
-        pot.CommitBets();
         pot.RefundBet("Charlie", 100);
+        pot.CommitBets();
 
         // Act
         var events = dealer.Start(
-            game: Game.NoLimitHoldem,
+            rules: CreateRules(),
             table: table,
             pot: pot,
             deck: deck,
@@ -424,6 +424,16 @@ public class NoLimitBettingDealerTest : BaseBettingDealerTest
         Assert.Equal(2, events.Count);
         Assert.IsType<StageIsStartedEvent>(events[0]);
         Assert.IsType<StageIsFinishedEvent>(events[1]);
+    }
+
+    private Rules CreateRules()
+    {
+        return new Rules
+        {
+            Game = Game.NoLimitHoldem,
+            SmallBlind = new Chips(5),
+            BigBlind = new Chips(10)
+        };
     }
 }
 
@@ -453,7 +463,7 @@ public class PotLimitBettingDealerTest : BaseBettingDealerTest
 
         // Act
         var events = dealer.Start(
-            game: Game.PotLimitOmaha,
+            rules: CreateRules(),
             table: table,
             pot: pot,
             deck: deck,
@@ -492,7 +502,7 @@ public class PotLimitBettingDealerTest : BaseBettingDealerTest
 
         // Act
         var events = dealer.Start(
-            game: Game.PotLimitOmaha,
+            rules: CreateRules(),
             table: table,
             pot: pot,
             deck: deck,
@@ -538,7 +548,7 @@ public class PotLimitBettingDealerTest : BaseBettingDealerTest
 
         // Act
         var events = dealer.Start(
-            game: Game.PotLimitOmaha,
+            rules: CreateRules(),
             table: table,
             pot: pot,
             deck: deck,
@@ -552,5 +562,15 @@ public class PotLimitBettingDealerTest : BaseBettingDealerTest
         var requestedEvent = Assert.IsType<DecisionIsRequestedEvent>(events[1]);
         Assert.Equal(new Nickname("Bobby"), requestedEvent.Nickname);
         Assert.Equal(new Chips(75), requestedEvent.MaxRaiseToAmount);
+    }
+
+    private Rules CreateRules()
+    {
+        return new Rules
+        {
+            Game = Game.PotLimitOmaha,
+            SmallBlind = new Chips(5),
+            BigBlind = new Chips(10)
+        };
     }
 }

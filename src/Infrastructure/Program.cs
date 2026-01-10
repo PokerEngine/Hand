@@ -57,8 +57,7 @@ public static class Bootstrapper
         RegisterEventHandler<DecisionIsRequestedEvent, DecisionIsRequestedEventHandler>(builder.Services);
         RegisterEventHandler<DecisionIsCommittedEvent, DecisionIsCommittedEventHandler>(builder.Services);
         RegisterEventHandler<RefundIsCommittedEvent, RefundIsCommittedEventHandler>(builder.Services);
-        RegisterEventHandler<WinAtShowdownIsCommittedEvent, WinAtShowdownIsCommittedEventHandler>(builder.Services);
-        RegisterEventHandler<WinWithoutShowdownIsCommittedEvent, WinWithoutShowdownIsCommittedEventHandler>(builder.Services);
+        RegisterEventHandler<WinIsCommittedEvent, WinIsCommittedEventHandler>(builder.Services);
         RegisterEventHandler<HoleCardsAreShownEvent, HoleCardsAreShownEventHandler>(builder.Services);
         RegisterEventHandler<HoleCardsAreMuckedEvent, HoleCardsAreMuckedEventHandler>(builder.Services);
         builder.Services.AddScoped<IEventDispatcher, EventDispatcher>();

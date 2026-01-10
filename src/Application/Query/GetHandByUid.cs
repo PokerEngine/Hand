@@ -17,9 +17,9 @@ public record struct GetHandByUidResponse : IQueryResponse
     public required Guid TableUid { get; init; }
     public required string TableType { get; init; }
     public required string Game { get; init; }
-    public required int MaxSeat { get; init; }
     public required int SmallBlind { get; init; }
     public required int BigBlind { get; init; }
+    public required int MaxSeat { get; init; }
     public required int SmallBlindSeat { get; init; }
     public required int BigBlindSeat { get; init; }
     public required int ButtonSeat { get; init; }
@@ -30,8 +30,7 @@ public record struct GetHandByUidStateResponse
 {
     public required List<GetHandByUidStatePlayerResponse> Players { get; init; }
     public required string BoardCards { get; init; }
-    public required Dictionary<string, int> CurrentSidePot { get; init; }
-    public required Dictionary<string, int> PreviousSidePot { get; init; }
+    public required Chips CommittedPotAmount { get; init; }
 }
 
 public record struct GetHandByUidStatePlayerResponse
@@ -40,6 +39,7 @@ public record struct GetHandByUidStatePlayerResponse
     public required int Seat { get; init; }
     public required int Stack { get; init; }
     public required string HoleCards { get; init; }
+    public required int UncommittedPotAmount { get; init; }
     public required bool IsFolded { get; init; }
 }
 
@@ -64,10 +64,10 @@ public class GetHandByUidHandler(
             Uid = hand.Uid,
             TableUid = hand.TableUid,
             TableType = hand.TableType.ToString(),
-            Game = hand.Game.ToString(),
+            Game = hand.Rules.Game.ToString(),
+            SmallBlind = hand.Rules.SmallBlind,
+            BigBlind = hand.Rules.BigBlind,
             MaxSeat = hand.Table.MaxSeat,
-            SmallBlind = hand.Pot.SmallBlind,
-            BigBlind = hand.Pot.BigBlind,
             SmallBlindSeat = hand.Table.SmallBlindSeat,
             BigBlindSeat = hand.Table.BigBlindSeat,
             ButtonSeat = hand.Table.ButtonSeat,
@@ -75,8 +75,7 @@ public class GetHandByUidHandler(
             {
                 Players = state.Players.Select(SerializePlayerState).ToList(),
                 BoardCards = state.BoardCards.ToString(),
-                CurrentSidePot = state.CurrentSidePot.ToDictionary(p => (string)p.Key, p => (int)p.Value),
-                PreviousSidePot = state.PreviousSidePot.ToDictionary(p => (string)p.Key, p => (int)p.Value)
+                CommittedPotAmount = state.CommittedPotAmount
             }
         };
     }
@@ -89,6 +88,7 @@ public class GetHandByUidHandler(
             Seat = player.Seat,
             Stack = player.Stack,
             HoleCards = player.HoleCards.ToString(),
+            UncommittedPotAmount = player.UncommittedPotAmount,
             IsFolded = player.IsFolded
         };
     }

@@ -13,9 +13,9 @@ public interface IFactory
         Seat buttonSeat
     );
 
-    BasePot GetPot(Chips smallBlind, Chips bigBlind);
+    Pot GetPot(Rules rules);
 
-    BaseDeck GetDeck();
+    BaseDeck GetDeck(Rules rules);
 
-    List<IDealer> GetDealers();
+    List<IDealer> GetDealers(Rules rules);
 }

@@ -51,9 +51,12 @@ public class NoLimitHoldem6MaxHandTest
             uid: handUid,
             tableUid: tableUid,
             tableType: TableType.Cash,
-            game: Game.NoLimitHoldem,
-            smallBlind: new Chips(5),
-            bigBlind: new Chips(10),
+            rules: new()
+            {
+                Game = Game.NoLimitHoldem,
+                SmallBlind = new Chips(5),
+                BigBlind = new Chips(10)
+            },
             maxSeat: new Seat(6),
             smallBlindSeat: new Seat(1),
             bigBlindSeat: new Seat(2),
@@ -66,17 +69,19 @@ public class NoLimitHoldem6MaxHandTest
         Assert.Equal(handUid, hand.Uid);
         Assert.Equal(tableUid, hand.TableUid);
         Assert.Equal(TableType.Cash, hand.TableType);
-        Assert.Equal(Game.NoLimitHoldem, hand.Game);
+        Assert.Equal(Game.NoLimitHoldem, hand.Rules.Game);
+        Assert.Equal(new Chips(5), hand.Rules.SmallBlind);
+        Assert.Equal(new Chips(10), hand.Rules.BigBlind);
         Assert.Equal(new Seat(6), hand.Table.MaxSeat);
-        Assert.IsType<NoLimitPot>(hand.Pot);
+        Assert.Equal(new Chips(0), hand.Pot.TotalAmount);
         Assert.IsType<StandardDeck>(hand.Deck);
 
         var events = hand.PullEvents();
         Assert.Single(events);
         var @event = Assert.IsType<HandIsCreatedEvent>(events[0]);
-        Assert.Equal(Game.NoLimitHoldem, @event.Game);
-        Assert.Equal(new Chips(5), @event.SmallBlind);
-        Assert.Equal(new Chips(10), @event.BigBlind);
+        Assert.Equal(Game.NoLimitHoldem, @event.Rules.Game);
+        Assert.Equal(new Chips(5), @event.Rules.SmallBlind);
+        Assert.Equal(new Chips(10), @event.Rules.BigBlind);
         Assert.Equal(6, @event.Participants.Count);
         Assert.Equal(participantSb, @event.Participants[0]);
         Assert.Equal(participantBb, @event.Participants[1]);
@@ -112,10 +117,13 @@ public class NoLimitHoldem6MaxHandTest
             new HandIsCreatedEvent
             {
                 TableUid = tableUid,
-                Game = Game.NoLimitHoldem,
                 TableType = TableType.Cash,
-                SmallBlind = new Chips(5),
-                BigBlind = new Chips(10),
+                Rules = new ()
+                {
+                    Game = Game.NoLimitHoldem,
+                    SmallBlind = new Chips(5),
+                    BigBlind = new Chips(10)
+                },
                 MaxSeat = new Seat(6),
                 SmallBlindSeat = new Seat(1),
                 BigBlindSeat = new Seat(2),
@@ -228,7 +236,7 @@ public class NoLimitHoldem6MaxHandTest
             new DecisionIsCommittedEvent
             {
                 Nickname = participantBb.Nickname,
-                Decision = new Decision(DecisionType.CallTo, new Chips(25)),
+                Decision = new Decision(DecisionType.Call),
                 OccurredAt = new DateTime(2025, 1, 1)
             },
             new StageIsFinishedEvent
@@ -306,50 +314,50 @@ public class NoLimitHoldem6MaxHandTest
                 Decision = new Decision(DecisionType.Fold, new Chips(0)),
                 OccurredAt = new DateTime(2025, 1, 1)
             },
-            new StageIsFinishedEvent
-            {
-                OccurredAt = new DateTime(2025, 1, 1)
-            },
-            new StageIsStartedEvent
-            {
-                OccurredAt = new DateTime(2025, 1, 1)
-            },
-            new StageIsFinishedEvent
-            {
-                OccurredAt = new DateTime(2025, 1, 1)
-            },
-            new StageIsStartedEvent
-            {
-                OccurredAt = new DateTime(2025, 1, 1)
-            },
-            new StageIsFinishedEvent
-            {
-                OccurredAt = new DateTime(2025, 1, 1)
-            },
-            new StageIsStartedEvent
-            {
-                OccurredAt = new DateTime(2025, 1, 1)
-            },
-            new StageIsFinishedEvent
-            {
-                OccurredAt = new DateTime(2025, 1, 1)
-            },
-            new StageIsStartedEvent
-            {
-                OccurredAt = new DateTime(2025, 1, 1)
-            },
-            new StageIsFinishedEvent
-            {
-                OccurredAt = new DateTime(2025, 1, 1)
-            },
-            new StageIsStartedEvent
-            {
-                OccurredAt = new DateTime(2025, 1, 1)
-            },
             new RefundIsCommittedEvent
             {
                 Nickname = participantBu.Nickname,
                 Amount = new Chips(15),
+                OccurredAt = new DateTime(2025, 1, 1)
+            },
+            new StageIsFinishedEvent
+            {
+                OccurredAt = new DateTime(2025, 1, 1)
+            },
+            new StageIsStartedEvent
+            {
+                OccurredAt = new DateTime(2025, 1, 1)
+            },
+            new StageIsFinishedEvent
+            {
+                OccurredAt = new DateTime(2025, 1, 1)
+            },
+            new StageIsStartedEvent
+            {
+                OccurredAt = new DateTime(2025, 1, 1)
+            },
+            new StageIsFinishedEvent
+            {
+                OccurredAt = new DateTime(2025, 1, 1)
+            },
+            new StageIsStartedEvent
+            {
+                OccurredAt = new DateTime(2025, 1, 1)
+            },
+            new StageIsFinishedEvent
+            {
+                OccurredAt = new DateTime(2025, 1, 1)
+            },
+            new StageIsStartedEvent
+            {
+                OccurredAt = new DateTime(2025, 1, 1)
+            },
+            new StageIsFinishedEvent
+            {
+                OccurredAt = new DateTime(2025, 1, 1)
+            },
+            new StageIsStartedEvent
+            {
                 OccurredAt = new DateTime(2025, 1, 1)
             },
             new HoleCardsAreMuckedEvent
@@ -357,9 +365,9 @@ public class NoLimitHoldem6MaxHandTest
                 Nickname = participantBu.Nickname,
                 OccurredAt = new DateTime(2025, 1, 1)
             },
-            new WinWithoutShowdownIsCommittedEvent
+            new WinIsCommittedEvent
             {
-                Nickname = participantBu.Nickname,
+                Nicknames = [participantBu.Nickname],
                 Amount = new Chips(55),
                 OccurredAt = new DateTime(2025, 1, 1)
             },
@@ -382,9 +390,11 @@ public class NoLimitHoldem6MaxHandTest
 
         Assert.Equal(handUid, hand.Uid);
         Assert.Equal(tableUid, hand.TableUid);
-        Assert.Equal(Game.NoLimitHoldem, hand.Game);
+        Assert.Equal(Game.NoLimitHoldem, hand.Rules.Game);
+        Assert.Equal(new Chips(5), hand.Rules.SmallBlind);
+        Assert.Equal(new Chips(10), hand.Rules.BigBlind);
         Assert.Equal(new Seat(6), hand.Table.MaxSeat);
-        Assert.IsType<NoLimitPot>(hand.Pot);
+        Assert.Equal(new Chips(55), hand.Pot.TotalAmount);
         Assert.IsType<StandardDeck>(hand.Deck);
 
         Assert.Equal(new CardSet([Card.AceOfSpades, Card.SevenOfClubs, Card.DeuceOfDiamonds]), hand.Table.BoardCards);
@@ -402,7 +412,7 @@ public class NoLimitHoldem6MaxHandTest
         Assert.True(playerBb.IsFolded);
 
         Assert.Equal(new CardSet([Card.SevenOfSpades, Card.EightOfSpades]), playerBu.HoleCards);
-        Assert.Equal(new Chips(830), playerBu.Stack);
+        Assert.Equal(new Chips(775), playerBu.Stack);
         Assert.False(playerBu.IsFolded);
     }
 
@@ -439,7 +449,7 @@ public class NoLimitHoldem6MaxHandTest
         );
         hand.CommitDecision(
             nickname: new Nickname("BigBlind"),
-            decision: new Decision(DecisionType.CallTo, new Chips(25))
+            decision: new Decision(DecisionType.Call, new Chips(0))
         );
         hand.CommitDecision(
             nickname: new Nickname("BigBlind"),
@@ -460,15 +470,16 @@ public class NoLimitHoldem6MaxHandTest
         Assert.Equal(new Nickname("Button"), state.Players[1].Nickname);
         Assert.Equal(new Chips(960), state.Players[1].Stack);
         Assert.Equal(2, state.Players[1].HoleCards.Count);
+        Assert.Equal(new Chips(15), state.Players[1].UncommittedPotAmount);
         Assert.False(state.Players[1].IsFolded);
         Assert.Equal(new Nickname("SmallBlind"), state.Players[2].Nickname);
         Assert.Equal(new Chips(995), state.Players[2].Stack);
+        Assert.Equal(new Chips(0), state.Players[2].UncommittedPotAmount);
         Assert.Equal(2, state.Players[2].HoleCards.Count);
         Assert.True(state.Players[2].IsFolded);
 
         Assert.Equal(3, state.BoardCards.Count);
-        Assert.Equal(new Chips(15), state.CurrentSidePot.Amount);
-        Assert.Equal(new Chips(55), state.PreviousSidePot.Amount);
+        Assert.Equal(new Chips(55), state.CommittedPotAmount);
     }
 
     [Fact]
@@ -544,7 +555,7 @@ public class NoLimitHoldem6MaxHandTest
 
         hand.CommitDecision(
             nickname: new Nickname("BigBlind"),
-            decision: new Decision(DecisionType.CallTo, new Chips(25))
+            decision: new Decision(DecisionType.Call, new Chips(0))
         );
 
         events = hand.PullEvents();
@@ -592,23 +603,23 @@ public class NoLimitHoldem6MaxHandTest
         Assert.Equal(16, events.Count);
         var event1f = Assert.IsType<DecisionIsCommittedEvent>(events[0]);
         Assert.Equal(new Nickname("BigBlind"), event1f.Nickname);
-        Assert.IsType<StageIsFinishedEvent>(events[1]);
-        Assert.IsType<StageIsStartedEvent>(events[2]);
-        Assert.IsType<StageIsFinishedEvent>(events[3]);
-        Assert.IsType<StageIsStartedEvent>(events[4]);
-        Assert.IsType<StageIsFinishedEvent>(events[5]);
-        Assert.IsType<StageIsStartedEvent>(events[6]);
-        Assert.IsType<StageIsFinishedEvent>(events[7]);
-        Assert.IsType<StageIsStartedEvent>(events[8]);
-        Assert.IsType<StageIsFinishedEvent>(events[9]);
-        Assert.IsType<StageIsStartedEvent>(events[10]);
-        var event12f = Assert.IsType<RefundIsCommittedEvent>(events[11]);
-        Assert.Equal(new Nickname("Button"), event12f.Nickname);
-        Assert.Equal(new Chips(15), event12f.Amount);
+        var event2f = Assert.IsType<RefundIsCommittedEvent>(events[1]);
+        Assert.Equal(new Nickname("Button"), event2f.Nickname);
+        Assert.Equal(new Chips(15), event2f.Amount);
+        Assert.IsType<StageIsFinishedEvent>(events[2]);
+        Assert.IsType<StageIsStartedEvent>(events[3]);
+        Assert.IsType<StageIsFinishedEvent>(events[4]);
+        Assert.IsType<StageIsStartedEvent>(events[5]);
+        Assert.IsType<StageIsFinishedEvent>(events[6]);
+        Assert.IsType<StageIsStartedEvent>(events[7]);
+        Assert.IsType<StageIsFinishedEvent>(events[8]);
+        Assert.IsType<StageIsStartedEvent>(events[9]);
+        Assert.IsType<StageIsFinishedEvent>(events[10]);
+        Assert.IsType<StageIsStartedEvent>(events[11]);
         var event13f = Assert.IsType<HoleCardsAreMuckedEvent>(events[12]);
         Assert.Equal(new Nickname("Button"), event13f.Nickname);
-        var event14f = Assert.IsType<WinWithoutShowdownIsCommittedEvent>(events[13]);
-        Assert.Equal(new Nickname("Button"), event14f.Nickname);
+        var event14f = Assert.IsType<WinIsCommittedEvent>(events[13]);
+        Assert.Equal([new Nickname("Button")], event14f.Nicknames);
         Assert.Equal(new Chips(55), event14f.Amount);
         Assert.IsType<StageIsFinishedEvent>(events[14]);
         Assert.IsType<HandIsFinishedEvent>(events[15]);
@@ -673,7 +684,7 @@ public class NoLimitHoldem6MaxHandTest
 
         hand.CommitDecision(
             nickname: new Nickname("BigBlind"),
-            decision: new Decision(DecisionType.CallTo, new Chips(25))
+            decision: new Decision(DecisionType.Call, new Chips(0))
         );
 
         events = hand.PullEvents();
@@ -721,23 +732,23 @@ public class NoLimitHoldem6MaxHandTest
         Assert.Equal(16, events.Count);
         var event1e = Assert.IsType<DecisionIsCommittedEvent>(events[0]);
         Assert.Equal(new Nickname("BigBlind"), event1e.Nickname);
-        Assert.IsType<StageIsFinishedEvent>(events[1]);
-        Assert.IsType<StageIsStartedEvent>(events[2]);
-        Assert.IsType<StageIsFinishedEvent>(events[3]);
-        Assert.IsType<StageIsStartedEvent>(events[4]);
-        Assert.IsType<StageIsFinishedEvent>(events[5]);
-        Assert.IsType<StageIsStartedEvent>(events[6]);
-        Assert.IsType<StageIsFinishedEvent>(events[7]);
-        Assert.IsType<StageIsStartedEvent>(events[8]);
-        Assert.IsType<StageIsFinishedEvent>(events[9]);
-        Assert.IsType<StageIsStartedEvent>(events[10]);
-        var event12e = Assert.IsType<RefundIsCommittedEvent>(events[11]);
-        Assert.Equal(new Nickname("SmallBlind"), event12e.Nickname);
-        Assert.Equal(new Chips(15), event12e.Amount);
+        var event2e = Assert.IsType<RefundIsCommittedEvent>(events[1]);
+        Assert.Equal(new Nickname("SmallBlind"), event2e.Nickname);
+        Assert.Equal(new Chips(15), event2e.Amount);
+        Assert.IsType<StageIsFinishedEvent>(events[2]);
+        Assert.IsType<StageIsStartedEvent>(events[3]);
+        Assert.IsType<StageIsFinishedEvent>(events[4]);
+        Assert.IsType<StageIsStartedEvent>(events[5]);
+        Assert.IsType<StageIsFinishedEvent>(events[6]);
+        Assert.IsType<StageIsStartedEvent>(events[7]);
+        Assert.IsType<StageIsFinishedEvent>(events[8]);
+        Assert.IsType<StageIsStartedEvent>(events[9]);
+        Assert.IsType<StageIsFinishedEvent>(events[10]);
+        Assert.IsType<StageIsStartedEvent>(events[11]);
         var event13e = Assert.IsType<HoleCardsAreMuckedEvent>(events[12]);
         Assert.Equal(new Nickname("SmallBlind"), event13e.Nickname);
-        var event14e = Assert.IsType<WinWithoutShowdownIsCommittedEvent>(events[13]);
-        Assert.Equal(new Nickname("SmallBlind"), event14e.Nickname);
+        var event14e = Assert.IsType<WinIsCommittedEvent>(events[13]);
+        Assert.Equal([new Nickname("SmallBlind")], event14e.Nicknames);
         Assert.Equal(new Chips(50), event14e.Amount);
         Assert.IsType<StageIsFinishedEvent>(events[14]);
         Assert.IsType<HandIsFinishedEvent>(events[15]);
@@ -757,9 +768,12 @@ public class NoLimitHoldem6MaxHandTest
             uid: new HandUid(Guid.NewGuid()),
             tableUid: new TableUid(Guid.NewGuid()),
             tableType: TableType.Cash,
-            game: Game.NoLimitHoldem,
-            smallBlind: new Chips(smallBlind),
-            bigBlind: new Chips(bigBlind),
+            rules: new()
+            {
+                Game = Game.NoLimitHoldem,
+                SmallBlind = new Chips(smallBlind),
+                BigBlind = new Chips(bigBlind)
+            },
             maxSeat: new Seat(maxSeat),
             smallBlindSeat: new Seat(smallBlindSeat),
             bigBlindSeat: new Seat(bigBlindSeat),
@@ -840,9 +854,12 @@ public class NoLimitHoldem9MaxHandTest
             uid: handUid,
             tableUid: tableUid,
             tableType: TableType.Cash,
-            game: Game.NoLimitHoldem,
-            smallBlind: new Chips(5),
-            bigBlind: new Chips(10),
+            rules: new()
+            {
+                Game = Game.NoLimitHoldem,
+                SmallBlind = new Chips(5),
+                BigBlind = new Chips(10)
+            },
             maxSeat: new Seat(9),
             smallBlindSeat: new Seat(1),
             bigBlindSeat: new Seat(2),
@@ -853,17 +870,19 @@ public class NoLimitHoldem9MaxHandTest
         );
 
         Assert.Equal(handUid, hand.Uid);
-        Assert.Equal(Game.NoLimitHoldem, hand.Game);
+        Assert.Equal(Game.NoLimitHoldem, hand.Rules.Game);
+        Assert.Equal(new Chips(5), hand.Rules.SmallBlind);
+        Assert.Equal(new Chips(10), hand.Rules.BigBlind);
         Assert.Equal(new Seat(9), hand.Table.MaxSeat);
-        Assert.IsType<NoLimitPot>(hand.Pot);
+        Assert.Equal(new Chips(0), hand.Pot.TotalAmount);
         Assert.IsType<StandardDeck>(hand.Deck);
 
         var events = hand.PullEvents();
         Assert.Single(events);
         var @event = Assert.IsType<HandIsCreatedEvent>(events[0]);
-        Assert.Equal(Game.NoLimitHoldem, @event.Game);
-        Assert.Equal(new Chips(5), @event.SmallBlind);
-        Assert.Equal(new Chips(10), @event.BigBlind);
+        Assert.Equal(Game.NoLimitHoldem, @event.Rules.Game);
+        Assert.Equal(new Chips(5), @event.Rules.SmallBlind);
+        Assert.Equal(new Chips(10), @event.Rules.BigBlind);
         Assert.Equal(9, @event.Participants.Count);
         Assert.Equal(participantSb, @event.Participants[0]);
         Assert.Equal(participantBb, @event.Participants[1]);
@@ -922,9 +941,12 @@ public class PotLimitOmaha6MaxHandTest
             uid: handUid,
             tableUid: tableUid,
             tableType: TableType.Cash,
-            game: Game.PotLimitOmaha,
-            smallBlind: new Chips(5),
-            bigBlind: new Chips(10),
+            rules: new()
+            {
+                Game = Game.PotLimitOmaha,
+                SmallBlind = new Chips(5),
+                BigBlind = new Chips(10)
+            },
             maxSeat: new Seat(6),
             smallBlindSeat: new Seat(1),
             bigBlindSeat: new Seat(2),
@@ -935,17 +957,19 @@ public class PotLimitOmaha6MaxHandTest
         );
 
         Assert.Equal(handUid, hand.Uid);
-        Assert.Equal(Game.PotLimitOmaha, hand.Game);
+        Assert.Equal(Game.PotLimitOmaha, hand.Rules.Game);
+        Assert.Equal(new Chips(5), hand.Rules.SmallBlind);
+        Assert.Equal(new Chips(10), hand.Rules.BigBlind);
         Assert.Equal(new Seat(6), hand.Table.MaxSeat);
-        Assert.IsType<PotLimitPot>(hand.Pot);
+        Assert.Equal(new Chips(0), hand.Pot.TotalAmount);
         Assert.IsType<StandardDeck>(hand.Deck);
 
         var events = hand.PullEvents();
         Assert.Single(events);
         var @event = Assert.IsType<HandIsCreatedEvent>(events[0]);
-        Assert.Equal(Game.PotLimitOmaha, @event.Game);
-        Assert.Equal(new Chips(5), @event.SmallBlind);
-        Assert.Equal(new Chips(10), @event.BigBlind);
+        Assert.Equal(Game.PotLimitOmaha, @event.Rules.Game);
+        Assert.Equal(new Chips(5), @event.Rules.SmallBlind);
+        Assert.Equal(new Chips(10), @event.Rules.BigBlind);
         Assert.Equal(6, @event.Participants.Count);
         Assert.Equal(participantSb, @event.Participants[0]);
         Assert.Equal(participantBb, @event.Participants[1]);
@@ -1016,9 +1040,12 @@ public class PotLimitOmaha9MaxHandTest
             uid: handUid,
             tableUid: tableUid,
             tableType: TableType.Cash,
-            game: Game.PotLimitOmaha,
-            smallBlind: new Chips(5),
-            bigBlind: new Chips(10),
+            rules: new()
+            {
+                Game = Game.PotLimitOmaha,
+                SmallBlind = new Chips(5),
+                BigBlind = new Chips(10)
+            },
             maxSeat: new Seat(9),
             smallBlindSeat: new Seat(1),
             bigBlindSeat: new Seat(2),
@@ -1029,17 +1056,19 @@ public class PotLimitOmaha9MaxHandTest
         );
 
         Assert.Equal(handUid, hand.Uid);
-        Assert.Equal(Game.PotLimitOmaha, hand.Game);
+        Assert.Equal(Game.PotLimitOmaha, hand.Rules.Game);
+        Assert.Equal(new Chips(5), hand.Rules.SmallBlind);
+        Assert.Equal(new Chips(10), hand.Rules.BigBlind);
         Assert.Equal(new Seat(9), hand.Table.MaxSeat);
-        Assert.IsType<PotLimitPot>(hand.Pot);
+        Assert.Equal(new Chips(0), hand.Pot.TotalAmount);
         Assert.IsType<StandardDeck>(hand.Deck);
 
         var events = hand.PullEvents();
         Assert.Single(events);
         var @event = Assert.IsType<HandIsCreatedEvent>(events[0]);
-        Assert.Equal(Game.PotLimitOmaha, @event.Game);
-        Assert.Equal(new Chips(5), @event.SmallBlind);
-        Assert.Equal(new Chips(10), @event.BigBlind);
+        Assert.Equal(Game.PotLimitOmaha, @event.Rules.Game);
+        Assert.Equal(new Chips(5), @event.Rules.SmallBlind);
+        Assert.Equal(new Chips(10), @event.Rules.BigBlind);
         Assert.Equal(9, @event.Participants.Count);
         Assert.Equal(participantSb, @event.Participants[0]);
         Assert.Equal(participantBb, @event.Participants[1]);

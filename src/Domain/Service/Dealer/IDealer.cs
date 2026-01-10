@@ -9,9 +9,9 @@ namespace Domain.Service.Dealer;
 public interface IDealer
 {
     IEnumerable<IEvent> Start(
-        Game game,
+        Rules rules,
         Table table,
-        BasePot pot,
+        Pot pot,
         BaseDeck deck,
         IRandomizer randomizer,
         IEvaluator evaluator
@@ -19,9 +19,9 @@ public interface IDealer
 
     void Handle(
         IEvent @event,
-        Game game,
+        Rules rules,
         Table table,
-        BasePot pot,
+        Pot pot,
         BaseDeck deck,
         IRandomizer randomizer,
         IEvaluator evaluator
@@ -30,9 +30,9 @@ public interface IDealer
     IEnumerable<IEvent> CommitDecision(
         Nickname nickname,
         Decision decision,
-        Game game,
+        Rules rules,
         Table table,
-        BasePot pot,
+        Pot pot,
         BaseDeck deck,
         IRandomizer randomizer,
         IEvaluator evaluator

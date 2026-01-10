@@ -11,10 +11,8 @@ public record struct HandIsCreatedEvent : IEvent
 {
     public required TableUid TableUid { get; init; }
     public required TableType TableType { get; init; }
-    public required Game Game { get; init; }
+    public required Rules Rules { get; init; }
     public required Seat MaxSeat { get; init; }
-    public required Chips SmallBlind { get; init; }
-    public required Chips BigBlind { get; init; }
     public required Seat SmallBlindSeat { get; init; }
     public required Seat BigBlindSeat { get; init; }
     public required Seat ButtonSeat { get; init; }
@@ -25,10 +23,8 @@ public record struct HandIsCreatedEvent : IEvent
     {
         return TableUid.Equals(other.TableUid)
                && TableType.Equals(other.TableType)
-               && Game.Equals(other.Game)
+               && Rules.Equals(other.Rules)
                && MaxSeat.Equals(other.MaxSeat)
-               && SmallBlind.Equals(other.SmallBlind)
-               && BigBlind.Equals(other.BigBlind)
                && SmallBlindSeat.Equals(other.SmallBlindSeat)
                && BigBlindSeat.Equals(other.BigBlindSeat)
                && ButtonSeat.Equals(other.ButtonSeat)
@@ -42,10 +38,8 @@ public record struct HandIsCreatedEvent : IEvent
 
         hash.Add(TableUid);
         hash.Add(TableType);
-        hash.Add(Game);
+        hash.Add(Rules);
         hash.Add(MaxSeat);
-        hash.Add(SmallBlind);
-        hash.Add(BigBlind);
         hash.Add(SmallBlindSeat);
         hash.Add(BigBlindSeat);
         hash.Add(ButtonSeat);
@@ -138,20 +132,6 @@ public record struct WinIsCommittedEvent : IEvent
 {
     public required HashSet<Nickname> Nicknames { get; init; } // In case of splitting the pot
     public required Chips Amount { get; init; }
-    public required DateTime OccurredAt { get; init; }
-}
-
-public record struct WinWithoutShowdownIsCommittedEvent : IEvent
-{
-    public required Nickname Nickname { get; init; }
-    public required Chips Amount { get; init; }
-    public required DateTime OccurredAt { get; init; }
-}
-
-public record struct WinAtShowdownIsCommittedEvent : IEvent
-{
-    public required SidePot SidePot { get; init; }
-    public required SidePot WinPot { get; init; }
     public required DateTime OccurredAt { get; init; }
 }
 

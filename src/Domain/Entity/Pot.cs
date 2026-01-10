@@ -1,602 +1,230 @@
 using Domain.ValueObject;
+using System.Collections;
 
 namespace Domain.Entity;
 
-public abstract class BasePot
+public class Pot
 {
-    public Chips SmallBlind { get; }
-    public Chips BigBlind { get; }
-    public Nickname? LastDecisionNickname { get; private set; }
-    public SidePot CurrentSidePot;
-    public SidePot PreviousSidePot;
+    public Chips MinBet { get; }
 
-    private Nickname? _lastRaiseNickname;
-    private Chips _lastRaiseStep;
-    private HashSet<Nickname> _currentDecisionCommittedNicknames;
+    private Chips Ante { get; set; } = new(0);
+    private Bets CommittedBets { get; } = new();
+    private Bets UncommittedBets { get; } = new();
 
-    protected BasePot(Chips smallBlind, Chips bigBlind)
+    public Nickname? LastPostedNickname { get; private set; }
+    public Nickname? LastRaisedNickname { get; private set; }
+    public Chips LastRaisedStep { get; private set; }
+    private HashSet<Nickname> PostedUncommittedBetNicknames { get; } = new();
+
+    public Chips CommittedAmount => Ante + CommittedBets.TotalAmount;
+    public Chips TotalAmount => Ante + CommittedBets.TotalAmount + UncommittedBets.TotalAmount;
+
+    public Pot(Chips minBet)
     {
-        SmallBlind = smallBlind;
-        BigBlind = bigBlind;
-        LastDecisionNickname = null;
-
-        _lastRaiseNickname = null;
-        _lastRaiseStep = bigBlind;
-        _currentDecisionCommittedNicknames = new HashSet<Nickname>();
-        CurrentSidePot = new SidePot();
-        PreviousSidePot = new SidePot();
+        MinBet = minBet;
+        LastRaisedStep = minBet;
     }
 
-    public void PostSmallBlind(Player player, Chips amount)
+    public void PostAnte(Chips amount)
     {
-        ValidatePostBlind(player: player, amount: amount, blind: SmallBlind);
-
-        PostTo(player, amount);
-        LastDecisionNickname = player.Nickname;
+        Ante += amount;
     }
 
-    public void PostBigBlind(Player player, Chips amount)
+    public void PostBlind(Nickname nickname, Chips amount)
     {
-        ValidatePostBlind(player: player, amount: amount, blind: BigBlind);
+        UncommittedBets.Post(nickname, amount);
 
-        PostTo(player, amount);
-        LastDecisionNickname = player.Nickname;
-    }
+        LastPostedNickname = nickname;
+        LastRaisedNickname = nickname;
 
-    public void CommitDecision(Player player, Decision decision)
-    {
-        switch (decision.Type)
+        if (amount > LastRaisedStep)
         {
-            case DecisionType.Fold:
-                Fold(player);
-                break;
-            case DecisionType.Check:
-                Check(player);
-                break;
-            case DecisionType.CallTo:
-                CallTo(player, decision.Amount);
-                break;
-            case DecisionType.RaiseTo:
-                RaiseTo(player, decision.Amount);
-                break;
-            default:
-                throw new InvalidOperationException($"{decision} is not supported");
+            // Covers the case of posting small blind or auto-all-in on the blind
+            LastRaisedStep = amount;
         }
     }
 
-    public void CommitRefund(Player player, Chips amount)
+    public void PostBet(Nickname nickname, Chips amount)
     {
-        ValidateRefund(player, amount);
+        var playerPosted = amount + UncommittedBets.GetAmountPostedBy(nickname);
+        var maxPosted = UncommittedBets.GetMaxAmountPostedNotBy(nickname);
 
-        PreviousSidePot = PreviousSidePot.Sub(player.Nickname, amount);
-        player.Refund(amount);
-    }
+        UncommittedBets.Post(nickname, amount);
+        LastPostedNickname = nickname;
+        PostedUncommittedBetNicknames.Add(nickname);
 
-    public void CommitWinWithoutShowdown(Player player, Chips amount)
-    {
-        ValidateWinWithoutShowdown(player, amount);
-
-        PreviousSidePot = new SidePot();
-        player.Win(amount);
-    }
-
-    public void CommitWinAtShowdown(List<Player> players, SidePot sidePot, SidePot winPot)
-    {
-        ValidateWinAtShowdown(players, sidePot, winPot);
-
-        foreach (var (nickname, amount) in sidePot)
+        if (playerPosted >= maxPosted + LastRaisedStep)
         {
-            PreviousSidePot = PreviousSidePot.Sub(nickname, amount);
-        }
-
-        foreach (var player in players)
-        {
-            var amount = winPot.Get(player.Nickname);
-            player.Win(amount);
+            LastRaisedNickname = nickname;
+            LastRaisedStep = playerPosted - maxPosted;
         }
     }
 
-    public void FinishStage()
+    public void RefundBet(Nickname nickname, Chips amount)
     {
-        LastDecisionNickname = null;
-        _lastRaiseStep = BigBlind;
-        _lastRaiseNickname = null;
-        _currentDecisionCommittedNicknames.Clear();
+        UncommittedBets.Refund(nickname, amount);
+    }
 
-        foreach (var (nickname, amount) in CurrentSidePot)
+    public void CommitBets()
+    {
+        LastPostedNickname = null;
+        LastRaisedNickname = null;
+        LastRaisedStep = MinBet;
+        PostedUncommittedBetNicknames.Clear();
+
+        CommittedBets.MergeWith(UncommittedBets);
+        UncommittedBets.Clear();
+    }
+
+    public Chips GetUncommittedAmountPostedBy(Nickname nickname)
+    {
+        return UncommittedBets.GetAmountPostedBy(nickname);
+    }
+
+    public Chips GetUncommittedMaxAmountPostedNotBy(Nickname nickname)
+    {
+        return UncommittedBets.GetMaxAmountPostedNotBy(nickname);
+    }
+
+    public bool PostedUncommittedBet(Nickname nickname)
+    {
+        return PostedUncommittedBetNicknames.Contains(nickname);
+    }
+
+    public (Nickname?, Chips) CalculateRefund()
+    {
+        var maxNickname = UncommittedBets.GetNicknamePostedMaxAmount();
+        if (maxNickname is null)
         {
-            CurrentSidePot = CurrentSidePot.Sub(nickname, amount);
-            PreviousSidePot = PreviousSidePot.Add(nickname, amount);
+            return (null, new Chips(0));
         }
-    }
 
-    public Chips GetTotalAmount()
-    {
-        return CurrentSidePot.Amount + PreviousSidePot.Amount;
-    }
+        var nickname = (Nickname)maxNickname;
+        var maxAmount = UncommittedBets.GetAmountPostedBy(nickname);
+        var secondMaxAmount = UncommittedBets.GetMaxAmountPostedNotBy(nickname);
 
-    public Chips GetCurrentAmount()
-    {
-        return CurrentSidePot.Amount;
-    }
-
-    public Chips GetCurrentPostedAmount(Player player)
-    {
-        return CurrentSidePot.Get(player.Nickname);
-    }
-
-    public Chips GetPreviousPostedAmount(Player player)
-    {
-        return PreviousSidePot.Get(player.Nickname);
-    }
-
-    public Chips GetCallToAmount(Player player)
-    {
-        var playerAmount = GetCurrentPostedAmount(player) + player.Stack;
-        var currentMaxAmount = GetCurrentMaxAmount(player);
-        return currentMaxAmount < playerAmount ? currentMaxAmount : playerAmount;
-    }
-
-    public Chips GetMinRaiseToAmount(Player player)
-    {
-        var playerAmount = GetCurrentPostedAmount(player) + player.Stack;
-        var amount = GetCurrentMaxAmount(player) + _lastRaiseStep;
-        return amount < playerAmount ? amount : playerAmount;
-    }
-
-    public abstract Chips GetMaxRaiseToAmount(Player player);
-
-    public Chips GetRefundAmount(Player player)
-    {
-        var postedAmount = GetPreviousPostedAmount(player);
-        var amount = GetPreviousMaxAmount(player);
-        return postedAmount > amount ? postedAmount - amount : new Chips(0);
-    }
-
-    public SidePot GetWinPot(List<Player> players, SidePot sidePot)
-    {
-        // More than 1 players means that they should split the pot
-        var quotient = sidePot.Amount / players.Count;
-        var remainder = sidePot.Amount % players.Count;
-
-        var winPot = new SidePot();
-        var oneChip = new Chips(1);
-
-        foreach (var player in players.OrderBy(x => x.Stack))
+        if (maxAmount > secondMaxAmount)
         {
-            winPot = winPot.Add(player.Nickname, quotient);
+            return (nickname, maxAmount - secondMaxAmount);
+        }
 
-            if (remainder)
+        return (null, new Chips(0));
+    }
+
+    public IEnumerable<RefactoredSidePot> CalculateSidePots(HashSet<Nickname> nicknames)
+    {
+        var deadAmount = Ante;
+        var totalBets = new Bets();
+        totalBets.MergeWith(CommittedBets);
+        totalBets.MergeWith(UncommittedBets);
+
+        if (totalBets.TotalAmount.IsZero && !deadAmount.IsZero)
+        {
+            // Only ante is in the pot, should distribute between all players who didn't fold
+            yield return new RefactoredSidePot(nicknames, deadAmount);
+            yield break;
+        }
+
+        while (!totalBets.TotalAmount.IsZero)
+        {
+            var sidePotNicknames = new HashSet<Nickname>();
+            var sidePotAmount = deadAmount;
+
+            var edgeAmount = nicknames.Select(n => totalBets.GetAmountPostedBy(n)).Where(a => !a.IsZero).Min();
+
+            foreach (var (n, a) in totalBets)
             {
-                // We distribute the remainder among the players starting from the poorest one
-                winPot = winPot.Add(player.Nickname, oneChip);
-                remainder -= oneChip;
-            }
-        }
+                var amount = a < edgeAmount ? a : edgeAmount;
+                totalBets.Refund(n, amount);
+                sidePotAmount += amount;
 
-        return winPot;
-    }
-
-    public List<SidePot> GetSidePots(List<Player> players)
-    {
-        return GetSidePots(players.Select(x => x.Nickname).ToList());
-    }
-
-    private List<SidePot> GetSidePots(IEnumerable<Nickname> nicknames)
-    {
-        var remainingPot = PreviousSidePot.Merge(CurrentSidePot);
-        var sortedNicknames = nicknames.OrderBy(x => remainingPot.Get(x)).ThenBy(x => x).ToList();
-
-        var oneChip = new Chips(1);
-        var sidePots = new List<SidePot>();
-
-        while (sortedNicknames.Count > 0)
-        {
-            var poorestNickname = sortedNicknames.First();
-            var poorestAmount = remainingPot.Get(poorestNickname);
-            if (!poorestAmount)
-            {
-                sortedNicknames.RemoveAt(0);
-                continue;
-            }
-
-            var sidePotAmount = new Chips(0);
-
-            foreach (var (nickname, amount) in remainingPot)
-            {
-                var minAmount = poorestAmount <= amount ? poorestAmount : amount;
-                remainingPot = remainingPot.Sub(nickname, minAmount);
-                sidePotAmount += minAmount;
-            }
-
-            var quotient = sidePotAmount / sortedNicknames.Count;
-            var remainder = sidePotAmount % sortedNicknames.Count;
-
-            var sidePot = new SidePot();
-
-            foreach (var nickname in sortedNicknames)
-            {
-                sidePot = sidePot.Add(nickname, quotient);
-
-                if (remainder)
+                if (nicknames.Contains(n))
                 {
-                    // We distribute the remainder among the players starting from the poorest one
-                    sidePot = sidePot.Add(nickname, oneChip);
-                    remainder -= oneChip;
+                    sidePotNicknames.Add(n);
                 }
             }
 
-            sidePots.Add(sidePot);
-            sortedNicknames.RemoveAt(0);
-        }
+            yield return new RefactoredSidePot(sidePotNicknames, sidePotAmount);
 
-        return sidePots;
-    }
-
-    public bool FoldIsAvailable(Player player)
-    {
-        try
-        {
-            ValidateFold(player);
-            return true;
-        }
-        catch (InvalidOperationException)
-        {
-            return false;
+            deadAmount = new Chips(0);
         }
     }
 
-    public bool CheckIsAvailable(Player player)
-    {
-        try
-        {
-            ValidateCheck(player);
-            return true;
-        }
-        catch (InvalidOperationException)
-        {
-            return false;
-        }
-    }
-
-    public bool CallIsAvailable(Player player)
-    {
-        var amount = GetCallToAmount(player);
-        try
-        {
-            ValidateCallTo(player, amount);
-            return true;
-        }
-        catch (InvalidOperationException)
-        {
-            return false;
-        }
-    }
-
-    public bool RaiseIsAvailable(Player player)
-    {
-        var amount = GetMinRaiseToAmount(player);
-        try
-        {
-            ValidateRaiseTo(player, amount);
-            return true;
-        }
-        catch (InvalidOperationException)
-        {
-            return false;
-        }
-    }
-
-    public bool DecisionIsAvailable(Player player)
-    {
-        return (
-            FoldIsAvailable(player)
-            || CheckIsAvailable(player)
-            || CallIsAvailable(player)
-            || RaiseIsAvailable(player)
-        );
-    }
-
-    protected Chips GetCurrentMaxAmount(Player player)
-    {
-        var maxAmount = new Chips(0);
-
-        foreach (var (nickname, amount) in CurrentSidePot)
-        {
-            if (nickname == player.Nickname)
-            {
-                continue;
-            }
-
-            if (amount > maxAmount)
-            {
-                maxAmount = amount;
-            }
-        }
-
-        return maxAmount;
-    }
-
-    private Chips GetPreviousMaxAmount(Player player)
-    {
-        var maxAmount = new Chips(0);
-
-        foreach (var (nickname, amount) in PreviousSidePot)
-        {
-            if (nickname == player.Nickname)
-            {
-                continue;
-            }
-
-            if (amount > maxAmount)
-            {
-                maxAmount = amount;
-            }
-        }
-
-        return maxAmount;
-    }
-
-    private void Fold(Player player)
-    {
-        ValidateFold(player);
-
-        player.Fold();
-
-        var amount = GetCurrentPostedAmount(player);
-        if (amount)
-        {
-            CurrentSidePot = CurrentSidePot.Sub(player.Nickname, amount);
-            PreviousSidePot = PreviousSidePot.Add(player.Nickname, amount);
-        }
-
-        LastDecisionNickname = player.Nickname;
-    }
-
-    private void Check(Player player)
-    {
-        ValidateCheck(player);
-
-        player.Check();
-        CommitCurrentDecision(player);
-        LastDecisionNickname = player.Nickname;
-    }
-
-    private void CallTo(Player player, Chips amount)
-    {
-        ValidateCallTo(player, amount);
-
-        BetTo(player, amount);
-        CommitCurrentDecision(player);
-        LastDecisionNickname = player.Nickname;
-    }
-
-    private void RaiseTo(Player player, Chips amount)
-    {
-        ValidateRaiseTo(player, amount);
-
-        var raiseStep = new Chips(0);
-        var currentMaxAmount = GetCurrentMaxAmount(player);
-        if (amount >= currentMaxAmount + _lastRaiseStep)
-        {
-            raiseStep = amount - currentMaxAmount;
-        }
-
-        BetTo(player, amount);
-        CommitCurrentDecision(player);
-        LastDecisionNickname = player.Nickname;
-
-        // If a player raises less than the minimum amount, he goes all in, and it is not considered a raise
-        if (raiseStep)
-        {
-            _lastRaiseStep = raiseStep;
-            _lastRaiseNickname = player.Nickname;
-        }
-    }
-
-    private void ValidatePostBlind(Player player, Chips amount, Chips blind)
-    {
-        var expectedAmount = (blind <= player.Stack) ? blind : player.Stack;
-        if (amount != expectedAmount)
-        {
-            throw new InvalidOperationException($"The player must post {expectedAmount}");
-        }
-    }
-
-    private void ValidateFold(Player player)
-    {
-        var currentPostedAmount = GetCurrentPostedAmount(player);
-        var currentMaxAmount = GetCurrentMaxAmount(player);
-
-        if (currentPostedAmount > currentMaxAmount)
-        {
-            throw new InvalidOperationException("The player has posted the most amount into the pot, he cannot fold");
-        }
-
-        if (currentPostedAmount == currentMaxAmount)
-        {
-            throw new InvalidOperationException("The player has posted the same amount into the pot, he cannot fold");
-        }
-    }
-
-    private void ValidateCheck(Player player)
-    {
-        var currentPostedAmount = GetCurrentPostedAmount(player);
-        var currentMaxAmount = GetCurrentMaxAmount(player);
-
-        if (currentPostedAmount > currentMaxAmount)
-        {
-            throw new InvalidOperationException("The player has posted the most amount into the pot, he cannot check");
-        }
-
-        if (currentPostedAmount < currentMaxAmount)
-        {
-            throw new InvalidOperationException("The player has posted less amount into the pot, he cannot check");
-        }
-
-        // Covers a case when the player is on a blind and there was a limp 
-        if (IsCurrentDecisionCommitted(player))
-        {
-            throw new InvalidOperationException("The player has already performed an action, he cannot check");
-        }
-    }
-
-    private void ValidateCallTo(Player player, Chips amount)
-    {
-        var currentPostedAmount = GetCurrentPostedAmount(player);
-        var currentMaxAmount = GetCurrentMaxAmount(player);
-
-        if (currentPostedAmount > currentMaxAmount)
-        {
-            throw new InvalidOperationException("The player has posted the most amount into the pot, he cannot call");
-        }
-
-        if (currentPostedAmount == currentMaxAmount)
-        {
-            throw new InvalidOperationException("The player has posted the same amount into the pot, he cannot call");
-        }
-
-        var expectedAmount = GetCallToAmount(player);
-        if (amount != expectedAmount)
-        {
-            throw new InvalidOperationException($"The player must call to {expectedAmount}");
-        }
-    }
-
-    private void ValidateRaiseTo(Player player, Chips amount)
-    {
-        var currentPostedAmount = GetCurrentPostedAmount(player);
-        var currentMaxAmount = GetCurrentMaxAmount(player);
-
-        if (currentPostedAmount > currentMaxAmount)
-        {
-            throw new InvalidOperationException("The player has posted the most amount into the pot, he cannot raise");
-        }
-
-        if (IsCurrentDecisionCommitted(player) && !ThereWasRaiseSincePlayerDecision(player))
-        {
-            throw new InvalidOperationException("There was no raise since the player's last action, he cannot raise");
-        }
-
-        var minExpectedAmount = GetMinRaiseToAmount(player);
-        if (minExpectedAmount < currentMaxAmount)
-        {
-            throw new InvalidOperationException($"The player must call to {minExpectedAmount}");
-        }
-        if (amount < minExpectedAmount)
-        {
-            throw new InvalidOperationException($"The player must raise to minimum {minExpectedAmount}");
-        }
-
-        var maxExpectedAmount = GetMaxRaiseToAmount(player);
-        if (amount > maxExpectedAmount)
-        {
-            throw new InvalidOperationException($"The player must raise to maximum {maxExpectedAmount}");
-        }
-    }
-
-    private void ValidateRefund(Player player, Chips amount)
-    {
-        var expectedAmount = GetRefundAmount(player);
-
-        if (!expectedAmount)
-        {
-            throw new InvalidOperationException("The player cannot refund");
-        }
-
-        if (amount != expectedAmount)
-        {
-            throw new InvalidOperationException($"The player must refund {expectedAmount}");
-        }
-    }
-
-    private void ValidateWinWithoutShowdown(Player player, Chips amount)
-    {
-        var expectedAmount = GetTotalAmount();
-        if (amount != expectedAmount)
-        {
-            throw new InvalidOperationException($"The player must win {expectedAmount}");
-        }
-    }
-
-    private void ValidateWinAtShowdown(List<Player> players, SidePot sidePot, SidePot winPot)
-    {
-        var expectedWinPot = GetWinPot(players, sidePot);
-        if (expectedWinPot.Amount != winPot.Amount)
-        {
-            throw new InvalidOperationException($"The player(s) must win {expectedWinPot.Amount}");
-        }
-        if (!expectedWinPot.Equals(winPot))
-        {
-            throw new InvalidOperationException($"The player(s) must win {expectedWinPot}");
-        }
-    }
-
-    private void PostTo(Player player, Chips amount)
-    {
-        var remainingAmount = amount - GetCurrentPostedAmount(player);
-        player.Post(remainingAmount);
-
-        CurrentSidePot = CurrentSidePot.Add(player.Nickname, remainingAmount);
-    }
-
-    private void BetTo(Player player, Chips amount)
-    {
-        var remainingAmount = amount - GetCurrentPostedAmount(player);
-        player.Bet(remainingAmount);
-
-        CurrentSidePot = CurrentSidePot.Add(player.Nickname, remainingAmount);
-    }
-
-    private void CommitCurrentDecision(Player player)
-    {
-        _currentDecisionCommittedNicknames.Add(player.Nickname);
-    }
-
-    private bool IsCurrentDecisionCommitted(Player player)
-    {
-        return _currentDecisionCommittedNicknames.Contains(player.Nickname);
-    }
-
-    private bool ThereWasRaiseSincePlayerDecision(Player player)
-    {
-        return (
-            IsCurrentDecisionCommitted(player)
-            && GetCurrentPostedAmount(player) < GetCurrentMaxAmount(player)
-            && player.Nickname != _lastRaiseNickname
-        );
-    }
+    public override string ToString() =>
+        $"{GetType().Name}: {TotalAmount}";
 }
 
-public class NoLimitPot : BasePot
+internal class Bets : IEnumerable<KeyValuePair<Nickname, Chips>>
 {
-    public NoLimitPot(Chips smallBlind, Chips bigBlind) : base(smallBlind, bigBlind)
+    private readonly Dictionary<Nickname, Chips> _mapping = new();
+    public Chips TotalAmount => _mapping.Values.Sum(x => x);
+
+    public Chips GetAmountPostedBy(Nickname nickname)
     {
+        if (_mapping.TryGetValue(nickname, out var amount))
+        {
+            return amount;
+        }
+
+        return new Chips(0);
     }
 
-    public override Chips GetMaxRaiseToAmount(Player player)
+    public Chips GetMaxAmountPostedNotBy(Nickname nickname)
     {
-        return GetCurrentPostedAmount(player) + player.Stack;
+        var posted = _mapping.Where(kv => kv.Key != nickname).Select(kv => kv.Value).ToList();
+        return posted.Count > 0 ? posted.Max(x => x) : new Chips(0);
     }
+
+    public Nickname? GetNicknamePostedMaxAmount()
+    {
+        if (_mapping.Count == 0)
+        {
+            return null;
+        }
+
+        var maxAmount = _mapping.Values.Max();
+        return _mapping.First(kv => kv.Value.Equals(maxAmount)).Key;
+    }
+
+    public void Post(Nickname nickname, Chips amount)
+    {
+        _mapping[nickname] = GetAmountPostedBy(nickname) + amount;
+    }
+
+    public void Refund(Nickname nickname, Chips amount)
+    {
+        if (amount > GetAmountPostedBy(nickname))
+        {
+            throw new InvalidOperationException("Cannot refund more than posted");
+        }
+
+        _mapping[nickname] = GetAmountPostedBy(nickname) - amount;
+    }
+
+    public void MergeWith(Bets other)
+    {
+        foreach (var (nickname, amount) in other._mapping)
+        {
+            Post(nickname, amount);
+        }
+    }
+
+    public void Clear()
+    {
+        _mapping.Clear();
+    }
+
+    public IEnumerator<KeyValuePair<Nickname, Chips>> GetEnumerator()
+    {
+        foreach (var pair in _mapping.Where(pair => !!pair.Value).OrderBy(pair => (pair.Value, pair.Key)))
+        {
+            yield return pair;
+        }
+    }
+
+    IEnumerator IEnumerable.GetEnumerator()
+        => GetEnumerator();
 
     public override string ToString()
-        => $"{GetType().Name}, {GetTotalAmount()}";
-}
-
-public class PotLimitPot : BasePot
-{
-    public PotLimitPot(Chips smallBlind, Chips bigBlind) : base(smallBlind, bigBlind)
-    {
-    }
-
-    public override Chips GetMaxRaiseToAmount(Player player)
-    {
-        var currentMaxAmount = GetCurrentMaxAmount(player);
-        var currentPostedAmount = GetCurrentPostedAmount(player);
-        var totalAmountAfterCall = GetTotalAmount() + currentMaxAmount - currentPostedAmount;
-        var maxAmount = currentMaxAmount + totalAmountAfterCall;
-        var amount = currentMaxAmount + maxAmount;
-        var playerAmount = currentPostedAmount + player.Stack;
-        return amount < playerAmount ? amount : playerAmount;
-    }
+        => $"{TotalAmount}: {_mapping.Keys}";
 }

@@ -3,26 +3,23 @@ using Domain.Event;
 
 namespace Application.Event;
 
-public class WinAtShowdownIsCommittedEventHandler(
+public class WinIsCommittedEventHandler(
     IIntegrationEventPublisher integrationEventPublisher
-) : IEventHandler<WinAtShowdownIsCommittedEvent>
+) : IEventHandler<WinIsCommittedEvent>
 {
-    public async Task HandleAsync(WinAtShowdownIsCommittedEvent @event, EventContext context)
+    public async Task HandleAsync(WinIsCommittedEvent @event, EventContext context)
     {
-        foreach (var (nickname, amount) in @event.WinPot)
+        var integrationEvent = new WinIsCommittedIntegrationEvent
         {
-            var integrationEvent = new WinIsCommittedIntegrationEvent
-            {
-                HandUid = context.HandUid,
-                TableUid = context.TableUid,
-                TableType = context.TableType.ToString(),
-                Nickname = nickname,
-                Amount = amount,
-                OccurredAt = @event.OccurredAt
-            };
+            HandUid = context.HandUid,
+            TableUid = context.TableUid,
+            TableType = context.TableType.ToString(),
+            Nicknames = @event.Nicknames.Select(n => n.ToString()).ToList(),
+            Amount = @event.Amount,
+            OccurredAt = @event.OccurredAt
+        };
 
-            var routingKey = new IntegrationEventRoutingKey($"hand.{context.TableType.ToRoutingKey()}.win-at-showdown-is-committed");
-            await integrationEventPublisher.PublishAsync(integrationEvent, routingKey);
-        }
+        var routingKey = new IntegrationEventRoutingKey($"hand.{context.TableType.ToRoutingKey()}.win-is-committed");
+        await integrationEventPublisher.PublishAsync(integrationEvent, routingKey);
     }
 }

@@ -13,9 +13,9 @@ public class Hand
     public readonly HandUid Uid;
     public readonly TableUid TableUid;
     public readonly TableType TableType;
-    public readonly Game Game;
+    public readonly Rules Rules;
     public readonly Table Table;
-    public readonly BasePot Pot;
+    public readonly Pot Pot;
     public readonly BaseDeck Deck;
     private readonly IRandomizer _randomizer;
     private readonly IEvaluator _evaluator;
@@ -30,9 +30,9 @@ public class Hand
         HandUid uid,
         TableUid tableUid,
         TableType tableType,
-        Game game,
+        Rules rules,
         Table table,
-        BasePot pot,
+        Pot pot,
         BaseDeck deck,
         IRandomizer randomizer,
         IEvaluator evaluator,
@@ -42,7 +42,7 @@ public class Hand
         Uid = uid;
         TableUid = tableUid;
         TableType = tableType;
-        Game = game;
+        Rules = rules;
         Table = table;
         Pot = pot;
         Deck = deck;
@@ -57,9 +57,7 @@ public class Hand
         HandUid uid,
         TableUid tableUid,
         TableType tableType,
-        Game game,
-        Chips smallBlind,
-        Chips bigBlind,
+        Rules rules,
         Seat maxSeat,
         Seat smallBlindSeat,
         Seat bigBlindSeat,
@@ -69,12 +67,12 @@ public class Hand
         IEvaluator evaluator
     )
     {
-        var factory = FactoryRegistry.GetFactory(game);
+        var factory = FactoryRegistry.GetFactory(rules.Game);
         var hand = new Hand(
             uid: uid,
             tableUid: tableUid,
             tableType: tableType,
-            game: game,
+            rules: rules,
             table: factory.GetTable(
                 participants: participants,
                 maxSeat: maxSeat,
@@ -82,23 +80,18 @@ public class Hand
                 bigBlindSeat: bigBlindSeat,
                 buttonSeat: buttonSeat
             ),
-            pot: factory.GetPot(
-                smallBlind: smallBlind,
-                bigBlind: bigBlind
-            ),
-            deck: factory.GetDeck(),
+            pot: factory.GetPot(rules),
+            deck: factory.GetDeck(rules),
             randomizer: randomizer,
             evaluator: evaluator,
-            dealers: factory.GetDealers()
+            dealers: factory.GetDealers(rules)
         );
 
         var @event = new HandIsCreatedEvent
         {
             TableUid = tableUid,
-            Game = game,
             TableType = tableType,
-            SmallBlind = smallBlind,
-            BigBlind = bigBlind,
+            Rules = rules,
             MaxSeat = maxSeat,
             SmallBlindSeat = smallBlindSeat,
             BigBlindSeat = bigBlindSeat,
@@ -128,9 +121,7 @@ public class Hand
             uid: uid,
             tableUid: createdEvent.TableUid,
             tableType: createdEvent.TableType,
-            game: createdEvent.Game,
-            smallBlind: createdEvent.SmallBlind,
-            bigBlind: createdEvent.BigBlind,
+            rules: createdEvent.Rules,
             maxSeat: createdEvent.MaxSeat,
             smallBlindSeat: createdEvent.SmallBlindSeat,
             bigBlindSeat: createdEvent.BigBlindSeat,
@@ -153,7 +144,7 @@ public class Hand
                 default:
                     hand.Dealer.Handle(
                         @event: @event,
-                        game: hand.Game,
+                        rules: hand.Rules,
                         table: hand.Table,
                         pot: hand.Pot,
                         deck: hand.Deck,
@@ -176,15 +167,15 @@ public class Hand
             Seat = p.Seat,
             Stack = p.Stack,
             HoleCards = p.HoleCards,
-            IsFolded = p.IsFolded
+            IsFolded = p.IsFolded,
+            UncommittedPotAmount = Pot.GetUncommittedAmountPostedBy(p.Nickname)
         }).ToList();
 
         return new State
         {
             Players = playerStates,
             BoardCards = Table.BoardCards,
-            CurrentSidePot = Pot.CurrentSidePot,
-            PreviousSidePot = Pot.PreviousSidePot
+            CommittedPotAmount = Pot.CommittedAmount
         };
     }
 
@@ -204,7 +195,7 @@ public class Hand
         var events = Dealer.CommitDecision(
             nickname: nickname,
             decision: decision,
-            game: Game,
+            rules: Rules,
             table: Table,
             pot: Pot,
             deck: Deck,
@@ -243,7 +234,7 @@ public class Hand
     private void StartDealer()
     {
         var events = Dealer.Start(
-            game: Game,
+            rules: Rules,
             table: Table,
             pot: Pot,
             deck: Deck,

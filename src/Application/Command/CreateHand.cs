@@ -6,14 +6,15 @@ using Domain.Service.Randomizer;
 using Domain.ValueObject;
 
 namespace Application.Command;
+
 public record struct CreateHandCommand : ICommand
 {
     public required Guid TableUid { get; init; }
     public required string TableType { get; init; }
     public required string Game { get; init; }
-    public required int MaxSeat { get; init; }
     public required int SmallBlind { get; init; }
     public required int BigBlind { get; init; }
+    public required int MaxSeat { get; init; }
     public required int SmallBlindSeat { get; init; }
     public required int BigBlindSeat { get; init; }
     public required int ButtonSeat { get; init; }
@@ -37,14 +38,19 @@ public class CreateHandHandler(
         var tableType = (TableType)Enum.Parse(typeof(TableType), command.TableType);
         var game = (Game)Enum.Parse(typeof(Game), command.Game);
 
+        var rules = new Rules
+        {
+            Game = game,
+            SmallBlind = command.SmallBlind,
+            BigBlind = command.BigBlind
+        };
+
         var hand = Hand.FromScratch(
             uid: await repository.GetNextUidAsync(),
             tableUid: command.TableUid,
             tableType: tableType,
-            game: game,
+            rules: rules,
             maxSeat: command.MaxSeat,
-            smallBlind: command.SmallBlind,
-            bigBlind: command.BigBlind,
             smallBlindSeat: command.SmallBlindSeat,
             bigBlindSeat: command.BigBlindSeat,
             buttonSeat: command.ButtonSeat,

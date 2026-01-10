@@ -23,33 +23,33 @@ public class NoLimitHoldemFactory : IFactory
         );
     }
 
-    public BasePot GetPot(Chips smallBlind, Chips bigBlind)
+    public Pot GetPot(Rules rules)
     {
-        return new NoLimitPot(smallBlind, bigBlind);
+        return new Pot(minBet: rules.BigBlind);
     }
 
-    public BaseDeck GetDeck()
+    public BaseDeck GetDeck(Rules rules)
     {
         return new StandardDeck();
     }
 
-    public List<IDealer> GetDealers()
+    public List<IDealer> GetDealers(Rules rules)
     {
         return [
             new BlindPostingDealer(),
             new HoleCardsDealingDealer(2),
-            new TradingDealer(),
+            new NoLimitBettingDealer(),
             new BoardCardsDealingDealer(3),
-            new TradingDealer(),
+            new NoLimitBettingDealer(),
             new BoardCardsDealingDealer(1),
-            new TradingDealer(),
+            new NoLimitBettingDealer(),
             new BoardCardsDealingDealer(1),
-            new TradingDealer(),
-            new ShowdownDealer(),
+            new NoLimitBettingDealer(),
+            new SettlementDealer(),
         ];
     }
 
-    protected Player GetPlayer(Participant participant)
+    private Player GetPlayer(Participant participant)
     {
         return new Player(
             nickname: participant.Nickname,

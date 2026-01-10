@@ -9,9 +9,9 @@ namespace Domain.Service.Dealer;
 public class BlindPostingDealer : IDealer
 {
     public IEnumerable<IEvent> Start(
-        Game game,
+        Rules rules,
         Table table,
-        BasePot pot,
+        Pot pot,
         BaseDeck deck,
         IRandomizer randomizer,
         IEvaluator evaluator
@@ -23,13 +23,13 @@ public class BlindPostingDealer : IDealer
         };
         yield return startEvent;
 
-        var smallBlindPostedEvent = PostSmallBlind(table, pot);
+        var smallBlindPostedEvent = PostSmallBlind(rules, table, pot);
         if (smallBlindPostedEvent is not null)
         {
             yield return smallBlindPostedEvent;
         }
 
-        var bigBlindPostedEvent = PostBigBlind(table, pot);
+        var bigBlindPostedEvent = PostBigBlind(rules, table, pot);
         if (bigBlindPostedEvent is not null)
         {
             yield return bigBlindPostedEvent;
@@ -42,7 +42,7 @@ public class BlindPostingDealer : IDealer
         yield return finishEvent;
     }
 
-    private SmallBlindIsPostedEvent? PostSmallBlind(Table table, BasePot pot)
+    private SmallBlindIsPostedEvent? PostSmallBlind(Rules rules, Table table, Pot pot)
     {
         var player = table.GetPlayerOnSmallBlind();
         if (player is null)
@@ -50,8 +50,9 @@ public class BlindPostingDealer : IDealer
             return null;
         }
 
-        var amount = player.Stack < pot.SmallBlind ? player.Stack : pot.SmallBlind;
-        pot.PostSmallBlind(player, amount);
+        var amount = player.Stack < rules.SmallBlind ? player.Stack : rules.SmallBlind;
+        player.Post(amount);
+        pot.PostBlind(player.Nickname, amount);
 
         var @event = new SmallBlindIsPostedEvent
         {
@@ -62,7 +63,7 @@ public class BlindPostingDealer : IDealer
         return @event;
     }
 
-    private BigBlindIsPostedEvent? PostBigBlind(Table table, BasePot pot)
+    private BigBlindIsPostedEvent? PostBigBlind(Rules rules, Table table, Pot pot)
     {
         var player = table.GetPlayerOnBigBlind();
         if (player is null)
@@ -70,8 +71,9 @@ public class BlindPostingDealer : IDealer
             return null;
         }
 
-        var amount = player.Stack < pot.BigBlind ? player.Stack : pot.BigBlind;
-        pot.PostBigBlind(player, amount);
+        var amount = player.Stack < rules.BigBlind ? player.Stack : rules.BigBlind;
+        player.Post(amount);
+        pot.PostBlind(player.Nickname, amount);
 
         var @event = new BigBlindIsPostedEvent
         {
@@ -84,9 +86,9 @@ public class BlindPostingDealer : IDealer
 
     public void Handle(
         IEvent @event,
-        Game game,
+        Rules rules,
         Table table,
-        BasePot pot,
+        Pot pot,
         BaseDeck deck,
         IRandomizer randomizer,
         IEvaluator evaluator
@@ -95,10 +97,12 @@ public class BlindPostingDealer : IDealer
         switch (@event)
         {
             case SmallBlindIsPostedEvent e:
-                pot.PostSmallBlind(table.GetPlayerByNickname(e.Nickname), e.Amount);
+                table.GetPlayerByNickname(e.Nickname).Post(e.Amount);
+                pot.PostBlind(e.Nickname, e.Amount);
                 break;
             case BigBlindIsPostedEvent e:
-                pot.PostBigBlind(table.GetPlayerByNickname(e.Nickname), e.Amount);
+                table.GetPlayerByNickname(e.Nickname).Post(e.Amount);
+                pot.PostBlind(e.Nickname, e.Amount);
                 break;
             case StageIsStartedEvent:
                 break;
@@ -112,9 +116,9 @@ public class BlindPostingDealer : IDealer
     public IEnumerable<IEvent> CommitDecision(
         Nickname nickname,
         Decision decision,
-        Game game,
+        Rules rules,
         Table table,
-        BasePot pot,
+        Pot pot,
         BaseDeck deck,
         IRandomizer randomizer,
         IEvaluator evaluator

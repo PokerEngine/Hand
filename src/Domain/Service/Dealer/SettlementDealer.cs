@@ -6,10 +6,10 @@ using Domain.ValueObject;
 
 namespace Domain.Service.Dealer;
 
-public class SettlementDealer
+public class SettlementDealer : IDealer
 {
     public IEnumerable<IEvent> Start(
-        Game game,
+        Rules rules,
         Table table,
         Pot pot,
         BaseDeck deck,
@@ -30,11 +30,11 @@ public class SettlementDealer
         }
         else if (IsSomebodyAllIn(table))
         {
-            events = WinAtShowdownWithAllIn(table, pot, game, evaluator);
+            events = WinAtShowdownWithAllIn(table, pot, rules, evaluator);
         }
         else
         {
-            events = WinAtShowdownWithoutAllIn(table, pot, game, evaluator);
+            events = WinAtShowdownWithoutAllIn(table, pot, rules, evaluator);
         }
 
         foreach (var e in events)
@@ -51,7 +51,7 @@ public class SettlementDealer
 
     public void Handle(
         IEvent @event,
-        Game game,
+        Rules rules,
         Table table,
         Pot pot,
         BaseDeck deck,
@@ -79,7 +79,7 @@ public class SettlementDealer
     public IEnumerable<IEvent> CommitDecision(
         Nickname nickname,
         Decision decision,
-        Game game,
+        Rules rules,
         Table table,
         Pot pot,
         BaseDeck deck,
@@ -115,12 +115,12 @@ public class SettlementDealer
         yield return winEvent;
     }
 
-    private IEnumerable<IEvent> WinAtShowdownWithAllIn(Table table, Pot pot, Game game, IEvaluator evaluator)
+    private IEnumerable<IEvent> WinAtShowdownWithAllIn(Table table, Pot pot, Rules rules, IEvaluator evaluator)
     {
         var startPlayer = table.GetPlayerNextToSeat(table.ButtonSeat, IsAvailable)!;
         var players = table.GetPlayersStartingFromSeat(startPlayer.Seat).Where(IsAvailable).ToList();
 
-        var comboMapping = players.Select(x => (x.Nickname, evaluator.Evaluate(game, table.BoardCards, x.HoleCards))).ToDictionary();
+        var comboMapping = players.Select(x => (x.Nickname, evaluator.Evaluate(rules.Game, table.BoardCards, x.HoleCards))).ToDictionary();
 
         foreach (var player in players)
         {
@@ -167,7 +167,7 @@ public class SettlementDealer
         }
     }
 
-    private IEnumerable<IEvent> WinAtShowdownWithoutAllIn(Table table, Pot pot, Game game, IEvaluator evaluator)
+    private IEnumerable<IEvent> WinAtShowdownWithoutAllIn(Table table, Pot pot, Rules rules, IEvaluator evaluator)
     {
         var startPlayer = GetStartPlayer(table, pot);
         var players = table.GetPlayersStartingFromSeat(startPlayer.Seat).Where(IsAvailable);
@@ -178,7 +178,7 @@ public class SettlementDealer
 
         foreach (var player in players)
         {
-            var combo = evaluator.Evaluate(game, table.BoardCards, player.HoleCards);
+            var combo = evaluator.Evaluate(rules.Game, table.BoardCards, player.HoleCards);
 
             if (combo.Weight < winningCombo.Weight)
             {

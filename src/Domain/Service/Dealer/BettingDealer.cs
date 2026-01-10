@@ -6,10 +6,10 @@ using Domain.ValueObject;
 
 namespace Domain.Service.Dealer;
 
-public abstract class BaseBettingDealer
+public abstract class BaseBettingDealer : IDealer
 {
     public IEnumerable<IEvent> Start(
-        Game game,
+        Rules rules,
         Table table,
         Pot pot,
         BaseDeck deck,
@@ -41,7 +41,7 @@ public abstract class BaseBettingDealer
 
     public void Handle(
         IEvent @event,
-        Game game,
+        Rules rules,
         Table table,
         Pot pot,
         BaseDeck deck,
@@ -56,6 +56,10 @@ public abstract class BaseBettingDealer
             case DecisionIsCommittedEvent e:
                 CommitDecision(table.GetPlayerByNickname(e.Nickname), e.Decision, pot);
                 break;
+            case RefundIsCommittedEvent e:
+                pot.RefundBet(e.Nickname, e.Amount);
+                table.GetPlayerByNickname(e.Nickname).Refund(e.Amount);
+                break;
             case StageIsStartedEvent:
                 break;
             case StageIsFinishedEvent:
@@ -69,7 +73,7 @@ public abstract class BaseBettingDealer
     public IEnumerable<IEvent> CommitDecision(
         Nickname nickname,
         Decision decision,
-        Game game,
+        Rules rules,
         Table table,
         Pot pot,
         BaseDeck deck,
@@ -111,7 +115,7 @@ public abstract class BaseBettingDealer
             case DecisionType.Check:
                 Check(player, pot);
                 break;
-            case DecisionType.CallTo:
+            case DecisionType.Call:
                 Call(player, pot);
                 break;
             case DecisionType.RaiseTo:
@@ -149,7 +153,7 @@ public abstract class BaseBettingDealer
             throw new InvalidOperationException($"The player cannot call: {reason}");
         }
 
-        var remainingAmount = GetCallToAmount(player, pot) - pot.GetUncommittedAmountPostedBy(player.Nickname);
+        var remainingAmount = GetCallAmount(player, pot) - pot.GetUncommittedAmountPostedBy(player.Nickname);
         player.Bet(remainingAmount);
         pot.PostBet(player.Nickname, remainingAmount);
     }
@@ -257,7 +261,7 @@ public abstract class BaseBettingDealer
         var (checkIsAvailable, _) = CheckIsValid(player, pot);
 
         var (callIsAvailable, _) = CallIsValid(player, pot);
-        var callToAmount = callIsAvailable ? GetCallToAmount(player, pot) : new Chips(0);
+        var callAmount = callIsAvailable ? GetCallAmount(player, pot) : new Chips(0);
 
         var (raiseIsAvailable, _) = RaiseToIsValid(player, null, pot);
         var minRaiseToAmount = raiseIsAvailable ? GetMinRaiseToAmount(player, pot) : new Chips(0);
@@ -269,7 +273,7 @@ public abstract class BaseBettingDealer
             FoldIsAvailable = true,
             CheckIsAvailable = checkIsAvailable,
             CallIsAvailable = callIsAvailable,
-            CallToAmount = callToAmount,
+            CallToAmount = callAmount,
             RaiseIsAvailable = raiseIsAvailable,
             MinRaiseToAmount = minRaiseToAmount,
             MaxRaiseToAmount = maxRaiseToAmount,
@@ -319,11 +323,11 @@ public abstract class BaseBettingDealer
 
     private (bool, string) RaiseToIsValid(Player player, Chips? amount, Pot pot)
     {
-        var callToAmount = GetCallToAmount(player, pot);
+        var callAmount = GetCallAmount(player, pot);
         var minRaiseToAmount = GetMinRaiseToAmount(player, pot);
-        var maxRaiseToAmount = GetMinRaiseToAmount(player, pot);
+        var maxRaiseToAmount = GetMaxRaiseToAmount(player, pot);
 
-        if (minRaiseToAmount == callToAmount)
+        if (minRaiseToAmount == callAmount)
         {
             return (false, "Not enough stack");
         }
@@ -369,11 +373,11 @@ public abstract class BaseBettingDealer
         return true;
     }
 
-    private Chips GetCallToAmount(Player player, Pot pot)
+    private Chips GetCallAmount(Player player, Pot pot)
     {
-        var callToAmount = pot.GetUncommittedMaxAmountPostedNotBy(player.Nickname);
+        var callAmount = pot.GetUncommittedMaxAmountPostedNotBy(player.Nickname);
         var playerTotalAmount = pot.GetUncommittedAmountPostedBy(player.Nickname) + player.Stack;
-        return playerTotalAmount < callToAmount ? playerTotalAmount : callToAmount;
+        return playerTotalAmount < callAmount ? playerTotalAmount : callAmount;
     }
 
     private Chips GetMinRaiseToAmount(Player player, Pot pot)

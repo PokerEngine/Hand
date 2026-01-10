@@ -9,9 +9,9 @@ namespace Domain.Service.Dealer;
 public class BoardCardsDealingDealer(int count) : IDealer
 {
     public IEnumerable<IEvent> Start(
-        Game game,
+        Rules rules,
         Table table,
-        BasePot pot,
+        Pot pot,
         BaseDeck deck,
         IRandomizer randomizer,
         IEvaluator evaluator
@@ -55,9 +55,9 @@ public class BoardCardsDealingDealer(int count) : IDealer
 
     public void Handle(
         IEvent @event,
-        Game game,
+        Rules rules,
         Table table,
-        BasePot pot,
+        Pot pot,
         BaseDeck deck,
         IRandomizer randomizer,
         IEvaluator evaluator
@@ -80,9 +80,9 @@ public class BoardCardsDealingDealer(int count) : IDealer
     public IEnumerable<IEvent> CommitDecision(
         Nickname nickname,
         Decision decision,
-        Game game,
+        Rules rules,
         Table table,
-        BasePot pot,
+        Pot pot,
         BaseDeck deck,
         IRandomizer randomizer,
         IEvaluator evaluator

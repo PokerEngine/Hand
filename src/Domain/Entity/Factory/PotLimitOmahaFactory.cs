@@ -23,33 +23,33 @@ public class PotLimitOmahaFactory : IFactory
         );
     }
 
-    public BasePot GetPot(Chips smallBlind, Chips bigBlind)
+    public Pot GetPot(Rules rules)
     {
-        return new PotLimitPot(smallBlind, bigBlind);
+        return new Pot(minBet: rules.BigBlind);
     }
 
-    public BaseDeck GetDeck()
+    public BaseDeck GetDeck(Rules rules)
     {
         return new StandardDeck();
     }
 
-    public List<IDealer> GetDealers()
+    public List<IDealer> GetDealers(Rules rules)
     {
         return [
             new BlindPostingDealer(),
             new HoleCardsDealingDealer(4),
-            new TradingDealer(),
+            new PotLimitBettingDealer(),
             new BoardCardsDealingDealer(3),
-            new TradingDealer(),
+            new PotLimitBettingDealer(),
             new BoardCardsDealingDealer(1),
-            new TradingDealer(),
+            new PotLimitBettingDealer(),
             new BoardCardsDealingDealer(1),
-            new TradingDealer(),
-            new ShowdownDealer(),
+            new PotLimitBettingDealer(),
+            new SettlementDealer(),
         ];
     }
 
-    protected Player GetPlayer(Participant participant)
+    private Player GetPlayer(Participant participant)
     {
         return new Player(
             nickname: participant.Nickname,

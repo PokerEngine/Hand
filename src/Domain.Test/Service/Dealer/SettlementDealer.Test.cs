@@ -9,7 +9,7 @@ namespace Domain.Test.Service.Dealer;
 
 public class SettlementDealerTest
 {
-    private readonly StubRandomizer Randomizer = new();
+    private readonly StubRandomizer _randomizer = new();
 
     [Fact]
     public void Start_OnePlayerRemaining_ShouldMuckCards()
@@ -45,11 +45,11 @@ public class SettlementDealerTest
 
         // Act
         var events = dealer.Start(
-            game: Game.NoLimitHoldem,
+            rules: CreateRules(),
             table: table,
             pot: pot,
             deck: deck,
-            randomizer: Randomizer,
+            randomizer: _randomizer,
             evaluator: evaluator
         ).ToList();
 
@@ -104,11 +104,11 @@ public class SettlementDealerTest
 
         // Act
         var events = dealer.Start(
-            game: Game.NoLimitHoldem,
+            rules: CreateRules(),
             table: table,
             pot: pot,
             deck: deck,
-            randomizer: Randomizer,
+            randomizer: _randomizer,
             evaluator: evaluator
         ).ToList();
 
@@ -169,11 +169,11 @@ public class SettlementDealerTest
 
         // Act
         var events = dealer.Start(
-            game: Game.NoLimitHoldem,
+            rules: CreateRules(),
             table: table,
             pot: pot,
             deck: deck,
-            randomizer: Randomizer,
+            randomizer: _randomizer,
             evaluator: evaluator
         ).ToList();
 
@@ -242,11 +242,11 @@ public class SettlementDealerTest
 
         // Act
         var events = dealer.Start(
-            game: Game.NoLimitHoldem,
+            rules: CreateRules(),
             table: table,
             pot: pot,
             deck: deck,
-            randomizer: Randomizer,
+            randomizer: _randomizer,
             evaluator: evaluator
         ).ToList();
 
@@ -302,5 +302,15 @@ public class SettlementDealerTest
     private BaseDeck CreateDeck()
     {
         return new StandardDeck();
+    }
+
+    private Rules CreateRules()
+    {
+        return new Rules
+        {
+            Game = Game.NoLimitHoldem,
+            SmallBlind = new Chips(5),
+            BigBlind = new Chips(10)
+        };
     }
 }

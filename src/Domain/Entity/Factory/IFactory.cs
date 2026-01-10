@@ -7,10 +7,7 @@ public interface IFactory
 {
     Table GetTable(
         IEnumerable<Participant> participants,
-        Seat maxSeat,
-        Seat smallBlindSeat,
-        Seat bigBlindSeat,
-        Seat buttonSeat
+        Positions positions
     );
 
     Pot GetPot(Rules rules);

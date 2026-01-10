@@ -117,7 +117,7 @@ public class SettlementDealer : IDealer
 
     private IEnumerable<IEvent> WinAtShowdownWithAllIn(Table table, Pot pot, Rules rules, IEvaluator evaluator)
     {
-        var startPlayer = table.GetPlayerNextToSeat(table.ButtonSeat, IsAvailable)!;
+        var startPlayer = table.GetPlayerNextToSeat(table.Positions.Button, IsAvailable)!;
         var players = table.GetPlayersStartingFromSeat(startPlayer.Seat).Where(IsAvailable).ToList();
 
         var comboMapping = players.Select(x => (x.Nickname, evaluator.Evaluate(rules.Game, table.BoardCards, x.HoleCards))).ToDictionary();
@@ -235,7 +235,7 @@ public class SettlementDealer : IDealer
             return table.GetPlayerByNickname((Nickname)pot.LastRaisedNickname);
         }
 
-        return table.GetPlayerNextToSeat(table.ButtonSeat, IsAvailable)!;
+        return table.GetPlayerNextToSeat(table.Positions.Button, IsAvailable)!;
     }
 
     private bool IsSomebodyAllIn(Table table)

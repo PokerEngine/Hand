@@ -67,10 +67,10 @@ public class GetHandByUidHandler(
             Game = hand.Rules.Game.ToString(),
             SmallBlind = hand.Rules.SmallBlind,
             BigBlind = hand.Rules.BigBlind,
-            MaxSeat = hand.Table.MaxSeat,
-            SmallBlindSeat = hand.Table.SmallBlindSeat,
-            BigBlindSeat = hand.Table.BigBlindSeat,
-            ButtonSeat = hand.Table.ButtonSeat,
+            MaxSeat = hand.Table.Positions.Max,
+            SmallBlindSeat = hand.Table.Positions.SmallBlind,
+            BigBlindSeat = hand.Table.Positions.BigBlind,
+            ButtonSeat = hand.Table.Positions.Button,
             State = new GetHandByUidStateResponse
             {
                 Players = state.Players.Select(SerializePlayerState).ToList(),

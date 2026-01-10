@@ -18,10 +18,10 @@ public class HandIsCreatedEventHandler(
             Game = @event.Rules.Game.ToString(),
             SmallBlind = @event.Rules.SmallBlind,
             BigBlind = @event.Rules.BigBlind,
-            MaxSeat = @event.MaxSeat,
-            SmallBlindSeat = @event.SmallBlindSeat,
-            BigBlindSeat = @event.BigBlindSeat,
-            ButtonSeat = @event.ButtonSeat,
+            MaxSeat = @event.Positions.Max,
+            SmallBlindSeat = @event.Positions.SmallBlind,
+            BigBlindSeat = @event.Positions.BigBlind,
+            ButtonSeat = @event.Positions.Button,
             Participants = @event.Participants.Select(SerializeParticipant).ToList(),
             OccurredAt = @event.OccurredAt
         };

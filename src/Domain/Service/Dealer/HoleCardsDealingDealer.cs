@@ -41,7 +41,7 @@ public class HoleCardsDealingDealer(int count) : IDealer
 
     private List<Player> GetPlayersForDealing(Table table)
     {
-        var startSeat = table.SmallBlindSeat;
+        var startSeat = table.Positions.SmallBlind;
         return table.GetPlayersStartingFromSeat(startSeat).Where(x => !x.IsFolded).ToList();
     }
 

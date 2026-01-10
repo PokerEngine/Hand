@@ -193,7 +193,7 @@ public abstract class BaseBettingDealer : IDealer
 
     private Player GetStartPlayer(Table table)
     {
-        return table.GetPlayerNextToSeat(table.ButtonSeat, IsAvailable)!;
+        return table.GetPlayerNextToSeat(table.Positions.Button, IsAvailable)!;
     }
 
     private bool IsAvailable(Player player)

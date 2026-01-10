@@ -57,10 +57,13 @@ public class NoLimitHoldem6MaxHandTest
                 SmallBlind = new Chips(5),
                 BigBlind = new Chips(10)
             },
-            maxSeat: new Seat(6),
-            smallBlindSeat: new Seat(1),
-            bigBlindSeat: new Seat(2),
-            buttonSeat: new Seat(6),
+            positions: new()
+            {
+                SmallBlind = new Seat(1),
+                BigBlind = new Seat(2),
+                Button = new Seat(6),
+                Max = new Seat(6)
+            },
             participants: [participantSb, participantBb, participantEp, participantMp, participantCo, participantBu],
             randomizer: _randomizer,
             evaluator: _evaluator
@@ -72,7 +75,10 @@ public class NoLimitHoldem6MaxHandTest
         Assert.Equal(Game.NoLimitHoldem, hand.Rules.Game);
         Assert.Equal(new Chips(5), hand.Rules.SmallBlind);
         Assert.Equal(new Chips(10), hand.Rules.BigBlind);
-        Assert.Equal(new Seat(6), hand.Table.MaxSeat);
+        Assert.Equal(new Seat(1), hand.Table.Positions.SmallBlind);
+        Assert.Equal(new Seat(2), hand.Table.Positions.BigBlind);
+        Assert.Equal(new Seat(6), hand.Table.Positions.Button);
+        Assert.Equal(new Seat(6), hand.Table.Positions.Max);
         Assert.Equal(new Chips(0), hand.Pot.TotalAmount);
         Assert.IsType<StandardDeck>(hand.Deck);
 
@@ -124,10 +130,13 @@ public class NoLimitHoldem6MaxHandTest
                     SmallBlind = new Chips(5),
                     BigBlind = new Chips(10)
                 },
-                MaxSeat = new Seat(6),
-                SmallBlindSeat = new Seat(1),
-                BigBlindSeat = new Seat(2),
-                ButtonSeat = new Seat(6),
+                Positions = new ()
+                {
+                    SmallBlind = new Seat(1),
+                    BigBlind = new Seat(2),
+                    Button = new Seat(6),
+                    Max = new Seat(6)
+                },
                 Participants = [participantSb, participantBb, participantBu],
                 OccurredAt = new DateTime(2025, 1, 1)
             },
@@ -393,7 +402,10 @@ public class NoLimitHoldem6MaxHandTest
         Assert.Equal(Game.NoLimitHoldem, hand.Rules.Game);
         Assert.Equal(new Chips(5), hand.Rules.SmallBlind);
         Assert.Equal(new Chips(10), hand.Rules.BigBlind);
-        Assert.Equal(new Seat(6), hand.Table.MaxSeat);
+        Assert.Equal(new Seat(1), hand.Table.Positions.SmallBlind);
+        Assert.Equal(new Seat(2), hand.Table.Positions.BigBlind);
+        Assert.Equal(new Seat(6), hand.Table.Positions.Button);
+        Assert.Equal(new Seat(6), hand.Table.Positions.Max);
         Assert.Equal(new Chips(55), hand.Pot.TotalAmount);
         Assert.IsType<StandardDeck>(hand.Deck);
 
@@ -774,10 +786,13 @@ public class NoLimitHoldem6MaxHandTest
                 SmallBlind = new Chips(smallBlind),
                 BigBlind = new Chips(bigBlind)
             },
-            maxSeat: new Seat(maxSeat),
-            smallBlindSeat: new Seat(smallBlindSeat),
-            bigBlindSeat: new Seat(bigBlindSeat),
-            buttonSeat: new Seat(buttonSeat),
+            positions: new()
+            {
+                SmallBlind = new Seat(smallBlindSeat),
+                BigBlind = new Seat(bigBlindSeat),
+                Button = new Seat(buttonSeat),
+                Max = new Seat(maxSeat)
+            },
             participants: participants,
             randomizer: _randomizer,
             evaluator: _evaluator
@@ -860,10 +875,13 @@ public class NoLimitHoldem9MaxHandTest
                 SmallBlind = new Chips(5),
                 BigBlind = new Chips(10)
             },
-            maxSeat: new Seat(9),
-            smallBlindSeat: new Seat(1),
-            bigBlindSeat: new Seat(2),
-            buttonSeat: new Seat(9),
+            positions: new()
+            {
+                SmallBlind = new Seat(1),
+                BigBlind = new Seat(2),
+                Button = new Seat(9),
+                Max = new Seat(9)
+            },
             participants: [participantSb, participantBb, participantUtg1, participantUtg2, participantUtg3, participantEp, participantMp, participantCo, participantBu],
             randomizer: _randomizer,
             evaluator: _evaluator
@@ -873,7 +891,10 @@ public class NoLimitHoldem9MaxHandTest
         Assert.Equal(Game.NoLimitHoldem, hand.Rules.Game);
         Assert.Equal(new Chips(5), hand.Rules.SmallBlind);
         Assert.Equal(new Chips(10), hand.Rules.BigBlind);
-        Assert.Equal(new Seat(9), hand.Table.MaxSeat);
+        Assert.Equal(new Seat(1), hand.Table.Positions.SmallBlind);
+        Assert.Equal(new Seat(2), hand.Table.Positions.BigBlind);
+        Assert.Equal(new Seat(9), hand.Table.Positions.Button);
+        Assert.Equal(new Seat(9), hand.Table.Positions.Max);
         Assert.Equal(new Chips(0), hand.Pot.TotalAmount);
         Assert.IsType<StandardDeck>(hand.Deck);
 
@@ -947,10 +968,13 @@ public class PotLimitOmaha6MaxHandTest
                 SmallBlind = new Chips(5),
                 BigBlind = new Chips(10)
             },
-            maxSeat: new Seat(6),
-            smallBlindSeat: new Seat(1),
-            bigBlindSeat: new Seat(2),
-            buttonSeat: new Seat(6),
+            positions: new()
+            {
+                SmallBlind = new Seat(1),
+                BigBlind = new Seat(2),
+                Button = new Seat(6),
+                Max = new Seat(6)
+            },
             participants: [participantSb, participantBb, participantEp, participantMp, participantCo, participantBu],
             randomizer: _randomizer,
             evaluator: _evaluator
@@ -960,7 +984,10 @@ public class PotLimitOmaha6MaxHandTest
         Assert.Equal(Game.PotLimitOmaha, hand.Rules.Game);
         Assert.Equal(new Chips(5), hand.Rules.SmallBlind);
         Assert.Equal(new Chips(10), hand.Rules.BigBlind);
-        Assert.Equal(new Seat(6), hand.Table.MaxSeat);
+        Assert.Equal(new Seat(1), hand.Table.Positions.SmallBlind);
+        Assert.Equal(new Seat(2), hand.Table.Positions.BigBlind);
+        Assert.Equal(new Seat(6), hand.Table.Positions.Button);
+        Assert.Equal(new Seat(6), hand.Table.Positions.Max);
         Assert.Equal(new Chips(0), hand.Pot.TotalAmount);
         Assert.IsType<StandardDeck>(hand.Deck);
 
@@ -1046,10 +1073,13 @@ public class PotLimitOmaha9MaxHandTest
                 SmallBlind = new Chips(5),
                 BigBlind = new Chips(10)
             },
-            maxSeat: new Seat(9),
-            smallBlindSeat: new Seat(1),
-            bigBlindSeat: new Seat(2),
-            buttonSeat: new Seat(9),
+            positions: new()
+            {
+                SmallBlind = new Seat(1),
+                BigBlind = new Seat(2),
+                Button = new Seat(9),
+                Max = new Seat(9)
+            },
             participants: [participantSb, participantBb, participantUtg1, participantUtg2, participantUtg3, participantEp, participantMp, participantCo, participantBu],
             randomizer: _randomizer,
             evaluator: _evaluator
@@ -1059,7 +1089,10 @@ public class PotLimitOmaha9MaxHandTest
         Assert.Equal(Game.PotLimitOmaha, hand.Rules.Game);
         Assert.Equal(new Chips(5), hand.Rules.SmallBlind);
         Assert.Equal(new Chips(10), hand.Rules.BigBlind);
-        Assert.Equal(new Seat(9), hand.Table.MaxSeat);
+        Assert.Equal(new Seat(1), hand.Table.Positions.SmallBlind);
+        Assert.Equal(new Seat(2), hand.Table.Positions.BigBlind);
+        Assert.Equal(new Seat(9), hand.Table.Positions.Button);
+        Assert.Equal(new Seat(9), hand.Table.Positions.Max);
         Assert.Equal(new Chips(0), hand.Pot.TotalAmount);
         Assert.IsType<StandardDeck>(hand.Deck);
 

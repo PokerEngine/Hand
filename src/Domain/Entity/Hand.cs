@@ -58,10 +58,7 @@ public class Hand
         TableUid tableUid,
         TableType tableType,
         Rules rules,
-        Seat maxSeat,
-        Seat smallBlindSeat,
-        Seat bigBlindSeat,
-        Seat buttonSeat,
+        Positions positions,
         List<Participant> participants,
         IRandomizer randomizer,
         IEvaluator evaluator
@@ -75,10 +72,7 @@ public class Hand
             rules: rules,
             table: factory.GetTable(
                 participants: participants,
-                maxSeat: maxSeat,
-                smallBlindSeat: smallBlindSeat,
-                bigBlindSeat: bigBlindSeat,
-                buttonSeat: buttonSeat
+                positions: positions
             ),
             pot: factory.GetPot(rules),
             deck: factory.GetDeck(rules),
@@ -92,10 +86,7 @@ public class Hand
             TableUid = tableUid,
             TableType = tableType,
             Rules = rules,
-            MaxSeat = maxSeat,
-            SmallBlindSeat = smallBlindSeat,
-            BigBlindSeat = bigBlindSeat,
-            ButtonSeat = buttonSeat,
+            Positions = positions,
             Participants = participants,
             OccurredAt = DateTime.Now
         };
@@ -122,10 +113,7 @@ public class Hand
             tableUid: createdEvent.TableUid,
             tableType: createdEvent.TableType,
             rules: createdEvent.Rules,
-            maxSeat: createdEvent.MaxSeat,
-            smallBlindSeat: createdEvent.SmallBlindSeat,
-            bigBlindSeat: createdEvent.BigBlindSeat,
-            buttonSeat: createdEvent.ButtonSeat,
+            positions: createdEvent.Positions,
             participants: createdEvent.Participants,
             randomizer: randomizer,
             evaluator: evaluator

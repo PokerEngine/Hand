@@ -22,11 +22,14 @@ public class TableTest
         );
 
         var table = new Table(
-            maxSeat: new Seat(6),
-            smallBlindSeat: playerSb.Seat,
-            bigBlindSeat: playerBb.Seat,
-            buttonSeat: playerBu.Seat,
-            players: [playerBu, playerSb, playerBb]
+            players: [playerBu, playerSb, playerBb],
+            positions: new()
+            {
+                SmallBlind = playerSb.Seat,
+                BigBlind = playerBb.Seat,
+                Button = playerBu.Seat,
+                Max = new Seat(6)
+            }
         );
 
         Assert.Equal(3, table.Count);
@@ -47,11 +50,14 @@ public class TableTest
         );
 
         var table = new Table(
-            maxSeat: new Seat(6),
-            smallBlindSeat: playerSb.Seat,
-            bigBlindSeat: playerBb.Seat,
-            buttonSeat: playerSb.Seat,
-            players: [playerSb, playerBb]
+            players: [playerSb, playerBb],
+            positions: new()
+            {
+                SmallBlind = playerSb.Seat,
+                BigBlind = playerBb.Seat,
+                Button = playerSb.Seat,
+                Max = new Seat(6)
+            }
         );
 
         Assert.Equal(2, table.Count);
@@ -75,10 +81,13 @@ public class TableTest
         {
             new Table(
                 players: [playerA, playerB],
-                maxSeat: new Seat(6),
-                smallBlindSeat: new Seat(1),
-                bigBlindSeat: new Seat(2),
-                buttonSeat: new Seat(1)
+                positions: new()
+                {
+                    SmallBlind = new Seat(1),
+                    BigBlind = new Seat(2),
+                    Button = new Seat(1),
+                    Max = new Seat(6)
+                }
             );
         });
         Assert.StartsWith("The table must contain players with unique nicknames", exc.Message);
@@ -100,10 +109,13 @@ public class TableTest
         {
             new Table(
                 players: [playerA, playerB],
-                maxSeat: new Seat(6),
-                smallBlindSeat: new Seat(1),
-                bigBlindSeat: new Seat(2),
-                buttonSeat: new Seat(1)
+                positions: new()
+                {
+                    SmallBlind = new Seat(1),
+                    BigBlind = new Seat(2),
+                    Button = new Seat(1),
+                    Max = new Seat(6)
+                }
             );
         });
         Assert.StartsWith("The table must contain players with unique seats", exc.Message);
@@ -129,10 +141,13 @@ public class TableTest
         {
             new Table(
                 players: [playerSb, playerBb, playerWrong],
-                maxSeat: new Seat(6),
-                smallBlindSeat: new Seat(1),
-                bigBlindSeat: new Seat(2),
-                buttonSeat: new Seat(6)
+                positions: new()
+                {
+                    SmallBlind = new Seat(1),
+                    BigBlind = new Seat(2),
+                    Button = new Seat(1),
+                    Max = new Seat(6)
+                }
             );
         });
         Assert.StartsWith("The table supports seats till #6", exc.Message);
@@ -150,10 +165,13 @@ public class TableTest
         {
             new Table(
                 players: [playerBb],
-                maxSeat: new Seat(6),
-                smallBlindSeat: new Seat(1),
-                bigBlindSeat: new Seat(1),
-                buttonSeat: new Seat(1)
+                positions: new()
+                {
+                    SmallBlind = new Seat(1),
+                    BigBlind = new Seat(1),
+                    Button = new Seat(1),
+                    Max = new Seat(6)
+                }
             );
         });
         Assert.StartsWith("The table must contain at least 2 players", exc.Message);
@@ -164,7 +182,7 @@ public class TableTest
     {
         var playerBb = CreatePlayer(
             nickname: "BigBlind",
-            seat: 1
+            seat: 2
         );
         var playerBu = CreatePlayer(
             nickname: "Button",
@@ -172,11 +190,14 @@ public class TableTest
         );
 
         var table = new Table(
-            maxSeat: new Seat(6),
-            smallBlindSeat: new Seat(2),
-            bigBlindSeat: new Seat(1),
-            buttonSeat: new Seat(6),
-            players: [playerBb, playerBu]
+            players: [playerBb, playerBu],
+            positions: new()
+            {
+                SmallBlind = new Seat(1),
+                BigBlind = new Seat(2),
+                Button = new Seat(6),
+                Max = new Seat(6)
+            }
         );
 
         Assert.Equal(2, table.Count);
@@ -199,10 +220,13 @@ public class TableTest
         {
             new Table(
                 players: [playerSb, playerBu],
-                maxSeat: new Seat(6),
-                smallBlindSeat: new Seat(1),
-                bigBlindSeat: new Seat(2),
-                buttonSeat: new Seat(6)
+                positions: new()
+                {
+                    SmallBlind = new Seat(1),
+                    BigBlind = new Seat(2),
+                    Button = new Seat(6),
+                    Max = new Seat(6)
+                }
             );
         });
         Assert.StartsWith("The table must contain a player on the big blind", exc.Message);
@@ -222,10 +246,13 @@ public class TableTest
 
         var table = new Table(
             players: [playerSb, playerBb],
-            maxSeat: new Seat(6),
-            smallBlindSeat: new Seat(1),
-            bigBlindSeat: new Seat(2),
-            buttonSeat: new Seat(6)
+            positions: new()
+            {
+                SmallBlind = new Seat(1),
+                BigBlind = new Seat(2),
+                Button = new Seat(6),
+                Max = new Seat(6)
+            }
         );
 
         Assert.Equal(2, table.Count);
@@ -248,10 +275,13 @@ public class TableTest
         {
             new Table(
                 players: [playerSb, playerBb],
-                maxSeat: new Seat(6),
-                smallBlindSeat: new Seat(2),
-                bigBlindSeat: new Seat(2),
-                buttonSeat: new Seat(1)
+                positions: new()
+                {
+                    SmallBlind = new Seat(1),
+                    BigBlind = new Seat(1),
+                    Button = new Seat(6),
+                    Max = new Seat(6)
+                }
             );
         });
         Assert.StartsWith("The table must contain different players on the big and small blinds", exc.Message);
@@ -273,10 +303,13 @@ public class TableTest
         {
             new Table(
                 players: [playerSb, playerBb],
-                maxSeat: new Seat(6),
-                smallBlindSeat: new Seat(1),
-                bigBlindSeat: new Seat(2),
-                buttonSeat: new Seat(2)
+                positions: new()
+                {
+                    SmallBlind = new Seat(1),
+                    BigBlind = new Seat(2),
+                    Button = new Seat(2),
+                    Max = new Seat(6)
+                }
             );
         });
         Assert.StartsWith("The table must contain different players on the big blind and button", exc.Message);
@@ -516,10 +549,13 @@ public class TableTest
 
         var table = new Table(
             players: [playerSb, playerBb, playerBu],
-            maxSeat: new Seat(6),
-            smallBlindSeat: new Seat(1),
-            bigBlindSeat: new Seat(2),
-            buttonSeat: new Seat(3)
+            positions: new()
+            {
+                SmallBlind = new Seat(1),
+                BigBlind = new Seat(2),
+                Button = new Seat(3),
+                Max = new Seat(6)
+            }
         );
         table.TakeBoardCards(new CardSet([Card.AceOfSpades, Card.DeuceOfClubs, Card.AceOfClubs]));
 
@@ -536,10 +572,13 @@ public class TableTest
     {
         return new Table(
             players: players,
-            maxSeat: new Seat(maxSeat),
-            smallBlindSeat: new Seat(smallBlindSeat),
-            bigBlindSeat: new Seat(bigBlindSeat),
-            buttonSeat: new Seat(buttonSeat)
+            positions: new()
+            {
+                SmallBlind = new Seat(smallBlindSeat),
+                BigBlind = new Seat(bigBlindSeat),
+                Button = new Seat(buttonSeat),
+                Max = new Seat(maxSeat)
+            }
         );
     }
 

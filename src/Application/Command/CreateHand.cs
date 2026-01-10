@@ -44,16 +44,20 @@ public class CreateHandHandler(
             SmallBlind = command.SmallBlind,
             BigBlind = command.BigBlind
         };
+        var positions = new Positions
+        {
+            Max = command.MaxSeat,
+            SmallBlind = command.SmallBlindSeat,
+            BigBlind = command.BigBlindSeat,
+            Button = command.ButtonSeat
+        };
 
         var hand = Hand.FromScratch(
             uid: await repository.GetNextUidAsync(),
             tableUid: command.TableUid,
             tableType: tableType,
             rules: rules,
-            maxSeat: command.MaxSeat,
-            smallBlindSeat: command.SmallBlindSeat,
-            bigBlindSeat: command.BigBlindSeat,
-            buttonSeat: command.ButtonSeat,
+            positions: positions,
             participants: command.Participants.Select(DeserializeParticipant).ToList(),
             randomizer: randomizer,
             evaluator: evaluator

@@ -7,19 +7,13 @@ public class NoLimitHoldemFactory : IFactory
 {
     public virtual Table GetTable(
         IEnumerable<Participant> participants,
-        Seat maxSeat,
-        Seat smallBlindSeat,
-        Seat bigBlindSeat,
-        Seat buttonSeat
+        Positions positions
     )
     {
         var players = participants.Select(GetPlayer);
         return new Table(
             players: players,
-            maxSeat: maxSeat,
-            smallBlindSeat: smallBlindSeat,
-            bigBlindSeat: bigBlindSeat,
-            buttonSeat: buttonSeat
+            positions: positions
         );
     }
 

@@ -12,10 +12,7 @@ public record struct HandIsCreatedEvent : IEvent
     public required TableUid TableUid { get; init; }
     public required TableType TableType { get; init; }
     public required Rules Rules { get; init; }
-    public required Seat MaxSeat { get; init; }
-    public required Seat SmallBlindSeat { get; init; }
-    public required Seat BigBlindSeat { get; init; }
-    public required Seat ButtonSeat { get; init; }
+    public required Positions Positions { get; init; }
     public required List<Participant> Participants { get; init; }
     public required DateTime OccurredAt { get; init; }
 
@@ -24,10 +21,7 @@ public record struct HandIsCreatedEvent : IEvent
         return TableUid.Equals(other.TableUid)
                && TableType.Equals(other.TableType)
                && Rules.Equals(other.Rules)
-               && MaxSeat.Equals(other.MaxSeat)
-               && SmallBlindSeat.Equals(other.SmallBlindSeat)
-               && BigBlindSeat.Equals(other.BigBlindSeat)
-               && ButtonSeat.Equals(other.ButtonSeat)
+               && Positions.Equals(other.Positions)
                && OccurredAt.Equals(other.OccurredAt)
                && Participants.SequenceEqual(other.Participants);
     }
@@ -39,10 +33,7 @@ public record struct HandIsCreatedEvent : IEvent
         hash.Add(TableUid);
         hash.Add(TableType);
         hash.Add(Rules);
-        hash.Add(MaxSeat);
-        hash.Add(SmallBlindSeat);
-        hash.Add(BigBlindSeat);
-        hash.Add(ButtonSeat);
+        hash.Add(Positions);
         hash.Add(OccurredAt);
 
         foreach (var participant in Participants)

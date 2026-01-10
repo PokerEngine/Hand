@@ -21,10 +21,13 @@ public abstract class BaseBettingDealerTest
     {
         return new Table(
             players: players,
-            maxSeat: new Seat(6),
-            smallBlindSeat: new Seat(smallBlindSeat),
-            bigBlindSeat: new Seat(bigBlindSeat),
-            buttonSeat: new Seat(buttonSeat)
+            positions: new()
+            {
+                SmallBlind = new Seat(smallBlindSeat),
+                BigBlind = new Seat(bigBlindSeat),
+                Button = new Seat(buttonSeat),
+                Max = new Seat(6)
+            }
         );
     }
 

@@ -18,7 +18,14 @@ public record struct CreateHandCommand : ICommand
     public required int SmallBlindSeat { get; init; }
     public required int BigBlindSeat { get; init; }
     public required int ButtonSeat { get; init; }
-    public required List<ParticipantDto> Participants { get; init; }
+    public required List<CommandParticipant> Participants { get; init; }
+}
+
+public record struct CommandParticipant
+{
+    public required string Nickname { get; init; }
+    public required int Seat { get; init; }
+    public required int Stack { get; init; }
 }
 
 public record struct CreateHandResponse : ICommandResponse
@@ -84,13 +91,13 @@ public class CreateHandHandler(
         };
     }
 
-    private Participant DeserializeParticipant(ParticipantDto dto)
+    private Participant DeserializeParticipant(CommandParticipant participant)
     {
         return new Participant
         {
-            Nickname = dto.Nickname,
-            Seat = dto.Seat,
-            Stack = dto.Stack
+            Nickname = participant.Nickname,
+            Seat = participant.Seat,
+            Stack = participant.Stack
         };
     }
 }

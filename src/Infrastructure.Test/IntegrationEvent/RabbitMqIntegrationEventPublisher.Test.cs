@@ -35,6 +35,14 @@ public class RabbitMqIntegrationEventPublisherTest(
             TableType = "Cash",
             Name = "Test Published Integration Event",
             Number = 100500,
+            Participants = [
+                new()
+                {
+                    Nickname = "Nickname",
+                    Seat = 1,
+                    Stack = 1000
+                }
+            ],
             OccurredAt = GetNow()
         };
 
@@ -169,5 +177,22 @@ internal record TestIntegrationEvent : IIntegrationEvent
     public required string TableType { get; init; }
     public required string Name { get; init; }
     public required int Number { get; init; }
+    public required List<IntegrationEventParticipant> Participants { get; init; }
     public required DateTime OccurredAt { get; init; }
+
+    public virtual bool Equals(TestIntegrationEvent? other)
+    {
+        if (other is null)
+        {
+            return false;
+        }
+
+        return HandUid.Equals(other.HandUid)
+               && TableUid.Equals(other.TableUid)
+               && TableType.Equals(other.TableType)
+               && Name.Equals(other.Name)
+               && Number.Equals(other.Number)
+               && Participants.SequenceEqual(other.Participants)
+               && OccurredAt.Equals(other.OccurredAt);
+    }
 }

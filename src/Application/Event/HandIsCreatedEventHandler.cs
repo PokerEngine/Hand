@@ -30,9 +30,9 @@ public class HandIsCreatedEventHandler(
         await integrationEventPublisher.PublishAsync(integrationEvent, routingKey);
     }
 
-    private ParticipantDto SerializeParticipant(Participant participant)
+    private IntegrationEventParticipant SerializeParticipant(Participant participant)
     {
-        return new ParticipantDto
+        return new IntegrationEventParticipant
         {
             Nickname = participant.Nickname,
             Seat = participant.Seat,

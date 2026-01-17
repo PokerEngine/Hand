@@ -1,4 +1,3 @@
-using Application;
 using Application.Command;
 using Application.Query;
 using Microsoft.AspNetCore.Mvc;
@@ -30,7 +29,7 @@ public class HandController(
             SmallBlindSeat = request.SmallBlindSeat,
             BigBlindSeat = request.BigBlindSeat,
             ButtonSeat = request.ButtonSeat,
-            Participants = request.Participants
+            Participants = request.Participants.Select(DeserializeParticipant).ToList()
         };
         var response = await commandDispatcher.DispatchAsync<CreateHandCommand, CreateHandResponse>(command);
         return CreatedAtAction(nameof(GetHandByUid), new { uid = response.Uid }, response);
@@ -77,6 +76,16 @@ public class HandController(
         var response = await queryDispatcher.DispatchAsync<GetHandByUidQuery, GetHandByUidResponse>(query);
         return Ok(response);
     }
+
+    private CommandParticipant DeserializeParticipant(RequestParticipant participant)
+    {
+        return new CommandParticipant
+        {
+            Nickname = participant.Nickname,
+            Seat = participant.Seat,
+            Stack = participant.Stack
+        };
+    }
 }
 
 public record struct CreateHandRequest
@@ -90,7 +99,14 @@ public record struct CreateHandRequest
     public required int SmallBlindSeat { get; init; }
     public required int BigBlindSeat { get; init; }
     public required int ButtonSeat { get; init; }
-    public required List<ParticipantDto> Participants { get; init; }
+    public required List<RequestParticipant> Participants { get; init; }
+}
+
+public record struct RequestParticipant
+{
+    public required string Nickname { get; init; }
+    public required int Seat { get; init; }
+    public required int Stack { get; init; }
 }
 
 public record struct CommitDecisionRequest

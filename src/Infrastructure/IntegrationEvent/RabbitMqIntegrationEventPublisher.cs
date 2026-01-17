@@ -61,7 +61,7 @@ public class RabbitMqIntegrationEventPublisher : IIntegrationEventPublisher, IAs
         );
 
         var body = Encoding.UTF8.GetBytes(Serialize(integrationEvent));
-        var type = integrationEvent.GetType().Name;
+        var type = RabbitMqIntegrationEventTypeResolver.GetName(integrationEvent);
         var timestamp = new DateTimeOffset(DateTime.SpecifyKind(integrationEvent.OccurredAt, DateTimeKind.Utc));
 
         var properties = new BasicProperties

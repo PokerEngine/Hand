@@ -12,6 +12,13 @@ public record struct HandIsCreatedIntegrationEvent : IIntegrationEvent
     public required int SmallBlindSeat { get; init; }
     public required int BigBlindSeat { get; init; }
     public required int ButtonSeat { get; init; }
-    public required List<ParticipantDto> Participants { get; init; }
+    public required List<IntegrationEventParticipant> Participants { get; init; }
     public required DateTime OccurredAt { get; init; }
+}
+
+public record struct IntegrationEventParticipant
+{
+    public required string Nickname { get; init; }
+    public required int Seat { get; init; }
+    public required int Stack { get; init; }
 }

@@ -2,6 +2,7 @@ namespace Domain.ValueObject;
 
 public readonly struct State
 {
+    public required Rules Rules { get; init; }
     public required TableState Table { get; init; }
     public required PotState Pot { get; init; }
 }
@@ -9,6 +10,7 @@ public readonly struct State
 public readonly struct TableState
 {
     public required CardSet BoardCards { get; init; }
+    public required Positions Positions { get; init; }
     public required List<PlayerState> Players { get; init; }
 }
 

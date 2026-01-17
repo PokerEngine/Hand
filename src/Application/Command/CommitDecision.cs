@@ -9,7 +9,7 @@ namespace Application.Command;
 
 public record struct CommitDecisionCommand : ICommand
 {
-    public required Guid HandUid { get; init; }
+    public required Guid Uid { get; init; }
     public required string Nickname { get; init; }
     public required string DecisionType { get; init; }
     public required int DecisionAmount { get; init; }
@@ -17,7 +17,8 @@ public record struct CommitDecisionCommand : ICommand
 
 public record struct CommitDecisionResponse : ICommandResponse
 {
-    public required Guid HandUid { get; init; }
+    public required Guid Uid { get; init; }
+    public required string Nickname { get; init; }
 }
 
 public class CommitDecisionHandler(
@@ -35,10 +36,10 @@ public class CommitDecisionHandler(
         );
 
         var hand = Hand.FromEvents(
-            uid: command.HandUid,
+            uid: command.Uid,
             randomizer: randomizer,
             evaluator: evaluator,
-            events: await repository.GetEventsAsync(command.HandUid)
+            events: await repository.GetEventsAsync(command.Uid)
         );
 
         hand.CommitDecision(command.Nickname, decision);
@@ -60,7 +61,8 @@ public class CommitDecisionHandler(
 
         return new CommitDecisionResponse
         {
-            HandUid = hand.Uid
+            Uid = hand.Uid,
+            Nickname = command.Nickname,
         };
     }
 }

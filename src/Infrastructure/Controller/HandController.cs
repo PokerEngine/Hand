@@ -57,7 +57,7 @@ public class HandController(
     {
         var command = new CommitDecisionCommand
         {
-            HandUid = uid,
+            Uid = uid,
             Nickname = nickname,
             DecisionType = request.DecisionType,
             DecisionAmount = request.DecisionAmount

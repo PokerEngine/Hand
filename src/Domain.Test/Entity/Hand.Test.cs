@@ -484,6 +484,10 @@ public class NoLimitHoldem6MaxHandTest
         var state = hand.GetState();
 
         Assert.Equal(3, state.Table.BoardCards.Count);
+        Assert.Equal(new Seat(6), state.Table.Positions.SmallBlind);
+        Assert.Equal(new Seat(2), state.Table.Positions.BigBlind);
+        Assert.Equal(new Seat(4), state.Table.Positions.Button);
+        Assert.Equal(new Seat(6), state.Table.Positions.Max);
         Assert.Equal(3, state.Table.Players.Count);
         Assert.Equal(new Nickname("BigBlind"), state.Table.Players[0].Nickname);
         Assert.Equal(new Chips(975), state.Table.Players[0].Stack);

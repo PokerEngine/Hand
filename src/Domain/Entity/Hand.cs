@@ -108,15 +108,21 @@ public class Hand
         }
 
         var createdEvent = (HandIsCreatedEvent)events[0];
-        var hand = FromScratch(
+        var factory = FactoryRegistry.GetFactory(createdEvent.Rules.Game);
+        var hand = new Hand(
             uid: uid,
             tableUid: createdEvent.TableUid,
             tableType: createdEvent.TableType,
             rules: createdEvent.Rules,
-            positions: createdEvent.Positions,
-            participants: createdEvent.Participants,
+            table: factory.GetTable(
+                participants: createdEvent.Participants,
+                positions: createdEvent.Positions
+            ),
+            pot: factory.GetPot(createdEvent.Rules),
+            deck: factory.GetDeck(createdEvent.Rules),
             randomizer: randomizer,
-            evaluator: evaluator
+            evaluator: evaluator,
+            dealers: factory.GetDealers(createdEvent.Rules)
         );
 
         foreach (var @event in events)
@@ -151,6 +157,7 @@ public class Hand
     {
         return new State
         {
+            Rules = Rules,
             Table = Table.GetState(),
             Pot = Pot.GetState()
         };

@@ -138,6 +138,7 @@ public class Table : IEnumerable<Player>
     {
         return new TableState
         {
+            Positions = Positions,
             Players = Players.Select(p => p.GetState()).ToList(),
             BoardCards = BoardCards
         };

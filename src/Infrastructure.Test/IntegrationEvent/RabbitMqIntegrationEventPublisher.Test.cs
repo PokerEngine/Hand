@@ -195,4 +195,23 @@ internal record TestIntegrationEvent : IIntegrationEvent
                && Participants.SequenceEqual(other.Participants)
                && OccurredAt.Equals(other.OccurredAt);
     }
+
+    public override int GetHashCode()
+    {
+        var hash = new HashCode();
+
+        hash.Add(HandUid);
+        hash.Add(TableUid);
+        hash.Add(TableType);
+        hash.Add(Name);
+        hash.Add(Number);
+        hash.Add(OccurredAt);
+
+        foreach (var participant in Participants)
+        {
+            hash.Add(participant);
+        }
+
+        return hash.ToHashCode();
+    }
 }

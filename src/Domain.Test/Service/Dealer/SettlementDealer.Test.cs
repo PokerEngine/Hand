@@ -58,7 +58,7 @@ public class SettlementDealerTest
         Assert.IsType<StageIsStartedEvent>(events[0]);
         var muckEvent = Assert.IsType<HoleCardsAreMuckedEvent>(events[1]);
         Assert.Equal(playerC.Nickname, muckEvent.Nickname);
-        var winEvent = Assert.IsType<WinIsCommittedEvent>(events[2]);
+        var winEvent = Assert.IsType<AwardIsCommittedEvent>(events[2]);
         Assert.Equal([playerC.Nickname], winEvent.Nicknames);
         Assert.Equal(new Chips(25), winEvent.Amount);
         Assert.IsType<StageIsFinishedEvent>(events[3]);
@@ -123,7 +123,7 @@ public class SettlementDealerTest
         Assert.Equal(playerC.Nickname, showEventC.Nickname);
         Assert.Equal(playerC.HoleCards, showEventC.Cards);
         Assert.Equal(comboC, showEventC.Combo);
-        var winEvent = Assert.IsType<WinIsCommittedEvent>(events[3]);
+        var winEvent = Assert.IsType<AwardIsCommittedEvent>(events[3]);
         Assert.Equal([playerC.Nickname], winEvent.Nicknames);
         Assert.Equal(new Chips(55), winEvent.Amount);
         Assert.IsType<StageIsFinishedEvent>(events[4]);
@@ -186,7 +186,7 @@ public class SettlementDealerTest
         Assert.Equal(comboB, showEventB.Combo);
         var showEventC = Assert.IsType<HoleCardsAreMuckedEvent>(events[2]);
         Assert.Equal(playerC.Nickname, showEventC.Nickname);
-        var winEvent = Assert.IsType<WinIsCommittedEvent>(events[3]);
+        var winEvent = Assert.IsType<AwardIsCommittedEvent>(events[3]);
         Assert.Equal([playerB.Nickname], winEvent.Nicknames);
         Assert.Equal(new Chips(55), winEvent.Amount);
         Assert.IsType<StageIsFinishedEvent>(events[4]);
@@ -265,10 +265,10 @@ public class SettlementDealerTest
         Assert.Equal(playerC.Nickname, showEventC.Nickname);
         Assert.Equal(playerC.HoleCards, showEventC.Cards);
         Assert.Equal(comboC, showEventC.Combo);
-        var winEvent1 = Assert.IsType<WinIsCommittedEvent>(events[4]);
+        var winEvent1 = Assert.IsType<AwardIsCommittedEvent>(events[4]);
         Assert.Equal([playerA.Nickname], winEvent1.Nicknames);
         Assert.Equal(new Chips(2400), winEvent1.Amount);
-        var winEvent2 = Assert.IsType<WinIsCommittedEvent>(events[5]);
+        var winEvent2 = Assert.IsType<AwardIsCommittedEvent>(events[5]);
         Assert.Equal([playerC.Nickname], winEvent2.Nicknames);
         Assert.Equal(new Chips(200), winEvent2.Amount);
         Assert.IsType<StageIsFinishedEvent>(events[6]);

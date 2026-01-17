@@ -453,6 +453,11 @@ internal sealed class ParticipantSerializer : SerializerBase<Participant>
 
         context.Reader.ReadEndDocument();
 
-        return new Participant(nickname, seat, stack);
+        return new Participant
+        {
+            Nickname = nickname,
+            Seat = seat,
+            Stack = stack
+        };
     }
 }

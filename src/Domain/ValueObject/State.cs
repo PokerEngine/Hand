@@ -26,10 +26,17 @@ public readonly struct PotState
     public required Chips Ante { get; init; }
     public required List<BetState> CommittedBets { get; init; }
     public required List<BetState> UncommittedBets { get; init; }
+    public required List<AwardState> Awards { get; init; }
 }
 
 public readonly struct BetState
 {
     public required Nickname Nickname { get; init; }
+    public required Chips Amount { get; init; }
+}
+
+public readonly struct AwardState
+{
+    public required List<Nickname> Nicknames { get; init; }
     public required Chips Amount { get; init; }
 }

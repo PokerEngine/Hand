@@ -1,14 +1,14 @@
 using Domain.ValueObject;
-using System.Collections;
 
 namespace Domain.Entity;
 
 public class Pot
 {
     public Chips MinBet { get; }
-    public Chips Ante { get; private set; } = new(0);
-    private Bets CommittedBets { get; } = new();
-    private Bets UncommittedBets { get; } = new();
+    private Chips Ante { get; set; } = Chips.Zero;
+    private Bets CommittedBets { get; set; } = new();
+    private Bets UncommittedBets { get; set; } = new();
+    private List<Award> Awards { get; } = new();
 
     public Nickname? LastPostedNickname { get; private set; }
     public Nickname? LastRaisedNickname { get; private set; }
@@ -30,7 +30,7 @@ public class Pot
 
     public void PostBlind(Nickname nickname, Chips amount)
     {
-        UncommittedBets.Post(nickname, amount);
+        UncommittedBets = UncommittedBets.Post(nickname, amount);
 
         LastPostedNickname = nickname;
         LastRaisedNickname = nickname;
@@ -47,7 +47,7 @@ public class Pot
         var playerPosted = amount + UncommittedBets.GetAmountPostedBy(nickname);
         var maxPosted = UncommittedBets.GetMaxAmountPostedNotBy(nickname);
 
-        UncommittedBets.Post(nickname, amount);
+        UncommittedBets = UncommittedBets.Post(nickname, amount);
         LastPostedNickname = nickname;
         PostedUncommittedBetNicknames.Add(nickname);
 
@@ -60,7 +60,7 @@ public class Pot
 
     public void RefundBet(Nickname nickname, Chips amount)
     {
-        UncommittedBets.Refund(nickname, amount);
+        UncommittedBets = UncommittedBets.Refund(nickname, amount);
     }
 
     public void CommitBets()
@@ -70,8 +70,22 @@ public class Pot
         LastRaisedStep = MinBet;
         PostedUncommittedBetNicknames.Clear();
 
-        CommittedBets.MergeWith(UncommittedBets);
-        UncommittedBets.Clear();
+        CommittedBets += UncommittedBets;
+        UncommittedBets = new Bets();
+    }
+
+    public void WinSidePot(SidePot sidePot, HashSet<Nickname> winners)
+    {
+        var amount = sidePot.TotalAmount;
+        Ante -= sidePot.Ante;
+        CommittedBets -= sidePot.Bets;
+
+        var award = new Award
+        {
+            Winners = winners,
+            Amount = amount
+        };
+        Awards.Add(award);
     }
 
     public Chips GetUncommittedAmountPostedBy(Nickname nickname)
@@ -109,26 +123,24 @@ public class Pot
         return (null, new Chips(0));
     }
 
-    public IEnumerable<SidePot> CalculateSidePots(HashSet<Nickname> nicknames)
+    public IEnumerable<SidePot> CalculateSidePots(HashSet<Nickname> competitors)
     {
-        var deadAmount = Ante;
-        var totalBets = new Bets();
-        totalBets.MergeWith(CommittedBets);
-        totalBets.MergeWith(UncommittedBets);
+        var ante = Ante;
+        var totalBets = CommittedBets + UncommittedBets;
 
-        if (totalBets.TotalAmount.IsZero && !deadAmount.IsZero)
+        if (totalBets.TotalAmount.IsZero && !ante.IsZero)
         {
-            // Only ante is in the pot, should distribute between all players who didn't fold
-            yield return new SidePot(nicknames, deadAmount);
+            // Only ante is in the pot, should distribute between all competitors
+            yield return new SidePot(competitors, totalBets, ante);
             yield break;
         }
 
         while (!totalBets.TotalAmount.IsZero)
         {
-            var sidePotNicknames = new HashSet<Nickname>();
-            var sidePotAmount = deadAmount;
+            var sidePotBets = new Bets();
+            var sidePotCompetitors = new HashSet<Nickname>();
 
-            var edgeAmount = nicknames.Select(n => totalBets.GetAmountPostedBy(n)).Where(a => !a.IsZero).Min();
+            var edgeAmount = competitors.Select(n => totalBets.GetAmountPostedBy(n)).Where(a => !a.IsZero).Min();
 
             foreach (var (n, a) in totalBets)
             {
@@ -138,18 +150,18 @@ public class Pot
                 }
 
                 var amount = a < edgeAmount ? a : edgeAmount;
-                totalBets.Refund(n, amount);
-                sidePotAmount += amount;
+                totalBets = totalBets.Refund(n, amount);
+                sidePotBets = sidePotBets.Post(n, amount);
 
-                if (nicknames.Contains(n))
+                if (competitors.Contains(n))
                 {
-                    sidePotNicknames.Add(n);
+                    sidePotCompetitors.Add(n);
                 }
             }
 
-            yield return new SidePot(sidePotNicknames, sidePotAmount);
+            yield return new SidePot(sidePotCompetitors, sidePotBets, ante);
 
-            deadAmount = new Chips(0);
+            ante = new Chips(0);
         }
     }
 
@@ -159,85 +171,11 @@ public class Pot
         {
             Ante = Ante,
             CommittedBets = CommittedBets.Select(x => new BetState { Nickname = x.Key, Amount = x.Value }).ToList(),
-            UncommittedBets = UncommittedBets.Select(x => new BetState { Nickname = x.Key, Amount = x.Value }).ToList()
+            UncommittedBets = UncommittedBets.Select(x => new BetState { Nickname = x.Key, Amount = x.Value }).ToList(),
+            Awards = Awards.Select(x => new AwardState { Nicknames = x.Winners.ToList(), Amount = x.Amount }).ToList()
         };
     }
 
     public override string ToString() =>
         $"{GetType().Name}: {TotalAmount}";
-}
-
-internal class Bets : IEnumerable<KeyValuePair<Nickname, Chips>>
-{
-    private readonly Dictionary<Nickname, Chips> _mapping = new();
-    public Chips TotalAmount => _mapping.Values.Sum(x => x);
-
-    public Chips GetAmountPostedBy(Nickname nickname)
-    {
-        if (_mapping.TryGetValue(nickname, out var amount))
-        {
-            return amount;
-        }
-
-        return new Chips(0);
-    }
-
-    public Chips GetMaxAmountPostedNotBy(Nickname nickname)
-    {
-        var posted = _mapping.Where(kv => kv.Key != nickname).Select(kv => kv.Value).ToList();
-        return posted.Count > 0 ? posted.Max(x => x) : new Chips(0);
-    }
-
-    public Nickname? GetNicknamePostedMaxAmount()
-    {
-        if (_mapping.Count == 0)
-        {
-            return null;
-        }
-
-        var maxAmount = _mapping.Values.Max();
-        return _mapping.First(kv => kv.Value.Equals(maxAmount)).Key;
-    }
-
-    public void Post(Nickname nickname, Chips amount)
-    {
-        _mapping[nickname] = GetAmountPostedBy(nickname) + amount;
-    }
-
-    public void Refund(Nickname nickname, Chips amount)
-    {
-        if (amount > GetAmountPostedBy(nickname))
-        {
-            throw new InvalidOperationException("Cannot refund more than posted");
-        }
-
-        _mapping[nickname] = GetAmountPostedBy(nickname) - amount;
-    }
-
-    public void MergeWith(Bets other)
-    {
-        foreach (var (nickname, amount) in other._mapping)
-        {
-            Post(nickname, amount);
-        }
-    }
-
-    public void Clear()
-    {
-        _mapping.Clear();
-    }
-
-    public IEnumerator<KeyValuePair<Nickname, Chips>> GetEnumerator()
-    {
-        foreach (var pair in _mapping.OrderBy(pair => (pair.Value, pair.Key)))
-        {
-            yield return pair;
-        }
-    }
-
-    IEnumerator IEnumerable.GetEnumerator()
-        => GetEnumerator();
-
-    public override string ToString()
-        => $"{TotalAmount}: {_mapping.Keys}";
 }

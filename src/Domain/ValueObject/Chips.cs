@@ -10,6 +10,9 @@ public readonly struct Chips : IMinMaxValue<Chips>, IComparable<Chips>, IEquatab
     public static Chips MaxValue
         => new(int.MaxValue);
 
+    public static Chips Zero
+        => new(0);
+
     public bool IsZero => _amount == 0;
 
     private readonly int _amount;

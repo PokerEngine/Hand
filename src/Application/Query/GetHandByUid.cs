@@ -52,11 +52,18 @@ public readonly struct GetHandByUidPotStateResponse
     public required int Ante { get; init; }
     public required List<GetHandByUidBetStateResponse> CommittedBets { get; init; }
     public required List<GetHandByUidBetStateResponse> UncommittedBets { get; init; }
+    public required List<GetHandByUidAwardStateResponse> Awards { get; init; }
 }
 
 public readonly struct GetHandByUidBetStateResponse
 {
     public required string Nickname { get; init; }
+    public required int Amount { get; init; }
+}
+
+public readonly struct GetHandByUidAwardStateResponse
+{
+    public required List<string> Nicknames { get; init; }
     public required int Amount { get; init; }
 }
 
@@ -123,7 +130,8 @@ public class GetHandByUidHandler(
         {
             Ante = state.Ante,
             CommittedBets = state.CommittedBets.Select(SerializeBetState).ToList(),
-            UncommittedBets = state.UncommittedBets.Select(SerializeBetState).ToList()
+            UncommittedBets = state.UncommittedBets.Select(SerializeBetState).ToList(),
+            Awards = state.Awards.Select(SerializeAwardState).ToList()
         };
     }
 
@@ -132,6 +140,15 @@ public class GetHandByUidHandler(
         return new GetHandByUidBetStateResponse
         {
             Nickname = state.Nickname,
+            Amount = state.Amount
+        };
+    }
+
+    private GetHandByUidAwardStateResponse SerializeAwardState(AwardState state)
+    {
+        return new GetHandByUidAwardStateResponse
+        {
+            Nicknames = state.Nicknames.Select(x => x.ToString()).ToList(),
             Amount = state.Amount
         };
     }

@@ -242,6 +242,30 @@ public class PotTest
     }
 
     [Fact]
+    public void WinSidePot_ShouldWin()
+    {
+        // Arrange
+        var pot = CreatePot();
+        var nicknameA = new Nickname("Alice");
+        var nicknameB = new Nickname("Bobby");
+        pot.PostBlind(nicknameA, new Chips(5));
+        pot.PostBlind(nicknameB, new Chips(10));
+        pot.PostBet(nicknameA, new Chips(20)); // Raise 25
+        pot.RefundBet(nicknameA, new Chips(15));
+        pot.CommitBets();
+
+        // Act
+        var bets = new Bets()
+            .Post(nicknameA, new Chips(10))
+            .Post(nicknameB, new Chips(10));
+        var sidePot = new SidePot([nicknameA], bets, Chips.Zero);
+        pot.WinSidePot(sidePot, [nicknameA]);
+
+        // Assert
+        Assert.Equal(Chips.Zero, pot.TotalAmount);
+    }
+
+    [Fact]
     public void CalculateRefund_WhenAvailable_ShouldReturnRefund()
     {
         // Arrange
@@ -302,8 +326,8 @@ public class PotTest
 
         // Assert
         Assert.Single(sidePots);
-        Assert.Equal([nicknameB, nicknameC], sidePots[0].Nicknames);
-        Assert.Equal(new Chips(58), sidePots[0].Amount);
+        Assert.Equal([nicknameB, nicknameC], sidePots[0].Competitors);
+        Assert.Equal(new Chips(58), sidePots[0].TotalAmount);
     }
 
     [Fact]
@@ -332,10 +356,10 @@ public class PotTest
 
         // Assert
         Assert.Equal(2, sidePots.Count);
-        Assert.Equal([nicknameA, nicknameB, nicknameC], sidePots[0].Nicknames);
-        Assert.Equal(new Chips(2403), sidePots[0].Amount);
-        Assert.Equal([nicknameB, nicknameC], sidePots[1].Nicknames);
-        Assert.Equal(new Chips(200), sidePots[1].Amount);
+        Assert.Equal([nicknameA, nicknameB, nicknameC], sidePots[0].Competitors);
+        Assert.Equal(new Chips(2403), sidePots[0].TotalAmount);
+        Assert.Equal([nicknameB, nicknameC], sidePots[1].Competitors);
+        Assert.Equal(new Chips(200), sidePots[1].TotalAmount);
     }
 
     [Fact]
@@ -355,8 +379,8 @@ public class PotTest
 
         // Assert
         Assert.Single(sidePots);
-        Assert.Equal([nicknameA, nicknameB, nicknameC], sidePots[0].Nicknames);
-        Assert.Equal(new Chips(3), sidePots[0].Amount);
+        Assert.Equal([nicknameA, nicknameB, nicknameC], sidePots[0].Competitors);
+        Assert.Equal(new Chips(3), sidePots[0].TotalAmount);
     }
 
     [Fact]

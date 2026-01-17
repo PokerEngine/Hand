@@ -3,13 +3,13 @@ using Domain.Event;
 
 namespace Application.Event;
 
-public class WinIsCommittedEventHandler(
+public class AwardIsCommittedEventHandler(
     IIntegrationEventPublisher integrationEventPublisher
-) : IEventHandler<WinIsCommittedEvent>
+) : IEventHandler<AwardIsCommittedEvent>
 {
-    public async Task HandleAsync(WinIsCommittedEvent @event, EventContext context)
+    public async Task HandleAsync(AwardIsCommittedEvent @event, EventContext context)
     {
-        var integrationEvent = new WinIsCommittedIntegrationEvent
+        var integrationEvent = new AwardIsCommittedIntegrationEvent
         {
             HandUid = context.HandUid,
             TableUid = context.TableUid,
@@ -19,7 +19,7 @@ public class WinIsCommittedEventHandler(
             OccurredAt = @event.OccurredAt
         };
 
-        var routingKey = new IntegrationEventRoutingKey($"hand.{context.TableType.ToRoutingKey()}.win-is-committed");
+        var routingKey = new IntegrationEventRoutingKey($"hand.{context.TableType.ToRoutingKey()}.award-is-committed");
         await integrationEventPublisher.PublishAsync(integrationEvent, routingKey);
     }
 }

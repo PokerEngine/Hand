@@ -86,6 +86,11 @@ public class CreateHandHandler(
 
     private Participant DeserializeParticipant(ParticipantDto dto)
     {
-        return new Participant(dto.Nickname, dto.Seat, dto.Stack);
+        return new Participant
+        {
+            Nickname = dto.Nickname,
+            Seat = dto.Seat,
+            Stack = dto.Stack
+        };
     }
 }

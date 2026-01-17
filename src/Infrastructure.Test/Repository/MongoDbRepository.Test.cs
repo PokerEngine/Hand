@@ -33,9 +33,24 @@ public class MongoDbRepositoryTest(MongoDbFixture fixture) : IClassFixture<Mongo
                 Max = new Seat(6)
             },
             Participants = [
-                new Participant(new Nickname("Alice"), new Seat(1), new Chips(1000)),
-                new Participant(new Nickname("Bobby"), new Seat(2), new Chips(900)),
-                new Participant(new Nickname("Charlie"), new Seat(6), new Chips(800))
+                new()
+                {
+                    Nickname = new Nickname("Alice"),
+                    Seat = new Seat(1),
+                    Stack = new Chips(1000)
+                },
+                new()
+                {
+                    Nickname = new Nickname("Bobby"),
+                    Seat = new Seat(2),
+                    Stack = new Chips(900)
+                },
+                new()
+                {
+                    Nickname = new Nickname("Charlie"),
+                    Seat = new Seat(6),
+                    Stack = new Chips(800)
+                }
             ],
             Nickname = new Nickname("Alice"),
             Seat = new Seat(2),
@@ -79,9 +94,24 @@ public class MongoDbRepositoryTest(MongoDbFixture fixture) : IClassFixture<Mongo
                 Max = new Seat(6)
             },
             Participants = [
-                new Participant(new Nickname("Alice"), new Seat(1), new Chips(1000)),
-                new Participant(new Nickname("Bobby"), new Seat(2), new Chips(900)),
-                new Participant(new Nickname("Charlie"), new Seat(6), new Chips(800))
+                new()
+                {
+                    Nickname = new Nickname("Alice"),
+                    Seat = new Seat(1),
+                    Stack = new Chips(1000)
+                },
+                new()
+                {
+                    Nickname = new Nickname("Bobby"),
+                    Seat = new Seat(2),
+                    Stack = new Chips(900)
+                },
+                new()
+                {
+                    Nickname = new Nickname("Charlie"),
+                    Seat = new Seat(6),
+                    Stack = new Chips(800)
+                }
             ],
             Nickname = new Nickname("Alice"),
             Seat = new Seat(2),

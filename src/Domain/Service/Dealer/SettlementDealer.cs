@@ -65,7 +65,7 @@ public class SettlementDealer : IDealer
                 break;
             case HoleCardsAreShownEvent:
                 break;
-            case WinIsCommittedEvent:
+            case AwardIsCommittedEvent:
                 break;
             case StageIsStartedEvent:
                 break;
@@ -106,13 +106,16 @@ public class SettlementDealer : IDealer
         };
         yield return muckEvent;
 
-        var winEvent = new WinIsCommittedEvent
+        var sidePot = pot.CalculateSidePots([player.Nickname]).First();
+        pot.WinSidePot(sidePot, [player.Nickname]);
+
+        var awardEvent = new AwardIsCommittedEvent
         {
-            Nicknames = [player.Nickname],
-            Amount = pot.TotalAmount,
+            Nicknames = sidePot.Competitors.ToHashSet(),
+            Amount = sidePot.TotalAmount,
             OccurredAt = DateTime.Now
         };
-        yield return winEvent;
+        yield return awardEvent;
     }
 
     private IEnumerable<IEvent> WinAtShowdownWithAllIn(Table table, Pot pot, Rules rules, IEvaluator evaluator)
@@ -138,32 +141,34 @@ public class SettlementDealer : IDealer
 
         foreach (var sidePot in sidePots)
         {
-            var winningCombo = new Combo(ComboType.HighCard, 0);
-            var winningNicknames = new HashSet<Nickname>();
+            var winners = new HashSet<Nickname>();
+            var winnerCombo = new Combo(ComboType.HighCard, 0);
 
-            foreach (var nickname in sidePot.Nicknames)
+            foreach (var nickname in sidePot.Competitors)
             {
                 var combo = comboMapping[nickname];
 
-                if (combo.Weight == winningCombo.Weight)
+                if (combo.Weight == winnerCombo.Weight)
                 {
-                    winningNicknames.Add(nickname);
+                    winners.Add(nickname);
                 }
-                else if (combo.Weight > winningCombo.Weight)
+                else if (combo.Weight > winnerCombo.Weight)
                 {
-                    winningCombo = combo;
-                    winningNicknames.Clear();
-                    winningNicknames.Add(nickname);
+                    winnerCombo = combo;
+                    winners.Clear();
+                    winners.Add(nickname);
                 }
             }
 
-            var winEvent = new WinIsCommittedEvent
+            pot.WinSidePot(sidePot, winners);
+
+            var awardEvent = new AwardIsCommittedEvent
             {
-                Nicknames = winningNicknames,
-                Amount = sidePot.Amount,
+                Nicknames = winners,
+                Amount = sidePot.TotalAmount,
                 OccurredAt = DateTime.Now
             };
-            yield return winEvent;
+            yield return awardEvent;
         }
     }
 
@@ -173,14 +178,14 @@ public class SettlementDealer : IDealer
         var players = table.GetPlayersStartingFromSeat(startPlayer.Seat).Where(IsAvailable);
 
         // No all-in => no side pots
-        var winningCombo = new Combo(ComboType.HighCard, 0);
-        var winningNicknames = new HashSet<Nickname>();
+        var winnerCombo = new Combo(ComboType.HighCard, 0);
+        var winners = new HashSet<Nickname>();
 
         foreach (var player in players)
         {
             var combo = evaluator.Evaluate(rules.Game, table.BoardCards, player.HoleCards);
 
-            if (combo.Weight < winningCombo.Weight)
+            if (combo.Weight < winnerCombo.Weight)
             {
                 var muckEvent = new HoleCardsAreMuckedEvent
                 {
@@ -189,9 +194,9 @@ public class SettlementDealer : IDealer
                 };
                 yield return muckEvent;
             }
-            else if (combo.Weight == winningCombo.Weight)
+            else if (combo.Weight == winnerCombo.Weight)
             {
-                winningNicknames.Add(player.Nickname);
+                winners.Add(player.Nickname);
 
                 var showEvent = new HoleCardsAreShownEvent
                 {
@@ -202,11 +207,11 @@ public class SettlementDealer : IDealer
                 };
                 yield return showEvent;
             }
-            else if (combo.Weight > winningCombo.Weight)
+            else if (combo.Weight > winnerCombo.Weight)
             {
-                winningCombo = combo;
-                winningNicknames.Clear();
-                winningNicknames.Add(player.Nickname);
+                winnerCombo = combo;
+                winners.Clear();
+                winners.Add(player.Nickname);
 
                 var showEvent = new HoleCardsAreShownEvent
                 {
@@ -219,13 +224,16 @@ public class SettlementDealer : IDealer
             }
         }
 
-        var winEvent = new WinIsCommittedEvent
+        var sidePot = pot.CalculateSidePots(winners).First();
+        pot.WinSidePot(sidePot, winners);
+
+        var awardEvent = new AwardIsCommittedEvent
         {
-            Nicknames = winningNicknames,
-            Amount = pot.TotalAmount,
+            Nicknames = sidePot.Competitors.ToHashSet(),
+            Amount = sidePot.TotalAmount,
             OccurredAt = DateTime.Now
         };
-        yield return winEvent;
+        yield return awardEvent;
     }
 
     private Player GetStartPlayer(Table table, Pot pot)

@@ -1,6 +1,6 @@
 namespace Application.IntegrationEvent;
 
-public record struct WinIsCommittedIntegrationEvent : IIntegrationEvent
+public record struct AwardIsCommittedIntegrationEvent : IIntegrationEvent
 {
     public required Guid HandUid { get; init; }
     public required Guid TableUid { get; init; }

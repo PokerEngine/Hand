@@ -16,36 +16,42 @@ public class NoLimitHoldem6MaxHandTest
     {
         var handUid = new HandUid(Guid.NewGuid());
         var tableUid = new TableUid(Guid.NewGuid());
-        var participantSb = new Participant(
-            nickname: new Nickname("SmallBlind"),
-            seat: new Seat(1),
-            stack: new Chips(1000)
-        );
-        var participantBb = new Participant(
-            nickname: new Nickname("BigBlind"),
-            seat: new Seat(2),
-            stack: new Chips(900)
-        );
-        var participantEp = new Participant(
-            nickname: new Nickname("Early"),
-            seat: new Seat(3),
-            stack: new Chips(800)
-        );
-        var participantMp = new Participant(
-            nickname: new Nickname("Middle"),
-            seat: new Seat(4),
-            stack: new Chips(700)
-        );
-        var participantCo = new Participant(
-            nickname: new Nickname("CutOff"),
-            seat: new Seat(5),
-            stack: new Chips(600)
-        );
-        var participantBu = new Participant(
-            nickname: new Nickname("Button"),
-            seat: new Seat(6),
-            stack: new Chips(500)
-        );
+        var participantSb = new Participant
+        {
+            Nickname = new Nickname("SmallBlind"),
+            Seat = new Seat(1),
+            Stack = new Chips(1000)
+        };
+        var participantBb = new Participant
+        {
+            Nickname = new Nickname("BigBlind"),
+            Seat = new Seat(2),
+            Stack = new Chips(900)
+        };
+        var participantEp = new Participant
+        {
+            Nickname = new Nickname("Early"),
+            Seat = new Seat(3),
+            Stack = new Chips(800)
+        };
+        var participantMp = new Participant
+        {
+            Nickname = new Nickname("Middle"),
+            Seat = new Seat(4),
+            Stack = new Chips(700)
+        };
+        var participantCo = new Participant
+        {
+            Nickname = new Nickname("CutOff"),
+            Seat = new Seat(5),
+            Stack = new Chips(600)
+        };
+        var participantBu = new Participant
+        {
+            Nickname = new Nickname("Button"),
+            Seat = new Seat(6),
+            Stack = new Chips(500)
+        };
 
         var hand = Hand.FromScratch(
             uid: handUid,
@@ -102,21 +108,24 @@ public class NoLimitHoldem6MaxHandTest
     {
         var handUid = new HandUid(Guid.NewGuid());
         var tableUid = new TableUid(Guid.NewGuid());
-        var participantSb = new Participant(
-            nickname: new Nickname("SmallBlind"),
-            seat: new Seat(1),
-            stack: new Chips(1000)
-        );
-        var participantBb = new Participant(
-            nickname: new Nickname("BigBlind"),
-            seat: new Seat(2),
-            stack: new Chips(900)
-        );
-        var participantBu = new Participant(
-            nickname: new Nickname("Button"),
-            seat: new Seat(6),
-            stack: new Chips(800)
-        );
+        var participantSb = new Participant
+        {
+            Nickname = new Nickname("SmallBlind"),
+            Seat = new Seat(1),
+            Stack = new Chips(1000)
+        };
+        var participantBb = new Participant
+        {
+            Nickname = new Nickname("BigBlind"),
+            Seat = new Seat(2),
+            Stack = new Chips(900)
+        };
+        var participantBu = new Participant
+        {
+            Nickname = new Nickname("Button"),
+            Seat = new Seat(6),
+            Stack = new Chips(800)
+        };
 
         var events = new List<IEvent>
         {
@@ -374,7 +383,7 @@ public class NoLimitHoldem6MaxHandTest
                 Nickname = participantBu.Nickname,
                 OccurredAt = new DateTime(2025, 1, 1)
             },
-            new WinIsCommittedEvent
+            new AwardIsCommittedEvent
             {
                 Nicknames = [participantBu.Nickname],
                 Amount = new Chips(55),
@@ -502,6 +511,7 @@ public class NoLimitHoldem6MaxHandTest
         Assert.Equal(new Chips(0), state.Pot.UncommittedBets[0].Amount);
         Assert.Equal(new Nickname("Button"), state.Pot.UncommittedBets[1].Nickname);
         Assert.Equal(new Chips(15), state.Pot.UncommittedBets[1].Amount);
+        Assert.Empty(state.Pot.Awards);
     }
 
     [Fact]
@@ -640,7 +650,7 @@ public class NoLimitHoldem6MaxHandTest
         Assert.IsType<StageIsStartedEvent>(events[11]);
         var event13f = Assert.IsType<HoleCardsAreMuckedEvent>(events[12]);
         Assert.Equal(new Nickname("Button"), event13f.Nickname);
-        var event14f = Assert.IsType<WinIsCommittedEvent>(events[13]);
+        var event14f = Assert.IsType<AwardIsCommittedEvent>(events[13]);
         Assert.Equal([new Nickname("Button")], event14f.Nicknames);
         Assert.Equal(new Chips(55), event14f.Amount);
         Assert.IsType<StageIsFinishedEvent>(events[14]);
@@ -769,7 +779,7 @@ public class NoLimitHoldem6MaxHandTest
         Assert.IsType<StageIsStartedEvent>(events[11]);
         var event13e = Assert.IsType<HoleCardsAreMuckedEvent>(events[12]);
         Assert.Equal(new Nickname("SmallBlind"), event13e.Nickname);
-        var event14e = Assert.IsType<WinIsCommittedEvent>(events[13]);
+        var event14e = Assert.IsType<AwardIsCommittedEvent>(events[13]);
         Assert.Equal([new Nickname("SmallBlind")], event14e.Nicknames);
         Assert.Equal(new Chips(50), event14e.Amount);
         Assert.IsType<StageIsFinishedEvent>(events[14]);
@@ -811,11 +821,12 @@ public class NoLimitHoldem6MaxHandTest
 
     private Participant CreateParticipant(string nickname, int seat, int stack = 1000)
     {
-        return new Participant(
-            nickname: new Nickname(nickname),
-            seat: new Seat(seat),
-            stack: new Chips(stack)
-        );
+        return new Participant
+        {
+            Nickname = new Nickname(nickname),
+            Seat = new Seat(seat),
+            Stack = new Chips(stack)
+        };
     }
 }
 
@@ -829,51 +840,60 @@ public class NoLimitHoldem9MaxHandTest
     {
         var handUid = new HandUid(Guid.NewGuid());
         var tableUid = new TableUid(Guid.NewGuid());
-        var participantSb = new Participant(
-            nickname: new Nickname("SmallBlind"),
-            seat: new Seat(1),
-            stack: new Chips(1000)
-        );
-        var participantBb = new Participant(
-            nickname: new Nickname("BigBlind"),
-            seat: new Seat(2),
-            stack: new Chips(900)
-        );
-        var participantUtg1 = new Participant(
-            nickname: new Nickname("UnderTheGun1"),
-            seat: new Seat(3),
-            stack: new Chips(800)
-        );
-        var participantUtg2 = new Participant(
-            nickname: new Nickname("UnderTheGun2"),
-            seat: new Seat(4),
-            stack: new Chips(700)
-        );
-        var participantUtg3 = new Participant(
-            nickname: new Nickname("UnderTheGun3"),
-            seat: new Seat(5),
-            stack: new Chips(600)
-        );
-        var participantEp = new Participant(
-            nickname: new Nickname("Early"),
-            seat: new Seat(6),
-            stack: new Chips(500)
-        );
-        var participantMp = new Participant(
-            nickname: new Nickname("Middle"),
-            seat: new Seat(7),
-            stack: new Chips(400)
-        );
-        var participantCo = new Participant(
-            nickname: new Nickname("CutOff"),
-            seat: new Seat(8),
-            stack: new Chips(300)
-        );
-        var participantBu = new Participant(
-            nickname: new Nickname("Button"),
-            seat: new Seat(9),
-            stack: new Chips(200)
-        );
+        var participantSb = new Participant
+        {
+            Nickname = new Nickname("SmallBlind"),
+            Seat = new Seat(1),
+            Stack = new Chips(1000)
+        };
+        var participantBb = new Participant
+        {
+            Nickname = new Nickname("BigBlind"),
+            Seat = new Seat(2),
+            Stack = new Chips(900)
+        };
+        var participantUtg1 = new Participant
+        {
+            Nickname = new Nickname("UnderTheGun1"),
+            Seat = new Seat(3),
+            Stack = new Chips(800)
+        };
+        var participantUtg2 = new Participant
+        {
+            Nickname = new Nickname("UnderTheGun2"),
+            Seat = new Seat(4),
+            Stack = new Chips(700)
+        };
+        var participantUtg3 = new Participant
+        {
+            Nickname = new Nickname("UnderTheGun3"),
+            Seat = new Seat(5),
+            Stack = new Chips(600)
+        };
+        var participantEp = new Participant
+        {
+            Nickname = new Nickname("Early"),
+            Seat = new Seat(6),
+            Stack = new Chips(500)
+        };
+        var participantMp = new Participant
+        {
+            Nickname = new Nickname("Middle"),
+            Seat = new Seat(7),
+            Stack = new Chips(400)
+        };
+        var participantCo = new Participant
+        {
+            Nickname = new Nickname("CutOff"),
+            Seat = new Seat(8),
+            Stack = new Chips(300)
+        };
+        var participantBu = new Participant
+        {
+            Nickname = new Nickname("Button"),
+            Seat = new Seat(9),
+            Stack = new Chips(200)
+        };
 
         var hand = Hand.FromScratch(
             uid: handUid,
@@ -937,36 +957,42 @@ public class PotLimitOmaha6MaxHandTest
     {
         var handUid = new HandUid(Guid.NewGuid());
         var tableUid = new TableUid(Guid.NewGuid());
-        var participantSb = new Participant(
-            nickname: new Nickname("SmallBlind"),
-            seat: new Seat(1),
-            stack: new Chips(1000)
-        );
-        var participantBb = new Participant(
-            nickname: new Nickname("BigBlind"),
-            seat: new Seat(2),
-            stack: new Chips(900)
-        );
-        var participantEp = new Participant(
-            nickname: new Nickname("Early"),
-            seat: new Seat(3),
-            stack: new Chips(800)
-        );
-        var participantMp = new Participant(
-            nickname: new Nickname("Middle"),
-            seat: new Seat(4),
-            stack: new Chips(700)
-        );
-        var participantCo = new Participant(
-            nickname: new Nickname("CutOff"),
-            seat: new Seat(5),
-            stack: new Chips(600)
-        );
-        var participantBu = new Participant(
-            nickname: new Nickname("Button"),
-            seat: new Seat(6),
-            stack: new Chips(500)
-        );
+        var participantSb = new Participant
+        {
+            Nickname = new Nickname("SmallBlind"),
+            Seat = new Seat(1),
+            Stack = new Chips(1000)
+        };
+        var participantBb = new Participant
+        {
+            Nickname = new Nickname("BigBlind"),
+            Seat = new Seat(2),
+            Stack = new Chips(900)
+        };
+        var participantEp = new Participant
+        {
+            Nickname = new Nickname("Early"),
+            Seat = new Seat(3),
+            Stack = new Chips(800)
+        };
+        var participantMp = new Participant
+        {
+            Nickname = new Nickname("Middle"),
+            Seat = new Seat(4),
+            Stack = new Chips(700)
+        };
+        var participantCo = new Participant
+        {
+            Nickname = new Nickname("CutOff"),
+            Seat = new Seat(5),
+            Stack = new Chips(600)
+        };
+        var participantBu = new Participant
+        {
+            Nickname = new Nickname("Button"),
+            Seat = new Seat(6),
+            Stack = new Chips(500)
+        };
 
         var hand = Hand.FromScratch(
             uid: handUid,
@@ -1027,51 +1053,60 @@ public class PotLimitOmaha9MaxHandTest
     {
         var handUid = new HandUid(Guid.NewGuid());
         var tableUid = new TableUid(Guid.NewGuid());
-        var participantSb = new Participant(
-            nickname: new Nickname("SmallBlind"),
-            seat: new Seat(1),
-            stack: new Chips(1000)
-        );
-        var participantBb = new Participant(
-            nickname: new Nickname("BigBlind"),
-            seat: new Seat(2),
-            stack: new Chips(900)
-        );
-        var participantUtg1 = new Participant(
-            nickname: new Nickname("UnderTheGun1"),
-            seat: new Seat(3),
-            stack: new Chips(800)
-        );
-        var participantUtg2 = new Participant(
-            nickname: new Nickname("UnderTheGun2"),
-            seat: new Seat(4),
-            stack: new Chips(700)
-        );
-        var participantUtg3 = new Participant(
-            nickname: new Nickname("UnderTheGun3"),
-            seat: new Seat(5),
-            stack: new Chips(600)
-        );
-        var participantEp = new Participant(
-            nickname: new Nickname("Early"),
-            seat: new Seat(6),
-            stack: new Chips(500)
-        );
-        var participantMp = new Participant(
-            nickname: new Nickname("Middle"),
-            seat: new Seat(7),
-            stack: new Chips(400)
-        );
-        var participantCo = new Participant(
-            nickname: new Nickname("CutOff"),
-            seat: new Seat(8),
-            stack: new Chips(300)
-        );
-        var participantBu = new Participant(
-            nickname: new Nickname("Button"),
-            seat: new Seat(9),
-            stack: new Chips(200)
-        );
+        var participantSb = new Participant
+        {
+            Nickname = new Nickname("SmallBlind"),
+            Seat = new Seat(1),
+            Stack = new Chips(1000)
+        };
+        var participantBb = new Participant
+        {
+            Nickname = new Nickname("BigBlind"),
+            Seat = new Seat(2),
+            Stack = new Chips(900)
+        };
+        var participantUtg1 = new Participant
+        {
+            Nickname = new Nickname("UnderTheGun1"),
+            Seat = new Seat(3),
+            Stack = new Chips(800)
+        };
+        var participantUtg2 = new Participant
+        {
+            Nickname = new Nickname("UnderTheGun2"),
+            Seat = new Seat(4),
+            Stack = new Chips(700)
+        };
+        var participantUtg3 = new Participant
+        {
+            Nickname = new Nickname("UnderTheGun3"),
+            Seat = new Seat(5),
+            Stack = new Chips(600)
+        };
+        var participantEp = new Participant
+        {
+            Nickname = new Nickname("Early"),
+            Seat = new Seat(6),
+            Stack = new Chips(500)
+        };
+        var participantMp = new Participant
+        {
+            Nickname = new Nickname("Middle"),
+            Seat = new Seat(7),
+            Stack = new Chips(400)
+        };
+        var participantCo = new Participant
+        {
+            Nickname = new Nickname("CutOff"),
+            Seat = new Seat(8),
+            Stack = new Chips(300)
+        };
+        var participantBu = new Participant
+        {
+            Nickname = new Nickname("Button"),
+            Seat = new Seat(9),
+            Stack = new Chips(200)
+        };
 
         var hand = Hand.FromScratch(
             uid: handUid,

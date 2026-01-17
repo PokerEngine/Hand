@@ -2,18 +2,24 @@ namespace Domain.ValueObject;
 
 public readonly struct SidePot : IEquatable<SidePot>
 {
-    public readonly IReadOnlySet<Nickname> Nicknames;
-    public readonly Chips Amount;
+    public readonly IReadOnlySet<Nickname> Competitors;
+    public readonly Bets Bets;
+    public readonly Chips Ante;
+    public Chips TotalAmount => Ante + Bets.TotalAmount;
 
-    public SidePot(HashSet<Nickname> nicknames, Chips amount)
+    public SidePot(HashSet<Nickname> competitors, Bets bets, Chips ante)
     {
-        Nicknames = nicknames;
-        Amount = amount;
+        Competitors = competitors;
+        Bets = bets;
+        Ante = ante;
     }
 
     public bool Equals(SidePot other)
-        => Nicknames.Equals(other.Nicknames) && Amount.Equals(other.Amount);
+        => Competitors.Equals(other.Competitors) && Bets.Equals(other.Bets) && Ante.Equals(other.Ante);
 
     public override string ToString()
-        => $"{Amount}: {Nicknames}";
+    {
+        var str = String.Join(", ", Competitors);
+        return $"{TotalAmount}: {{{str}}}";
+    }
 }

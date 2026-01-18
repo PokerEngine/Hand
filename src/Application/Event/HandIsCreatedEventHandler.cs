@@ -12,6 +12,8 @@ public class HandIsCreatedEventHandler(
     {
         var integrationEvent = new HandIsCreatedIntegrationEvent
         {
+            Uid = Guid.NewGuid(),
+            OccurredAt = @event.OccurredAt,
             HandUid = context.HandUid,
             TableUid = context.TableUid,
             TableType = context.TableType.ToString(),
@@ -22,8 +24,7 @@ public class HandIsCreatedEventHandler(
             SmallBlindSeat = @event.Positions.SmallBlind,
             BigBlindSeat = @event.Positions.BigBlind,
             ButtonSeat = @event.Positions.Button,
-            Participants = @event.Participants.Select(SerializeParticipant).ToList(),
-            OccurredAt = @event.OccurredAt
+            Participants = @event.Participants.Select(SerializeParticipant).ToList()
         };
 
         var routingKey = new IntegrationEventRoutingKey($"hand.{context.TableType.ToRoutingKey()}.hand-is-created");

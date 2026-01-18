@@ -11,12 +11,13 @@ public class RefundIsCommittedEventHandler(
     {
         var integrationEvent = new RefundIsCommittedIntegrationEvent
         {
+            Uid = Guid.NewGuid(),
+            OccurredAt = @event.OccurredAt,
             HandUid = context.HandUid,
             TableUid = context.TableUid,
             TableType = context.TableType.ToString(),
             Nickname = @event.Nickname,
-            Amount = @event.Amount,
-            OccurredAt = @event.OccurredAt
+            Amount = @event.Amount
         };
 
         var routingKey = new IntegrationEventRoutingKey($"hand.{context.TableType.ToRoutingKey()}.refund-is-committed");

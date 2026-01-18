@@ -22,14 +22,18 @@ public class RabbitMqIntegrationEventPublisherTest(
     private const string QueueName = "test.integration-event-publisher-queue";
     private const string RoutingKey = "test.integration-event-publisher-routing-key";
 
-    [Fact]
-    public async Task PublishAsync_WhenConnected_ShouldPublishIntegrationEvent()
+    [Theory]
+    [InlineData(true)]
+    [InlineData(false)]
+    public async Task PublishAsync_WhenConnected_ShouldPublishIntegrationEvent(bool withCorrelationId)
     {
         // Arrange
         var publisher = CreateIntegrationEventPublisher();
 
-        var integrationEvent = new TestIntegrationEvent
+        var integrationEvent = new TestPublishedIntegrationEvent
         {
+            Uid = Guid.NewGuid(),
+            CorrelationUid = withCorrelationId ? Guid.NewGuid() : null,
             HandUid = Guid.NewGuid(),
             TableUid = Guid.NewGuid(),
             TableType = "Cash",
@@ -75,7 +79,7 @@ public class RabbitMqIntegrationEventPublisherTest(
 
         var body = Encoding.UTF8.GetString(received.Body.Span);
         var publishedEvent =
-            JsonSerializer.Deserialize<TestIntegrationEvent>(body, new JsonSerializerOptions
+            JsonSerializer.Deserialize<TestPublishedIntegrationEvent>(body, new JsonSerializerOptions
             {
                 PropertyNamingPolicy = JsonNamingPolicy.CamelCase
             }
@@ -84,7 +88,7 @@ public class RabbitMqIntegrationEventPublisherTest(
         Assert.NotNull(publishedEvent);
         Assert.Equal(integrationEvent, publishedEvent);
         Assert.Equal("application/json", received.BasicProperties.ContentType);
-        Assert.Equal(nameof(TestIntegrationEvent), received.BasicProperties.Type);
+        Assert.Equal(nameof(TestPublishedIntegrationEvent), received.BasicProperties.Type);
         Assert.Equal(
             integrationEvent.OccurredAt,
             DateTimeOffset.FromUnixTimeSeconds(received.BasicProperties.Timestamp.UnixTime).UtcDateTime
@@ -170,42 +174,52 @@ public class RabbitMqIntegrationEventPublisherTest(
     }
 }
 
-internal record TestIntegrationEvent : IIntegrationEvent
+internal record TestPublishedIntegrationEvent : IIntegrationEvent
 {
+    public required Guid Uid { get; init; }
+    public Guid? CorrelationUid { get; init; }
+    public required DateTime OccurredAt { get; init; }
+
     public required Guid HandUid { get; init; }
     public required Guid TableUid { get; init; }
     public required string TableType { get; init; }
+
     public required string Name { get; init; }
     public required int Number { get; init; }
     public required List<IntegrationEventParticipant> Participants { get; init; }
-    public required DateTime OccurredAt { get; init; }
 
-    public virtual bool Equals(TestIntegrationEvent? other)
+    public virtual bool Equals(TestPublishedIntegrationEvent? other)
     {
         if (other is null)
         {
             return false;
         }
 
-        return HandUid.Equals(other.HandUid)
+        return Uid.Equals(other.Uid)
+               && CorrelationUid.Equals(other.CorrelationUid)
+               && OccurredAt.Equals(other.OccurredAt)
+               && HandUid.Equals(other.HandUid)
                && TableUid.Equals(other.TableUid)
                && TableType.Equals(other.TableType)
                && Name.Equals(other.Name)
                && Number.Equals(other.Number)
-               && Participants.SequenceEqual(other.Participants)
-               && OccurredAt.Equals(other.OccurredAt);
+               && Participants.SequenceEqual(other.Participants);
     }
 
     public override int GetHashCode()
     {
         var hash = new HashCode();
 
+        hash.Add(Uid);
+        hash.Add(CorrelationUid);
+        hash.Add(OccurredAt);
+
         hash.Add(HandUid);
         hash.Add(TableUid);
         hash.Add(TableType);
+
         hash.Add(Name);
         hash.Add(Number);
-        hash.Add(OccurredAt);
 
         foreach (var participant in Participants)
         {

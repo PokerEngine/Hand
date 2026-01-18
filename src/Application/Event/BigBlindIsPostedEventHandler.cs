@@ -11,6 +11,7 @@ public class BigBlindIsPostedEventHandler(
     {
         var integrationEvent = new BlindIsPostedIntegrationEvent
         {
+            Uid = Guid.NewGuid(),
             HandUid = context.HandUid,
             TableUid = context.TableUid,
             TableType = context.TableType.ToString(),

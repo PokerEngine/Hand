@@ -11,14 +11,15 @@ public class HoleCardsAreShownEventHandler(
     {
         var integrationEvent = new HoleCardsAreShownIntegrationEvent
         {
+            Uid = Guid.NewGuid(),
+            OccurredAt = @event.OccurredAt,
             HandUid = context.HandUid,
             TableUid = context.TableUid,
             TableType = context.TableType.ToString(),
             Nickname = @event.Nickname,
             Cards = @event.Cards.ToString(),
             ComboType = @event.Combo.Type.ToString(),
-            ComboWeight = @event.Combo.Weight,
-            OccurredAt = @event.OccurredAt
+            ComboWeight = @event.Combo.Weight
         };
 
         var routingKey = new IntegrationEventRoutingKey($"hand.{context.TableType.ToRoutingKey()}.hole-cards-are-shown");

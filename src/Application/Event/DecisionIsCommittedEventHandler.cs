@@ -11,13 +11,14 @@ public class DecisionIsCommittedEventHandler(
     {
         var integrationEvent = new DecisionIsCommittedIntegrationEvent()
         {
+            Uid = Guid.NewGuid(),
+            OccurredAt = @event.OccurredAt,
             HandUid = context.HandUid,
             TableUid = context.TableUid,
             TableType = context.TableType.ToString(),
             Nickname = @event.Nickname,
             DecisionType = @event.Decision.Type.ToString(),
-            DecisionAmount = @event.Decision.Amount,
-            OccurredAt = @event.OccurredAt
+            DecisionAmount = @event.Decision.Amount
         };
 
         var routingKey = new IntegrationEventRoutingKey($"hand.{context.TableType.ToRoutingKey()}.decision-is-committed");

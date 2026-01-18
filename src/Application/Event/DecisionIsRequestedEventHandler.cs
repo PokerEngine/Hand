@@ -11,6 +11,8 @@ public class DecisionIsRequestedEventHandler(
     {
         var integrationEvent = new DecisionIsRequestedIntegrationEvent
         {
+            Uid = Guid.NewGuid(),
+            OccurredAt = @event.OccurredAt,
             HandUid = context.HandUid,
             TableUid = context.TableUid,
             TableType = context.TableType.ToString(),
@@ -21,8 +23,7 @@ public class DecisionIsRequestedEventHandler(
             CallToAmount = @event.CallToAmount,
             RaiseIsAvailable = @event.RaiseIsAvailable,
             MinRaiseToAmount = @event.MinRaiseToAmount,
-            MaxRaiseToAmount = @event.MaxRaiseToAmount,
-            OccurredAt = @event.OccurredAt
+            MaxRaiseToAmount = @event.MaxRaiseToAmount
         };
 
         var routingKey = new IntegrationEventRoutingKey($"hand.{context.TableType.ToRoutingKey()}.decision-is-requested");

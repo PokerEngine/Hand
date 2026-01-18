@@ -11,11 +11,12 @@ public class BoardCardsAreDealtEventHandler(
     {
         var integrationEvent = new BoardCardsAreDealtIntegrationEvent
         {
+            Uid = Guid.NewGuid(),
+            OccurredAt = @event.OccurredAt,
             HandUid = context.HandUid,
             TableUid = context.TableUid,
             TableType = context.TableType.ToString(),
-            Cards = @event.Cards.ToString(),
-            OccurredAt = @event.OccurredAt
+            Cards = @event.Cards.ToString()
         };
 
         var routingKey = new IntegrationEventRoutingKey($"hand.{context.TableType.ToRoutingKey()}.board-cards-are-dealt");

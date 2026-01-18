@@ -11,10 +11,11 @@ public class HandIsStartedEventHandler(
     {
         var integrationEvent = new HandIsStartedIntegrationEvent
         {
+            Uid = Guid.NewGuid(),
+            OccurredAt = @event.OccurredAt,
             HandUid = context.HandUid,
             TableUid = context.TableUid,
-            TableType = context.TableType.ToString(),
-            OccurredAt = @event.OccurredAt
+            TableType = context.TableType.ToString()
         };
 
         var routingKey = new IntegrationEventRoutingKey($"hand.{context.TableType.ToRoutingKey()}.hand-is-started");

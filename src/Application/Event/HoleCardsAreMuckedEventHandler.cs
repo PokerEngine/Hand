@@ -11,11 +11,12 @@ public class HoleCardsAreMuckedEventHandler(
     {
         var integrationEvent = new HoleCardsAreMuckedIntegrationEvent()
         {
+            Uid = Guid.NewGuid(),
+            OccurredAt = @event.OccurredAt,
             HandUid = context.HandUid,
             TableUid = context.TableUid,
             TableType = context.TableType.ToString(),
-            Nickname = @event.Nickname,
-            OccurredAt = @event.OccurredAt
+            Nickname = @event.Nickname
         };
 
         var routingKey = new IntegrationEventRoutingKey($"hand.{context.TableType.ToRoutingKey()}.hole-cards-are-mucked");

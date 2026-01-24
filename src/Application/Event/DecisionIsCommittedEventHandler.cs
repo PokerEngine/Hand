@@ -9,7 +9,7 @@ public class DecisionIsCommittedEventHandler(
 {
     public async Task HandleAsync(DecisionIsCommittedEvent @event, EventContext context)
     {
-        var integrationEvent = new DecisionIsCommittedIntegrationEvent()
+        var integrationEvent = new DecisionIsCommittedIntegrationEvent
         {
             Uid = Guid.NewGuid(),
             OccurredAt = @event.OccurredAt,
@@ -17,8 +17,8 @@ public class DecisionIsCommittedEventHandler(
             TableUid = context.TableUid,
             TableType = context.TableType.ToString(),
             Nickname = @event.Nickname,
-            DecisionType = @event.Decision.Type.ToString(),
-            DecisionAmount = @event.Decision.Amount
+            Type = @event.Decision.Type.ToString(),
+            Amount = @event.Decision.Amount
         };
 
         var routingKey = new IntegrationEventRoutingKey($"hand.{context.TableType.ToRoutingKey()}.decision-is-committed");

@@ -22,12 +22,12 @@ public class CommitDecisionTest
         await StartHandAsync(handUid, repository, eventDispatcher, randomizer, evaluator);
         await eventDispatcher.ClearDispatchedEventsAsync(handUid);
 
-        var command = new CommitDecisionCommand()
+        var command = new CommitDecisionCommand
         {
             Uid = handUid,
             Nickname = "Charlie",
-            DecisionType = "RaiseTo",
-            DecisionAmount = 25,
+            Type = "RaiseTo",
+            Amount = 25,
         };
         var handler = new CommitDecisionHandler(repository, eventDispatcher, randomizer, evaluator);
 

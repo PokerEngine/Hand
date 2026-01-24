@@ -205,7 +205,7 @@ public abstract class BaseBettingDealer : IDealer
         var previousPlayer = GetPreviousPlayer(table, pot);
         var nextPlayer = previousPlayer is null ? GetStartPlayer(table) : GetNextPlayer(table, previousPlayer);
 
-        if (nextPlayer is null || !DecisionIsExpected(nextPlayer, pot))
+        if (!EnoughPlayers(table) || nextPlayer is null || !DecisionIsExpected(nextPlayer, pot))
         {
             foreach (var @event in Finish(table, pot))
             {

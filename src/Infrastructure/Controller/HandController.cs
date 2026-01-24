@@ -59,8 +59,8 @@ public class HandController(
         {
             Uid = uid,
             Nickname = nickname,
-            DecisionType = request.DecisionType,
-            DecisionAmount = request.DecisionAmount
+            Type = request.Type,
+            Amount = request.Amount
         };
         var response = await commandDispatcher.DispatchAsync<CommitDecisionCommand, CommitDecisionResponse>(command);
         return Ok(response);
@@ -111,6 +111,6 @@ public record struct RequestParticipant
 
 public record struct CommitDecisionRequest
 {
-    public required string DecisionType { get; init; }
-    public required int DecisionAmount { get; init; }
+    public required string Type { get; init; }
+    public required int Amount { get; init; }
 }

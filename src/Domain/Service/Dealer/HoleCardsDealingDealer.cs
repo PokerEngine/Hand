@@ -58,7 +58,7 @@ public class HoleCardsDealingDealer(int count) : IDealer
         var @event = new HoleCardsAreDealtEvent
         {
             Nickname = player.Nickname,
-            Cards = player.HoleCards,
+            Cards = cards,
             OccurredAt = DateTime.Now
         };
         return @event;

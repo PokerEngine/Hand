@@ -47,7 +47,7 @@ public class BoardCardsDealingDealer(int count) : IDealer
 
         var @event = new BoardCardsAreDealtEvent
         {
-            Cards = table.BoardCards,
+            Cards = cards,
             OccurredAt = DateTime.Now
         };
         return @event;

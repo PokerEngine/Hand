@@ -556,10 +556,13 @@ public class NoLimitHoldem6MaxHandTest
         Assert.IsType<StageIsStartedEvent>(events[6]);
         var event8 = Assert.IsType<HoleCardsAreDealtEvent>(events[7]);
         Assert.Equal(new Nickname("SmallBlind"), event8.Nickname);
+        Assert.Equal(2, event8.Cards.Count);
         var event9 = Assert.IsType<HoleCardsAreDealtEvent>(events[8]);
         Assert.Equal(new Nickname("BigBlind"), event9.Nickname);
+        Assert.Equal(2, event9.Cards.Count);
         var event10 = Assert.IsType<HoleCardsAreDealtEvent>(events[9]);
         Assert.Equal(new Nickname("Button"), event10.Nickname);
+        Assert.Equal(2, event10.Cards.Count);
         Assert.IsType<StageIsFinishedEvent>(events[10]);
         Assert.IsType<StageIsStartedEvent>(events[11]);
         var event13 = Assert.IsType<DecisionIsRequestedEvent>(events[12]);
@@ -600,7 +603,8 @@ public class NoLimitHoldem6MaxHandTest
         Assert.Equal(new Nickname("BigBlind"), event1c.Nickname);
         Assert.IsType<StageIsFinishedEvent>(events[1]);
         Assert.IsType<StageIsStartedEvent>(events[2]);
-        Assert.IsType<BoardCardsAreDealtEvent>(events[3]);
+        var event4c = Assert.IsType<BoardCardsAreDealtEvent>(events[3]);
+        Assert.Equal(3, event4c.Cards.Count);
         Assert.IsType<StageIsFinishedEvent>(events[4]);
         Assert.IsType<StageIsStartedEvent>(events[5]);
         var event7c = Assert.IsType<DecisionIsRequestedEvent>(events[6]);
@@ -659,6 +663,74 @@ public class NoLimitHoldem6MaxHandTest
         Assert.Equal(new Chips(55), event14f.Amount);
         Assert.IsType<StageIsFinishedEvent>(events[14]);
         Assert.IsType<HandIsFinishedEvent>(events[15]);
+    }
+
+    [Fact]
+    public void TestFlowPreflopFold()
+    {
+        var participantSb = CreateParticipant(
+            nickname: "SmallBlind",
+            seat: 6
+        );
+        var participantBb = CreateParticipant(
+            nickname: "BigBlind",
+            seat: 2
+        );
+        var participantBu = CreateParticipant(
+            nickname: "Button",
+            seat: 4
+        );
+
+        var hand = CreateHand(
+            participants: [participantSb, participantBb, participantBu],
+            smallBlindSeat: 6,
+            bigBlindSeat: 2,
+            buttonSeat: 4
+        );
+        hand.Start();
+
+        var events = hand.PullEvents();
+        Assert.Equal(13, events.Count);
+
+        hand.CommitDecision(
+            nickname: new Nickname("Button"),
+            decision: new Decision(DecisionType.Fold, new Chips(0))
+        );
+
+        events = hand.PullEvents();
+        Assert.Equal(2, events.Count);
+
+        hand.CommitDecision(
+            nickname: new Nickname("SmallBlind"),
+            decision: new Decision(DecisionType.Fold, new Chips(0))
+        );
+
+        events = hand.PullEvents();
+        Assert.Equal(20, events.Count);
+
+        Assert.IsType<DecisionIsCommittedEvent>(events[0]);
+        var event2 = Assert.IsType<RefundIsCommittedEvent>(events[1]);
+        Assert.Equal(new Chips(5), event2.Amount);
+        Assert.IsType<StageIsFinishedEvent>(events[2]);
+        Assert.IsType<StageIsStartedEvent>(events[3]);
+        Assert.IsType<StageIsFinishedEvent>(events[4]);
+        Assert.IsType<StageIsStartedEvent>(events[5]);
+        Assert.IsType<StageIsFinishedEvent>(events[6]);
+        Assert.IsType<StageIsStartedEvent>(events[7]);
+        Assert.IsType<StageIsFinishedEvent>(events[8]);
+        Assert.IsType<StageIsStartedEvent>(events[9]);
+        Assert.IsType<StageIsFinishedEvent>(events[10]);
+        Assert.IsType<StageIsStartedEvent>(events[11]);
+        Assert.IsType<StageIsFinishedEvent>(events[12]);
+        Assert.IsType<StageIsStartedEvent>(events[13]);
+        Assert.IsType<StageIsFinishedEvent>(events[14]);
+        Assert.IsType<StageIsStartedEvent>(events[15]);
+        Assert.IsType<HoleCardsAreMuckedEvent>(events[16]);
+        var event18 = Assert.IsType<AwardIsCommittedEvent>(events[17]);
+        Assert.Equal([new Nickname("BigBlind")], event18.Nicknames);
+        Assert.Equal(new Chips(10), event18.Amount);
+        Assert.IsType<StageIsFinishedEvent>(events[18]);
+        Assert.IsType<HandIsFinishedEvent>(events[19]);
     }
 
     [Fact]
@@ -729,7 +801,8 @@ public class NoLimitHoldem6MaxHandTest
         Assert.Equal(new Nickname("BigBlind"), event1b.Nickname);
         Assert.IsType<StageIsFinishedEvent>(events[1]);
         Assert.IsType<StageIsStartedEvent>(events[2]);
-        Assert.IsType<BoardCardsAreDealtEvent>(events[3]);
+        var event4b = Assert.IsType<BoardCardsAreDealtEvent>(events[3]);
+        Assert.Equal(3, event4b.Cards.Count);
         Assert.IsType<StageIsFinishedEvent>(events[4]);
         Assert.IsType<StageIsStartedEvent>(events[5]);
         var event7b = Assert.IsType<DecisionIsRequestedEvent>(events[6]);

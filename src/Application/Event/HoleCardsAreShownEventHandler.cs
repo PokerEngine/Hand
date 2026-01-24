@@ -18,8 +18,8 @@ public class HoleCardsAreShownEventHandler(
             TableType = context.TableType.ToString(),
             Nickname = @event.Nickname,
             Cards = @event.Cards.ToString(),
-            ComboType = @event.Combo.Type.ToString(),
-            ComboWeight = @event.Combo.Weight
+            Type = @event.Combo.Type.ToString(),
+            Weight = @event.Combo.Weight
         };
 
         var routingKey = new IntegrationEventRoutingKey($"hand.{context.TableType.ToRoutingKey()}.hole-cards-are-shown");

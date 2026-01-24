@@ -12,6 +12,6 @@ public record struct HoleCardsAreShownIntegrationEvent : IIntegrationEvent
 
     public required string Nickname { get; init; }
     public required string Cards { get; init; }
-    public required string ComboType { get; init; }
-    public required int ComboWeight { get; init; }
+    public required string Type { get; init; }
+    public required int Weight { get; init; }
 }

@@ -11,8 +11,8 @@ public record struct CommitDecisionCommand : ICommand
 {
     public required Guid Uid { get; init; }
     public required string Nickname { get; init; }
-    public required string DecisionType { get; init; }
-    public required int DecisionAmount { get; init; }
+    public required string Type { get; init; }
+    public required int Amount { get; init; }
 }
 
 public record struct CommitDecisionResponse : ICommandResponse
@@ -31,8 +31,8 @@ public class CommitDecisionHandler(
     public async Task<CommitDecisionResponse> HandleAsync(CommitDecisionCommand command)
     {
         var decision = new Decision(
-            type: (DecisionType)Enum.Parse(typeof(DecisionType), command.DecisionType),
-            amount: command.DecisionAmount
+            type: (DecisionType)Enum.Parse(typeof(DecisionType), command.Type),
+            amount: command.Amount
         );
 
         var hand = Hand.FromEvents(

@@ -1,6 +1,6 @@
 namespace Application.IntegrationEvent;
 
-public record struct BlindIsPostedIntegrationEvent : IIntegrationEvent
+public record BlindIsPostedIntegrationEvent : IIntegrationEvent
 {
     public required Guid Uid { init; get; }
     public Guid? CorrelationUid { init; get; }

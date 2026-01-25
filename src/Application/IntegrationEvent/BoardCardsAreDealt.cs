@@ -1,6 +1,6 @@
 namespace Application.IntegrationEvent;
 
-public record struct BoardCardsAreDealtIntegrationEvent : IIntegrationEvent
+public record BoardCardsAreDealtIntegrationEvent : IIntegrationEvent
 {
     public required Guid Uid { init; get; }
     public Guid? CorrelationUid { init; get; }

@@ -7,7 +7,7 @@ using Domain.ValueObject;
 
 namespace Application.Command;
 
-public record struct CommitDecisionCommand : ICommand
+public record CommitDecisionCommand : ICommand
 {
     public required Guid Uid { get; init; }
     public required string Nickname { get; init; }
@@ -15,7 +15,7 @@ public record struct CommitDecisionCommand : ICommand
     public required int Amount { get; init; }
 }
 
-public record struct CommitDecisionResponse : ICommandResponse
+public record CommitDecisionResponse : ICommandResponse
 {
     public required Guid Uid { get; init; }
     public required string Nickname { get; init; }

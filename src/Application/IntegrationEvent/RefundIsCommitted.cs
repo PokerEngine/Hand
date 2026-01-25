@@ -1,6 +1,6 @@
 namespace Application.IntegrationEvent;
 
-public record struct RefundIsCommittedIntegrationEvent : IIntegrationEvent
+public record RefundIsCommittedIntegrationEvent : IIntegrationEvent
 {
     public required Guid Uid { init; get; }
     public Guid? CorrelationUid { init; get; }

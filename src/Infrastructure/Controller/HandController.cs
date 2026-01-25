@@ -88,7 +88,7 @@ public class HandController(
     }
 }
 
-public record struct CreateHandRequest
+public record CreateHandRequest
 {
     public required Guid TableUid { get; init; }
     public required string TableType { get; init; }
@@ -102,14 +102,14 @@ public record struct CreateHandRequest
     public required List<RequestParticipant> Participants { get; init; }
 }
 
-public record struct RequestParticipant
+public record RequestParticipant
 {
     public required string Nickname { get; init; }
     public required int Seat { get; init; }
     public required int Stack { get; init; }
 }
 
-public record struct CommitDecisionRequest
+public record CommitDecisionRequest
 {
     public required string Type { get; init; }
     public required int Amount { get; init; }

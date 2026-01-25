@@ -1,6 +1,6 @@
 namespace Application.IntegrationEvent;
 
-public record struct HandIsCreatedIntegrationEvent : IIntegrationEvent
+public record HandIsCreatedIntegrationEvent : IIntegrationEvent
 {
     public required Guid Uid { init; get; }
     public Guid? CorrelationUid { init; get; }
@@ -20,7 +20,7 @@ public record struct HandIsCreatedIntegrationEvent : IIntegrationEvent
     public required List<IntegrationEventParticipant> Participants { get; init; }
 }
 
-public record struct IntegrationEventParticipant
+public record IntegrationEventParticipant
 {
     public required string Nickname { get; init; }
     public required int Seat { get; init; }

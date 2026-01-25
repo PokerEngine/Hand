@@ -6,12 +6,12 @@ using Domain.ValueObject;
 
 namespace Application.Query;
 
-public record struct GetHandByUidQuery : IQuery
+public record GetHandByUidQuery : IQuery
 {
     public required Guid Uid { get; init; }
 }
 
-public record struct GetHandByUidResponse : IQueryResponse
+public record GetHandByUidResponse : IQueryResponse
 {
     public required Guid Uid { get; init; }
     public required Guid TableUid { get; init; }
@@ -26,7 +26,7 @@ public record struct GetHandByUidResponse : IQueryResponse
     public required GetHandByUidStateResponse State { get; init; }
 }
 
-public record struct GetHandByUidStateResponse
+public record GetHandByUidStateResponse
 {
     public required GetHandByUidTableStateResponse Table { get; init; }
     public required GetHandByUidPotStateResponse Pot { get; init; }

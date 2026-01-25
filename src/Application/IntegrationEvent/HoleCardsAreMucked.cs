@@ -1,6 +1,6 @@
 namespace Application.IntegrationEvent;
 
-public record struct HoleCardsAreMuckedIntegrationEvent : IIntegrationEvent
+public record HoleCardsAreMuckedIntegrationEvent : IIntegrationEvent
 {
     public required Guid Uid { init; get; }
     public Guid? CorrelationUid { init; get; }

@@ -7,7 +7,7 @@ using Domain.ValueObject;
 
 namespace Application.Command;
 
-public record struct CreateHandCommand : ICommand
+public record CreateHandCommand : ICommand
 {
     public required Guid TableUid { get; init; }
     public required string TableType { get; init; }
@@ -21,14 +21,14 @@ public record struct CreateHandCommand : ICommand
     public required List<CommandParticipant> Participants { get; init; }
 }
 
-public record struct CommandParticipant
+public record CommandParticipant
 {
     public required string Nickname { get; init; }
     public required int Seat { get; init; }
     public required int Stack { get; init; }
 }
 
-public record struct CreateHandResponse : ICommandResponse
+public record CreateHandResponse : ICommandResponse
 {
     public required Guid Uid { get; init; }
 }

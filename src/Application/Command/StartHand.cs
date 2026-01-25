@@ -6,12 +6,12 @@ using Domain.Service.Randomizer;
 
 namespace Application.Command;
 
-public record struct StartHandCommand : ICommand
+public record StartHandCommand : ICommand
 {
     public required Guid Uid { get; init; }
 }
 
-public record struct StartHandResponse : ICommandResponse
+public record StartHandResponse : ICommandResponse
 {
     public required Guid Uid { get; init; }
 }

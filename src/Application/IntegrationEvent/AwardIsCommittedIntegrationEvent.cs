@@ -1,6 +1,6 @@
 namespace Application.IntegrationEvent;
 
-public record struct AwardIsCommittedIntegrationEvent : IIntegrationEvent
+public record AwardIsCommittedIntegrationEvent : IIntegrationEvent
 {
     public required Guid Uid { init; get; }
     public Guid? CorrelationUid { init; get; }

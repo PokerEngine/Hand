@@ -3,24 +3,23 @@ using Domain.Event;
 
 namespace Application.Event;
 
-public class AwardIsCommittedEventHandler(
+public class HoleCardsMuckedEventHandler(
     IIntegrationEventPublisher integrationEventPublisher
-) : IEventHandler<AwardIsCommittedEvent>
+) : IEventHandler<HoleCardsMuckedEvent>
 {
-    public async Task HandleAsync(AwardIsCommittedEvent @event, EventContext context)
+    public async Task HandleAsync(HoleCardsMuckedEvent @event, EventContext context)
     {
-        var integrationEvent = new AwardIsCommittedIntegrationEvent
+        var integrationEvent = new HoleCardsMuckedIntegrationEvent()
         {
             Uid = Guid.NewGuid(),
             OccurredAt = @event.OccurredAt,
             HandUid = context.HandUid,
             TableUid = context.TableUid,
             TableType = context.TableType.ToString(),
-            Nicknames = @event.Nicknames.Select(n => n.ToString()).ToList(),
-            Amount = @event.Amount
+            Nickname = @event.Nickname
         };
 
-        var routingKey = new IntegrationEventRoutingKey($"hand.{context.TableType.ToRoutingKey()}.award-is-committed");
+        var routingKey = new IntegrationEventRoutingKey($"hand.{context.TableType.ToRoutingKey()}.hole-cards-mucked");
         await integrationEventPublisher.PublishAsync(integrationEvent, routingKey);
     }
 }

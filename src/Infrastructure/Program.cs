@@ -39,7 +39,7 @@ public static class Bootstrapper
         // Register commands
         RegisterCommandHandler<CreateHandCommand, CreateHandHandler, CreateHandResponse>(builder.Services);
         RegisterCommandHandler<StartHandCommand, StartHandHandler, StartHandResponse>(builder.Services);
-        RegisterCommandHandler<CommitDecisionCommand, CommitDecisionHandler, CommitDecisionResponse>(builder.Services);
+        RegisterCommandHandler<SubmitPlayerActionCommand, SubmitPlayerActionHandler, SubmitPlayerActionResponse>(builder.Services);
         builder.Services.AddScoped<ICommandDispatcher, CommandDispatcher>();
 
         // Register queries
@@ -47,19 +47,19 @@ public static class Bootstrapper
         builder.Services.AddScoped<IQueryDispatcher, QueryDispatcher>();
 
         // Register domain events
-        RegisterEventHandler<HandIsCreatedEvent, HandIsCreatedEventHandler>(builder.Services);
-        RegisterEventHandler<HandIsStartedEvent, HandIsStartedEventHandler>(builder.Services);
-        RegisterEventHandler<HandIsFinishedEvent, HandIsFinishedEventHandler>(builder.Services);
-        RegisterEventHandler<SmallBlindIsPostedEvent, SmallBlindIsPostedEventHandler>(builder.Services);
-        RegisterEventHandler<BigBlindIsPostedEvent, BigBlindIsPostedEventHandler>(builder.Services);
-        RegisterEventHandler<HoleCardsAreDealtEvent, HoleCardsAreDealtEventHandler>(builder.Services);
-        RegisterEventHandler<BoardCardsAreDealtEvent, BoardCardsAreDealtEventHandler>(builder.Services);
-        RegisterEventHandler<DecisionIsRequestedEvent, DecisionIsRequestedEventHandler>(builder.Services);
-        RegisterEventHandler<DecisionIsCommittedEvent, DecisionIsCommittedEventHandler>(builder.Services);
-        RegisterEventHandler<RefundIsCommittedEvent, RefundIsCommittedEventHandler>(builder.Services);
-        RegisterEventHandler<AwardIsCommittedEvent, AwardIsCommittedEventHandler>(builder.Services);
-        RegisterEventHandler<HoleCardsAreShownEvent, HoleCardsAreShownEventHandler>(builder.Services);
-        RegisterEventHandler<HoleCardsAreMuckedEvent, HoleCardsAreMuckedEventHandler>(builder.Services);
+        RegisterEventHandler<HandCreatedEvent, HandCreatedEventHandler>(builder.Services);
+        RegisterEventHandler<HandStartedEvent, HandStartedEventHandler>(builder.Services);
+        RegisterEventHandler<HandFinishedEvent, HandFinishedEventHandler>(builder.Services);
+        RegisterEventHandler<SmallBlindPostedEvent, SmallBlindPostedEventHandler>(builder.Services);
+        RegisterEventHandler<BigBlindPostedEvent, BigBlindPostedEventHandler>(builder.Services);
+        RegisterEventHandler<HoleCardsDealtEvent, HoleCardsDealtEventHandler>(builder.Services);
+        RegisterEventHandler<BoardCardsDealtEvent, BoardCardsDealtEventHandler>(builder.Services);
+        RegisterEventHandler<PlayerActionRequestedEvent, PlayerActionRequestedEventHandler>(builder.Services);
+        RegisterEventHandler<PlayerActedEvent, PlayerActedEventHandler>(builder.Services);
+        RegisterEventHandler<BetRefundedEvent, BetRefundedEventHandler>(builder.Services);
+        RegisterEventHandler<SidePotAwardedEvent, SidePotAwardedEventHandler>(builder.Services);
+        RegisterEventHandler<HoleCardsShownEvent, HoleCardsShownEventHandler>(builder.Services);
+        RegisterEventHandler<HoleCardsMuckedEvent, HoleCardsMuckedEventHandler>(builder.Services);
         builder.Services.AddScoped<IEventDispatcher, EventDispatcher>();
 
         // Register integration events

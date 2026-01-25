@@ -6,16 +6,16 @@ public class Pot
 {
     public Chips MinBet { get; }
     private Chips Ante { get; set; } = Chips.Zero;
-    private Bets CommittedBets { get; set; } = new();
-    private Bets UncommittedBets { get; set; } = new();
+    private Bets CollectedBets { get; set; } = new();
+    private Bets CurrentBets { get; set; } = new();
     private List<Award> Awards { get; } = new();
 
     public Nickname? LastPostedNickname { get; private set; }
     public Nickname? LastRaisedNickname { get; private set; }
     public Chips LastRaisedStep { get; private set; }
-    private HashSet<Nickname> PostedUncommittedBetNicknames { get; } = new();
+    private HashSet<Nickname> PostedCurrentBetNicknames { get; } = new();
 
-    public Chips TotalAmount => Ante + CommittedBets.TotalAmount + UncommittedBets.TotalAmount;
+    public Chips TotalAmount => Ante + CollectedBets.TotalAmount + CurrentBets.TotalAmount;
 
     public Pot(Chips minBet)
     {
@@ -30,7 +30,7 @@ public class Pot
 
     public void PostBlind(Nickname nickname, Chips amount)
     {
-        UncommittedBets = UncommittedBets.Post(nickname, amount);
+        CurrentBets = CurrentBets.Post(nickname, amount);
 
         LastPostedNickname = nickname;
         LastRaisedNickname = nickname;
@@ -44,12 +44,12 @@ public class Pot
 
     public void PostBet(Nickname nickname, Chips amount)
     {
-        var playerPosted = amount + UncommittedBets.GetAmountPostedBy(nickname);
-        var maxPosted = UncommittedBets.GetMaxAmountPostedNotBy(nickname);
+        var playerPosted = amount + CurrentBets.GetAmountPostedBy(nickname);
+        var maxPosted = CurrentBets.GetMaxAmountPostedNotBy(nickname);
 
-        UncommittedBets = UncommittedBets.Post(nickname, amount);
+        CurrentBets = CurrentBets.Post(nickname, amount);
         LastPostedNickname = nickname;
-        PostedUncommittedBetNicknames.Add(nickname);
+        PostedCurrentBetNicknames.Add(nickname);
 
         if (playerPosted >= maxPosted + LastRaisedStep)
         {
@@ -60,25 +60,30 @@ public class Pot
 
     public void RefundBet(Nickname nickname, Chips amount)
     {
-        UncommittedBets = UncommittedBets.Refund(nickname, amount);
+        CurrentBets = CurrentBets.Refund(nickname, amount);
     }
 
-    public void CommitBets()
+    public bool HasCurrentBets()
+    {
+        return !CurrentBets.TotalAmount.IsZero;
+    }
+
+    public void CollectBets()
     {
         LastPostedNickname = null;
         LastRaisedNickname = null;
         LastRaisedStep = MinBet;
-        PostedUncommittedBetNicknames.Clear();
+        PostedCurrentBetNicknames.Clear();
 
-        CommittedBets += UncommittedBets;
-        UncommittedBets = new Bets();
+        CollectedBets += CurrentBets;
+        CurrentBets = new Bets();
     }
 
     public void WinSidePot(SidePot sidePot, HashSet<Nickname> winners)
     {
         var amount = sidePot.TotalAmount;
         Ante -= sidePot.Ante;
-        CommittedBets -= sidePot.Bets;
+        CollectedBets -= sidePot.Bets;
 
         var award = new Award
         {
@@ -88,32 +93,32 @@ public class Pot
         Awards.Add(award);
     }
 
-    public Chips GetUncommittedAmountPostedBy(Nickname nickname)
+    public Chips GetCurrentAmountPostedBy(Nickname nickname)
     {
-        return UncommittedBets.GetAmountPostedBy(nickname);
+        return CurrentBets.GetAmountPostedBy(nickname);
     }
 
-    public Chips GetUncommittedMaxAmountPostedNotBy(Nickname nickname)
+    public Chips GetCurrentMaxAmountPostedNotBy(Nickname nickname)
     {
-        return UncommittedBets.GetMaxAmountPostedNotBy(nickname);
+        return CurrentBets.GetMaxAmountPostedNotBy(nickname);
     }
 
-    public bool PostedUncommittedBet(Nickname nickname)
+    public bool PostedCurrentBet(Nickname nickname)
     {
-        return PostedUncommittedBetNicknames.Contains(nickname);
+        return PostedCurrentBetNicknames.Contains(nickname);
     }
 
     public (Nickname?, Chips) CalculateRefund()
     {
-        var maxNickname = UncommittedBets.GetNicknamePostedMaxAmount();
+        var maxNickname = CurrentBets.GetNicknamePostedMaxAmount();
         if (maxNickname is null)
         {
             return (null, new Chips(0));
         }
 
         var nickname = (Nickname)maxNickname;
-        var maxAmount = UncommittedBets.GetAmountPostedBy(nickname);
-        var secondMaxAmount = UncommittedBets.GetMaxAmountPostedNotBy(nickname);
+        var maxAmount = CurrentBets.GetAmountPostedBy(nickname);
+        var secondMaxAmount = CurrentBets.GetMaxAmountPostedNotBy(nickname);
 
         if (maxAmount > secondMaxAmount)
         {
@@ -126,7 +131,7 @@ public class Pot
     public IEnumerable<SidePot> CalculateSidePots(HashSet<Nickname> competitors)
     {
         var ante = Ante;
-        var totalBets = CommittedBets + UncommittedBets;
+        var totalBets = CollectedBets + CurrentBets;
 
         if (totalBets.TotalAmount.IsZero && !ante.IsZero)
         {
@@ -170,8 +175,8 @@ public class Pot
         return new PotState
         {
             Ante = Ante,
-            CommittedBets = CommittedBets.Select(x => new BetState { Nickname = x.Key, Amount = x.Value }).ToList(),
-            UncommittedBets = UncommittedBets.Select(x => new BetState { Nickname = x.Key, Amount = x.Value }).ToList(),
+            CollectedBets = CollectedBets.Select(x => new BetState { Nickname = x.Key, Amount = x.Value }).ToList(),
+            CurrentBets = CurrentBets.Select(x => new BetState { Nickname = x.Key, Amount = x.Value }).ToList(),
             Awards = Awards.Select(x => new AwardState { Nicknames = x.Winners.ToList(), Amount = x.Amount }).ToList()
         };
     }

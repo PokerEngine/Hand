@@ -103,9 +103,10 @@ internal static class BsonSerializerConfig
         BsonSerializer.TryRegisterSerializer(new SeatSerializer());
         BsonSerializer.TryRegisterSerializer(new ChipsSerializer());
         BsonSerializer.TryRegisterSerializer(new CardSetSerializer());
+        BsonSerializer.TryRegisterSerializer(new SidePotSerializer());
         BsonSerializer.TryRegisterSerializer(new RulesSerializer());
         BsonSerializer.TryRegisterSerializer(new PositionsSerializer());
-        BsonSerializer.TryRegisterSerializer(new DecisionSerializer());
+        BsonSerializer.TryRegisterSerializer(new PlayerActionSerializer());
         BsonSerializer.TryRegisterSerializer(new ComboSerializer());
         BsonSerializer.TryRegisterSerializer(new ParticipantSerializer());
     }
@@ -163,6 +164,90 @@ internal sealed class CardSetSerializer : SerializerBase<CardSet>
 
     public override CardSet Deserialize(BsonDeserializationContext context, BsonDeserializationArgs args)
         => CardSet.FromString(context.Reader.ReadString());
+}
+
+internal sealed class SidePotSerializer : SerializerBase<SidePot>
+{
+    private const string CompetitorsField = "competitors";
+    private const string BetsField = "bets";
+    private const string AnteField = "ante";
+
+    public override void Serialize(BsonSerializationContext context, BsonSerializationArgs args, SidePot value)
+    {
+        context.Writer.WriteStartDocument();
+
+        context.Writer.WriteName(CompetitorsField);
+        context.Writer.WriteStartArray();
+        foreach (var nickname in value.Competitors)
+        {
+            context.Writer.WriteString(nickname);
+            // BsonSerializer.Serialize(context.Writer, nickname);
+        }
+        context.Writer.WriteEndArray();
+
+        context.Writer.WriteName(BetsField);
+        context.Writer.WriteStartDocument();
+        foreach (var (nickname, amount) in value.Bets)
+        {
+            context.Writer.WriteName(nickname);
+            context.Writer.WriteInt32(amount);
+        }
+        context.Writer.WriteEndDocument();
+
+        context.Writer.WriteName(AnteField);
+        context.Writer.WriteInt32(value.Ante);
+        context.Writer.WriteEndDocument();
+    }
+
+    public override SidePot Deserialize(BsonDeserializationContext context, BsonDeserializationArgs args)
+    {
+        HashSet<Nickname> competitors = new();
+        Bets bets = new();
+        Chips ante = new();
+
+        context.Reader.ReadStartDocument();
+
+        while (context.Reader.ReadBsonType() != BsonType.EndOfDocument)
+        {
+            var name = context.Reader.ReadName(Utf8NameDecoder.Instance);
+
+            switch (name)
+            {
+                case CompetitorsField:
+                    context.Reader.ReadStartArray();
+                    while (context.Reader.ReadBsonType() != BsonType.EndOfDocument)
+                    {
+                        var nickname = context.Reader.ReadString();
+                        competitors.Add(nickname);
+                    }
+                    context.Reader.ReadEndArray();
+                    break;
+
+                case BetsField:
+                    context.Reader.ReadStartDocument();
+                    while (context.Reader.ReadBsonType() != BsonType.EndOfDocument)
+                    {
+                        var nickname = context.Reader.ReadName(Utf8NameDecoder.Instance);
+                        var amount = context.Reader.ReadInt32();
+                        bets = bets.Post(nickname, amount);
+                    }
+                    context.Reader.ReadEndDocument();
+                    break;
+
+                case AnteField:
+                    ante = context.Reader.ReadInt32();
+                    break;
+
+                default:
+                    context.Reader.SkipValue();
+                    break;
+            }
+        }
+
+        context.Reader.ReadEndDocument();
+
+        return new SidePot(competitors, bets, ante);
+    }
 }
 
 internal sealed class RulesSerializer : SerializerBase<Rules>
@@ -299,12 +384,12 @@ internal sealed class PositionsSerializer : SerializerBase<Positions>
     }
 }
 
-internal sealed class DecisionSerializer : SerializerBase<Decision>
+internal sealed class PlayerActionSerializer : SerializerBase<PlayerAction>
 {
     private const string TypeField = "type";
     private const string AmountField = "amount";
 
-    public override void Serialize(BsonSerializationContext context, BsonSerializationArgs args, Decision value)
+    public override void Serialize(BsonSerializationContext context, BsonSerializationArgs args, PlayerAction value)
     {
         context.Writer.WriteStartDocument();
         context.Writer.WriteName(TypeField);
@@ -314,9 +399,9 @@ internal sealed class DecisionSerializer : SerializerBase<Decision>
         context.Writer.WriteEndDocument();
     }
 
-    public override Decision Deserialize(BsonDeserializationContext context, BsonDeserializationArgs args)
+    public override PlayerAction Deserialize(BsonDeserializationContext context, BsonDeserializationArgs args)
     {
-        DecisionType type = default;
+        PlayerActionType type = default;
         Chips amount = default;
 
         context.Reader.ReadStartDocument();
@@ -328,10 +413,7 @@ internal sealed class DecisionSerializer : SerializerBase<Decision>
             switch (name)
             {
                 case TypeField:
-                    type = Enum.Parse<DecisionType>(
-                        context.Reader.ReadString(),
-                        ignoreCase: true
-                    );
+                    type = Enum.Parse<PlayerActionType>(context.Reader.ReadString());
                     break;
 
                 case AmountField:
@@ -346,7 +428,7 @@ internal sealed class DecisionSerializer : SerializerBase<Decision>
 
         context.Reader.ReadEndDocument();
 
-        return new Decision(type, amount);
+        return new PlayerAction(type, amount);
     }
 }
 
@@ -379,10 +461,7 @@ internal sealed class ComboSerializer : SerializerBase<Combo>
             switch (name)
             {
                 case TypeField:
-                    type = Enum.Parse<ComboType>(
-                        context.Reader.ReadString(),
-                        ignoreCase: true
-                    );
+                    type = Enum.Parse<ComboType>(context.Reader.ReadString());
                     break;
 
                 case WeightField:

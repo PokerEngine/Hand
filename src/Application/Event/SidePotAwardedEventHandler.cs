@@ -3,24 +3,24 @@ using Domain.Event;
 
 namespace Application.Event;
 
-public class RefundIsCommittedEventHandler(
+public class SidePotAwardedEventHandler(
     IIntegrationEventPublisher integrationEventPublisher
-) : IEventHandler<RefundIsCommittedEvent>
+) : IEventHandler<SidePotAwardedEvent>
 {
-    public async Task HandleAsync(RefundIsCommittedEvent @event, EventContext context)
+    public async Task HandleAsync(SidePotAwardedEvent @event, EventContext context)
     {
-        var integrationEvent = new RefundIsCommittedIntegrationEvent
+        var integrationEvent = new SidePotAwardedIntegrationEvent
         {
             Uid = Guid.NewGuid(),
             OccurredAt = @event.OccurredAt,
             HandUid = context.HandUid,
             TableUid = context.TableUid,
             TableType = context.TableType.ToString(),
-            Nickname = @event.Nickname,
-            Amount = @event.Amount
+            Winners = @event.Winners.Select(n => n.ToString()).ToList(),
+            Amount = @event.SidePot.TotalAmount
         };
 
-        var routingKey = new IntegrationEventRoutingKey($"hand.{context.TableType.ToRoutingKey()}.refund-is-committed");
+        var routingKey = new IntegrationEventRoutingKey($"hand.{context.TableType.ToRoutingKey()}.side-pot-awarded");
         await integrationEventPublisher.PublishAsync(integrationEvent, routingKey);
     }
 }

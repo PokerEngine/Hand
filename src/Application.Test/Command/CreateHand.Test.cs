@@ -72,6 +72,6 @@ public class CreateHandTest
 
         var events = await eventDispatcher.GetDispatchedEventsAsync(response.Uid);
         Assert.Single(events);
-        Assert.IsType<HandIsCreatedEvent>(events[0]);
+        Assert.IsType<HandCreatedEvent>(events[0]);
     }
 }

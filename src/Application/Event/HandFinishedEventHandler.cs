@@ -3,13 +3,13 @@ using Domain.Event;
 
 namespace Application.Event;
 
-public class HandIsFinishedEventHandler(
+public class HandFinishedEventHandler(
     IIntegrationEventPublisher integrationEventPublisher
-) : IEventHandler<HandIsFinishedEvent>
+) : IEventHandler<HandFinishedEvent>
 {
-    public async Task HandleAsync(HandIsFinishedEvent @event, EventContext context)
+    public async Task HandleAsync(HandFinishedEvent @event, EventContext context)
     {
-        var integrationEvent = new HandIsFinishedIntegrationEvent
+        var integrationEvent = new HandFinishedIntegrationEvent
         {
             Uid = Guid.NewGuid(),
             OccurredAt = @event.OccurredAt,
@@ -18,7 +18,7 @@ public class HandIsFinishedEventHandler(
             TableType = context.TableType.ToString()
         };
 
-        var routingKey = new IntegrationEventRoutingKey($"hand.{context.TableType.ToRoutingKey()}.hand-is-finished");
+        var routingKey = new IntegrationEventRoutingKey($"hand.{context.TableType.ToRoutingKey()}.hand-finished");
         await integrationEventPublisher.PublishAsync(integrationEvent, routingKey);
     }
 }

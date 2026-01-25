@@ -1,6 +1,6 @@
 namespace Application.IntegrationEvent;
 
-public record BoardCardsAreDealtIntegrationEvent : IIntegrationEvent
+public record HandFinishedIntegrationEvent : IIntegrationEvent
 {
     public required Guid Uid { init; get; }
     public Guid? CorrelationUid { init; get; }
@@ -9,6 +9,4 @@ public record BoardCardsAreDealtIntegrationEvent : IIntegrationEvent
     public required Guid HandUid { get; init; }
     public required Guid TableUid { get; init; }
     public required string TableType { get; init; }
-
-    public required string Cards { get; init; }
 }

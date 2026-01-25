@@ -3,13 +3,13 @@ using Domain.Event;
 
 namespace Application.Event;
 
-public class HoleCardsAreDealtEventHandler(
+public class PlayerActedEventHandler(
     IIntegrationEventPublisher integrationEventPublisher
-) : IEventHandler<HoleCardsAreDealtEvent>
+) : IEventHandler<PlayerActedEvent>
 {
-    public async Task HandleAsync(HoleCardsAreDealtEvent @event, EventContext context)
+    public async Task HandleAsync(PlayerActedEvent @event, EventContext context)
     {
-        var integrationEvent = new HoleCardsAreDealtIntegrationEvent
+        var integrationEvent = new PlayerActedIntegrationEvent
         {
             Uid = Guid.NewGuid(),
             OccurredAt = @event.OccurredAt,
@@ -17,10 +17,11 @@ public class HoleCardsAreDealtEventHandler(
             TableUid = context.TableUid,
             TableType = context.TableType.ToString(),
             Nickname = @event.Nickname,
-            Cards = @event.Cards.ToString()
+            Type = @event.Action.Type.ToString(),
+            Amount = @event.Action.Amount
         };
 
-        var routingKey = new IntegrationEventRoutingKey($"hand.{context.TableType.ToRoutingKey()}.hole-cards-are-dealt");
+        var routingKey = new IntegrationEventRoutingKey($"hand.{context.TableType.ToRoutingKey()}.player-acted");
         await integrationEventPublisher.PublishAsync(integrationEvent, routingKey);
     }
 }

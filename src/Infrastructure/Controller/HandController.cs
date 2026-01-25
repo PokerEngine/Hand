@@ -49,20 +49,20 @@ public class HandController(
         return Ok(response);
     }
 
-    [HttpPost("{uid:guid}/commit-decision/{nickname}")]
-    [ProducesResponseType(typeof(CommitDecisionResponse), StatusCodes.Status201Created)]
+    [HttpPost("{uid:guid}/submit-player-action/{nickname}")]
+    [ProducesResponseType(typeof(SubmitPlayerActionResponse), StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status409Conflict)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-    public async Task<IActionResult> CommitDecision(Guid uid, string nickname, [FromBody] CommitDecisionRequest request)
+    public async Task<IActionResult> SubmitPlayerAction(Guid uid, string nickname, [FromBody] SubmitPlayerActionRequest request)
     {
-        var command = new CommitDecisionCommand
+        var command = new SubmitPlayerActionCommand
         {
             Uid = uid,
             Nickname = nickname,
             Type = request.Type,
             Amount = request.Amount
         };
-        var response = await commandDispatcher.DispatchAsync<CommitDecisionCommand, CommitDecisionResponse>(command);
+        var response = await commandDispatcher.DispatchAsync<SubmitPlayerActionCommand, SubmitPlayerActionResponse>(command);
         return Ok(response);
     }
 
@@ -109,7 +109,7 @@ public record RequestParticipant
     public required int Stack { get; init; }
 }
 
-public record CommitDecisionRequest
+public record SubmitPlayerActionRequest
 {
     public required string Type { get; init; }
     public required int Amount { get; init; }

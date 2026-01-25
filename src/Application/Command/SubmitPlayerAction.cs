@@ -7,7 +7,7 @@ using Domain.ValueObject;
 
 namespace Application.Command;
 
-public record CommitDecisionCommand : ICommand
+public record SubmitPlayerActionCommand : ICommand
 {
     public required Guid Uid { get; init; }
     public required string Nickname { get; init; }
@@ -15,23 +15,23 @@ public record CommitDecisionCommand : ICommand
     public required int Amount { get; init; }
 }
 
-public record CommitDecisionResponse : ICommandResponse
+public record SubmitPlayerActionResponse : ICommandResponse
 {
     public required Guid Uid { get; init; }
     public required string Nickname { get; init; }
 }
 
-public class CommitDecisionHandler(
+public class SubmitPlayerActionHandler(
     IRepository repository,
     IEventDispatcher eventDispatcher,
     IRandomizer randomizer,
     IEvaluator evaluator
-) : ICommandHandler<CommitDecisionCommand, CommitDecisionResponse>
+) : ICommandHandler<SubmitPlayerActionCommand, SubmitPlayerActionResponse>
 {
-    public async Task<CommitDecisionResponse> HandleAsync(CommitDecisionCommand command)
+    public async Task<SubmitPlayerActionResponse> HandleAsync(SubmitPlayerActionCommand command)
     {
-        var decision = new Decision(
-            type: (DecisionType)Enum.Parse(typeof(DecisionType), command.Type),
+        var action = new PlayerAction(
+            type: (PlayerActionType)Enum.Parse(typeof(PlayerActionType), command.Type),
             amount: command.Amount
         );
 
@@ -42,7 +42,7 @@ public class CommitDecisionHandler(
             events: await repository.GetEventsAsync(command.Uid)
         );
 
-        hand.CommitDecision(command.Nickname, decision);
+        hand.SubmitPlayerAction(command.Nickname, action);
 
         var events = hand.PullEvents();
         await repository.AddEventsAsync(hand.Uid, events);
@@ -59,7 +59,7 @@ public class CommitDecisionHandler(
             await eventDispatcher.DispatchAsync(@event, context);
         }
 
-        return new CommitDecisionResponse
+        return new SubmitPlayerActionResponse
         {
             Uid = hand.Uid,
             Nickname = command.Nickname,

@@ -1,6 +1,6 @@
 namespace Application.IntegrationEvent;
 
-public record DecisionIsRequestedIntegrationEvent : IIntegrationEvent
+public record PlayerActionRequestedIntegrationEvent : IIntegrationEvent
 {
     public required Guid Uid { init; get; }
     public Guid? CorrelationUid { init; get; }

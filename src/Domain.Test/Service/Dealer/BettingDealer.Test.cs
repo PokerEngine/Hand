@@ -49,7 +49,7 @@ public abstract class BaseBettingDealerTest
 public class NoLimitBettingDealerTest : BaseBettingDealerTest
 {
     [Fact]
-    public void Start_Preflop3Max_ShouldRequestsDecisionNextToBigBlind()
+    public void Start_Preflop3Max_ShouldRequestPlayerActionNextToBigBlind()
     {
         // Arrange
         var dealer = new NoLimitBettingDealer();
@@ -82,8 +82,8 @@ public class NoLimitBettingDealerTest : BaseBettingDealerTest
 
         // Assert
         Assert.Equal(2, events.Count);
-        Assert.IsType<StageIsStartedEvent>(events[0]);
-        var requestedEvent = Assert.IsType<DecisionIsRequestedEvent>(events[1]);
+        Assert.IsType<StageStartedEvent>(events[0]);
+        var requestedEvent = Assert.IsType<PlayerActionRequestedEvent>(events[1]);
         Assert.Equal(new Nickname("Charlie"), requestedEvent.Nickname);
         Assert.True(requestedEvent.FoldIsAvailable);
         Assert.False(requestedEvent.CheckIsAvailable);
@@ -95,7 +95,7 @@ public class NoLimitBettingDealerTest : BaseBettingDealerTest
     }
 
     [Fact]
-    public void Start_PreflopHeadsUp_ShouldRequestsDecisionNextToBigBlind()
+    public void Start_PreflopHeadsUp_ShouldRequestPlayerActionNextToBigBlind()
     {
         // Arrange
         var dealer = new NoLimitBettingDealer();
@@ -127,8 +127,8 @@ public class NoLimitBettingDealerTest : BaseBettingDealerTest
 
         // Assert
         Assert.Equal(2, events.Count);
-        Assert.IsType<StageIsStartedEvent>(events[0]);
-        var requestedEvent = Assert.IsType<DecisionIsRequestedEvent>(events[1]);
+        Assert.IsType<StageStartedEvent>(events[0]);
+        var requestedEvent = Assert.IsType<PlayerActionRequestedEvent>(events[1]);
         Assert.Equal(new Nickname("Alice"), requestedEvent.Nickname);
         Assert.True(requestedEvent.FoldIsAvailable);
         Assert.False(requestedEvent.CheckIsAvailable);
@@ -140,7 +140,7 @@ public class NoLimitBettingDealerTest : BaseBettingDealerTest
     }
 
     [Fact]
-    public void Start_PreflopHeadsUpWithDeadButton_ShouldRequestsDecisionNextToBigBlind()
+    public void Start_PreflopHeadsUpWithDeadButton_ShouldRequestPlayerActionNextToBigBlind()
     {
         // Arrange
         var dealer = new NoLimitBettingDealer();
@@ -172,8 +172,8 @@ public class NoLimitBettingDealerTest : BaseBettingDealerTest
 
         // Assert
         Assert.Equal(2, events.Count);
-        Assert.IsType<StageIsStartedEvent>(events[0]);
-        var requestedEvent = Assert.IsType<DecisionIsRequestedEvent>(events[1]);
+        Assert.IsType<StageStartedEvent>(events[0]);
+        var requestedEvent = Assert.IsType<PlayerActionRequestedEvent>(events[1]);
         Assert.Equal(new Nickname("Alice"), requestedEvent.Nickname);
         Assert.True(requestedEvent.FoldIsAvailable);
         Assert.False(requestedEvent.CheckIsAvailable);
@@ -185,7 +185,7 @@ public class NoLimitBettingDealerTest : BaseBettingDealerTest
     }
 
     [Fact]
-    public void Start_Postflop3Max_ShouldRequestsDecisionNextToButton()
+    public void Start_Postflop3Max_ShouldRequestPlayerActionNextToButton()
     {
         // Arrange
         var dealer = new NoLimitBettingDealer();
@@ -210,7 +210,7 @@ public class NoLimitBettingDealerTest : BaseBettingDealerTest
         playerA.Fold();
         playerB.Post(15); // Call 25
         pot.PostBet("Bobby", 15);
-        pot.CommitBets();
+        pot.CollectBets();
 
         // Act
         var events = dealer.Start(
@@ -224,8 +224,8 @@ public class NoLimitBettingDealerTest : BaseBettingDealerTest
 
         // Assert
         Assert.Equal(2, events.Count);
-        Assert.IsType<StageIsStartedEvent>(events[0]);
-        var requestedEvent = Assert.IsType<DecisionIsRequestedEvent>(events[1]);
+        Assert.IsType<StageStartedEvent>(events[0]);
+        var requestedEvent = Assert.IsType<PlayerActionRequestedEvent>(events[1]);
         Assert.Equal(new Nickname("Bobby"), requestedEvent.Nickname);
         Assert.True(requestedEvent.FoldIsAvailable);
         Assert.True(requestedEvent.CheckIsAvailable);
@@ -237,7 +237,7 @@ public class NoLimitBettingDealerTest : BaseBettingDealerTest
     }
 
     [Fact]
-    public void Start_PostflopHeadsUp_ShouldRequestsDecisionNextToButton()
+    public void Start_PostflopHeadsUp_ShouldRequestPlayerActionNextToButton()
     {
         // Arrange
         var dealer = new NoLimitBettingDealer();
@@ -260,7 +260,7 @@ public class NoLimitBettingDealerTest : BaseBettingDealerTest
         pot.PostBet("Alice", 25);
         playerB.Post(20); // Call 30
         pot.PostBet("Bobby", 20);
-        pot.CommitBets();
+        pot.CollectBets();
 
         // Act
         var events = dealer.Start(
@@ -274,8 +274,8 @@ public class NoLimitBettingDealerTest : BaseBettingDealerTest
 
         // Assert
         Assert.Equal(2, events.Count);
-        Assert.IsType<StageIsStartedEvent>(events[0]);
-        var requestedEvent = Assert.IsType<DecisionIsRequestedEvent>(events[1]);
+        Assert.IsType<StageStartedEvent>(events[0]);
+        var requestedEvent = Assert.IsType<PlayerActionRequestedEvent>(events[1]);
         Assert.Equal(new Nickname("Bobby"), requestedEvent.Nickname);
         Assert.True(requestedEvent.FoldIsAvailable);
         Assert.True(requestedEvent.CheckIsAvailable);
@@ -287,7 +287,7 @@ public class NoLimitBettingDealerTest : BaseBettingDealerTest
     }
 
     [Fact]
-    public void Start_PostflopHeadsUpWithDeadButton_ShouldRequestsDecisionNextToButton()
+    public void Start_PostflopHeadsUpWithDeadButton_ShouldRequestPlayerActionNextToButton()
     {
         // Arrange
         var dealer = new NoLimitBettingDealer();
@@ -310,7 +310,7 @@ public class NoLimitBettingDealerTest : BaseBettingDealerTest
         pot.PostBet("Alice", 25);
         playerB.Post(20); // Call 30
         pot.PostBet("Bobby", 20);
-        pot.CommitBets();
+        pot.CollectBets();
 
         // Act
         var events = dealer.Start(
@@ -324,8 +324,8 @@ public class NoLimitBettingDealerTest : BaseBettingDealerTest
 
         // Assert
         Assert.Equal(2, events.Count);
-        Assert.IsType<StageIsStartedEvent>(events[0]);
-        var requestedEvent = Assert.IsType<DecisionIsRequestedEvent>(events[1]);
+        Assert.IsType<StageStartedEvent>(events[0]);
+        var requestedEvent = Assert.IsType<PlayerActionRequestedEvent>(events[1]);
         Assert.Equal(new Nickname("Alice"), requestedEvent.Nickname);
         Assert.True(requestedEvent.FoldIsAvailable);
         Assert.True(requestedEvent.CheckIsAvailable);
@@ -362,7 +362,7 @@ public class NoLimitBettingDealerTest : BaseBettingDealerTest
         playerA.Fold();
         playerB.Fold();
         pot.RefundBet("Charlie", 15);
-        pot.CommitBets();
+        pot.CollectBets();
 
         // Act
         var events = dealer.Start(
@@ -376,8 +376,8 @@ public class NoLimitBettingDealerTest : BaseBettingDealerTest
 
         // Assert
         Assert.Equal(2, events.Count);
-        Assert.IsType<StageIsStartedEvent>(events[0]);
-        Assert.IsType<StageIsFinishedEvent>(events[1]);
+        Assert.IsType<StageStartedEvent>(events[0]);
+        Assert.IsType<StageFinishedEvent>(events[1]);
     }
 
     [Fact]
@@ -411,7 +411,7 @@ public class NoLimitBettingDealerTest : BaseBettingDealerTest
         playerA.Post(780); // Call 900 (all-in)
         pot.PostBet("Alice", 780);
         pot.RefundBet("Charlie", 100);
-        pot.CommitBets();
+        pot.CollectBets();
 
         // Act
         var events = dealer.Start(
@@ -425,8 +425,8 @@ public class NoLimitBettingDealerTest : BaseBettingDealerTest
 
         // Assert
         Assert.Equal(2, events.Count);
-        Assert.IsType<StageIsStartedEvent>(events[0]);
-        Assert.IsType<StageIsFinishedEvent>(events[1]);
+        Assert.IsType<StageStartedEvent>(events[0]);
+        Assert.IsType<StageFinishedEvent>(events[1]);
     }
 
     private Rules CreateRules()
@@ -443,7 +443,7 @@ public class NoLimitBettingDealerTest : BaseBettingDealerTest
 public class PotLimitBettingDealerTest : BaseBettingDealerTest
 {
     [Fact]
-    public void Start_Preflop3Max_ShouldRequestsDecisionNextToBigBlind()
+    public void Start_Preflop3Max_ShouldRequestPlayerActionNextToBigBlind()
     {
         // Arrange
         var dealer = new PotLimitBettingDealer();
@@ -476,14 +476,14 @@ public class PotLimitBettingDealerTest : BaseBettingDealerTest
 
         // Assert
         Assert.Equal(2, events.Count);
-        Assert.IsType<StageIsStartedEvent>(events[0]);
-        var requestedEvent = Assert.IsType<DecisionIsRequestedEvent>(events[1]);
+        Assert.IsType<StageStartedEvent>(events[0]);
+        var requestedEvent = Assert.IsType<PlayerActionRequestedEvent>(events[1]);
         Assert.Equal(new Nickname("Charlie"), requestedEvent.Nickname);
         Assert.Equal(new Chips(35), requestedEvent.MaxRaiseToAmount);
     }
 
     [Fact]
-    public void Start_PreflopHeadsUp_ShouldRequestsDecisionNextToBigBlind()
+    public void Start_PreflopHeadsUp_ShouldRequestPlayerActionNextToBigBlind()
     {
         // Arrange
         var dealer = new PotLimitBettingDealer();
@@ -515,14 +515,14 @@ public class PotLimitBettingDealerTest : BaseBettingDealerTest
 
         // Assert
         Assert.Equal(2, events.Count);
-        Assert.IsType<StageIsStartedEvent>(events[0]);
-        var requestedEvent = Assert.IsType<DecisionIsRequestedEvent>(events[1]);
+        Assert.IsType<StageStartedEvent>(events[0]);
+        var requestedEvent = Assert.IsType<PlayerActionRequestedEvent>(events[1]);
         Assert.Equal(new Nickname("Alice"), requestedEvent.Nickname);
         Assert.Equal(new Chips(30), requestedEvent.MaxRaiseToAmount);
     }
 
     [Fact]
-    public void Start_Postflop3Max_ShouldRequestsDecisionNextToButton()
+    public void Start_Postflop3Max_ShouldRequestPlayerActionNextToButton()
     {
         // Arrange
         var dealer = new PotLimitBettingDealer();
@@ -547,7 +547,7 @@ public class PotLimitBettingDealerTest : BaseBettingDealerTest
         playerA.Fold();
         playerB.Post(25); // Call 35
         pot.PostBet("Bobby", 25);
-        pot.CommitBets();
+        pot.CollectBets();
 
         // Act
         var events = dealer.Start(
@@ -561,8 +561,8 @@ public class PotLimitBettingDealerTest : BaseBettingDealerTest
 
         // Assert
         Assert.Equal(2, events.Count);
-        Assert.IsType<StageIsStartedEvent>(events[0]);
-        var requestedEvent = Assert.IsType<DecisionIsRequestedEvent>(events[1]);
+        Assert.IsType<StageStartedEvent>(events[0]);
+        var requestedEvent = Assert.IsType<PlayerActionRequestedEvent>(events[1]);
         Assert.Equal(new Nickname("Bobby"), requestedEvent.Nickname);
         Assert.Equal(new Chips(75), requestedEvent.MaxRaiseToAmount);
     }

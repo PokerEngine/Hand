@@ -3,13 +3,13 @@ using Domain.Event;
 
 namespace Application.Event;
 
-public class HandIsStartedEventHandler(
+public class HandStartedEventHandler(
     IIntegrationEventPublisher integrationEventPublisher
-) : IEventHandler<HandIsStartedEvent>
+) : IEventHandler<HandStartedEvent>
 {
-    public async Task HandleAsync(HandIsStartedEvent @event, EventContext context)
+    public async Task HandleAsync(HandStartedEvent @event, EventContext context)
     {
-        var integrationEvent = new HandIsStartedIntegrationEvent
+        var integrationEvent = new HandStartedIntegrationEvent
         {
             Uid = Guid.NewGuid(),
             OccurredAt = @event.OccurredAt,
@@ -18,7 +18,7 @@ public class HandIsStartedEventHandler(
             TableType = context.TableType.ToString()
         };
 
-        var routingKey = new IntegrationEventRoutingKey($"hand.{context.TableType.ToRoutingKey()}.hand-is-started");
+        var routingKey = new IntegrationEventRoutingKey($"hand.{context.TableType.ToRoutingKey()}.hand-started");
         await integrationEventPublisher.PublishAsync(integrationEvent, routingKey);
     }
 }

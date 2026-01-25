@@ -4,13 +4,13 @@ using Domain.ValueObject;
 
 namespace Application.Event;
 
-public class HandIsCreatedEventHandler(
+public class HandCreatedEventHandler(
     IIntegrationEventPublisher integrationEventPublisher
-) : IEventHandler<HandIsCreatedEvent>
+) : IEventHandler<HandCreatedEvent>
 {
-    public async Task HandleAsync(HandIsCreatedEvent @event, EventContext context)
+    public async Task HandleAsync(HandCreatedEvent @event, EventContext context)
     {
-        var integrationEvent = new HandIsCreatedIntegrationEvent
+        var integrationEvent = new HandCreatedIntegrationEvent
         {
             Uid = Guid.NewGuid(),
             OccurredAt = @event.OccurredAt,
@@ -27,7 +27,7 @@ public class HandIsCreatedEventHandler(
             Participants = @event.Participants.Select(SerializeParticipant).ToList()
         };
 
-        var routingKey = new IntegrationEventRoutingKey($"hand.{context.TableType.ToRoutingKey()}.hand-is-created");
+        var routingKey = new IntegrationEventRoutingKey($"hand.{context.TableType.ToRoutingKey()}.hand-created");
         await integrationEventPublisher.PublishAsync(integrationEvent, routingKey);
     }
 

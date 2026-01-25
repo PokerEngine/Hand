@@ -17,7 +17,7 @@ public class BlindPostingDealer : IDealer
         IEvaluator evaluator
     )
     {
-        var startEvent = new StageIsStartedEvent
+        var startEvent = new StageStartedEvent
         {
             OccurredAt = DateTime.Now
         };
@@ -35,14 +35,14 @@ public class BlindPostingDealer : IDealer
             yield return bigBlindPostedEvent;
         }
 
-        var finishEvent = new StageIsFinishedEvent
+        var finishEvent = new StageFinishedEvent
         {
             OccurredAt = DateTime.Now
         };
         yield return finishEvent;
     }
 
-    private SmallBlindIsPostedEvent? PostSmallBlind(Rules rules, Table table, Pot pot)
+    private SmallBlindPostedEvent? PostSmallBlind(Rules rules, Table table, Pot pot)
     {
         var player = table.GetPlayerOnSmallBlind();
         if (player is null)
@@ -54,7 +54,7 @@ public class BlindPostingDealer : IDealer
         player.Post(amount);
         pot.PostBlind(player.Nickname, amount);
 
-        var @event = new SmallBlindIsPostedEvent
+        var @event = new SmallBlindPostedEvent
         {
             Nickname = player.Nickname,
             Amount = amount,
@@ -63,7 +63,7 @@ public class BlindPostingDealer : IDealer
         return @event;
     }
 
-    private BigBlindIsPostedEvent? PostBigBlind(Rules rules, Table table, Pot pot)
+    private BigBlindPostedEvent? PostBigBlind(Rules rules, Table table, Pot pot)
     {
         var player = table.GetPlayerOnBigBlind();
         if (player is null)
@@ -75,7 +75,7 @@ public class BlindPostingDealer : IDealer
         player.Post(amount);
         pot.PostBlind(player.Nickname, amount);
 
-        var @event = new BigBlindIsPostedEvent
+        var @event = new BigBlindPostedEvent
         {
             Nickname = player.Nickname,
             Amount = amount,
@@ -96,26 +96,26 @@ public class BlindPostingDealer : IDealer
     {
         switch (@event)
         {
-            case SmallBlindIsPostedEvent e:
+            case SmallBlindPostedEvent e:
                 table.GetPlayerByNickname(e.Nickname).Post(e.Amount);
                 pot.PostBlind(e.Nickname, e.Amount);
                 break;
-            case BigBlindIsPostedEvent e:
+            case BigBlindPostedEvent e:
                 table.GetPlayerByNickname(e.Nickname).Post(e.Amount);
                 pot.PostBlind(e.Nickname, e.Amount);
                 break;
-            case StageIsStartedEvent:
+            case StageStartedEvent:
                 break;
-            case StageIsFinishedEvent:
+            case StageFinishedEvent:
                 break;
             default:
                 throw new InvalidOperationException($"{@event.GetType().Name} is not supported");
         }
     }
 
-    public IEnumerable<IEvent> CommitDecision(
+    public IEnumerable<IEvent> SubmitPlayerAction(
         Nickname nickname,
-        Decision decision,
+        PlayerAction action,
         Rules rules,
         Table table,
         Pot pot,
@@ -124,6 +124,6 @@ public class BlindPostingDealer : IDealer
         IEvaluator evaluator
     )
     {
-        throw new InvalidOperationException("The player cannot commit a decision during this stage");
+        throw new InvalidOperationException("The player cannot act during this stage");
     }
 }

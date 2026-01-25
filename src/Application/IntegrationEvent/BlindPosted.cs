@@ -1,6 +1,6 @@
 namespace Application.IntegrationEvent;
 
-public record HoleCardsAreMuckedIntegrationEvent : IIntegrationEvent
+public record BlindPostedIntegrationEvent : IIntegrationEvent
 {
     public required Guid Uid { init; get; }
     public Guid? CorrelationUid { init; get; }
@@ -11,4 +11,5 @@ public record HoleCardsAreMuckedIntegrationEvent : IIntegrationEvent
     public required string TableType { get; init; }
 
     public required string Nickname { get; init; }
+    public required int Amount { get; init; }
 }

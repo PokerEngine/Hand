@@ -1,6 +1,6 @@
 namespace Application.IntegrationEvent;
 
-public record HandIsStartedIntegrationEvent : IIntegrationEvent
+public record HandStartedIntegrationEvent : IIntegrationEvent
 {
     public required Guid Uid { init; get; }
     public Guid? CorrelationUid { init; get; }

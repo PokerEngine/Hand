@@ -17,7 +17,7 @@ public abstract class BaseBettingDealer : IDealer
         IEvaluator evaluator
     )
     {
-        var startEvent = new StageIsStartedEvent
+        var startEvent = new StageStartedEvent
         {
             OccurredAt = DateTime.Now
         };
@@ -32,7 +32,7 @@ public abstract class BaseBettingDealer : IDealer
         }
         else
         {
-            foreach (var @event in RequestDecisionOrFinish(table, pot))
+            foreach (var @event in RequestPlayerActionOrFinish(table, pot))
             {
                 yield return @event;
             }
@@ -51,28 +51,30 @@ public abstract class BaseBettingDealer : IDealer
     {
         switch (@event)
         {
-            case DecisionIsRequestedEvent:
+            case PlayerActionRequestedEvent:
                 break;
-            case DecisionIsCommittedEvent e:
-                CommitDecision(table.GetPlayerByNickname(e.Nickname), e.Decision, pot);
+            case PlayerActedEvent e:
+                SubmitPlayerAction(table.GetPlayerByNickname(e.Nickname), e.Action, pot);
                 break;
-            case RefundIsCommittedEvent e:
+            case BetRefundedEvent e:
                 pot.RefundBet(e.Nickname, e.Amount);
                 table.GetPlayerByNickname(e.Nickname).Refund(e.Amount);
                 break;
-            case StageIsStartedEvent:
+            case BetsCollectedEvent:
+                pot.CollectBets();
                 break;
-            case StageIsFinishedEvent:
-                pot.CommitBets();
+            case StageStartedEvent:
+                break;
+            case StageFinishedEvent:
                 break;
             default:
                 throw new InvalidOperationException($"{@event.GetType().Name} is not supported");
         }
     }
 
-    public IEnumerable<IEvent> CommitDecision(
+    public IEnumerable<IEvent> SubmitPlayerAction(
         Nickname nickname,
-        Decision decision,
+        PlayerAction action,
         Rules rules,
         Table table,
         Pot pot,
@@ -85,44 +87,44 @@ public abstract class BaseBettingDealer : IDealer
         var nextPlayer = previousPlayer is null ? GetStartPlayer(table) : GetNextPlayer(table, previousPlayer);
         if (nextPlayer is null || nextPlayer.Nickname != nickname)
         {
-            throw new InvalidOperationException("The player cannot commit a decision for now");
+            throw new InvalidOperationException("The player cannot act: it's not his turn");
         }
 
         var player = table.GetPlayerByNickname(nickname);
-        CommitDecision(player, decision, pot);
+        SubmitPlayerAction(player, action, pot);
 
-        var @event = new DecisionIsCommittedEvent
+        var @event = new PlayerActedEvent
         {
             Nickname = nickname,
-            Decision = decision,
+            Action = action,
             OccurredAt = DateTime.Now
         };
         yield return @event;
 
-        foreach (var e in RequestDecisionOrFinish(table, pot))
+        foreach (var e in RequestPlayerActionOrFinish(table, pot))
         {
             yield return e;
         }
     }
 
-    private void CommitDecision(Player player, Decision decision, Pot pot)
+    private void SubmitPlayerAction(Player player, PlayerAction action, Pot pot)
     {
-        switch (decision.Type)
+        switch (action.Type)
         {
-            case DecisionType.Fold:
+            case PlayerActionType.Fold:
                 Fold(player);
                 break;
-            case DecisionType.Check:
+            case PlayerActionType.Check:
                 Check(player, pot);
                 break;
-            case DecisionType.Call:
+            case PlayerActionType.Call:
                 Call(player, pot);
                 break;
-            case DecisionType.RaiseTo:
-                RaiseTo(player, decision.Amount, pot);
+            case PlayerActionType.RaiseTo:
+                RaiseTo(player, action.Amount, pot);
                 break;
             default:
-                throw new InvalidOperationException($"{decision} is not supported");
+                throw new InvalidOperationException($"{action} is not supported");
         }
     }
 
@@ -139,7 +141,7 @@ public abstract class BaseBettingDealer : IDealer
             throw new InvalidOperationException($"The player cannot check: {reason}");
         }
 
-        // We post zero chips for check to mark that the player has committed his decision
+        // We post zero chips for check to mark that the player has committed his action
         player.Post(new Chips(0));
         pot.PostBet(player.Nickname, new Chips(0));
     }
@@ -152,7 +154,7 @@ public abstract class BaseBettingDealer : IDealer
             throw new InvalidOperationException($"The player cannot call: {reason}");
         }
 
-        var remainingAmount = GetCallAmount(player, pot) - pot.GetUncommittedAmountPostedBy(player.Nickname);
+        var remainingAmount = GetCallAmount(player, pot) - pot.GetCurrentAmountPostedBy(player.Nickname);
         player.Post(remainingAmount);
         pot.PostBet(player.Nickname, remainingAmount);
     }
@@ -165,7 +167,7 @@ public abstract class BaseBettingDealer : IDealer
             throw new InvalidOperationException($"The player cannot raise to {amount}: {reason}");
         }
 
-        var remainingAmount = amount - pot.GetUncommittedAmountPostedBy(player.Nickname);
+        var remainingAmount = amount - pot.GetCurrentAmountPostedBy(player.Nickname);
         player.Post(remainingAmount);
         pot.PostBet(player.Nickname, remainingAmount);
     }
@@ -200,12 +202,12 @@ public abstract class BaseBettingDealer : IDealer
         return !player.IsFolded && !player.IsAllIn;
     }
 
-    private IEnumerable<IEvent> RequestDecisionOrFinish(Table table, Pot pot)
+    private IEnumerable<IEvent> RequestPlayerActionOrFinish(Table table, Pot pot)
     {
         var previousPlayer = GetPreviousPlayer(table, pot);
         var nextPlayer = previousPlayer is null ? GetStartPlayer(table) : GetNextPlayer(table, previousPlayer);
 
-        if (!EnoughPlayers(table) || nextPlayer is null || !DecisionIsExpected(nextPlayer, pot))
+        if (!EnoughPlayers(table) || nextPlayer is null || !PlayerActionIsExpected(nextPlayer, pot))
         {
             foreach (var @event in Finish(table, pot))
             {
@@ -214,27 +216,35 @@ public abstract class BaseBettingDealer : IDealer
         }
         else
         {
-            yield return RequestDecision(nextPlayer, pot);
+            yield return RequestPlayerAction(nextPlayer, pot);
         }
     }
 
     private IEnumerable<IEvent> Finish(Table table, Pot pot)
     {
-        var refundEvent = Refund(table, pot);
+        var refundEvent = RefundBet(table, pot);
         if (refundEvent is not null)
         {
             yield return refundEvent;
         }
 
-        pot.CommitBets();
+        if (pot.HasCurrentBets())
+        {
+            pot.CollectBets();
 
-        yield return new StageIsFinishedEvent
+            yield return new BetsCollectedEvent
+            {
+                OccurredAt = DateTime.Now
+            };
+        }
+
+        yield return new StageFinishedEvent
         {
             OccurredAt = DateTime.Now
         };
     }
 
-    private RefundIsCommittedEvent? Refund(Table table, Pot pot)
+    private BetRefundedEvent? RefundBet(Table table, Pot pot)
     {
         var (nn, amount) = pot.CalculateRefund();
         if (nn is null)
@@ -247,7 +257,7 @@ public abstract class BaseBettingDealer : IDealer
         pot.RefundBet(nickname, amount);
         player.Refund(amount);
 
-        return new RefundIsCommittedEvent
+        return new BetRefundedEvent
         {
             Nickname = nickname,
             Amount = amount,
@@ -255,7 +265,7 @@ public abstract class BaseBettingDealer : IDealer
         };
     }
 
-    private DecisionIsRequestedEvent RequestDecision(Player player, Pot pot)
+    private PlayerActionRequestedEvent RequestPlayerAction(Player player, Pot pot)
     {
         var (checkIsAvailable, _) = CheckIsValid(player, pot);
 
@@ -266,7 +276,7 @@ public abstract class BaseBettingDealer : IDealer
         var minRaiseToAmount = raiseIsAvailable ? GetMinRaiseToAmount(player, pot) : new Chips(0);
         var maxRaiseToAmount = raiseIsAvailable ? GetMaxRaiseToAmount(player, pot) : new Chips(0);
 
-        var @event = new DecisionIsRequestedEvent
+        var @event = new PlayerActionRequestedEvent
         {
             Nickname = player.Nickname,
             FoldIsAvailable = true,
@@ -281,18 +291,18 @@ public abstract class BaseBettingDealer : IDealer
         return @event;
     }
 
-    private bool DecisionIsExpected(Player player, Pot pot)
+    private bool PlayerActionIsExpected(Player player, Pot pot)
     {
-        var playerPostedAmount = pot.GetUncommittedAmountPostedBy(player.Nickname);
-        var otherMaxPostedAmount = pot.GetUncommittedMaxAmountPostedNotBy(player.Nickname);
+        var playerPostedAmount = pot.GetCurrentAmountPostedBy(player.Nickname);
+        var otherMaxPostedAmount = pot.GetCurrentMaxAmountPostedNotBy(player.Nickname);
 
-        return playerPostedAmount < otherMaxPostedAmount || !pot.PostedUncommittedBet(player.Nickname);
+        return playerPostedAmount < otherMaxPostedAmount || !pot.PostedCurrentBet(player.Nickname);
     }
 
     private (bool, string) CheckIsValid(Player player, Pot pot)
     {
-        var playerPostedAmount = pot.GetUncommittedAmountPostedBy(player.Nickname);
-        var otherMaxPostedAmount = pot.GetUncommittedMaxAmountPostedNotBy(player.Nickname);
+        var playerPostedAmount = pot.GetCurrentAmountPostedBy(player.Nickname);
+        var otherMaxPostedAmount = pot.GetCurrentMaxAmountPostedNotBy(player.Nickname);
 
         if (playerPostedAmount < otherMaxPostedAmount)
         {
@@ -304,8 +314,8 @@ public abstract class BaseBettingDealer : IDealer
 
     private (bool, string) CallIsValid(Player player, Pot pot)
     {
-        var playerPostedAmount = pot.GetUncommittedAmountPostedBy(player.Nickname);
-        var otherMaxPostedAmount = pot.GetUncommittedMaxAmountPostedNotBy(player.Nickname);
+        var playerPostedAmount = pot.GetCurrentAmountPostedBy(player.Nickname);
+        var otherMaxPostedAmount = pot.GetCurrentMaxAmountPostedNotBy(player.Nickname);
 
         if (!otherMaxPostedAmount)
         {
@@ -331,7 +341,7 @@ public abstract class BaseBettingDealer : IDealer
             return (false, "Not enough stack");
         }
 
-        if (pot.PostedUncommittedBet(player.Nickname) && !WasRaiseSincePlayerLastDecision(player, pot))
+        if (pot.PostedCurrentBet(player.Nickname) && !WasRaiseSincePlayerLastAction(player, pot))
         {
             return (false, "There is no raise since the player's last action and the following all-in");
         }
@@ -352,12 +362,12 @@ public abstract class BaseBettingDealer : IDealer
         return (true, string.Empty);
     }
 
-    private bool WasRaiseSincePlayerLastDecision(Player player, Pot pot)
+    private bool WasRaiseSincePlayerLastAction(Player player, Pot pot)
     {
-        var playerPostedAmount = pot.GetUncommittedAmountPostedBy(player.Nickname);
-        var otherMaxPostedAmount = pot.GetUncommittedMaxAmountPostedNotBy(player.Nickname);
+        var playerPostedAmount = pot.GetCurrentAmountPostedBy(player.Nickname);
+        var otherMaxPostedAmount = pot.GetCurrentMaxAmountPostedNotBy(player.Nickname);
 
-        // No one has posted more than the player -> no raise since their last decision
+        // No one has posted more than the player -> no raise since their last action
         if (playerPostedAmount >= otherMaxPostedAmount)
         {
             return false;
@@ -374,15 +384,15 @@ public abstract class BaseBettingDealer : IDealer
 
     private Chips GetCallAmount(Player player, Pot pot)
     {
-        var callAmount = pot.GetUncommittedMaxAmountPostedNotBy(player.Nickname);
-        var playerTotalAmount = pot.GetUncommittedAmountPostedBy(player.Nickname) + player.Stack;
+        var callAmount = pot.GetCurrentMaxAmountPostedNotBy(player.Nickname);
+        var playerTotalAmount = pot.GetCurrentAmountPostedBy(player.Nickname) + player.Stack;
         return playerTotalAmount < callAmount ? playerTotalAmount : callAmount;
     }
 
     private Chips GetMinRaiseToAmount(Player player, Pot pot)
     {
-        var minRaiseToAmount = pot.GetUncommittedMaxAmountPostedNotBy(player.Nickname) + pot.LastRaisedStep;
-        var playerTotalAmount = pot.GetUncommittedAmountPostedBy(player.Nickname) + player.Stack;
+        var minRaiseToAmount = pot.GetCurrentMaxAmountPostedNotBy(player.Nickname) + pot.LastRaisedStep;
+        var playerTotalAmount = pot.GetCurrentAmountPostedBy(player.Nickname) + player.Stack;
         return playerTotalAmount < minRaiseToAmount ? playerTotalAmount : minRaiseToAmount;
     }
 
@@ -393,7 +403,7 @@ public class NoLimitBettingDealer : BaseBettingDealer
 {
     protected override Chips GetMaxRaiseToAmount(Player player, Pot pot)
     {
-        var playerTotalAmount = pot.GetUncommittedAmountPostedBy(player.Nickname) + player.Stack;
+        var playerTotalAmount = pot.GetCurrentAmountPostedBy(player.Nickname) + player.Stack;
         return playerTotalAmount;
     }
 }
@@ -402,8 +412,8 @@ public class PotLimitBettingDealer : BaseBettingDealer
 {
     protected override Chips GetMaxRaiseToAmount(Player player, Pot pot)
     {
-        var playerPostedAmount = pot.GetUncommittedAmountPostedBy(player.Nickname);
-        var otherMaxPostedAmount = pot.GetUncommittedMaxAmountPostedNotBy(player.Nickname);
+        var playerPostedAmount = pot.GetCurrentAmountPostedBy(player.Nickname);
+        var otherMaxPostedAmount = pot.GetCurrentMaxAmountPostedNotBy(player.Nickname);
         var potTotalAmountAfterCall = pot.TotalAmount + otherMaxPostedAmount - playerPostedAmount;
         var maxRaiseToAmount = otherMaxPostedAmount + potTotalAmountAfterCall;
 

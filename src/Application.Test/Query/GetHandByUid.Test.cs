@@ -38,8 +38,8 @@ public class GetHandByUidTest
         Assert.Equal((int)hand.Table.Positions.Button, response.ButtonSeat);
         Assert.Equal((int)hand.Table.Positions.Max, response.MaxSeat);
         Assert.Equal(3, response.State.Table.Players.Count);
-        Assert.Equal(2, response.State.Pot.UncommittedBets.Count);
-        Assert.Empty(response.State.Pot.CommittedBets);
+        Assert.Equal(2, response.State.Pot.CurrentBets.Count);
+        Assert.Empty(response.State.Pot.CollectedBets);
         Assert.Empty(response.State.Pot.Awards);
     }
 

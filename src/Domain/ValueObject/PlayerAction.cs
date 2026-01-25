@@ -1,26 +1,26 @@
 namespace Domain.ValueObject;
 
-public enum DecisionType
+public enum PlayerActionType
 {
     Fold,
     Check,
     Call,
-    RaiseTo,
+    RaiseTo
 }
 
-public readonly struct Decision
+public readonly struct PlayerAction : IEquatable<PlayerAction>
 {
-    public readonly DecisionType Type;
+    public readonly PlayerActionType Type;
     public readonly Chips Amount;
 
-    public Decision(DecisionType type, Chips amount = new())
+    public PlayerAction(PlayerActionType type, Chips amount = new())
     {
-        if ((type == DecisionType.Fold || type == DecisionType.Check || type == DecisionType.Call) && !!amount)
+        if ((type == PlayerActionType.Fold || type == PlayerActionType.Check || type == PlayerActionType.Call) && !!amount)
         {
             throw new ArgumentException($"Amount must be zero for {type}", nameof(amount));
         }
 
-        if (type == DecisionType.RaiseTo && !amount)
+        if (type == PlayerActionType.RaiseTo && !amount)
         {
             throw new ArgumentException($"Amount must be non-zero for {type}", nameof(amount));
         }
@@ -28,6 +28,9 @@ public readonly struct Decision
         Type = type;
         Amount = amount;
     }
+
+    public bool Equals(PlayerAction other)
+        => Type.Equals(other.Type) && Amount.Equals(other.Amount);
 
     public override string ToString()
     {

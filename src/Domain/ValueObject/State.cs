@@ -26,8 +26,8 @@ public readonly struct PlayerState
 public readonly struct PotState
 {
     public required Chips Ante { get; init; }
-    public required List<BetState> CommittedBets { get; init; }
-    public required List<BetState> UncommittedBets { get; init; }
+    public required List<BetState> CollectedBets { get; init; }
+    public required List<BetState> CurrentBets { get; init; }
     public required List<AwardState> Awards { get; init; }
 }
 

@@ -15,7 +15,7 @@ public readonly struct SidePot : IEquatable<SidePot>
     }
 
     public bool Equals(SidePot other)
-        => Competitors.Equals(other.Competitors) && Bets.Equals(other.Bets) && Ante.Equals(other.Ante);
+        => Competitors.SetEquals(other.Competitors) && Bets.Equals(other.Bets) && Ante.Equals(other.Ante);
 
     public override string ToString()
     {

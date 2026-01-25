@@ -56,7 +56,15 @@ public class MongoDbRepositoryTest(MongoDbFixture fixture) : IClassFixture<Mongo
             Seat = new Seat(2),
             Chips = new Chips(1000),
             CardSet = new CardSet([Card.AceOfSpades, Card.SevenOfHearts, Card.DeuceOfDiamonds]),
-            Decision = new Decision(DecisionType.RaiseTo, new Chips(30)),
+            SidePot = new SidePot(
+                [new Nickname("Bobby"), new Nickname("Charlie")],
+                new Bets()
+                    .Post(new Nickname("Alice"), new Chips(5))
+                    .Post(new Nickname("Bobby"), new Chips(25))
+                    .Post(new Nickname("Charlie"), new Chips(25)),
+                new Chips(3)
+            ),
+            Action = new PlayerAction(PlayerActionType.RaiseTo, new Chips(30)),
             Combo = new Combo(ComboType.OnePair, 100500),
             OccurredAt = GetNow()
         };
@@ -117,7 +125,15 @@ public class MongoDbRepositoryTest(MongoDbFixture fixture) : IClassFixture<Mongo
             Seat = new Seat(2),
             Chips = new Chips(1000),
             CardSet = new CardSet([Card.AceOfSpades, Card.SevenOfHearts, Card.DeuceOfDiamonds]),
-            Decision = new Decision(DecisionType.RaiseTo, new Chips(30)),
+            SidePot = new SidePot(
+                [new Nickname("Bobby"), new Nickname("Charlie")],
+                new Bets()
+                    .Post(new Nickname("Alice"), new Chips(5))
+                    .Post(new Nickname("Bobby"), new Chips(25))
+                    .Post(new Nickname("Charlie"), new Chips(25)),
+                new Chips(3)
+            ),
+            Action = new PlayerAction(PlayerActionType.RaiseTo, new Chips(30)),
             Combo = new Combo(ComboType.OnePair, 100500),
             OccurredAt = GetNow()
         };
@@ -156,7 +172,8 @@ internal record struct TestEvent : IEvent
     public required Seat Seat { get; init; }
     public required Chips Chips { get; init; }
     public required CardSet CardSet { get; init; }
-    public required Decision Decision { get; init; }
+    public required SidePot SidePot { get; init; }
+    public required PlayerAction Action { get; init; }
     public required Combo Combo { get; init; }
     public required DateTime OccurredAt { get; init; }
 
@@ -169,7 +186,8 @@ internal record struct TestEvent : IEvent
                && Seat.Equals(other.Seat)
                && Chips.Equals(other.Chips)
                && CardSet.Equals(other.CardSet)
-               && Decision.Equals(other.Decision)
+               && SidePot.Equals(other.SidePot)
+               && Action.Equals(other.Action)
                && Combo.Equals(other.Combo)
                && OccurredAt.Equals(other.OccurredAt);
     }
@@ -190,7 +208,8 @@ internal record struct TestEvent : IEvent
         hash.Add(Seat);
         hash.Add(Chips);
         hash.Add(CardSet);
-        hash.Add(Decision);
+        hash.Add(SidePot);
+        hash.Add(Action);
         hash.Add(Combo);
         hash.Add(OccurredAt);
 

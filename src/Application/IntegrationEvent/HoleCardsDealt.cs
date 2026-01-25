@@ -1,6 +1,6 @@
 namespace Application.IntegrationEvent;
 
-public record HoleCardsAreShownIntegrationEvent : IIntegrationEvent
+public record HoleCardsDealtIntegrationEvent : IIntegrationEvent
 {
     public required Guid Uid { init; get; }
     public Guid? CorrelationUid { init; get; }
@@ -12,6 +12,4 @@ public record HoleCardsAreShownIntegrationEvent : IIntegrationEvent
 
     public required string Nickname { get; init; }
     public required string Cards { get; init; }
-    public required string Type { get; init; }
-    public required int Weight { get; init; }
 }

@@ -1,6 +1,6 @@
 namespace Application.IntegrationEvent;
 
-public record RefundIsCommittedIntegrationEvent : IIntegrationEvent
+public record BetRefundedIntegrationEvent : IIntegrationEvent
 {
     public required Guid Uid { init; get; }
     public Guid? CorrelationUid { init; get; }

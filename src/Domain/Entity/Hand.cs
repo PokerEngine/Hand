@@ -81,7 +81,7 @@ public class Hand
             dealers: factory.GetDealers(rules)
         );
 
-        var @event = new HandIsCreatedEvent
+        var @event = new HandCreatedEvent
         {
             TableUid = tableUid,
             TableType = tableType,
@@ -102,12 +102,12 @@ public class Hand
         List<IEvent> events
     )
     {
-        if (events.Count == 0 || events[0] is not HandIsCreatedEvent)
+        if (events.Count == 0 || events[0] is not HandCreatedEvent)
         {
-            throw new InvalidOperationException("The first event must be a HandIsCreatedEvent");
+            throw new InvalidOperationException("The first event must be a HandCreatedEvent");
         }
 
-        var createdEvent = (HandIsCreatedEvent)events[0];
+        var createdEvent = (HandCreatedEvent)events[0];
         var factory = FactoryRegistry.GetFactory(createdEvent.Rules.Game);
         var hand = new Hand(
             uid: uid,
@@ -129,11 +129,11 @@ public class Hand
         {
             switch (@event)
             {
-                case HandIsCreatedEvent:
+                case HandCreatedEvent:
                     break;
-                case HandIsStartedEvent:
+                case HandStartedEvent:
                     break;
-                case HandIsFinishedEvent:
+                case HandFinishedEvent:
                     break;
                 default:
                     hand.Dealer.Handle(
@@ -145,7 +145,7 @@ public class Hand
                         randomizer: hand._randomizer,
                         evaluator: hand._evaluator
                     );
-                    if (@event is StageIsFinishedEvent && hand._dealerIdx < hand._dealers.Count - 1) hand._dealerIdx++;
+                    if (@event is StageFinishedEvent && hand._dealerIdx < hand._dealers.Count - 1) hand._dealerIdx++;
                     break;
             }
         }
@@ -165,7 +165,7 @@ public class Hand
 
     public void Start()
     {
-        var @event = new HandIsStartedEvent
+        var @event = new HandStartedEvent
         {
             OccurredAt = DateTime.Now
         };
@@ -174,11 +174,11 @@ public class Hand
         StartDealer();
     }
 
-    public void CommitDecision(Nickname nickname, Decision decision)
+    public void SubmitPlayerAction(Nickname nickname, PlayerAction action)
     {
-        var events = Dealer.CommitDecision(
+        var events = Dealer.SubmitPlayerAction(
             nickname: nickname,
-            decision: decision,
+            action: action,
             rules: Rules,
             table: Table,
             pot: Pot,
@@ -190,7 +190,7 @@ public class Hand
         {
             AddEvent(e);
 
-            if (e is StageIsFinishedEvent)
+            if (e is StageFinishedEvent)
             {
                 StartNextDealerOrFinish();
                 break;
@@ -202,7 +202,7 @@ public class Hand
     {
         if (_dealerIdx == _dealers.Count - 1)
         {
-            var @event = new HandIsFinishedEvent
+            var @event = new HandFinishedEvent
             {
                 OccurredAt = DateTime.Now
             };
@@ -229,7 +229,7 @@ public class Hand
         {
             AddEvent(e);
 
-            if (e is StageIsFinishedEvent)
+            if (e is StageFinishedEvent)
             {
                 StartNextDealerOrFinish();
                 break;

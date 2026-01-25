@@ -27,9 +27,9 @@ public interface IDealer
         IEvaluator evaluator
     );
 
-    IEnumerable<IEvent> CommitDecision(
+    IEnumerable<IEvent> SubmitPlayerAction(
         Nickname nickname,
-        Decision decision,
+        PlayerAction action,
         Rules rules,
         Table table,
         Pot pot,

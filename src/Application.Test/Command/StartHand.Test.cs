@@ -35,11 +35,11 @@ public class StartHandTest
 
         var hand = Hand.FromEvents(response.Uid, randomizer, evaluator, await repository.GetEventsAsync(response.Uid));
         var state = hand.GetState();
-        Assert.Equal(2, state.Pot.UncommittedBets.Count);
+        Assert.Equal(2, state.Pot.CurrentBets.Count);
 
         var events = await eventDispatcher.GetDispatchedEventsAsync(response.Uid);
         Assert.Equal(12, events.Count);
-        Assert.IsType<HandIsStartedEvent>(events[0]);
+        Assert.IsType<HandStartedEvent>(events[0]);
     }
 
     private async Task<Guid> CreateHandAsync(

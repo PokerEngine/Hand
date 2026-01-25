@@ -3,13 +3,13 @@ using Domain.Event;
 
 namespace Application.Event;
 
-public class DecisionIsRequestedEventHandler(
+public class PlayerActionRequestedEventHandler(
     IIntegrationEventPublisher integrationEventPublisher
-) : IEventHandler<DecisionIsRequestedEvent>
+) : IEventHandler<PlayerActionRequestedEvent>
 {
-    public async Task HandleAsync(DecisionIsRequestedEvent @event, EventContext context)
+    public async Task HandleAsync(PlayerActionRequestedEvent @event, EventContext context)
     {
-        var integrationEvent = new DecisionIsRequestedIntegrationEvent
+        var integrationEvent = new PlayerActionRequestedIntegrationEvent
         {
             Uid = Guid.NewGuid(),
             OccurredAt = @event.OccurredAt,
@@ -26,7 +26,7 @@ public class DecisionIsRequestedEventHandler(
             MaxRaiseToAmount = @event.MaxRaiseToAmount
         };
 
-        var routingKey = new IntegrationEventRoutingKey($"hand.{context.TableType.ToRoutingKey()}.decision-is-requested");
+        var routingKey = new IntegrationEventRoutingKey($"hand.{context.TableType.ToRoutingKey()}.player-action-requested");
         await integrationEventPublisher.PublishAsync(integrationEvent, routingKey);
     }
 }

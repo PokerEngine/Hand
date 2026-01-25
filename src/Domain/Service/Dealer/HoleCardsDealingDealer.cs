@@ -17,7 +17,7 @@ public class HoleCardsDealingDealer(int count) : IDealer
         IEvaluator evaluator
     )
     {
-        var startEvent = new StageIsStartedEvent
+        var startEvent = new StageStartedEvent
         {
             OccurredAt = DateTime.Now
         };
@@ -32,7 +32,7 @@ public class HoleCardsDealingDealer(int count) : IDealer
             }
         }
 
-        var finishEvent = new StageIsFinishedEvent
+        var finishEvent = new StageFinishedEvent
         {
             OccurredAt = DateTime.Now
         };
@@ -50,12 +50,12 @@ public class HoleCardsDealingDealer(int count) : IDealer
         return players.Count > 1;
     }
 
-    private HoleCardsAreDealtEvent DealHoleCards(Player player, BaseDeck deck, IRandomizer randomizer)
+    private HoleCardsDealtEvent DealHoleCards(Player player, BaseDeck deck, IRandomizer randomizer)
     {
         var cards = deck.ExtractRandomCards(count, randomizer);
         player.TakeHoleCards(cards);
 
-        var @event = new HoleCardsAreDealtEvent
+        var @event = new HoleCardsDealtEvent
         {
             Nickname = player.Nickname,
             Cards = cards,
@@ -76,21 +76,21 @@ public class HoleCardsDealingDealer(int count) : IDealer
     {
         switch (@event)
         {
-            case HoleCardsAreDealtEvent e:
+            case HoleCardsDealtEvent e:
                 table.GetPlayerByNickname(e.Nickname).TakeHoleCards(deck.ExtractCertainCards(e.Cards));
                 break;
-            case StageIsStartedEvent:
+            case StageStartedEvent:
                 break;
-            case StageIsFinishedEvent:
+            case StageFinishedEvent:
                 break;
             default:
                 throw new InvalidOperationException($"{@event.GetType().Name} is not supported");
         }
     }
 
-    public IEnumerable<IEvent> CommitDecision(
+    public IEnumerable<IEvent> SubmitPlayerAction(
         Nickname nickname,
-        Decision decision,
+        PlayerAction action,
         Rules rules,
         Table table,
         Pot pot,
@@ -99,6 +99,6 @@ public class HoleCardsDealingDealer(int count) : IDealer
         IEvaluator evaluator
     )
     {
-        throw new InvalidOperationException("The player cannot commit a decision during this stage");
+        throw new InvalidOperationException("The player cannot act during this stage");
     }
 }

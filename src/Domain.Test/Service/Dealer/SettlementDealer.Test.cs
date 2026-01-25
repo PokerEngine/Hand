@@ -41,7 +41,7 @@ public class SettlementDealerTest
         playerA.Fold();
         playerB.Fold();
         pot.RefundBet(playerC.Nickname, 15);
-        pot.CommitBets();
+        pot.CollectBets();
 
         // Act
         var events = dealer.Start(
@@ -55,13 +55,13 @@ public class SettlementDealerTest
 
         // Assert
         Assert.Equal(4, events.Count);
-        Assert.IsType<StageIsStartedEvent>(events[0]);
-        var muckEvent = Assert.IsType<HoleCardsAreMuckedEvent>(events[1]);
+        Assert.IsType<StageStartedEvent>(events[0]);
+        var muckEvent = Assert.IsType<HoleCardsMuckedEvent>(events[1]);
         Assert.Equal(playerC.Nickname, muckEvent.Nickname);
-        var winEvent = Assert.IsType<AwardIsCommittedEvent>(events[2]);
-        Assert.Equal([playerC.Nickname], winEvent.Nicknames);
-        Assert.Equal(new Chips(25), winEvent.Amount);
-        Assert.IsType<StageIsFinishedEvent>(events[3]);
+        var awardEvent = Assert.IsType<SidePotAwardedEvent>(events[2]);
+        Assert.Equal([playerC.Nickname], awardEvent.Winners);
+        Assert.Equal(new Chips(25), awardEvent.SidePot.TotalAmount);
+        Assert.IsType<StageFinishedEvent>(events[3]);
     }
 
     [Fact]
@@ -94,7 +94,7 @@ public class SettlementDealerTest
         playerA.Fold();
         playerB.Post(15);
         pot.PostBet(playerB.Nickname, 15); // Call 25
-        pot.CommitBets();
+        pot.CollectBets();
         table.TakeBoardCards("Ad9d6c6dTs");
 
         var comboB = new Combo(ComboType.TwoPair, 10);
@@ -114,19 +114,19 @@ public class SettlementDealerTest
 
         // Assert
         Assert.Equal(5, events.Count);
-        Assert.IsType<StageIsStartedEvent>(events[0]);
-        var showEventB = Assert.IsType<HoleCardsAreShownEvent>(events[1]);
+        Assert.IsType<StageStartedEvent>(events[0]);
+        var showEventB = Assert.IsType<HoleCardsShownEvent>(events[1]);
         Assert.Equal(playerB.Nickname, showEventB.Nickname);
         Assert.Equal(playerB.HoleCards, showEventB.Cards);
         Assert.Equal(comboB, showEventB.Combo);
-        var showEventC = Assert.IsType<HoleCardsAreShownEvent>(events[2]);
+        var showEventC = Assert.IsType<HoleCardsShownEvent>(events[2]);
         Assert.Equal(playerC.Nickname, showEventC.Nickname);
         Assert.Equal(playerC.HoleCards, showEventC.Cards);
         Assert.Equal(comboC, showEventC.Combo);
-        var winEvent = Assert.IsType<AwardIsCommittedEvent>(events[3]);
-        Assert.Equal([playerC.Nickname], winEvent.Nicknames);
-        Assert.Equal(new Chips(55), winEvent.Amount);
-        Assert.IsType<StageIsFinishedEvent>(events[4]);
+        var awardEvent = Assert.IsType<SidePotAwardedEvent>(events[3]);
+        Assert.Equal([playerC.Nickname], awardEvent.Winners);
+        Assert.Equal(new Chips(55), awardEvent.SidePot.TotalAmount);
+        Assert.IsType<StageFinishedEvent>(events[4]);
     }
 
     [Fact]
@@ -159,7 +159,7 @@ public class SettlementDealerTest
         playerA.Fold();
         playerB.Post(15);
         pot.PostBet(playerB.Nickname, 15); // Call 25
-        pot.CommitBets();
+        pot.CollectBets();
         table.TakeBoardCards("Ad9d6c6dTs");
 
         var comboB = new Combo(ComboType.Trips, 20);
@@ -179,17 +179,17 @@ public class SettlementDealerTest
 
         // Assert
         Assert.Equal(5, events.Count);
-        Assert.IsType<StageIsStartedEvent>(events[0]);
-        var showEventB = Assert.IsType<HoleCardsAreShownEvent>(events[1]);
+        Assert.IsType<StageStartedEvent>(events[0]);
+        var showEventB = Assert.IsType<HoleCardsShownEvent>(events[1]);
         Assert.Equal(playerB.Nickname, showEventB.Nickname);
         Assert.Equal(playerB.HoleCards, showEventB.Cards);
         Assert.Equal(comboB, showEventB.Combo);
-        var showEventC = Assert.IsType<HoleCardsAreMuckedEvent>(events[2]);
+        var showEventC = Assert.IsType<HoleCardsMuckedEvent>(events[2]);
         Assert.Equal(playerC.Nickname, showEventC.Nickname);
-        var winEvent = Assert.IsType<AwardIsCommittedEvent>(events[3]);
-        Assert.Equal([playerB.Nickname], winEvent.Nicknames);
-        Assert.Equal(new Chips(55), winEvent.Amount);
-        Assert.IsType<StageIsFinishedEvent>(events[4]);
+        var awardEvent = Assert.IsType<SidePotAwardedEvent>(events[3]);
+        Assert.Equal([playerB.Nickname], awardEvent.Winners);
+        Assert.Equal(new Chips(55), awardEvent.SidePot.TotalAmount);
+        Assert.IsType<StageFinishedEvent>(events[4]);
     }
 
     [Fact]
@@ -201,7 +201,7 @@ public class SettlementDealerTest
         var pot = CreatePot();
         var playerA = CreatePlayer("Alice", 1, 800);
         var playerB = CreatePlayer("Bobby", 2, 900);
-        var playerC = CreatePlayer("Charlie", 6, 1000);
+        var playerC = CreatePlayer("Charlie", 6);
         var table = CreateTable(
             players: [playerA, playerB, playerC],
             smallBlindSeat: 1,
@@ -230,7 +230,7 @@ public class SettlementDealerTest
         playerB.Post(660);
         pot.PostBet(playerB.Nickname, 660); // Call 900 (all-in)
         pot.RefundBet(playerC.Nickname, 100);
-        pot.CommitBets();
+        pot.CollectBets();
         table.TakeBoardCards("Ad9d6c6dTs");
 
         var comboA = new Combo(ComboType.TwoPair, 30);
@@ -252,26 +252,26 @@ public class SettlementDealerTest
 
         // Assert
         Assert.Equal(7, events.Count);
-        Assert.IsType<StageIsStartedEvent>(events[0]);
-        var showEventA = Assert.IsType<HoleCardsAreShownEvent>(events[1]);
+        Assert.IsType<StageStartedEvent>(events[0]);
+        var showEventA = Assert.IsType<HoleCardsShownEvent>(events[1]);
         Assert.Equal(playerA.Nickname, showEventA.Nickname);
         Assert.Equal(playerA.HoleCards, showEventA.Cards);
         Assert.Equal(comboA, showEventA.Combo);
-        var showEventB = Assert.IsType<HoleCardsAreShownEvent>(events[2]);
+        var showEventB = Assert.IsType<HoleCardsShownEvent>(events[2]);
         Assert.Equal(playerB.Nickname, showEventB.Nickname);
         Assert.Equal(playerB.HoleCards, showEventB.Cards);
         Assert.Equal(comboB, showEventB.Combo);
-        var showEventC = Assert.IsType<HoleCardsAreShownEvent>(events[3]);
+        var showEventC = Assert.IsType<HoleCardsShownEvent>(events[3]);
         Assert.Equal(playerC.Nickname, showEventC.Nickname);
         Assert.Equal(playerC.HoleCards, showEventC.Cards);
         Assert.Equal(comboC, showEventC.Combo);
-        var winEvent1 = Assert.IsType<AwardIsCommittedEvent>(events[4]);
-        Assert.Equal([playerA.Nickname], winEvent1.Nicknames);
-        Assert.Equal(new Chips(2400), winEvent1.Amount);
-        var winEvent2 = Assert.IsType<AwardIsCommittedEvent>(events[5]);
-        Assert.Equal([playerC.Nickname], winEvent2.Nicknames);
-        Assert.Equal(new Chips(200), winEvent2.Amount);
-        Assert.IsType<StageIsFinishedEvent>(events[6]);
+        var awardEvent1 = Assert.IsType<SidePotAwardedEvent>(events[4]);
+        Assert.Equal([playerA.Nickname], awardEvent1.Winners);
+        Assert.Equal(new Chips(2400), awardEvent1.SidePot.TotalAmount);
+        var awardEvent2 = Assert.IsType<SidePotAwardedEvent>(events[5]);
+        Assert.Equal([playerC.Nickname], awardEvent2.Winners);
+        Assert.Equal(new Chips(200), awardEvent2.SidePot.TotalAmount);
+        Assert.IsType<StageFinishedEvent>(events[6]);
     }
 
     private Pot CreatePot(int minBet = 10)

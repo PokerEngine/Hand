@@ -3,24 +3,23 @@ using Domain.Event;
 
 namespace Application.Event;
 
-public class SmallBlindIsPostedEventHandler(
+public class BoardCardsDealtEventHandler(
     IIntegrationEventPublisher integrationEventPublisher
-) : IEventHandler<SmallBlindIsPostedEvent>
+) : IEventHandler<BoardCardsDealtEvent>
 {
-    public async Task HandleAsync(SmallBlindIsPostedEvent @event, EventContext context)
+    public async Task HandleAsync(BoardCardsDealtEvent @event, EventContext context)
     {
-        var integrationEvent = new BlindIsPostedIntegrationEvent
+        var integrationEvent = new BoardCardsDealtIntegrationEvent
         {
             Uid = Guid.NewGuid(),
             OccurredAt = @event.OccurredAt,
             HandUid = context.HandUid,
             TableUid = context.TableUid,
             TableType = context.TableType.ToString(),
-            Nickname = @event.Nickname,
-            Amount = @event.Amount
+            Cards = @event.Cards.ToString()
         };
 
-        var routingKey = new IntegrationEventRoutingKey($"hand.{context.TableType.ToRoutingKey()}.blind-is-posted");
+        var routingKey = new IntegrationEventRoutingKey($"hand.{context.TableType.ToRoutingKey()}.board-cards-dealt");
         await integrationEventPublisher.PublishAsync(integrationEvent, routingKey);
     }
 }

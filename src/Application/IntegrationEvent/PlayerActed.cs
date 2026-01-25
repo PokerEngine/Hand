@@ -1,6 +1,6 @@
 namespace Application.IntegrationEvent;
 
-public record BlindIsPostedIntegrationEvent : IIntegrationEvent
+public record PlayerActedIntegrationEvent : IIntegrationEvent
 {
     public required Guid Uid { init; get; }
     public Guid? CorrelationUid { init; get; }
@@ -11,5 +11,6 @@ public record BlindIsPostedIntegrationEvent : IIntegrationEvent
     public required string TableType { get; init; }
 
     public required string Nickname { get; init; }
+    public required string Type { get; init; }
     public required int Amount { get; init; }
 }

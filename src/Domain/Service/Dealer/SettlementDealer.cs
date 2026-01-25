@@ -17,7 +17,7 @@ public class SettlementDealer : IDealer
         IEvaluator evaluator
     )
     {
-        var startEvent = new StageIsStartedEvent
+        var startEvent = new StageStartedEvent
         {
             OccurredAt = DateTime.Now
         };
@@ -42,7 +42,7 @@ public class SettlementDealer : IDealer
             yield return e;
         }
 
-        var finishEvent = new StageIsFinishedEvent
+        var finishEvent = new StageFinishedEvent
         {
             OccurredAt = DateTime.Now
         };
@@ -61,24 +61,25 @@ public class SettlementDealer : IDealer
     {
         switch (@event)
         {
-            case HoleCardsAreMuckedEvent:
+            case HoleCardsMuckedEvent:
                 break;
-            case HoleCardsAreShownEvent:
+            case HoleCardsShownEvent:
                 break;
-            case AwardIsCommittedEvent:
+            case SidePotAwardedEvent e:
+                pot.WinSidePot(e.SidePot, e.Winners);
                 break;
-            case StageIsStartedEvent:
+            case StageStartedEvent:
                 break;
-            case StageIsFinishedEvent:
+            case StageFinishedEvent:
                 break;
             default:
                 throw new InvalidOperationException($"{@event.GetType().Name} is not supported");
         }
     }
 
-    public IEnumerable<IEvent> CommitDecision(
+    public IEnumerable<IEvent> SubmitPlayerAction(
         Nickname nickname,
-        Decision decision,
+        PlayerAction action,
         Rules rules,
         Table table,
         Pot pot,
@@ -87,7 +88,7 @@ public class SettlementDealer : IDealer
         IEvaluator evaluator
     )
     {
-        throw new InvalidOperationException("The player cannot commit a decision during this stage");
+        throw new InvalidOperationException("The player cannot act during this stage");
     }
 
     private bool IsShowdownNeeded(Table table)
@@ -99,7 +100,7 @@ public class SettlementDealer : IDealer
     {
         var player = table.Players.Where(IsAvailable).First();
 
-        var muckEvent = new HoleCardsAreMuckedEvent
+        var muckEvent = new HoleCardsMuckedEvent
         {
             Nickname = player.Nickname,
             OccurredAt = DateTime.Now
@@ -109,10 +110,10 @@ public class SettlementDealer : IDealer
         var sidePot = pot.CalculateSidePots([player.Nickname]).First();
         pot.WinSidePot(sidePot, [player.Nickname]);
 
-        var awardEvent = new AwardIsCommittedEvent
+        var awardEvent = new SidePotAwardedEvent
         {
-            Nicknames = sidePot.Competitors.ToHashSet(),
-            Amount = sidePot.TotalAmount,
+            SidePot = sidePot,
+            Winners = sidePot.Competitors.ToHashSet(),
             OccurredAt = DateTime.Now
         };
         yield return awardEvent;
@@ -127,7 +128,7 @@ public class SettlementDealer : IDealer
 
         foreach (var player in players)
         {
-            var showEvent = new HoleCardsAreShownEvent
+            var showEvent = new HoleCardsShownEvent
             {
                 Nickname = player.Nickname,
                 Cards = player.HoleCards,
@@ -162,10 +163,10 @@ public class SettlementDealer : IDealer
 
             pot.WinSidePot(sidePot, winners);
 
-            var awardEvent = new AwardIsCommittedEvent
+            var awardEvent = new SidePotAwardedEvent
             {
-                Nicknames = winners,
-                Amount = sidePot.TotalAmount,
+                SidePot = sidePot,
+                Winners = winners,
                 OccurredAt = DateTime.Now
             };
             yield return awardEvent;
@@ -187,7 +188,7 @@ public class SettlementDealer : IDealer
 
             if (combo.Weight < winnerCombo.Weight)
             {
-                var muckEvent = new HoleCardsAreMuckedEvent
+                var muckEvent = new HoleCardsMuckedEvent
                 {
                     Nickname = player.Nickname,
                     OccurredAt = DateTime.Now
@@ -198,7 +199,7 @@ public class SettlementDealer : IDealer
             {
                 winners.Add(player.Nickname);
 
-                var showEvent = new HoleCardsAreShownEvent
+                var showEvent = new HoleCardsShownEvent
                 {
                     Nickname = player.Nickname,
                     Cards = player.HoleCards,
@@ -213,7 +214,7 @@ public class SettlementDealer : IDealer
                 winners.Clear();
                 winners.Add(player.Nickname);
 
-                var showEvent = new HoleCardsAreShownEvent
+                var showEvent = new HoleCardsShownEvent
                 {
                     Nickname = player.Nickname,
                     Cards = player.HoleCards,
@@ -227,10 +228,10 @@ public class SettlementDealer : IDealer
         var sidePot = pot.CalculateSidePots(winners).First();
         pot.WinSidePot(sidePot, winners);
 
-        var awardEvent = new AwardIsCommittedEvent
+        var awardEvent = new SidePotAwardedEvent
         {
-            Nicknames = sidePot.Competitors.ToHashSet(),
-            Amount = sidePot.TotalAmount,
+            SidePot = sidePot,
+            Winners = sidePot.Competitors.ToHashSet(),
             OccurredAt = DateTime.Now
         };
         yield return awardEvent;

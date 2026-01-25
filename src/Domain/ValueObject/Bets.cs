@@ -3,7 +3,7 @@ using System.Collections.Immutable;
 
 namespace Domain.ValueObject;
 
-public readonly struct Bets : IEnumerable<KeyValuePair<Nickname, Chips>>
+public readonly struct Bets : IEnumerable<KeyValuePair<Nickname, Chips>>, IEquatable<Bets>
 {
     private readonly ImmutableDictionary<Nickname, Chips> _mapping;
 
@@ -108,6 +108,12 @@ public readonly struct Bets : IEnumerable<KeyValuePair<Nickname, Chips>>
     }
 
     IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
+
+    public bool Equals(Bets other)
+    {
+        return _mapping.Count == other._mapping.Count
+               && _mapping.All(kv => other._mapping.TryGetValue(kv.Key, out var v) && kv.Value == v);
+    }
 
     public override string ToString()
     {

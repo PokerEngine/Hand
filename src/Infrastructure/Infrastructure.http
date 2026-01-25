@@ -44,14 +44,14 @@ Content-Type: application/json
 
 {}
 
-### Commit a decision
-POST {{Infrastructure_HostAddress}}/api/hand/{{handUid}}/commit-decision/charlie
+### Submit a player action
+POST {{Infrastructure_HostAddress}}/api/hand/{{handUid}}/submit-player-action/charlie
 Accept: application/json
 Content-Type: application/json
 
 {
-    "decisionType": "RaiseTo",
-    "decisionAmount": 25
+    "Type": "RaiseTo",
+    "Amount": 25
 }
 
 ### Get the hand

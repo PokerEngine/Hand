@@ -1,6 +1,6 @@
 namespace Application.IntegrationEvent;
 
-public record AwardIsCommittedIntegrationEvent : IIntegrationEvent
+public record SidePotAwardedIntegrationEvent : IIntegrationEvent
 {
     public required Guid Uid { init; get; }
     public Guid? CorrelationUid { init; get; }
@@ -10,6 +10,6 @@ public record AwardIsCommittedIntegrationEvent : IIntegrationEvent
     public required Guid TableUid { get; init; }
     public required string TableType { get; init; }
 
-    public required List<string> Nicknames { get; init; }
+    public required List<string> Winners { get; init; }
     public required int Amount { get; init; }
 }

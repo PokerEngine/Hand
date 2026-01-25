@@ -8,10 +8,10 @@ using Domain.Event;
 
 namespace Application.Test.Command;
 
-public class CommitDecisionTest
+public class SubmitPlayerActionTest
 {
     [Fact]
-    public async Task HandleAsync_Valid_ShouldCommitDecision()
+    public async Task HandleAsync_Valid_ShouldSubmitPlayerAction()
     {
         // Arrange
         var repository = new StubRepository();
@@ -22,14 +22,14 @@ public class CommitDecisionTest
         await StartHandAsync(handUid, repository, eventDispatcher, randomizer, evaluator);
         await eventDispatcher.ClearDispatchedEventsAsync(handUid);
 
-        var command = new CommitDecisionCommand
+        var command = new SubmitPlayerActionCommand
         {
             Uid = handUid,
             Nickname = "Charlie",
             Type = "RaiseTo",
             Amount = 25,
         };
-        var handler = new CommitDecisionHandler(repository, eventDispatcher, randomizer, evaluator);
+        var handler = new SubmitPlayerActionHandler(repository, eventDispatcher, randomizer, evaluator);
 
         // Act
         var response = await handler.HandleAsync(command);
@@ -39,11 +39,11 @@ public class CommitDecisionTest
 
         var hand = Hand.FromEvents(response.Uid, randomizer, evaluator, await repository.GetEventsAsync(response.Uid));
         var state = hand.GetState();
-        Assert.Equal(3, state.Pot.UncommittedBets.Count);
+        Assert.Equal(3, state.Pot.CurrentBets.Count);
 
         var events = await eventDispatcher.GetDispatchedEventsAsync(response.Uid);
         Assert.Equal(2, events.Count);
-        Assert.IsType<DecisionIsCommittedEvent>(events[0]);
+        Assert.IsType<PlayerActedEvent>(events[0]);
     }
 
     private async Task<Guid> CreateHandAsync(

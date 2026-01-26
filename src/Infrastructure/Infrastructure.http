@@ -37,13 +37,6 @@ Content-Type: application/json
     client.global.set("handUid", response.body.uid);
 %}
 
-### Start the hand
-POST {{Infrastructure_HostAddress}}/api/hand/{{handUid}}/start
-Accept: application/json
-Content-Type: application/json
-
-{}
-
 ### Submit a player action
 POST {{Infrastructure_HostAddress}}/api/hand/{{handUid}}/submit-player-action/charlie
 Accept: application/json

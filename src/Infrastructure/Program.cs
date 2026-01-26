@@ -37,7 +37,6 @@ public static class Bootstrapper
         builder.Services.AddSingleton<IRepository, MongoDbRepository>();
 
         // Register commands
-        RegisterCommandHandler<CreateHandCommand, CreateHandHandler, CreateHandResponse>(builder.Services);
         RegisterCommandHandler<StartHandCommand, StartHandHandler, StartHandResponse>(builder.Services);
         RegisterCommandHandler<SubmitPlayerActionCommand, SubmitPlayerActionHandler, SubmitPlayerActionResponse>(builder.Services);
         builder.Services.AddScoped<ICommandDispatcher, CommandDispatcher>();
@@ -47,7 +46,6 @@ public static class Bootstrapper
         builder.Services.AddScoped<IQueryDispatcher, QueryDispatcher>();
 
         // Register domain events
-        RegisterEventHandler<HandCreatedEvent, HandCreatedEventHandler>(builder.Services);
         RegisterEventHandler<HandStartedEvent, HandStartedEventHandler>(builder.Services);
         RegisterEventHandler<HandFinishedEvent, HandFinishedEventHandler>(builder.Services);
         RegisterEventHandler<SmallBlindPostedEvent, SmallBlindPostedEventHandler>(builder.Services);

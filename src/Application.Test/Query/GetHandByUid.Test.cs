@@ -18,8 +18,7 @@ public class GetHandByUidTest
         var eventDispatcher = new StubEventDispatcher();
         var randomizer = new StubRandomizer();
         var evaluator = new StubEvaluator();
-        var handUid = await CreateHandAsync(repository, eventDispatcher, randomizer, evaluator);
-        await StartHandAsync(handUid, repository, eventDispatcher, randomizer, evaluator);
+        var handUid = await StartHandAsync(repository, eventDispatcher, randomizer, evaluator);
 
         var query = new GetHandByUidQuery { Uid = handUid };
         var handler = new GetHandByUidHandler(repository, randomizer, evaluator);
@@ -64,14 +63,14 @@ public class GetHandByUidTest
         Assert.Equal("The hand is not found", exc.Message);
     }
 
-    private async Task<Guid> CreateHandAsync(
+    private async Task<Guid> StartHandAsync(
         StubRepository repository,
         StubEventDispatcher eventDispatcher,
         StubRandomizer randomizer,
         StubEvaluator evaluator)
     {
-        var handler = new CreateHandHandler(repository, eventDispatcher, randomizer, evaluator);
-        var command = new CreateHandCommand
+        var handler = new StartHandHandler(repository, eventDispatcher, randomizer, evaluator);
+        var command = new StartHandCommand
         {
             TableUid = Guid.NewGuid(),
             TableType = "Cash",
@@ -105,20 +104,5 @@ public class GetHandByUidTest
         };
         var response = await handler.HandleAsync(command);
         return response.Uid;
-    }
-
-    private async Task StartHandAsync(
-        Guid uid,
-        StubRepository repository,
-        StubEventDispatcher eventDispatcher,
-        StubRandomizer randomizer,
-        StubEvaluator evaluator)
-    {
-        var handler = new StartHandHandler(repository, eventDispatcher, randomizer, evaluator);
-        var command = new StartHandCommand
-        {
-            Uid = uid
-        };
-        await handler.HandleAsync(command);
     }
 }

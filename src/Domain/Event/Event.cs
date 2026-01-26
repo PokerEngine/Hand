@@ -7,7 +7,7 @@ public interface IEvent
     DateTime OccurredAt { init; get; }
 }
 
-public record struct HandCreatedEvent : IEvent
+public record struct HandStartedEvent : IEvent
 {
     public required DateTime OccurredAt { get; init; }
 
@@ -17,7 +17,7 @@ public record struct HandCreatedEvent : IEvent
     public required Positions Positions { get; init; }
     public required List<Participant> Participants { get; init; }
 
-    public bool Equals(HandCreatedEvent other)
+    public bool Equals(HandStartedEvent other)
     {
         return OccurredAt.Equals(other.OccurredAt)
                && TableUid.Equals(other.TableUid)
@@ -45,11 +45,6 @@ public record struct HandCreatedEvent : IEvent
 
         return hash.ToHashCode();
     }
-}
-
-public record struct HandStartedEvent : IEvent
-{
-    public required DateTime OccurredAt { get; init; }
 }
 
 public record struct HandFinishedEvent : IEvent

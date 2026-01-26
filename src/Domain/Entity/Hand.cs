@@ -81,7 +81,7 @@ public class Hand
             dealers: factory.GetDealers(rules)
         );
 
-        var @event = new HandCreatedEvent
+        var @event = new HandStartedEvent
         {
             TableUid = tableUid,
             TableType = tableType,
@@ -102,12 +102,12 @@ public class Hand
         List<IEvent> events
     )
     {
-        if (events.Count == 0 || events[0] is not HandCreatedEvent)
+        if (events.Count == 0 || events[0] is not HandStartedEvent)
         {
-            throw new InvalidOperationException("The first event must be a HandCreatedEvent");
+            throw new InvalidOperationException("The first event must be a HandStartedEvent");
         }
 
-        var createdEvent = (HandCreatedEvent)events[0];
+        var createdEvent = (HandStartedEvent)events[0];
         var factory = FactoryRegistry.GetFactory(createdEvent.Rules.Game);
         var hand = new Hand(
             uid: uid,
@@ -129,8 +129,6 @@ public class Hand
         {
             switch (@event)
             {
-                case HandCreatedEvent:
-                    break;
                 case HandStartedEvent:
                     break;
                 case HandFinishedEvent:
@@ -165,12 +163,6 @@ public class Hand
 
     public void Start()
     {
-        var @event = new HandStartedEvent
-        {
-            OccurredAt = DateTime.Now
-        };
-        AddEvent(@event);
-
         StartDealer();
     }
 

@@ -13,12 +13,12 @@ public class HandController(
 ) : ControllerBase
 {
     [HttpPost]
-    [ProducesResponseType(typeof(CreateHandResponse), StatusCodes.Status201Created)]
+    [ProducesResponseType(typeof(StartHandResponse), StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-    public async Task<IActionResult> CreateHand([FromBody] CreateHandRequest request)
+    public async Task<IActionResult> StartHand([FromBody] StartHandRequest request)
     {
-        var command = new CreateHandCommand
+        var command = new StartHandCommand
         {
             TableUid = request.TableUid,
             TableType = request.TableType,
@@ -31,22 +31,8 @@ public class HandController(
             ButtonSeat = request.ButtonSeat,
             Participants = request.Participants.Select(DeserializeParticipant).ToList()
         };
-        var response = await commandDispatcher.DispatchAsync<CreateHandCommand, CreateHandResponse>(command);
-        return CreatedAtAction(nameof(GetHandByUid), new { uid = response.Uid }, response);
-    }
-
-    [HttpPost("{uid:guid}/start")]
-    [ProducesResponseType(typeof(StartHandResponse), StatusCodes.Status201Created)]
-    [ProducesResponseType(StatusCodes.Status409Conflict)]
-    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-    public async Task<IActionResult> StartHand(Guid uid)
-    {
-        var command = new StartHandCommand
-        {
-            Uid = uid
-        };
         var response = await commandDispatcher.DispatchAsync<StartHandCommand, StartHandResponse>(command);
-        return Ok(response);
+        return CreatedAtAction(nameof(GetHandByUid), new { uid = response.Uid }, response);
     }
 
     [HttpPost("{uid:guid}/submit-player-action/{nickname}")]
@@ -77,9 +63,9 @@ public class HandController(
         return Ok(response);
     }
 
-    private CommandParticipant DeserializeParticipant(RequestParticipant participant)
+    private StartHandCommandParticipant DeserializeParticipant(StartHandRequestParticipant participant)
     {
-        return new CommandParticipant
+        return new StartHandCommandParticipant
         {
             Nickname = participant.Nickname,
             Seat = participant.Seat,
@@ -88,7 +74,7 @@ public class HandController(
     }
 }
 
-public record CreateHandRequest
+public record StartHandRequest
 {
     public required Guid TableUid { get; init; }
     public required string TableType { get; init; }
@@ -99,10 +85,10 @@ public record CreateHandRequest
     public required int SmallBlindSeat { get; init; }
     public required int BigBlindSeat { get; init; }
     public required int ButtonSeat { get; init; }
-    public required List<RequestParticipant> Participants { get; init; }
+    public required List<StartHandRequestParticipant> Participants { get; init; }
 }
 
-public record RequestParticipant
+public record StartHandRequestParticipant
 {
     public required string Nickname { get; init; }
     public required int Seat { get; init; }

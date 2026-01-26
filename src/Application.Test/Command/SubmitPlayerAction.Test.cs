@@ -18,8 +18,7 @@ public class SubmitPlayerActionTest
         var eventDispatcher = new StubEventDispatcher();
         var randomizer = new StubRandomizer();
         var evaluator = new StubEvaluator();
-        var handUid = await CreateHandAsync(repository, eventDispatcher, randomizer, evaluator);
-        await StartHandAsync(handUid, repository, eventDispatcher, randomizer, evaluator);
+        var handUid = await StartHandAsync(repository, eventDispatcher, randomizer, evaluator);
         await eventDispatcher.ClearDispatchedEventsAsync(handUid);
 
         var command = new SubmitPlayerActionCommand
@@ -46,14 +45,14 @@ public class SubmitPlayerActionTest
         Assert.IsType<PlayerActedEvent>(events[0]);
     }
 
-    private async Task<Guid> CreateHandAsync(
+    private async Task<Guid> StartHandAsync(
         StubRepository repository,
         StubEventDispatcher eventDispatcher,
         StubRandomizer randomizer,
         StubEvaluator evaluator)
     {
-        var handler = new CreateHandHandler(repository, eventDispatcher, randomizer, evaluator);
-        var command = new CreateHandCommand
+        var handler = new StartHandHandler(repository, eventDispatcher, randomizer, evaluator);
+        var command = new StartHandCommand
         {
             TableUid = Guid.NewGuid(),
             TableType = "Cash",
@@ -87,20 +86,5 @@ public class SubmitPlayerActionTest
         };
         var response = await handler.HandleAsync(command);
         return response.Uid;
-    }
-
-    private async Task StartHandAsync(
-        Guid uid,
-        StubRepository repository,
-        StubEventDispatcher eventDispatcher,
-        StubRandomizer randomizer,
-        StubEvaluator evaluator)
-    {
-        var handler = new StartHandHandler(repository, eventDispatcher, randomizer, evaluator);
-        var command = new StartHandCommand
-        {
-            Uid = uid
-        };
-        await handler.HandleAsync(command);
     }
 }

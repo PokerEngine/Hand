@@ -26,8 +26,8 @@ public class SubmitPlayerActionTest
         {
             Uid = handUid,
             Nickname = "Charlie",
-            Type = "RaiseTo",
-            Amount = 25,
+            Type = "RaiseBy",
+            Amount = 25
         };
         var handler = new SubmitPlayerActionHandler(repository, eventDispatcher, randomizer, evaluator);
 

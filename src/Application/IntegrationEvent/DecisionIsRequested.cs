@@ -14,8 +14,8 @@ public record PlayerActionRequestedIntegrationEvent : IIntegrationEvent
     public required bool FoldIsAvailable { get; init; }
     public required bool CheckIsAvailable { get; init; }
     public required bool CallIsAvailable { get; init; }
-    public required int CallToAmount { get; init; }
+    public required int CallByAmount { get; init; }
     public required bool RaiseIsAvailable { get; init; }
-    public required int MinRaiseToAmount { get; init; }
-    public required int MaxRaiseToAmount { get; init; }
+    public required int MinRaiseByAmount { get; init; }
+    public required int MaxRaiseByAmount { get; init; }
 }

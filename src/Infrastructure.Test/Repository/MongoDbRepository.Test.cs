@@ -64,7 +64,7 @@ public class MongoDbRepositoryTest(MongoDbFixture fixture) : IClassFixture<Mongo
                     .Post(new Nickname("Charlie"), new Chips(25)),
                 new Chips(3)
             ),
-            Action = new PlayerAction(PlayerActionType.RaiseTo, new Chips(30)),
+            Action = new PlayerAction(PlayerActionType.RaiseBy, new Chips(30)),
             Combo = new Combo(ComboType.OnePair, 100500),
             OccurredAt = GetNow()
         };
@@ -133,7 +133,7 @@ public class MongoDbRepositoryTest(MongoDbFixture fixture) : IClassFixture<Mongo
                     .Post(new Nickname("Charlie"), new Chips(25)),
                 new Chips(3)
             ),
-            Action = new PlayerAction(PlayerActionType.RaiseTo, new Chips(30)),
+            Action = new PlayerAction(PlayerActionType.RaiseBy, new Chips(30)),
             Combo = new Combo(ComboType.OnePair, 100500),
             OccurredAt = GetNow()
         };

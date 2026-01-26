@@ -209,16 +209,16 @@ public class NoLimitHoldem6MaxHandTest
                 FoldIsAvailable = true,
                 CheckIsAvailable = false,
                 CallIsAvailable = true,
-                CallToAmount = new Chips(10),
+                CallByAmount = new Chips(10),
                 RaiseIsAvailable = true,
-                MinRaiseToAmount = new Chips(20),
-                MaxRaiseToAmount = new Chips(800),
+                MinRaiseByAmount = new Chips(20),
+                MaxRaiseByAmount = new Chips(800),
                 OccurredAt = new DateTime(2025, 1, 1)
             },
             new PlayerActedEvent
             {
                 Nickname = participantBu.Nickname,
-                Action = new PlayerAction(PlayerActionType.RaiseTo, new Chips(25)),
+                Action = new PlayerAction(PlayerActionType.RaiseBy, new Chips(25)),
                 OccurredAt = new DateTime(2025, 1, 1)
             },
             new PlayerActionRequestedEvent
@@ -227,16 +227,16 @@ public class NoLimitHoldem6MaxHandTest
                 FoldIsAvailable = true,
                 CheckIsAvailable = false,
                 CallIsAvailable = true,
-                CallToAmount = new Chips(25),
+                CallByAmount = new Chips(20),
                 RaiseIsAvailable = true,
-                MinRaiseToAmount = new Chips(40),
-                MaxRaiseToAmount = new Chips(1000),
+                MinRaiseByAmount = new Chips(35),
+                MaxRaiseByAmount = new Chips(1000),
                 OccurredAt = new DateTime(2025, 1, 1)
             },
             new PlayerActedEvent
             {
                 Nickname = participantSb.Nickname,
-                Action = new PlayerAction(PlayerActionType.Fold, new Chips(0)),
+                Action = new PlayerAction(PlayerActionType.Fold),
                 OccurredAt = new DateTime(2025, 1, 1)
             },
             new PlayerActionRequestedEvent
@@ -245,16 +245,16 @@ public class NoLimitHoldem6MaxHandTest
                 FoldIsAvailable = true,
                 CheckIsAvailable = false,
                 CallIsAvailable = true,
-                CallToAmount = new Chips(25),
+                CallByAmount = new Chips(15),
                 RaiseIsAvailable = true,
-                MinRaiseToAmount = new Chips(40),
-                MaxRaiseToAmount = new Chips(900),
+                MinRaiseByAmount = new Chips(30),
+                MaxRaiseByAmount = new Chips(900),
                 OccurredAt = new DateTime(2025, 1, 1)
             },
             new PlayerActedEvent
             {
                 Nickname = participantBb.Nickname,
-                Action = new PlayerAction(PlayerActionType.Call),
+                Action = new PlayerAction(PlayerActionType.CallBy, new Chips(15)),
                 OccurredAt = new DateTime(2025, 1, 1)
             },
             new BetsCollectedEvent
@@ -288,16 +288,16 @@ public class NoLimitHoldem6MaxHandTest
                 FoldIsAvailable = false,
                 CheckIsAvailable = true,
                 CallIsAvailable = false,
-                CallToAmount = new Chips(0),
+                CallByAmount = new Chips(0),
                 RaiseIsAvailable = true,
-                MinRaiseToAmount = new Chips(10),
-                MaxRaiseToAmount = new Chips(875),
+                MinRaiseByAmount = new Chips(10),
+                MaxRaiseByAmount = new Chips(875),
                 OccurredAt = new DateTime(2025, 1, 1)
             },
             new PlayerActedEvent
             {
                 Nickname = participantBb.Nickname,
-                Action = new PlayerAction(PlayerActionType.Check, new Chips(0)),
+                Action = new PlayerAction(PlayerActionType.Check),
                 OccurredAt = new DateTime(2025, 1, 1)
             },
             new PlayerActionRequestedEvent
@@ -306,16 +306,16 @@ public class NoLimitHoldem6MaxHandTest
                 FoldIsAvailable = false,
                 CheckIsAvailable = true,
                 CallIsAvailable = false,
-                CallToAmount = new Chips(0),
+                CallByAmount = new Chips(0),
                 RaiseIsAvailable = true,
-                MinRaiseToAmount = new Chips(10),
-                MaxRaiseToAmount = new Chips(775),
+                MinRaiseByAmount = new Chips(10),
+                MaxRaiseByAmount = new Chips(775),
                 OccurredAt = new DateTime(2025, 1, 1)
             },
             new PlayerActedEvent
             {
                 Nickname = participantBu.Nickname,
-                Action = new PlayerAction(PlayerActionType.RaiseTo, new Chips(15)),
+                Action = new PlayerAction(PlayerActionType.RaiseBy, new Chips(15)),
                 OccurredAt = new DateTime(2025, 1, 1)
             },
             new PlayerActionRequestedEvent
@@ -324,16 +324,16 @@ public class NoLimitHoldem6MaxHandTest
                 FoldIsAvailable = true,
                 CheckIsAvailable = false,
                 CallIsAvailable = true,
-                CallToAmount = new Chips(15),
+                CallByAmount = new Chips(15),
                 RaiseIsAvailable = true,
-                MinRaiseToAmount = new Chips(30),
-                MaxRaiseToAmount = new Chips(875),
+                MinRaiseByAmount = new Chips(30),
+                MaxRaiseByAmount = new Chips(875),
                 OccurredAt = new DateTime(2025, 1, 1)
             },
             new PlayerActedEvent
             {
                 Nickname = participantBb.Nickname,
-                Action = new PlayerAction(PlayerActionType.Fold, new Chips(0)),
+                Action = new PlayerAction(PlayerActionType.Fold),
                 OccurredAt = new DateTime(2025, 1, 1)
             },
             new BetRefundedEvent
@@ -473,23 +473,23 @@ public class NoLimitHoldem6MaxHandTest
         hand.Start();
         hand.SubmitPlayerAction(
             nickname: new Nickname("Button"),
-            action: new PlayerAction(PlayerActionType.RaiseTo, new Chips(25))
+            action: new PlayerAction(PlayerActionType.RaiseBy, new Chips(25))
         );
         hand.SubmitPlayerAction(
             nickname: new Nickname("SmallBlind"),
-            action: new PlayerAction(PlayerActionType.Fold, new Chips(0))
+            action: new PlayerAction(PlayerActionType.Fold)
         );
         hand.SubmitPlayerAction(
             nickname: new Nickname("BigBlind"),
-            action: new PlayerAction(PlayerActionType.Call, new Chips(0))
+            action: new PlayerAction(PlayerActionType.CallBy, new Chips(15))
         );
         hand.SubmitPlayerAction(
             nickname: new Nickname("BigBlind"),
-            action: new PlayerAction(PlayerActionType.Check, new Chips(0))
+            action: new PlayerAction(PlayerActionType.Check)
         );
         hand.SubmitPlayerAction(
             nickname: new Nickname("Button"),
-            action: new PlayerAction(PlayerActionType.RaiseTo, new Chips(15))
+            action: new PlayerAction(PlayerActionType.RaiseBy, new Chips(15))
         );
 
         var state = hand.GetState();
@@ -581,7 +581,7 @@ public class NoLimitHoldem6MaxHandTest
 
         hand.SubmitPlayerAction(
             nickname: new Nickname("Button"),
-            action: new PlayerAction(PlayerActionType.RaiseTo, new Chips(25))
+            action: new PlayerAction(PlayerActionType.RaiseBy, new Chips(25))
         );
 
         events = hand.PullEvents();
@@ -593,7 +593,7 @@ public class NoLimitHoldem6MaxHandTest
 
         hand.SubmitPlayerAction(
             nickname: new Nickname("SmallBlind"),
-            action: new PlayerAction(PlayerActionType.Fold, new Chips(0))
+            action: new PlayerAction(PlayerActionType.Fold)
         );
 
         events = hand.PullEvents();
@@ -605,7 +605,7 @@ public class NoLimitHoldem6MaxHandTest
 
         hand.SubmitPlayerAction(
             nickname: new Nickname("BigBlind"),
-            action: new PlayerAction(PlayerActionType.Call, new Chips(0))
+            action: new PlayerAction(PlayerActionType.CallBy, new Chips(15))
         );
 
         events = hand.PullEvents();
@@ -624,7 +624,7 @@ public class NoLimitHoldem6MaxHandTest
 
         hand.SubmitPlayerAction(
             nickname: new Nickname("BigBlind"),
-            action: new PlayerAction(PlayerActionType.Check, new Chips(0))
+            action: new PlayerAction(PlayerActionType.Check)
         );
 
         events = hand.PullEvents();
@@ -636,7 +636,7 @@ public class NoLimitHoldem6MaxHandTest
 
         hand.SubmitPlayerAction(
             nickname: new Nickname("Button"),
-            action: new PlayerAction(PlayerActionType.RaiseTo, new Chips(15))
+            action: new PlayerAction(PlayerActionType.RaiseBy, new Chips(15))
         );
 
         events = hand.PullEvents();
@@ -648,7 +648,7 @@ public class NoLimitHoldem6MaxHandTest
 
         hand.SubmitPlayerAction(
             nickname: new Nickname("BigBlind"),
-            action: new PlayerAction(PlayerActionType.Fold, new Chips(0))
+            action: new PlayerAction(PlayerActionType.Fold)
         );
 
         events = hand.PullEvents();
@@ -706,7 +706,7 @@ public class NoLimitHoldem6MaxHandTest
 
         hand.SubmitPlayerAction(
             nickname: new Nickname("Button"),
-            action: new PlayerAction(PlayerActionType.Fold, new Chips(0))
+            action: new PlayerAction(PlayerActionType.Fold)
         );
 
         events = hand.PullEvents();
@@ -714,7 +714,7 @@ public class NoLimitHoldem6MaxHandTest
 
         hand.SubmitPlayerAction(
             nickname: new Nickname("SmallBlind"),
-            action: new PlayerAction(PlayerActionType.Fold, new Chips(0))
+            action: new PlayerAction(PlayerActionType.Fold)
         );
 
         events = hand.PullEvents();
@@ -793,7 +793,7 @@ public class NoLimitHoldem6MaxHandTest
 
         hand.SubmitPlayerAction(
             nickname: new Nickname("SmallBlind"),
-            action: new PlayerAction(PlayerActionType.RaiseTo, new Chips(25))
+            action: new PlayerAction(PlayerActionType.RaiseBy, new Chips(20))
         );
 
         events = hand.PullEvents();
@@ -805,7 +805,7 @@ public class NoLimitHoldem6MaxHandTest
 
         hand.SubmitPlayerAction(
             nickname: new Nickname("BigBlind"),
-            action: new PlayerAction(PlayerActionType.Call, new Chips(0))
+            action: new PlayerAction(PlayerActionType.CallBy, new Chips(15))
         );
 
         events = hand.PullEvents();
@@ -824,7 +824,7 @@ public class NoLimitHoldem6MaxHandTest
 
         hand.SubmitPlayerAction(
             nickname: new Nickname("BigBlind"),
-            action: new PlayerAction(PlayerActionType.Check, new Chips(0))
+            action: new PlayerAction(PlayerActionType.Check)
         );
 
         events = hand.PullEvents();
@@ -836,7 +836,7 @@ public class NoLimitHoldem6MaxHandTest
 
         hand.SubmitPlayerAction(
             nickname: new Nickname("SmallBlind"),
-            action: new PlayerAction(PlayerActionType.RaiseTo, new Chips(15))
+            action: new PlayerAction(PlayerActionType.RaiseBy, new Chips(15))
         );
 
         events = hand.PullEvents();
@@ -848,7 +848,7 @@ public class NoLimitHoldem6MaxHandTest
 
         hand.SubmitPlayerAction(
             nickname: new Nickname("BigBlind"),
-            action: new PlayerAction(PlayerActionType.Fold, new Chips(0))
+            action: new PlayerAction(PlayerActionType.Fold)
         );
 
         events = hand.PullEvents();

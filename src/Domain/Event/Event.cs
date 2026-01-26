@@ -106,10 +106,10 @@ public record struct PlayerActionRequestedEvent : IEvent
     public required bool FoldIsAvailable { get; init; }
     public required bool CheckIsAvailable { get; init; }
     public required bool CallIsAvailable { get; init; }
-    public required Chips CallToAmount { get; init; }
+    public required Chips CallByAmount { get; init; }
     public required bool RaiseIsAvailable { get; init; }
-    public required Chips MinRaiseToAmount { get; init; }
-    public required Chips MaxRaiseToAmount { get; init; }
+    public required Chips MinRaiseByAmount { get; init; }
+    public required Chips MaxRaiseByAmount { get; init; }
 }
 
 public record struct PlayerActedEvent : IEvent

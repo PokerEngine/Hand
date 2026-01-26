@@ -117,11 +117,11 @@ public abstract class BaseBettingDealer : IDealer
             case PlayerActionType.Check:
                 Check(player, pot);
                 break;
-            case PlayerActionType.Call:
-                Call(player, pot);
+            case PlayerActionType.CallBy:
+                CallBy(player, action.Amount, pot);
                 break;
-            case PlayerActionType.RaiseTo:
-                RaiseTo(player, action.Amount, pot);
+            case PlayerActionType.RaiseBy:
+                RaiseBy(player, action.Amount, pot);
                 break;
             default:
                 throw new InvalidOperationException($"{action} is not supported");
@@ -142,34 +142,32 @@ public abstract class BaseBettingDealer : IDealer
         }
 
         // We post zero chips for check to mark that the player has committed his action
-        player.Post(new Chips(0));
-        pot.PostBet(player.Nickname, new Chips(0));
+        player.Post(Chips.Zero);
+        pot.PostBet(player.Nickname, Chips.Zero);
     }
 
-    private void Call(Player player, Pot pot)
+    private void CallBy(Player player, Chips amount, Pot pot)
     {
-        var (isValid, reason) = CallIsValid(player, pot);
+        var (isValid, reason) = CallByIsValid(player, amount, pot);
         if (!isValid)
         {
-            throw new InvalidOperationException($"The player cannot call: {reason}");
+            throw new InvalidOperationException($"The player cannot call by {amount}: {reason}");
         }
 
-        var remainingAmount = GetCallAmount(player, pot) - pot.GetCurrentAmountPostedBy(player.Nickname);
-        player.Post(remainingAmount);
-        pot.PostBet(player.Nickname, remainingAmount);
+        player.Post(amount);
+        pot.PostBet(player.Nickname, amount);
     }
 
-    private void RaiseTo(Player player, Chips amount, Pot pot)
+    private void RaiseBy(Player player, Chips amount, Pot pot)
     {
-        var (isValid, reason) = RaiseToIsValid(player, amount, pot);
+        var (isValid, reason) = RaiseByIsValid(player, amount, pot);
         if (!isValid)
         {
-            throw new InvalidOperationException($"The player cannot raise to {amount}: {reason}");
+            throw new InvalidOperationException($"The player cannot raise by {amount}: {reason}");
         }
 
-        var remainingAmount = amount - pot.GetCurrentAmountPostedBy(player.Nickname);
-        player.Post(remainingAmount);
-        pot.PostBet(player.Nickname, remainingAmount);
+        player.Post(amount);
+        pot.PostBet(player.Nickname, amount);
     }
 
     private bool EnoughPlayers(Table table)
@@ -269,12 +267,12 @@ public abstract class BaseBettingDealer : IDealer
     {
         var (checkIsAvailable, _) = CheckIsValid(player, pot);
 
-        var (callIsAvailable, _) = CallIsValid(player, pot);
-        var callAmount = callIsAvailable ? GetCallAmount(player, pot) : new Chips(0);
+        var (callIsAvailable, _) = CallByIsValid(player, null, pot);
+        var callByAmount = callIsAvailable ? GetCallByAmount(player, pot) : Chips.Zero;
 
-        var (raiseIsAvailable, _) = RaiseToIsValid(player, null, pot);
-        var minRaiseToAmount = raiseIsAvailable ? GetMinRaiseToAmount(player, pot) : new Chips(0);
-        var maxRaiseToAmount = raiseIsAvailable ? GetMaxRaiseToAmount(player, pot) : new Chips(0);
+        var (raiseIsAvailable, _) = RaiseByIsValid(player, null, pot);
+        var minRaiseByAmount = raiseIsAvailable ? GetMinRaiseByAmount(player, pot) : Chips.Zero;
+        var maxRaiseByAmount = raiseIsAvailable ? GetMaxRaiseByAmount(player, pot) : Chips.Zero;
 
         var @event = new PlayerActionRequestedEvent
         {
@@ -282,10 +280,10 @@ public abstract class BaseBettingDealer : IDealer
             FoldIsAvailable = true,
             CheckIsAvailable = checkIsAvailable,
             CallIsAvailable = callIsAvailable,
-            CallToAmount = callAmount,
+            CallByAmount = callByAmount,
             RaiseIsAvailable = raiseIsAvailable,
-            MinRaiseToAmount = minRaiseToAmount,
-            MaxRaiseToAmount = maxRaiseToAmount,
+            MinRaiseByAmount = minRaiseByAmount,
+            MaxRaiseByAmount = maxRaiseByAmount,
             OccurredAt = DateTime.Now
         };
         return @event;
@@ -312,7 +310,7 @@ public abstract class BaseBettingDealer : IDealer
         return (true, string.Empty);
     }
 
-    private (bool, string) CallIsValid(Player player, Pot pot)
+    private (bool, string) CallByIsValid(Player player, Chips? amount, Pot pot)
     {
         var playerPostedAmount = pot.GetCurrentAmountPostedBy(player.Nickname);
         var otherMaxPostedAmount = pot.GetCurrentMaxAmountPostedNotBy(player.Nickname);
@@ -327,16 +325,25 @@ public abstract class BaseBettingDealer : IDealer
             return (false, "There is no raise to call");
         }
 
+        if (amount is not null)
+        {
+            var callByAmount = GetCallByAmount(player, pot);
+            if (amount != callByAmount)
+            {
+                return (false, $"Should post {callByAmount}");
+            }
+        }
+
         return (true, string.Empty);
     }
 
-    private (bool, string) RaiseToIsValid(Player player, Chips? amount, Pot pot)
+    private (bool, string) RaiseByIsValid(Player player, Chips? amount, Pot pot)
     {
-        var callAmount = GetCallAmount(player, pot);
-        var minRaiseToAmount = GetMinRaiseToAmount(player, pot);
-        var maxRaiseToAmount = GetMaxRaiseToAmount(player, pot);
+        var callByAmount = GetCallByAmount(player, pot);
+        var minRaiseByAmount = GetMinRaiseByAmount(player, pot);
+        var maxRaiseByAmount = GetMaxRaiseByAmount(player, pot);
 
-        if (minRaiseToAmount == callAmount)
+        if (minRaiseByAmount == callByAmount)
         {
             return (false, "Not enough stack");
         }
@@ -348,14 +355,14 @@ public abstract class BaseBettingDealer : IDealer
 
         if (amount is not null)
         {
-            if (amount < minRaiseToAmount)
+            if (amount < minRaiseByAmount)
             {
-                return (false, $"Minimum is {minRaiseToAmount}");
+                return (false, $"Minimum is {minRaiseByAmount}");
             }
 
-            if (amount > maxRaiseToAmount)
+            if (amount > maxRaiseByAmount)
             {
-                return (false, $"Maximum is {maxRaiseToAmount}");
+                return (false, $"Maximum is {maxRaiseByAmount}");
             }
         }
 
@@ -382,42 +389,41 @@ public abstract class BaseBettingDealer : IDealer
         return true;
     }
 
-    private Chips GetCallAmount(Player player, Pot pot)
+    private Chips GetCallByAmount(Player player, Pot pot)
     {
-        var callAmount = pot.GetCurrentMaxAmountPostedNotBy(player.Nickname);
-        var playerTotalAmount = pot.GetCurrentAmountPostedBy(player.Nickname) + player.Stack;
-        return playerTotalAmount < callAmount ? playerTotalAmount : callAmount;
+        var otherMaxPostedAmount = pot.GetCurrentMaxAmountPostedNotBy(player.Nickname);
+        var playerPostedAmount = pot.GetCurrentAmountPostedBy(player.Nickname);
+        var callByAmount = otherMaxPostedAmount - playerPostedAmount;
+        return callByAmount < player.Stack ? callByAmount : player.Stack;
     }
 
-    private Chips GetMinRaiseToAmount(Player player, Pot pot)
+    private Chips GetMinRaiseByAmount(Player player, Pot pot)
     {
-        var minRaiseToAmount = pot.GetCurrentMaxAmountPostedNotBy(player.Nickname) + pot.LastRaisedStep;
-        var playerTotalAmount = pot.GetCurrentAmountPostedBy(player.Nickname) + player.Stack;
-        return playerTotalAmount < minRaiseToAmount ? playerTotalAmount : minRaiseToAmount;
+        var otherMaxPostedAmount = pot.GetCurrentMaxAmountPostedNotBy(player.Nickname);
+        var playerPostedAmount = pot.GetCurrentAmountPostedBy(player.Nickname);
+        var minRaiseByAmount = otherMaxPostedAmount - playerPostedAmount + pot.LastRaisedStep;
+        return minRaiseByAmount < player.Stack ? minRaiseByAmount : player.Stack;
     }
 
-    protected abstract Chips GetMaxRaiseToAmount(Player player, Pot pot);
+    protected abstract Chips GetMaxRaiseByAmount(Player player, Pot pot);
 }
 
 public class NoLimitBettingDealer : BaseBettingDealer
 {
-    protected override Chips GetMaxRaiseToAmount(Player player, Pot pot)
+    protected override Chips GetMaxRaiseByAmount(Player player, Pot pot)
     {
-        var playerTotalAmount = pot.GetCurrentAmountPostedBy(player.Nickname) + player.Stack;
-        return playerTotalAmount;
+        return player.Stack;
     }
 }
 
 public class PotLimitBettingDealer : BaseBettingDealer
 {
-    protected override Chips GetMaxRaiseToAmount(Player player, Pot pot)
+    protected override Chips GetMaxRaiseByAmount(Player player, Pot pot)
     {
-        var playerPostedAmount = pot.GetCurrentAmountPostedBy(player.Nickname);
         var otherMaxPostedAmount = pot.GetCurrentMaxAmountPostedNotBy(player.Nickname);
+        var playerPostedAmount = pot.GetCurrentAmountPostedBy(player.Nickname);
         var potTotalAmountAfterCall = pot.TotalAmount + otherMaxPostedAmount - playerPostedAmount;
-        var maxRaiseToAmount = otherMaxPostedAmount + potTotalAmountAfterCall;
-
-        var playerTotalAmount = playerPostedAmount + player.Stack;
-        return maxRaiseToAmount < playerTotalAmount ? maxRaiseToAmount : playerTotalAmount;
+        var maxRaiseByAmount = otherMaxPostedAmount + potTotalAmountAfterCall - playerPostedAmount;
+        return maxRaiseByAmount < player.Stack ? maxRaiseByAmount : player.Stack;
     }
 }

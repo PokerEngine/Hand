@@ -50,8 +50,8 @@ Accept: application/json
 Content-Type: application/json
 
 {
-    "Type": "RaiseTo",
-    "Amount": 25
+    "Type": "RaiseBy",
+    "Amount": 20
 }
 
 ### Get the hand

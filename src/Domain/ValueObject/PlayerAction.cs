@@ -4,8 +4,8 @@ public enum PlayerActionType
 {
     Fold,
     Check,
-    Call,
-    RaiseTo
+    CallBy,
+    RaiseBy
 }
 
 public readonly struct PlayerAction : IEquatable<PlayerAction>
@@ -15,12 +15,12 @@ public readonly struct PlayerAction : IEquatable<PlayerAction>
 
     public PlayerAction(PlayerActionType type, Chips amount = new())
     {
-        if ((type == PlayerActionType.Fold || type == PlayerActionType.Check || type == PlayerActionType.Call) && !!amount)
+        if ((type == PlayerActionType.Fold || type == PlayerActionType.Check) && !amount.IsZero)
         {
             throw new ArgumentException($"Amount must be zero for {type}", nameof(amount));
         }
 
-        if (type == PlayerActionType.RaiseTo && !amount)
+        if ((type == PlayerActionType.CallBy || type == PlayerActionType.RaiseBy) && amount.IsZero)
         {
             throw new ArgumentException($"Amount must be non-zero for {type}", nameof(amount));
         }

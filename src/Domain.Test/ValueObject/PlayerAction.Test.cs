@@ -7,8 +7,8 @@ public class PlayerActionTest
     [Theory]
     [InlineData(PlayerActionType.Fold, 0)]
     [InlineData(PlayerActionType.Check, 0)]
-    [InlineData(PlayerActionType.Call, 0)]
-    [InlineData(PlayerActionType.RaiseTo, 10)]
+    [InlineData(PlayerActionType.CallBy, 10)]
+    [InlineData(PlayerActionType.RaiseBy, 10)]
     public void TestInitialization(PlayerActionType type, int amount)
     {
         var action = new PlayerAction(type, new Chips(amount));
@@ -19,7 +19,6 @@ public class PlayerActionTest
     [Theory]
     [InlineData(PlayerActionType.Fold, 10)]
     [InlineData(PlayerActionType.Check, 10)]
-    [InlineData(PlayerActionType.Call, 10)]
     public void TestInitializationWithNonZeroAmount(PlayerActionType type, int amount)
     {
         var exc = Assert.Throws<ArgumentException>(() => new PlayerAction(type, new Chips(amount)));
@@ -27,7 +26,8 @@ public class PlayerActionTest
     }
 
     [Theory]
-    [InlineData(PlayerActionType.RaiseTo, 0)]
+    [InlineData(PlayerActionType.RaiseBy, 0)]
+    [InlineData(PlayerActionType.CallBy, 0)]
     public void TestInitializationWithZeroAmount(PlayerActionType type, int amount)
     {
         var exc = Assert.Throws<ArgumentException>(() => new PlayerAction(type, new Chips(amount)));
@@ -45,8 +45,8 @@ public class PlayerActionTest
     [Fact]
     public void TestRepresentationWithNonZeroAmount()
     {
-        var action = new PlayerAction(PlayerActionType.RaiseTo, new Chips(10));
+        var action = new PlayerAction(PlayerActionType.RaiseBy, new Chips(10));
 
-        Assert.Equal("RaiseTo [10 chip(s)]", $"{action}");
+        Assert.Equal("RaiseBy [10 chip(s)]", $"{action}");
     }
 }

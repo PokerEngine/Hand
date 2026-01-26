@@ -88,10 +88,10 @@ public class NoLimitBettingDealerTest : BaseBettingDealerTest
         Assert.True(requestedEvent.FoldIsAvailable);
         Assert.False(requestedEvent.CheckIsAvailable);
         Assert.True(requestedEvent.CallIsAvailable);
-        Assert.Equal(new Chips(10), requestedEvent.CallToAmount);
+        Assert.Equal(new Chips(10), requestedEvent.CallByAmount);
         Assert.True(requestedEvent.RaiseIsAvailable);
-        Assert.Equal(new Chips(20), requestedEvent.MinRaiseToAmount);
-        Assert.Equal(new Chips(1000), requestedEvent.MaxRaiseToAmount);
+        Assert.Equal(new Chips(20), requestedEvent.MinRaiseByAmount);
+        Assert.Equal(new Chips(1000), requestedEvent.MaxRaiseByAmount);
     }
 
     [Fact]
@@ -133,10 +133,10 @@ public class NoLimitBettingDealerTest : BaseBettingDealerTest
         Assert.True(requestedEvent.FoldIsAvailable);
         Assert.False(requestedEvent.CheckIsAvailable);
         Assert.True(requestedEvent.CallIsAvailable);
-        Assert.Equal(new Chips(10), requestedEvent.CallToAmount);
+        Assert.Equal(new Chips(5), requestedEvent.CallByAmount);
         Assert.True(requestedEvent.RaiseIsAvailable);
-        Assert.Equal(new Chips(20), requestedEvent.MinRaiseToAmount);
-        Assert.Equal(new Chips(1000), requestedEvent.MaxRaiseToAmount);
+        Assert.Equal(new Chips(15), requestedEvent.MinRaiseByAmount);
+        Assert.Equal(new Chips(995), requestedEvent.MaxRaiseByAmount);
     }
 
     [Fact]
@@ -178,10 +178,10 @@ public class NoLimitBettingDealerTest : BaseBettingDealerTest
         Assert.True(requestedEvent.FoldIsAvailable);
         Assert.False(requestedEvent.CheckIsAvailable);
         Assert.True(requestedEvent.CallIsAvailable);
-        Assert.Equal(new Chips(10), requestedEvent.CallToAmount);
+        Assert.Equal(new Chips(5), requestedEvent.CallByAmount);
         Assert.True(requestedEvent.RaiseIsAvailable);
-        Assert.Equal(new Chips(20), requestedEvent.MinRaiseToAmount);
-        Assert.Equal(new Chips(1000), requestedEvent.MaxRaiseToAmount);
+        Assert.Equal(new Chips(15), requestedEvent.MinRaiseByAmount);
+        Assert.Equal(new Chips(995), requestedEvent.MaxRaiseByAmount);
     }
 
     [Fact]
@@ -205,10 +205,10 @@ public class NoLimitBettingDealerTest : BaseBettingDealerTest
         pot.PostBlind("Alice", 5);
         playerB.Post(10);
         pot.PostBlind("Bobby", 10);
-        playerC.Post(25); // Raise 25
+        playerC.Post(25); // Raise to 25
         pot.PostBet("Charlie", 25);
         playerA.Fold();
-        playerB.Post(15); // Call 25
+        playerB.Post(15); // Call to 25
         pot.PostBet("Bobby", 15);
         pot.CollectBets();
 
@@ -230,10 +230,10 @@ public class NoLimitBettingDealerTest : BaseBettingDealerTest
         Assert.True(requestedEvent.FoldIsAvailable);
         Assert.True(requestedEvent.CheckIsAvailable);
         Assert.False(requestedEvent.CallIsAvailable);
-        Assert.Equal(new Chips(0), requestedEvent.CallToAmount);
+        Assert.Equal(new Chips(0), requestedEvent.CallByAmount);
         Assert.True(requestedEvent.RaiseIsAvailable);
-        Assert.Equal(new Chips(10), requestedEvent.MinRaiseToAmount);
-        Assert.Equal(new Chips(975), requestedEvent.MaxRaiseToAmount);
+        Assert.Equal(new Chips(10), requestedEvent.MinRaiseByAmount);
+        Assert.Equal(new Chips(975), requestedEvent.MaxRaiseByAmount);
     }
 
     [Fact]
@@ -256,9 +256,9 @@ public class NoLimitBettingDealerTest : BaseBettingDealerTest
         pot.PostBlind("Alice", 5);
         playerB.Post(10);
         pot.PostBlind("Bobby", 10);
-        playerA.Post(25); // Raise 30
+        playerA.Post(25); // Raise to 30
         pot.PostBet("Alice", 25);
-        playerB.Post(20); // Call 30
+        playerB.Post(20); // Call to 30
         pot.PostBet("Bobby", 20);
         pot.CollectBets();
 
@@ -280,10 +280,10 @@ public class NoLimitBettingDealerTest : BaseBettingDealerTest
         Assert.True(requestedEvent.FoldIsAvailable);
         Assert.True(requestedEvent.CheckIsAvailable);
         Assert.False(requestedEvent.CallIsAvailable);
-        Assert.Equal(new Chips(0), requestedEvent.CallToAmount);
+        Assert.Equal(new Chips(0), requestedEvent.CallByAmount);
         Assert.True(requestedEvent.RaiseIsAvailable);
-        Assert.Equal(new Chips(10), requestedEvent.MinRaiseToAmount);
-        Assert.Equal(new Chips(970), requestedEvent.MaxRaiseToAmount);
+        Assert.Equal(new Chips(10), requestedEvent.MinRaiseByAmount);
+        Assert.Equal(new Chips(970), requestedEvent.MaxRaiseByAmount);
     }
 
     [Fact]
@@ -306,9 +306,9 @@ public class NoLimitBettingDealerTest : BaseBettingDealerTest
         pot.PostBlind("Alice", 5);
         playerB.Post(10);
         pot.PostBlind("Bobby", 10);
-        playerA.Post(25); // Raise 30
+        playerA.Post(25); // Raise to 30
         pot.PostBet("Alice", 25);
-        playerB.Post(20); // Call 30
+        playerB.Post(20); // Call to 30
         pot.PostBet("Bobby", 20);
         pot.CollectBets();
 
@@ -330,10 +330,10 @@ public class NoLimitBettingDealerTest : BaseBettingDealerTest
         Assert.True(requestedEvent.FoldIsAvailable);
         Assert.True(requestedEvent.CheckIsAvailable);
         Assert.False(requestedEvent.CallIsAvailable);
-        Assert.Equal(new Chips(0), requestedEvent.CallToAmount);
+        Assert.Equal(new Chips(0), requestedEvent.CallByAmount);
         Assert.True(requestedEvent.RaiseIsAvailable);
-        Assert.Equal(new Chips(10), requestedEvent.MinRaiseToAmount);
-        Assert.Equal(new Chips(970), requestedEvent.MaxRaiseToAmount);
+        Assert.Equal(new Chips(10), requestedEvent.MinRaiseByAmount);
+        Assert.Equal(new Chips(970), requestedEvent.MaxRaiseByAmount);
     }
 
     [Fact]
@@ -357,7 +357,7 @@ public class NoLimitBettingDealerTest : BaseBettingDealerTest
         pot.PostBlind("Alice", 5);
         playerB.Post(10);
         pot.PostBlind("Bobby", 10);
-        playerC.Post(25); // Raise 25
+        playerC.Post(25); // Raise to 25
         pot.PostBet("Charlie", 25);
         playerA.Fold();
         playerB.Fold();
@@ -401,14 +401,14 @@ public class NoLimitBettingDealerTest : BaseBettingDealerTest
         pot.PostBlind("Alice", 5);
         playerB.Post(10);
         pot.PostBlind("Bobby", 10);
-        playerC.Post(25); // Raise 25
+        playerC.Post(25); // Raise to 25
         pot.PostBet("Charlie", 25);
-        playerA.Post(115); // Raise 120
+        playerA.Post(115); // Raise to 120
         pot.PostBet("Alice", 110);
         playerB.Fold();
-        playerC.Post(975); // Raise 1000 (all-in)
+        playerC.Post(975); // Raise to 1000 (all-in)
         pot.PostBet("Charlie", 975);
-        playerA.Post(780); // Call 900 (all-in)
+        playerA.Post(780); // Call to 900 (all-in)
         pot.PostBet("Alice", 780);
         pot.RefundBet("Charlie", 100);
         pot.CollectBets();
@@ -479,7 +479,7 @@ public class PotLimitBettingDealerTest : BaseBettingDealerTest
         Assert.IsType<StageStartedEvent>(events[0]);
         var requestedEvent = Assert.IsType<PlayerActionRequestedEvent>(events[1]);
         Assert.Equal(new Nickname("Charlie"), requestedEvent.Nickname);
-        Assert.Equal(new Chips(35), requestedEvent.MaxRaiseToAmount);
+        Assert.Equal(new Chips(35), requestedEvent.MaxRaiseByAmount);
     }
 
     [Fact]
@@ -518,7 +518,7 @@ public class PotLimitBettingDealerTest : BaseBettingDealerTest
         Assert.IsType<StageStartedEvent>(events[0]);
         var requestedEvent = Assert.IsType<PlayerActionRequestedEvent>(events[1]);
         Assert.Equal(new Nickname("Alice"), requestedEvent.Nickname);
-        Assert.Equal(new Chips(30), requestedEvent.MaxRaiseToAmount);
+        Assert.Equal(new Chips(25), requestedEvent.MaxRaiseByAmount);
     }
 
     [Fact]
@@ -542,10 +542,10 @@ public class PotLimitBettingDealerTest : BaseBettingDealerTest
         pot.PostBlind("Alice", 5);
         playerB.Post(10);
         pot.PostBlind("Bobby", 10);
-        playerC.Post(35); // Raise 35
+        playerC.Post(35); // Raise to 35
         pot.PostBet("Charlie", 35);
         playerA.Fold();
-        playerB.Post(25); // Call 35
+        playerB.Post(25); // Call to 35
         pot.PostBet("Bobby", 25);
         pot.CollectBets();
 
@@ -564,7 +564,7 @@ public class PotLimitBettingDealerTest : BaseBettingDealerTest
         Assert.IsType<StageStartedEvent>(events[0]);
         var requestedEvent = Assert.IsType<PlayerActionRequestedEvent>(events[1]);
         Assert.Equal(new Nickname("Bobby"), requestedEvent.Nickname);
-        Assert.Equal(new Chips(75), requestedEvent.MaxRaiseToAmount);
+        Assert.Equal(new Chips(75), requestedEvent.MaxRaiseByAmount);
     }
 
     private Rules CreateRules()

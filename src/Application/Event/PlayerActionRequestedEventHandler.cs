@@ -20,10 +20,10 @@ public class PlayerActionRequestedEventHandler(
             FoldIsAvailable = @event.FoldIsAvailable,
             CheckIsAvailable = @event.CheckIsAvailable,
             CallIsAvailable = @event.CallIsAvailable,
-            CallToAmount = @event.CallToAmount,
+            CallByAmount = @event.CallByAmount,
             RaiseIsAvailable = @event.RaiseIsAvailable,
-            MinRaiseToAmount = @event.MinRaiseToAmount,
-            MaxRaiseToAmount = @event.MaxRaiseToAmount
+            MinRaiseByAmount = @event.MinRaiseByAmount,
+            MaxRaiseByAmount = @event.MaxRaiseByAmount
         };
 
         var routingKey = new IntegrationEventRoutingKey($"hand.{context.TableType.ToRoutingKey()}.player-action-requested");

@@ -113,7 +113,7 @@ public class Pot
         var maxNickname = CurrentBets.GetNicknamePostedMaxAmount();
         if (maxNickname is null)
         {
-            return (null, new Chips(0));
+            return (null, Chips.Zero);
         }
 
         var nickname = (Nickname)maxNickname;
@@ -125,7 +125,7 @@ public class Pot
             return (nickname, maxAmount - secondMaxAmount);
         }
 
-        return (null, new Chips(0));
+        return (null, Chips.Zero);
     }
 
     public IEnumerable<SidePot> CalculateSidePots(HashSet<Nickname> competitors)
@@ -166,7 +166,7 @@ public class Pot
 
             yield return new SidePot(sidePotCompetitors, sidePotBets, ante);
 
-            ante = new Chips(0);
+            ante = Chips.Zero;
         }
     }
 

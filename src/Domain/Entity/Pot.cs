@@ -177,7 +177,7 @@ public class Pot
             Ante = Ante,
             CollectedBets = CollectedBets.Select(x => new BetState { Nickname = x.Key, Amount = x.Value }).ToList(),
             CurrentBets = CurrentBets.Select(x => new BetState { Nickname = x.Key, Amount = x.Value }).ToList(),
-            Awards = Awards.Select(x => new AwardState { Nicknames = x.Winners.ToList(), Amount = x.Amount }).ToList()
+            Awards = Awards.Select(x => new AwardState { Winners = x.Winners.ToList(), Amount = x.Amount }).ToList()
         };
     }
 

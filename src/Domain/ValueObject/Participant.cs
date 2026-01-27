@@ -1,6 +1,6 @@
 namespace Domain.ValueObject;
 
-public struct Participant
+public record Participant
 {
     public Nickname Nickname { get; init; }
     public Seat Seat { get; init; }

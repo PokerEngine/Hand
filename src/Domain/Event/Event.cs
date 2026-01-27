@@ -7,7 +7,7 @@ public interface IEvent
     DateTime OccurredAt { init; get; }
 }
 
-public record struct HandStartedEvent : IEvent
+public sealed record HandStartedEvent : IEvent
 {
     public required DateTime OccurredAt { get; init; }
 
@@ -17,9 +17,10 @@ public record struct HandStartedEvent : IEvent
     public required Positions Positions { get; init; }
     public required List<Participant> Participants { get; init; }
 
-    public bool Equals(HandStartedEvent other)
+    public bool Equals(HandStartedEvent? other)
     {
-        return OccurredAt.Equals(other.OccurredAt)
+        return other is not null
+               && OccurredAt.Equals(other.OccurredAt)
                && TableUid.Equals(other.TableUid)
                && TableType.Equals(other.TableType)
                && Rules.Equals(other.Rules)
@@ -47,30 +48,22 @@ public record struct HandStartedEvent : IEvent
     }
 }
 
-public record struct HandFinishedEvent : IEvent
+public sealed record HandFinishedEvent : IEvent
 {
     public required DateTime OccurredAt { get; init; }
 }
 
-public record struct StageStartedEvent : IEvent
+public sealed record StageStartedEvent : IEvent
 {
     public required DateTime OccurredAt { get; init; }
 }
 
-public record struct StageFinishedEvent : IEvent
+public sealed record StageFinishedEvent : IEvent
 {
     public required DateTime OccurredAt { get; init; }
 }
 
-public record struct SmallBlindPostedEvent : IEvent
-{
-    public required DateTime OccurredAt { get; init; }
-
-    public required Nickname Nickname { get; init; }
-    public required Chips Amount { get; init; }
-}
-
-public record struct BigBlindPostedEvent : IEvent
+public sealed record SmallBlindPostedEvent : IEvent
 {
     public required DateTime OccurredAt { get; init; }
 
@@ -78,7 +71,15 @@ public record struct BigBlindPostedEvent : IEvent
     public required Chips Amount { get; init; }
 }
 
-public record struct HoleCardsDealtEvent : IEvent
+public sealed record BigBlindPostedEvent : IEvent
+{
+    public required DateTime OccurredAt { get; init; }
+
+    public required Nickname Nickname { get; init; }
+    public required Chips Amount { get; init; }
+}
+
+public sealed record HoleCardsDealtEvent : IEvent
 {
     public required DateTime OccurredAt { get; init; }
 
@@ -86,14 +87,14 @@ public record struct HoleCardsDealtEvent : IEvent
     public required CardSet Cards { get; init; }
 }
 
-public record struct BoardCardsDealtEvent : IEvent
+public sealed record BoardCardsDealtEvent : IEvent
 {
     public required DateTime OccurredAt { get; init; }
 
     public required CardSet Cards { get; init; }
 }
 
-public record struct PlayerActionRequestedEvent : IEvent
+public sealed record PlayerActionRequestedEvent : IEvent
 {
     public required DateTime OccurredAt { get; init; }
 
@@ -107,7 +108,7 @@ public record struct PlayerActionRequestedEvent : IEvent
     public required Chips MaxRaiseByAmount { get; init; }
 }
 
-public record struct PlayerActedEvent : IEvent
+public sealed record PlayerActedEvent : IEvent
 {
     public required DateTime OccurredAt { get; init; }
 
@@ -115,7 +116,7 @@ public record struct PlayerActedEvent : IEvent
     public required PlayerAction Action { get; init; }
 }
 
-public record struct BetRefundedEvent : IEvent
+public sealed record BetRefundedEvent : IEvent
 {
     public required DateTime OccurredAt { get; init; }
 
@@ -123,12 +124,12 @@ public record struct BetRefundedEvent : IEvent
     public required Chips Amount { get; init; }
 }
 
-public record struct BetsCollectedEvent : IEvent
+public sealed record BetsCollectedEvent : IEvent
 {
     public required DateTime OccurredAt { get; init; }
 }
 
-public record struct SidePotAwardedEvent : IEvent
+public sealed record SidePotAwardedEvent : IEvent
 {
     public required DateTime OccurredAt { get; init; }
 
@@ -136,14 +137,14 @@ public record struct SidePotAwardedEvent : IEvent
     public required SidePot SidePot { get; init; }
 }
 
-public record struct HoleCardsMuckedEvent : IEvent
+public sealed record HoleCardsMuckedEvent : IEvent
 {
     public required DateTime OccurredAt { get; init; }
 
     public required Nickname Nickname { get; init; }
 }
 
-public record struct HoleCardsShownEvent : IEvent
+public sealed record HoleCardsShownEvent : IEvent
 {
     public required DateTime OccurredAt { get; init; }
 

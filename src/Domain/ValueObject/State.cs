@@ -1,20 +1,20 @@
 namespace Domain.ValueObject;
 
-public readonly struct State
+public record State
 {
     public required Rules Rules { get; init; }
     public required TableState Table { get; init; }
     public required PotState Pot { get; init; }
 }
 
-public readonly struct TableState
+public record TableState
 {
     public required CardSet BoardCards { get; init; }
     public required Positions Positions { get; init; }
     public required List<PlayerState> Players { get; init; }
 }
 
-public readonly struct PlayerState
+public record PlayerState
 {
     public required Seat Seat { get; init; }
     public required Nickname Nickname { get; init; }
@@ -23,7 +23,7 @@ public readonly struct PlayerState
     public required bool IsFolded { get; init; }
 }
 
-public readonly struct PotState
+public record PotState
 {
     public required Chips Ante { get; init; }
     public required List<BetState> CollectedBets { get; init; }
@@ -31,14 +31,14 @@ public readonly struct PotState
     public required List<AwardState> Awards { get; init; }
 }
 
-public readonly struct BetState
+public record BetState
 {
     public required Nickname Nickname { get; init; }
     public required Chips Amount { get; init; }
 }
 
-public readonly struct AwardState
+public record AwardState
 {
-    public required List<Nickname> Nicknames { get; init; }
+    public required List<Nickname> Winners { get; init; }
     public required Chips Amount { get; init; }
 }

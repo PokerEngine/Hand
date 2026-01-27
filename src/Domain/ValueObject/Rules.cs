@@ -1,6 +1,6 @@
 namespace Domain.ValueObject;
 
-public readonly struct Rules
+public record Rules
 {
     public required Game Game { get; init; }
     public required Chips SmallBlind { get; init; }

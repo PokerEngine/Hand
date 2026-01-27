@@ -163,7 +163,7 @@ public class MongoDbRepositoryTest(MongoDbFixture fixture) : IClassFixture<Mongo
     }
 }
 
-internal record struct TestEvent : IEvent
+internal sealed record TestEvent : IEvent
 {
     public required Rules Rules { get; init; }
     public required Positions Positions { get; init; }
@@ -177,9 +177,10 @@ internal record struct TestEvent : IEvent
     public required Combo Combo { get; init; }
     public required DateTime OccurredAt { get; init; }
 
-    public bool Equals(TestEvent other)
+    public bool Equals(TestEvent? other)
     {
-        return Rules.Equals(other.Rules)
+        return other is not null
+               && Rules.Equals(other.Rules)
                && Positions.Equals(other.Positions)
                && Participants.SequenceEqual(other.Participants)
                && Nickname.Equals(other.Nickname)

@@ -32,13 +32,13 @@ public record GetHandByUidStateResponse
     public required GetHandByUidPotStateResponse Pot { get; init; }
 }
 
-public readonly struct GetHandByUidTableStateResponse
+public record GetHandByUidTableStateResponse
 {
     public required List<GetHandByUidPlayerStateResponse> Players { get; init; }
     public required string BoardCards { get; init; }
 }
 
-public readonly struct GetHandByUidPlayerStateResponse
+public record GetHandByUidPlayerStateResponse
 {
     public required int Seat { get; init; }
     public required string Nickname { get; init; }
@@ -47,7 +47,7 @@ public readonly struct GetHandByUidPlayerStateResponse
     public required bool IsFolded { get; init; }
 }
 
-public readonly struct GetHandByUidPotStateResponse
+public record GetHandByUidPotStateResponse
 {
     public required int Ante { get; init; }
     public required List<GetHandByUidBetStateResponse> CollectedBets { get; init; }
@@ -55,15 +55,15 @@ public readonly struct GetHandByUidPotStateResponse
     public required List<GetHandByUidAwardStateResponse> Awards { get; init; }
 }
 
-public readonly struct GetHandByUidBetStateResponse
+public record GetHandByUidBetStateResponse
 {
     public required string Nickname { get; init; }
     public required int Amount { get; init; }
 }
 
-public readonly struct GetHandByUidAwardStateResponse
+public record GetHandByUidAwardStateResponse
 {
-    public required List<string> Nicknames { get; init; }
+    public required List<string> Winners { get; init; }
     public required int Amount { get; init; }
 }
 
@@ -148,7 +148,7 @@ public class GetHandByUidHandler(
     {
         return new GetHandByUidAwardStateResponse
         {
-            Nicknames = state.Nicknames.Select(x => x.ToString()).ToList(),
+            Winners = state.Winners.Select(x => x.ToString()).ToList(),
             Amount = state.Amount
         };
     }

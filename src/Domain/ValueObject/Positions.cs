@@ -1,6 +1,6 @@
 namespace Domain.ValueObject;
 
-public readonly struct Positions
+public record Positions
 {
     public required Seat SmallBlind { get; init; }
     public required Seat BigBlind { get; init; }

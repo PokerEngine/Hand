@@ -2,7 +2,7 @@ using Domain.ValueObject;
 
 namespace Application.Event;
 
-public record struct EventContext
+public record EventContext
 {
     public required HandUid HandUid { get; init; }
     public required TableUid TableUid { get; init; }

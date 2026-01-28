@@ -35,7 +35,7 @@ public class HandController(
         return CreatedAtAction(nameof(GetHandByUid), new { uid = response.Uid }, response);
     }
 
-    [HttpPost("{uid:guid}/submit-player-action/{nickname}")]
+    [HttpPost("{uid:guid}/submit-action/{nickname}")]
     [ProducesResponseType(typeof(SubmitPlayerActionResponse), StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status409Conflict)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]

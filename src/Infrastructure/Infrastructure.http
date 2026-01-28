@@ -38,7 +38,7 @@ Content-Type: application/json
 %}
 
 ### Submit a player action
-POST {{Infrastructure_HostAddress}}/api/hand/{{handUid}}/submit-player-action/charlie
+POST {{Infrastructure_HostAddress}}/api/hand/{{handUid}}/submit-action/charlie
 Accept: application/json
 Content-Type: application/json
 

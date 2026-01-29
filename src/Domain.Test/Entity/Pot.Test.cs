@@ -233,12 +233,31 @@ public class PotTest
         pot.CollectBets();
 
         // Assert
-        Assert.Equal(new Chips(50), pot.TotalAmount);
+        Assert.Equal(Chips.Zero, pot.GetCurrentAmountPostedBy(nicknameA));
+        Assert.Equal(Chips.Zero, pot.GetCurrentAmountPostedBy(nicknameB));
+    }
+
+    [Fact]
+    public void ResetCurrentActions_ShouldResetCurrentActions()
+    {
+        // Arrange
+        var pot = CreatePot();
+        var nicknameA = new Nickname("Alice");
+        var nicknameB = new Nickname("Bobby");
+        pot.PostBlind(nicknameA, new Chips(5));
+        pot.PostBlind(nicknameB, new Chips(10));
+        pot.PostBet(nicknameA, new Chips(20)); // Raise 25
+        pot.PostBet(nicknameB, new Chips(15)); // Call
+
+        // Act
+        pot.ResetCurrentActions();
+
+        // Assert
+        Assert.False(pot.PostedCurrentBet(nicknameA));
+        Assert.False(pot.PostedCurrentBet(nicknameB));
         Assert.Null(pot.LastPostedNickname);
         Assert.Null(pot.LastRaisedNickname);
         Assert.Equal(new Chips(10), pot.LastRaisedStep);
-        Assert.False(pot.PostedCurrentBet(nicknameA));
-        Assert.False(pot.PostedCurrentBet(nicknameB));
     }
 
     [Fact]

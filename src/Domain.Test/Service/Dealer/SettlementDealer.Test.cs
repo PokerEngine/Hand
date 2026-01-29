@@ -42,6 +42,7 @@ public class SettlementDealerTest
         playerB.Fold();
         pot.RefundBet(playerC.Nickname, 15);
         pot.CollectBets();
+        pot.ResetCurrentActions();
 
         // Act
         var events = dealer.Start(
@@ -95,6 +96,7 @@ public class SettlementDealerTest
         playerB.Post(15);
         pot.PostBet(playerB.Nickname, 15); // Call 25
         pot.CollectBets();
+        pot.ResetCurrentActions();
         table.TakeBoardCards("Ad9d6c6dTs");
 
         var comboB = new Combo(ComboType.TwoPair, 10);
@@ -160,6 +162,7 @@ public class SettlementDealerTest
         playerB.Post(15);
         pot.PostBet(playerB.Nickname, 15); // Call 25
         pot.CollectBets();
+        pot.ResetCurrentActions();
         table.TakeBoardCards("Ad9d6c6dTs");
 
         var comboB = new Combo(ComboType.Trips, 20);
@@ -231,6 +234,7 @@ public class SettlementDealerTest
         pot.PostBet(playerB.Nickname, 660); // Call 900 (all-in)
         pot.RefundBet(playerC.Nickname, 100);
         pot.CollectBets();
+        pot.ResetCurrentActions();
         table.TakeBoardCards("Ad9d6c6dTs");
 
         var comboA = new Combo(ComboType.TwoPair, 30);

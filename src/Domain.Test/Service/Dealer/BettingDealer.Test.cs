@@ -211,6 +211,7 @@ public class NoLimitBettingDealerTest : BaseBettingDealerTest
         playerB.Post(15); // Call to 25
         pot.PostBet("Bobby", 15);
         pot.CollectBets();
+        pot.ResetCurrentActions();
 
         // Act
         var events = dealer.Start(
@@ -261,6 +262,7 @@ public class NoLimitBettingDealerTest : BaseBettingDealerTest
         playerB.Post(20); // Call to 30
         pot.PostBet("Bobby", 20);
         pot.CollectBets();
+        pot.ResetCurrentActions();
 
         // Act
         var events = dealer.Start(
@@ -311,6 +313,7 @@ public class NoLimitBettingDealerTest : BaseBettingDealerTest
         playerB.Post(20); // Call to 30
         pot.PostBet("Bobby", 20);
         pot.CollectBets();
+        pot.ResetCurrentActions();
 
         // Act
         var events = dealer.Start(
@@ -363,6 +366,7 @@ public class NoLimitBettingDealerTest : BaseBettingDealerTest
         playerB.Fold();
         pot.RefundBet("Charlie", 15);
         pot.CollectBets();
+        pot.ResetCurrentActions();
 
         // Act
         var events = dealer.Start(
@@ -412,6 +416,7 @@ public class NoLimitBettingDealerTest : BaseBettingDealerTest
         pot.PostBet("Alice", 780);
         pot.RefundBet("Charlie", 100);
         pot.CollectBets();
+        pot.ResetCurrentActions();
 
         // Act
         var events = dealer.Start(
@@ -548,6 +553,7 @@ public class PotLimitBettingDealerTest : BaseBettingDealerTest
         playerB.Post(25); // Call to 35
         pot.PostBet("Bobby", 25);
         pot.CollectBets();
+        pot.ResetCurrentActions();
 
         // Act
         var events = dealer.Start(

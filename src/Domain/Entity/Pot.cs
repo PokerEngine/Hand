@@ -70,13 +70,16 @@ public class Pot
 
     public void CollectBets()
     {
+        CollectedBets += CurrentBets;
+        CurrentBets = new Bets();
+    }
+
+    public void ResetCurrentActions()
+    {
+        PostedCurrentBetNicknames.Clear();
         LastPostedNickname = null;
         LastRaisedNickname = null;
         LastRaisedStep = MinBet;
-        PostedCurrentBetNicknames.Clear();
-
-        CollectedBets += CurrentBets;
-        CurrentBets = new Bets();
     }
 
     public void WinSidePot(SidePot sidePot, HashSet<Nickname> winners)

@@ -66,6 +66,7 @@ public abstract class BaseBettingDealer : IDealer
             case StageStartedEvent:
                 break;
             case StageFinishedEvent:
+                pot.ResetCurrentActions();
                 break;
             default:
                 throw new InvalidOperationException($"{@event.GetType().Name} is not supported");
@@ -235,6 +236,8 @@ public abstract class BaseBettingDealer : IDealer
                 OccurredAt = DateTime.Now
             };
         }
+
+        pot.ResetCurrentActions();
 
         yield return new StageFinishedEvent
         {

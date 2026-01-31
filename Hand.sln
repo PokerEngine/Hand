@@ -1,16 +1,16 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Domain", "src\Domain\Domain.csproj", "{D003CB10-2537-4C0F-BCB2-58A226C6EB42}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Domain", "Domain\Domain.csproj", "{D003CB10-2537-4C0F-BCB2-58A226C6EB42}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Domain.Test", "src\Domain.Test\Domain.Test.csproj", "{86327A7D-3D9C-4F67-B8C4-B949BB866388}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Domain.Test", "Domain.Test\Domain.Test.csproj", "{86327A7D-3D9C-4F67-B8C4-B949BB866388}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Application", "src\Application\Application.csproj", "{15E6A034-24AC-434D-A941-5EAF11CBF500}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Application", "Application\Application.csproj", "{15E6A034-24AC-434D-A941-5EAF11CBF500}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Application.Test", "src\Application.Test\Application.Test.csproj", "{01F3F1F6-0B20-456E-B3F6-0A910F7C1716}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Application.Test", "Application.Test\Application.Test.csproj", "{01F3F1F6-0B20-456E-B3F6-0A910F7C1716}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Infrastructure", "src\Infrastructure\Infrastructure.csproj", "{CCDB672B-9AD6-471B-A9BC-98943988F02C}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Infrastructure", "Infrastructure\Infrastructure.csproj", "{CCDB672B-9AD6-471B-A9BC-98943988F02C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Infrastructure.Test", "src\Infrastructure.Test\Infrastructure.Test.csproj", "{4A11A4E2-A8A7-46C6-9643-A0F2F1E0C84E}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Infrastructure.Test", "Infrastructure.Test\Infrastructure.Test.csproj", "{4A11A4E2-A8A7-46C6-9643-A0F2F1E0C84E}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

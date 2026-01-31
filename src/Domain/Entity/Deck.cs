@@ -1,3 +1,4 @@
+using Domain.Exception;
 using Domain.Service.Randomizer;
 using Domain.ValueObject;
 
@@ -13,7 +14,7 @@ public abstract class BaseDeck
     {
         if (count > Cards.Count)
         {
-            throw new InvalidOperationException("The deck does not contain enough cards");
+            throw new InvalidHandStateException("The deck does not contain enough cards");
         }
 
         var extractedCards = new CardSet();
@@ -31,7 +32,7 @@ public abstract class BaseDeck
     {
         if (!cards.IsSubsetOf(Cards))
         {
-            throw new InvalidOperationException("The deck does not contain the given cards");
+            throw new InvalidHandStateException("The deck does not contain the given cards");
         }
 
         Cards = Cards.Except(cards);

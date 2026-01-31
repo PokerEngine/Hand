@@ -1,3 +1,4 @@
+using Domain.Exception;
 using Domain.ValueObject;
 
 namespace Domain.Test.ValueObject;
@@ -21,7 +22,7 @@ public class PlayerActionTest
     [InlineData(PlayerActionType.Check, 10)]
     public void TestInitializationWithNonZeroAmount(PlayerActionType type, int amount)
     {
-        var exc = Assert.Throws<ArgumentException>(() => new PlayerAction(type, new Chips(amount)));
+        var exc = Assert.Throws<PlayerActionNotValidException>(() => new PlayerAction(type, new Chips(amount)));
         Assert.StartsWith($"Amount must be zero for {type}", exc.Message);
     }
 
@@ -30,7 +31,7 @@ public class PlayerActionTest
     [InlineData(PlayerActionType.CallBy, 0)]
     public void TestInitializationWithZeroAmount(PlayerActionType type, int amount)
     {
-        var exc = Assert.Throws<ArgumentException>(() => new PlayerAction(type, new Chips(amount)));
+        var exc = Assert.Throws<PlayerActionNotValidException>(() => new PlayerAction(type, new Chips(amount)));
         Assert.StartsWith($"Amount must be non-zero for {type}", exc.Message);
     }
 

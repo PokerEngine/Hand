@@ -1,4 +1,5 @@
 using Domain.Entity;
+using Domain.Exception;
 using Domain.Test.Service.Randomizer;
 using Domain.ValueObject;
 
@@ -37,7 +38,7 @@ public class StandardDeckTest
     {
         var deck = new StandardDeck();
 
-        var exc = Assert.Throws<InvalidOperationException>(() => deck.ExtractRandomCards(53, _randomizer));
+        var exc = Assert.Throws<InvalidHandStateException>(() => deck.ExtractRandomCards(53, _randomizer));
 
         Assert.Equal("The deck does not contain enough cards", exc.Message);
     }
@@ -66,7 +67,7 @@ public class StandardDeckTest
         var deck = new StandardDeck();
         deck.ExtractCertainCards(new CardSet([Card.AceOfDiamonds, Card.DeuceOfClubs]));
 
-        var exc = Assert.Throws<InvalidOperationException>(() => deck.ExtractCertainCards(new CardSet([Card.AceOfDiamonds])));
+        var exc = Assert.Throws<InvalidHandStateException>(() => deck.ExtractCertainCards(new CardSet([Card.AceOfDiamonds])));
 
         Assert.Equal("The deck does not contain the given cards", exc.Message);
     }

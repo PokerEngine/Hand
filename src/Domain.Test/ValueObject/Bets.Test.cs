@@ -1,3 +1,4 @@
+using Domain.Exception;
 using Domain.ValueObject;
 
 namespace Domain.Test.ValueObject;
@@ -154,15 +155,6 @@ public class BetsTest
 
         Assert.Equal(Chips.Zero, bets.GetAmountPostedBy("alice"));
         Assert.Equal(Chips.Zero, bets.TotalAmount);
-    }
-
-    [Fact]
-    public void TestRefundMoreThanPosted()
-    {
-        var bets = new Bets().Post("alice", new Chips(50));
-
-        var exc = Assert.Throws<InvalidOperationException>(() => bets.Refund("alice", new Chips(75)));
-        Assert.Equal("Cannot refund more than posted", exc.Message);
     }
 
     [Fact]

@@ -17,7 +17,7 @@ public class HoleCardsDealtEventHandler(
             TableUid = context.TableUid,
             TableType = context.TableType.ToString(),
             Nickname = @event.Nickname,
-            Cards = @event.Cards.ToString()
+            Cards = @event.Cards
         };
 
         var routingKey = new IntegrationEventRoutingKey($"hand.{context.TableType.ToRoutingKey()}.hole-cards-dealt");

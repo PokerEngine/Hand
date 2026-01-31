@@ -1,3 +1,5 @@
+using Domain.Exception;
+
 namespace Domain.ValueObject;
 
 public enum Rank
@@ -153,11 +155,11 @@ public readonly struct Card : IEquatable<Card>, IComparable<Card>
         Suit = suit;
     }
 
-    public static Card FromString(string value)
+    private static Card FromString(string value)
     {
         if (!Mapping.TryGetValue(value, out var card))
         {
-            throw new ArgumentException($"Invalid Card: {value}", nameof(value));
+            throw new InsufficientCardException($"Unknown card: {value}");
         }
 
         return card;

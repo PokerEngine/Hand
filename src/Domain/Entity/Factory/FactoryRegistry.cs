@@ -1,3 +1,4 @@
+using Domain.Exception;
 using Domain.ValueObject;
 
 namespace Domain.Entity.Factory;
@@ -14,7 +15,7 @@ public static class FactoryRegistry
     {
         if (!Mapping.TryGetValue(game, out var factory))
         {
-            throw new ArgumentException("The game is not found", nameof(game));
+            throw new InvalidHandConfigurationException($"The game is not supported: {game}");
         }
 
         return factory;

@@ -1,4 +1,5 @@
 using Domain.Entity;
+using Domain.Exception;
 using Domain.ValueObject;
 
 namespace Domain.Test.Entity;
@@ -41,7 +42,7 @@ public class PlayerTest
         var player = CreatePlayer();
         player.Fold();
 
-        var exc = Assert.Throws<InvalidOperationException>(() => player.TakeHoleCards(new CardSet([Card.KingOfHearts, Card.TreyOfDiamonds])));
+        var exc = Assert.Throws<InvalidHandStateException>(() => player.TakeHoleCards(new CardSet([Card.KingOfHearts, Card.TreyOfDiamonds])));
 
         Assert.Equal("The player has already folded", exc.Message);
         Assert.Empty(player.HoleCards);
@@ -64,7 +65,7 @@ public class PlayerTest
         var player = CreatePlayer();
         player.Fold();
 
-        var exc = Assert.Throws<InvalidOperationException>(() => player.Fold());
+        var exc = Assert.Throws<InvalidHandStateException>(() => player.Fold());
 
         Assert.Equal("The player has already folded", exc.Message);
         Assert.True(player.IsFolded);
@@ -77,7 +78,7 @@ public class PlayerTest
         var player = CreatePlayer();
         player.Post(player.Stack);
 
-        var exc = Assert.Throws<InvalidOperationException>(() => player.Fold());
+        var exc = Assert.Throws<InvalidHandStateException>(() => player.Fold());
 
         Assert.Equal("The player has already been all in", exc.Message);
         Assert.False(player.IsFolded);
@@ -114,7 +115,7 @@ public class PlayerTest
         var player = CreatePlayer();
         player.Fold();
 
-        var exc = Assert.Throws<InvalidOperationException>(() => player.Post(new Chips(25)));
+        var exc = Assert.Throws<InvalidHandStateException>(() => player.Post(new Chips(25)));
 
         Assert.Equal("The player has already folded", exc.Message);
         Assert.True(player.IsFolded);
@@ -128,7 +129,7 @@ public class PlayerTest
         var player = CreatePlayer();
         player.Post(player.Stack);
 
-        var exc = Assert.Throws<InvalidOperationException>(() => player.Post(new Chips(25)));
+        var exc = Assert.Throws<InvalidHandStateException>(() => player.Post(new Chips(25)));
 
         Assert.Equal("The player has already been all in", exc.Message);
         Assert.False(player.IsFolded);
@@ -140,7 +141,7 @@ public class PlayerTest
     {
         var player = CreatePlayer();
 
-        var exc = Assert.Throws<InvalidOperationException>(() => player.Post(new Chips(1025)));
+        var exc = Assert.Throws<InvalidHandStateException>(() => player.Post(new Chips(1025)));
 
         Assert.Equal("The player cannot post more amount than his stack", exc.Message);
         Assert.False(player.IsFolded);
@@ -165,7 +166,7 @@ public class PlayerTest
         var player = CreatePlayer();
         player.Fold();
 
-        var exc = Assert.Throws<InvalidOperationException>(() => player.Refund(new Chips(25)));
+        var exc = Assert.Throws<InvalidHandStateException>(() => player.Refund(new Chips(25)));
 
         Assert.Equal("The player has already folded", exc.Message);
         Assert.True(player.IsFolded);

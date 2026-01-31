@@ -1,5 +1,6 @@
 using Domain.Entity.Factory;
 using Domain.Event;
+using Domain.Exception;
 using Domain.Service.Dealer;
 using Domain.Service.Evaluator;
 using Domain.Service.Randomizer;
@@ -104,7 +105,7 @@ public class Hand
     {
         if (events.Count == 0 || events[0] is not HandStartedEvent)
         {
-            throw new InvalidOperationException("The first event must be a HandStartedEvent");
+            throw new InvalidHandStateException("The first event must be a HandStartedEvent");
         }
 
         var createdEvent = (HandStartedEvent)events[0];

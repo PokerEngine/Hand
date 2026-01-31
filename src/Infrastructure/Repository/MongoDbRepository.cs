@@ -1,3 +1,4 @@
+using Application.Exception;
 using Application.Repository;
 using Domain.Event;
 using Domain.ValueObject;
@@ -49,7 +50,7 @@ public class MongoDbRepository : IRepository
 
         if (events.Count == 0)
         {
-            throw new InvalidOperationException("The hand is not found");
+            throw new HandNotFoundException("The hand is not found");
         }
 
         return events;
@@ -160,10 +161,10 @@ internal sealed class ChipsSerializer : SerializerBase<Chips>
 internal sealed class CardSetSerializer : SerializerBase<CardSet>
 {
     public override void Serialize(BsonSerializationContext context, BsonSerializationArgs args, CardSet value)
-        => context.Writer.WriteString(value.ToString());
+        => context.Writer.WriteString(value);
 
     public override CardSet Deserialize(BsonDeserializationContext context, BsonDeserializationArgs args)
-        => CardSet.FromString(context.Reader.ReadString());
+        => context.Reader.ReadString();
 }
 
 internal sealed class SidePotSerializer : SerializerBase<SidePot>

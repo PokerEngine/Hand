@@ -1,3 +1,4 @@
+using Domain.Exception;
 using Domain.ValueObject;
 
 namespace Domain.Test.ValueObject;
@@ -25,10 +26,10 @@ public class ChipsTest
     {
         Chips chips;
 
-        var exc = Assert.Throws<ArgumentOutOfRangeException>(() => chips = new Chips(-5));
+        var exc = Assert.Throws<InsufficientChipsException>(() => chips = new Chips(-5));
         Assert.StartsWith("Chips amount must be a non-negative integer", exc.Message);
 
-        exc = Assert.Throws<ArgumentOutOfRangeException>(() => chips = (Chips)(-5));
+        exc = Assert.Throws<InsufficientChipsException>(() => chips = (Chips)(-5));
         Assert.StartsWith("Chips amount must be a non-negative integer", exc.Message);
     }
 
@@ -96,7 +97,7 @@ public class ChipsTest
     public void TestUnarySubtraction()
     {
         Chips chips;
-        var exc = Assert.Throws<ArgumentOutOfRangeException>(() => chips = -new Chips(5));
+        var exc = Assert.Throws<InsufficientChipsException>(() => chips = -new Chips(5));
         Assert.StartsWith("Chips amount must be a non-negative integer", exc.Message);
     }
 
@@ -124,8 +125,8 @@ public class ChipsTest
     public void TestSubtractionWithNegativeResult()
     {
         Chips chips;
-        var exc = Assert.Throws<ArgumentOutOfRangeException>(() => chips = new Chips(5) - new Chips(8));
-        Assert.StartsWith("Chips amount must be a non-negative integer", exc.Message);
+        var exc = Assert.Throws<InsufficientChipsException>(() => chips = new Chips(5) - new Chips(8));
+        Assert.StartsWith("Cannot subtract more chips than available", exc.Message);
     }
 
     [Fact]
@@ -145,8 +146,8 @@ public class ChipsTest
     public void TestMultiplicationByNegativeNumber()
     {
         Chips chips;
-        var exc = Assert.Throws<ArgumentOutOfRangeException>(() => chips = new Chips(5) * -3);
-        Assert.StartsWith("Chips amount must be a non-negative integer", exc.Message);
+        var exc = Assert.Throws<InsufficientChipsException>(() => chips = new Chips(5) * -3);
+        Assert.StartsWith("Cannot multiply by a negative integer", exc.Message);
     }
 
     [Fact]
@@ -177,8 +178,8 @@ public class ChipsTest
     public void TestDivisionByNegativeNumber()
     {
         Chips chips;
-        var exc = Assert.Throws<ArgumentOutOfRangeException>(() => chips = new Chips(8) / -2);
-        Assert.StartsWith("Chips amount must be a non-negative integer", exc.Message);
+        var exc = Assert.Throws<InsufficientChipsException>(() => chips = new Chips(8) / -2);
+        Assert.StartsWith("Cannot divide by a negative integer", exc.Message);
     }
 
     [Fact]

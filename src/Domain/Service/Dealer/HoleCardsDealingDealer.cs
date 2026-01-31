@@ -1,5 +1,6 @@
 using Domain.Entity;
 using Domain.Event;
+using Domain.Exception;
 using Domain.Service.Evaluator;
 using Domain.Service.Randomizer;
 using Domain.ValueObject;
@@ -84,7 +85,7 @@ public class HoleCardsDealingDealer(int count) : IDealer
             case StageFinishedEvent:
                 break;
             default:
-                throw new InvalidOperationException($"{@event.GetType().Name} is not supported");
+                throw new InvalidHandStateException($"{@event.GetType().Name} is not supported");
         }
     }
 
@@ -99,6 +100,6 @@ public class HoleCardsDealingDealer(int count) : IDealer
         IEvaluator evaluator
     )
     {
-        throw new InvalidOperationException("The player cannot act during this stage");
+        throw new PlayerActionNotAllowedException("The player cannot act during this stage");
     }
 }

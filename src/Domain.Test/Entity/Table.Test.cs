@@ -1,4 +1,5 @@
 using Domain.Entity;
+using Domain.Exception;
 using Domain.ValueObject;
 
 namespace Domain.Test.Entity;
@@ -77,7 +78,7 @@ public class TableTest
             seat: 2
         );
 
-        var exc = Assert.Throws<ArgumentException>(() =>
+        var exc = Assert.Throws<InvalidHandConfigurationException>(() =>
         {
             new Table(
                 players: [playerA, playerB],
@@ -105,7 +106,7 @@ public class TableTest
             seat: 1
         );
 
-        var exc = Assert.Throws<ArgumentException>(() =>
+        var exc = Assert.Throws<InvalidHandConfigurationException>(() =>
         {
             new Table(
                 players: [playerA, playerB],
@@ -137,7 +138,7 @@ public class TableTest
             seat: 9
         );
 
-        var exc = Assert.Throws<ArgumentOutOfRangeException>(() =>
+        var exc = Assert.Throws<InvalidHandConfigurationException>(() =>
         {
             new Table(
                 players: [playerSb, playerBb, playerWrong],
@@ -161,7 +162,7 @@ public class TableTest
             seat: 1
         );
 
-        var exc = Assert.Throws<ArgumentException>(() =>
+        var exc = Assert.Throws<InvalidHandConfigurationException>(() =>
         {
             new Table(
                 players: [playerBb],
@@ -216,7 +217,7 @@ public class TableTest
             seat: 6
         );
 
-        var exc = Assert.Throws<ArgumentException>(() =>
+        var exc = Assert.Throws<InvalidHandConfigurationException>(() =>
         {
             new Table(
                 players: [playerSb, playerBu],
@@ -271,7 +272,7 @@ public class TableTest
             seat: 2
         );
 
-        var exc = Assert.Throws<ArgumentException>(() =>
+        var exc = Assert.Throws<InvalidHandConfigurationException>(() =>
         {
             new Table(
                 players: [playerSb, playerBb],
@@ -299,7 +300,7 @@ public class TableTest
             seat: 2
         );
 
-        var exc = Assert.Throws<ArgumentException>(() =>
+        var exc = Assert.Throws<InvalidHandConfigurationException>(() =>
         {
             new Table(
                 players: [playerSb, playerBb],
@@ -357,8 +358,8 @@ public class TableTest
             buttonSeat: 1
         );
 
-        var exc = Assert.Throws<ArgumentException>(() => table.GetPlayerByNickname(new Nickname("Wrong")));
-        Assert.StartsWith("A player with the given nickname is not found at the table", exc.Message);
+        var exc = Assert.Throws<PlayerNotFoundException>(() => table.GetPlayerByNickname(new Nickname("Wrong")));
+        Assert.StartsWith("The player is not found at the table", exc.Message);
     }
 
     [Fact]

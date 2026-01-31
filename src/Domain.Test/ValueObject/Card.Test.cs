@@ -7,7 +7,7 @@ public class CardTest
     [Fact]
     public void TestFromString()
     {
-        Assert.Equal(Card.AceOfSpades, Card.FromString("As"));
+        Assert.Equal(Card.AceOfSpades, (Card)"As");
     }
 
     [Fact]

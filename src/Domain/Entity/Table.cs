@@ -1,3 +1,4 @@
+using Domain.Exception;
 using Domain.ValueObject;
 using System.Collections;
 
@@ -7,7 +8,7 @@ public class Table : IEnumerable<Player>
 {
     private readonly Player?[] _players;
 
-    public Positions Positions { get; private set; }
+    public Positions Positions { get; }
     public CardSet BoardCards { get; private set; }
     public IEnumerable<Player> Players => _players.OfType<Player>();
     public int Count => _players.Count(x => x != null);
@@ -23,7 +24,7 @@ public class Table : IEnumerable<Player>
         {
             if (player.Seat > positions.Max)
             {
-                throw new ArgumentOutOfRangeException(nameof(players), players, $"The table supports seats till {positions.Max}");
+                throw new InvalidHandConfigurationException($"The table supports seats till {positions.Max}");
             }
             _players[player.Seat - 1] = player;
         }
@@ -31,33 +32,33 @@ public class Table : IEnumerable<Player>
         var nicknames = allPlayers.Select(x => x.Nickname).ToHashSet();
         if (allPlayers.Count != nicknames.Count)
         {
-            throw new ArgumentException("The table must contain players with unique nicknames", nameof(players));
+            throw new InvalidHandConfigurationException("The table must contain players with unique nicknames");
         }
 
         var seats = allPlayers.Select(x => x.Seat).ToHashSet();
         if (allPlayers.Count != seats.Count)
         {
-            throw new ArgumentException("The table must contain players with unique seats", nameof(players));
+            throw new InvalidHandConfigurationException("The table must contain players with unique seats");
         }
 
         if (allPlayers.Count < 2)
         {
-            throw new ArgumentException("The table must contain at least 2 players", nameof(players));
+            throw new InvalidHandConfigurationException("The table must contain at least 2 players");
         }
 
         if (_players[positions.BigBlind - 1] == null)
         {
-            throw new ArgumentException("The table must contain a player on the big blind", nameof(players));
+            throw new InvalidHandConfigurationException("The table must contain a player on the big blind");
         }
 
         if (positions.SmallBlind == positions.BigBlind)
         {
-            throw new ArgumentException("The table must contain different players on the big and small blinds", nameof(positions));
+            throw new InvalidHandConfigurationException("The table must contain different players on the big and small blinds");
         }
 
         if (positions.Button == positions.BigBlind)
         {
-            throw new ArgumentException("The table must contain different players on the big blind and button", nameof(positions));
+            throw new InvalidHandConfigurationException("The table must contain different players on the big blind and button");
         }
     }
 
@@ -71,7 +72,7 @@ public class Table : IEnumerable<Player>
             }
         }
 
-        throw new ArgumentException("A player with the given nickname is not found at the table", nameof(nickname));
+        throw new PlayerNotFoundException("The player is not found at the table");
     }
 
     public Player? GetPlayerOnSmallBlind()

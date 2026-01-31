@@ -84,12 +84,6 @@ public readonly struct Bets : IEnumerable<KeyValuePair<Nickname, Chips>>, IEquat
     public Bets Refund(Nickname nickname, Chips amount)
     {
         var current = GetAmountPostedBy(nickname);
-
-        if (amount > current)
-        {
-            throw new InvalidOperationException("Cannot refund more than posted");
-        }
-
         var newAmount = current - amount;
 
         var updated = newAmount.IsZero

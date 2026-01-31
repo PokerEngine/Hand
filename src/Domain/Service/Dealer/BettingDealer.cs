@@ -1,5 +1,6 @@
 using Domain.Entity;
 using Domain.Event;
+using Domain.Exception;
 using Domain.Service.Evaluator;
 using Domain.Service.Randomizer;
 using Domain.ValueObject;
@@ -69,7 +70,7 @@ public abstract class BaseBettingDealer : IDealer
                 pot.ResetCurrentActions();
                 break;
             default:
-                throw new InvalidOperationException($"{@event.GetType().Name} is not supported");
+                throw new InvalidHandStateException($"{@event.GetType().Name} is not supported");
         }
     }
 
@@ -88,7 +89,7 @@ public abstract class BaseBettingDealer : IDealer
         var nextPlayer = previousPlayer is null ? GetStartPlayer(table) : GetNextPlayer(table, previousPlayer);
         if (nextPlayer is null || nextPlayer.Nickname != nickname)
         {
-            throw new InvalidOperationException("The player cannot act: it's not his turn");
+            throw new PlayerActionNotAllowedException("The player cannot act: it's not his turn");
         }
 
         var player = table.GetPlayerByNickname(nickname);
@@ -125,7 +126,7 @@ public abstract class BaseBettingDealer : IDealer
                 RaiseBy(player, action.Amount, pot);
                 break;
             default:
-                throw new InvalidOperationException($"{action} is not supported");
+                throw new InvalidHandStateException($"{action} is not supported");
         }
     }
 
@@ -139,7 +140,7 @@ public abstract class BaseBettingDealer : IDealer
         var (isValid, reason) = CheckIsValid(player, pot);
         if (!isValid)
         {
-            throw new InvalidOperationException($"The player cannot check: {reason}");
+            throw new PlayerActionNotAllowedException($"The player cannot check: {reason}");
         }
 
         // We post zero chips for check to mark that the player has committed his action
@@ -152,7 +153,7 @@ public abstract class BaseBettingDealer : IDealer
         var (isValid, reason) = CallByIsValid(player, amount, pot);
         if (!isValid)
         {
-            throw new InvalidOperationException($"The player cannot call by {amount}: {reason}");
+            throw new PlayerActionNotAllowedException($"The player cannot call by {amount}: {reason}");
         }
 
         player.Post(amount);
@@ -164,7 +165,7 @@ public abstract class BaseBettingDealer : IDealer
         var (isValid, reason) = RaiseByIsValid(player, amount, pot);
         if (!isValid)
         {
-            throw new InvalidOperationException($"The player cannot raise by {amount}: {reason}");
+            throw new PlayerActionNotAllowedException($"The player cannot raise by {amount}: {reason}");
         }
 
         player.Post(amount);
@@ -318,7 +319,7 @@ public abstract class BaseBettingDealer : IDealer
         var playerPostedAmount = pot.GetCurrentAmountPostedBy(player.Nickname);
         var otherMaxPostedAmount = pot.GetCurrentMaxAmountPostedNotBy(player.Nickname);
 
-        if (!otherMaxPostedAmount)
+        if (otherMaxPostedAmount.IsZero)
         {
             return (false, "There is no bet to call");
         }

@@ -1,3 +1,4 @@
+using Application.Exception;
 using Domain.Service.Evaluator;
 using Domain.ValueObject;
 using Microsoft.Extensions.Options;
@@ -65,7 +66,14 @@ public class PokerStoveEvaluator(
 
     private (string, string) RunProcess(Process process)
     {
-        process.Start();
+        try
+        {
+            process.Start();
+        }
+        catch (Exception e)
+        {
+            throw new ExternalSystemUnavailableException("Failed to run the evaluator", e);
+        }
 
         var output = process.StandardOutput.ReadToEnd();
         var error = process.StandardError.ReadToEnd();
@@ -89,7 +97,7 @@ public class PokerStoveEvaluator(
     {
         if (!GameMapping.TryGetValue(game, out var gameType))
         {
-            throw new ArgumentException("Game is not supported", nameof(game));
+            throw new ExternalSystemUnavailableException($"The game is not supported: {game}");
         }
 
         return gameType;
@@ -99,23 +107,23 @@ public class PokerStoveEvaluator(
     {
         if (error != "")
         {
-            throw new FormatException($"Error is caught: {error}");
+            throw new ExternalSystemErrorException($"Error is caught: {error}");
         }
 
         var parts = output.Split(':').Select(x => x.Trim()).ToArray();
         if (parts.Length != 3)
         {
-            throw new FormatException($"Invalid response: {output}");
+            throw new ExternalSystemContractViolatedException($"Invalid response: {output}");
         }
 
         if (!ComboTypeMapping.TryGetValue(parts[0], out var comboType))
         {
-            throw new FormatException($"Invalid combo: {output}");
+            throw new ExternalSystemContractViolatedException($"Invalid combo: {output}");
         }
 
         if (!Int32.TryParse(parts[2], out var comboWeight))
         {
-            throw new FormatException($"Invalid weight: {output}");
+            throw new ExternalSystemContractViolatedException($"Invalid weight: {output}");
         }
 
         return new Combo(type: comboType, weight: comboWeight);

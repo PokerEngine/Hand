@@ -1,3 +1,5 @@
+using Domain.Exception;
+
 namespace Domain.ValueObject;
 
 public enum PlayerActionType
@@ -17,12 +19,12 @@ public readonly struct PlayerAction : IEquatable<PlayerAction>
     {
         if ((type == PlayerActionType.Fold || type == PlayerActionType.Check) && !amount.IsZero)
         {
-            throw new ArgumentException($"Amount must be zero for {type}", nameof(amount));
+            throw new PlayerActionNotValidException($"Amount must be zero for {type}");
         }
 
         if ((type == PlayerActionType.CallBy || type == PlayerActionType.RaiseBy) && amount.IsZero)
         {
-            throw new ArgumentException($"Amount must be non-zero for {type}", nameof(amount));
+            throw new PlayerActionNotValidException($"Amount must be non-zero for {type}");
         }
 
         Type = type;
@@ -34,7 +36,7 @@ public readonly struct PlayerAction : IEquatable<PlayerAction>
 
     public override string ToString()
     {
-        if (Amount)
+        if (!Amount.IsZero)
         {
             return $"{Type} [{Amount}]";
         }

@@ -1,4 +1,5 @@
 using Application.Command;
+using Application.Exception;
 using Application.Query;
 using Application.Test.Event;
 using Application.Test.Repository;
@@ -43,7 +44,7 @@ public class GetHandByUidTest
     }
 
     [Fact]
-    public async Task HandleAsync_NotExists_ShouldThrowInvalidOperationException()
+    public async Task HandleAsync_NotExists_ShouldThrowException()
     {
         // Arrange
         var repository = new StubRepository();
@@ -54,7 +55,7 @@ public class GetHandByUidTest
         var handler = new GetHandByUidHandler(repository, randomizer, evaluator);
 
         // Act
-        var exc = await Assert.ThrowsAsync<InvalidOperationException>(async () =>
+        var exc = await Assert.ThrowsAsync<HandNotFoundException>(async () =>
         {
             await handler.HandleAsync(query);
         });

@@ -1,3 +1,4 @@
+using Application.Exception;
 using Application.Repository;
 using Domain.Event;
 using Domain.ValueObject;
@@ -18,7 +19,7 @@ public class StubRepository : IRepository
     {
         if (!_mapping.TryGetValue(handUid, out var events))
         {
-            throw new InvalidOperationException("The hand is not found");
+            throw new HandNotFoundException("The hand is not found");
         }
 
         List<IEvent> snapshot;

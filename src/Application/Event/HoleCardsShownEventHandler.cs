@@ -17,7 +17,7 @@ public class HoleCardsShownEventHandler(
             TableUid = context.TableUid,
             TableType = context.TableType.ToString(),
             Nickname = @event.Nickname,
-            Cards = @event.Cards.ToString(),
+            Cards = @event.Cards,
             Type = @event.Combo.Type.ToString(),
             Weight = @event.Combo.Weight
         };

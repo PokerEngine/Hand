@@ -1,3 +1,4 @@
+using Domain.Exception;
 using System.Collections;
 using System.Collections.Immutable;
 
@@ -17,17 +18,17 @@ public readonly struct CardSet : IReadOnlySet<Card>, IEquatable<CardSet>
         _cards = ImmutableSortedSet<Card>.Empty;
     }
 
-    public static CardSet FromString(string value)
+    private static CardSet FromString(string value)
     {
         if (value.Length % 2 != 0)
         {
-            throw new ArgumentException($"Invalid CardSet: {value}", nameof(value));
+            throw new InsufficientCardException($"Unknown cards: {value}");
         }
 
         var cards = new List<Card>();
         for (var i = 0; i < value.Length; i += 2)
         {
-            var card = Card.FromString(value.Substring(i, 2));
+            var card = (Card)value.Substring(i, 2);
             cards.Add(card);
         }
 

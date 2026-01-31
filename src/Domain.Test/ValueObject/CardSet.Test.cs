@@ -18,7 +18,7 @@ public class CardSetTest
     [Fact]
     public void TestFromString()
     {
-        var cards = CardSet.FromString("As2c");
+        var cards = (CardSet)"As2c";
 
         Assert.Equal(new CardSet([Card.AceOfSpades, Card.DeuceOfClubs]), cards);
     }

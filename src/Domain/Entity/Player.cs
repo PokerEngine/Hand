@@ -1,3 +1,4 @@
+using Domain.Exception;
 using Domain.ValueObject;
 
 namespace Domain.Entity;
@@ -10,7 +11,7 @@ public class Player
     public CardSet HoleCards { get; private set; }
     public bool IsFolded { get; private set; }
 
-    public bool IsAllIn => !Stack;
+    public bool IsAllIn => Stack.IsZero;
 
     public Player(Nickname nickname, Seat seat, Chips stack)
     {
@@ -25,7 +26,7 @@ public class Player
     {
         if (IsFolded)
         {
-            throw new InvalidOperationException("The player has already folded");
+            throw new InvalidHandStateException("The player has already folded");
         }
 
         HoleCards += holeCards;
@@ -35,11 +36,11 @@ public class Player
     {
         if (IsFolded)
         {
-            throw new InvalidOperationException("The player has already folded");
+            throw new InvalidHandStateException("The player has already folded");
         }
         if (IsAllIn)
         {
-            throw new InvalidOperationException("The player has already been all in");
+            throw new InvalidHandStateException("The player has already been all in");
         }
 
         IsFolded = true;
@@ -49,15 +50,15 @@ public class Player
     {
         if (IsFolded)
         {
-            throw new InvalidOperationException("The player has already folded");
+            throw new InvalidHandStateException("The player has already folded");
         }
         if (IsAllIn)
         {
-            throw new InvalidOperationException("The player has already been all in");
+            throw new InvalidHandStateException("The player has already been all in");
         }
         if (Stack < amount)
         {
-            throw new InvalidOperationException("The player cannot post more amount than his stack");
+            throw new InvalidHandStateException("The player cannot post more amount than his stack");
         }
 
         Stack -= amount;
@@ -67,7 +68,7 @@ public class Player
     {
         if (IsFolded)
         {
-            throw new InvalidOperationException("The player has already folded");
+            throw new InvalidHandStateException("The player has already folded");
         }
 
         Stack += amount;

@@ -22,17 +22,26 @@ public class HandController(
         {
             TableUid = request.TableUid,
             TableType = request.TableType,
-            Game = request.Game,
-            MaxSeat = request.MaxSeat,
-            SmallBlind = request.SmallBlind,
-            BigBlind = request.BigBlind,
-            SmallBlindSeat = request.SmallBlindSeat,
-            BigBlindSeat = request.BigBlindSeat,
-            ButtonSeat = request.ButtonSeat,
-            Participants = request.Participants.Select(DeserializeParticipant).ToList()
+            Rules = new StartHandCommandRules
+            {
+                Game = request.Rules.Game,
+                MaxSeat = request.Rules.MaxSeat,
+                SmallBlind = request.Rules.SmallBlind,
+                BigBlind = request.Rules.BigBlind,
+            },
+            Table = new StartHandCommandTable
+            {
+                Positions = new StartHandCommandPositions
+                {
+                    SmallBlindSeat = request.Table.Positions.SmallBlindSeat,
+                    BigBlindSeat = request.Table.Positions.BigBlindSeat,
+                    ButtonSeat = request.Table.Positions.ButtonSeat,
+                },
+                Participants = request.Table.Participants.Select(DeserializeParticipant).ToList()
+            }
         };
         var response = await commandDispatcher.DispatchAsync<StartHandCommand, StartHandResponse>(command);
-        return CreatedAtAction(nameof(GetHandByUid), new { uid = response.Uid }, response);
+        return CreatedAtAction(nameof(GetHandDetail), new { uid = response.Uid }, response);
     }
 
     [HttpPost("{uid:guid}/submit-action/{nickname}")]
@@ -53,13 +62,13 @@ public class HandController(
     }
 
     [HttpGet("{uid:guid}")]
-    [ProducesResponseType(typeof(GetHandByUidResponse), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(GetHandDetailResponse), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-    public async Task<IActionResult> GetHandByUid(Guid uid)
+    public async Task<IActionResult> GetHandDetail(Guid uid)
     {
-        var query = new GetHandByUidQuery { Uid = uid };
-        var response = await queryDispatcher.DispatchAsync<GetHandByUidQuery, GetHandByUidResponse>(query);
+        var query = new GetHandDetailQuery { Uid = uid };
+        var response = await queryDispatcher.DispatchAsync<GetHandDetailQuery, GetHandDetailResponse>(query);
         return Ok(response);
     }
 
@@ -78,14 +87,29 @@ public record StartHandRequest
 {
     public required Guid TableUid { get; init; }
     public required string TableType { get; init; }
+    public required StartHandRequestRules Rules { get; init; }
+    public required StartHandRequestTable Table { get; init; }
+}
+
+public record StartHandRequestRules
+{
     public required string Game { get; init; }
     public required int MaxSeat { get; init; }
     public required int SmallBlind { get; init; }
     public required int BigBlind { get; init; }
+}
+
+public record StartHandRequestTable
+{
+    public required StartHandRequestPositions Positions { get; init; }
+    public required List<StartHandRequestParticipant> Participants { get; init; }
+}
+
+public record StartHandRequestPositions
+{
     public required int SmallBlindSeat { get; init; }
     public required int BigBlindSeat { get; init; }
     public required int ButtonSeat { get; init; }
-    public required List<StartHandRequestParticipant> Participants { get; init; }
 }
 
 public record StartHandRequestParticipant

@@ -73,6 +73,7 @@ public class Hand
             rules: rules,
             table: factory.GetTable(
                 participants: participants,
+                rules: rules,
                 positions: positions
             ),
             pot: factory.GetPot(rules),
@@ -117,6 +118,7 @@ public class Hand
             rules: createdEvent.Rules,
             table: factory.GetTable(
                 participants: createdEvent.Participants,
+                rules: createdEvent.Rules,
                 positions: createdEvent.Positions
             ),
             pot: factory.GetPot(createdEvent.Rules),

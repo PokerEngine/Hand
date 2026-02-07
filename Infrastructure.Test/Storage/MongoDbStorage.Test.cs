@@ -34,13 +34,13 @@ public class MongoDbStorageTest(MongoDbClientFixture fixture) : IClassFixture<Mo
         // Assert
         Assert.Equal(hand.Uid, (HandUid)view.Uid);
         Assert.Equal("NoLimitHoldem", view.Rules.Game);
+        Assert.Equal(6, view.Rules.MaxSeat);
         Assert.Equal(5, view.Rules.SmallBlind);
         Assert.Equal(10, view.Rules.BigBlind);
 
         Assert.Equal(1, view.Table.Positions.SmallBlindSeat);
         Assert.Equal(2, view.Table.Positions.BigBlindSeat);
         Assert.Equal(6, view.Table.Positions.ButtonSeat);
-        Assert.Equal(6, view.Table.Positions.MaxSeat);
         Assert.Equal(6, view.Table.BoardCards.Length); // 3 cards
 
         Assert.Equal(3, view.Table.Players.Count);
@@ -111,15 +111,15 @@ public class MongoDbStorageTest(MongoDbClientFixture fixture) : IClassFixture<Mo
             rules: new Rules
             {
                 Game = game,
+                MaxSeat = 6,
                 SmallBlind = smallBlind,
                 BigBlind = bigBlind
             },
             positions: new Positions
             {
-                SmallBlind = 1,
-                BigBlind = 2,
-                Button = 6,
-                Max = 6
+                SmallBlindSeat = 1,
+                BigBlindSeat = 2,
+                ButtonSeat = 6
             },
             participants: [
                 new Participant

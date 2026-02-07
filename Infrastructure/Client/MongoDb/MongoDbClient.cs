@@ -191,6 +191,7 @@ internal sealed class SidePotSerializer : SerializerBase<SidePot>
 internal sealed class RulesSerializer : SerializerBase<Rules>
 {
     private const string GameField = "game";
+    private const string MaxSeatField = "maxSeat";
     private const string SmallBlindField = "smallBlind";
     private const string BigBlindField = "bigBlind";
 
@@ -209,6 +210,7 @@ internal sealed class RulesSerializer : SerializerBase<Rules>
     public override Rules Deserialize(BsonDeserializationContext context, BsonDeserializationArgs args)
     {
         Game game = default;
+        int maxSeat = default;
         int smallBlind = default;
         int bigBlind = default;
 
@@ -225,6 +227,10 @@ internal sealed class RulesSerializer : SerializerBase<Rules>
                         context.Reader.ReadString(),
                         ignoreCase: true
                     );
+                    break;
+
+                case MaxSeatField:
+                    maxSeat = context.Reader.ReadInt32();
                     break;
 
                 case SmallBlindField:
@@ -246,6 +252,7 @@ internal sealed class RulesSerializer : SerializerBase<Rules>
         return new Rules
         {
             Game = game,
+            MaxSeat = maxSeat,
             SmallBlind = smallBlind,
             BigBlind = bigBlind
         };
@@ -254,31 +261,27 @@ internal sealed class RulesSerializer : SerializerBase<Rules>
 
 internal sealed class PositionsSerializer : SerializerBase<Positions>
 {
-    private const string SmallBlindField = "smallBlind";
-    private const string BigBlindField = "bigBlind";
-    private const string ButtonField = "button";
-    private const string MaxField = "max";
+    private const string SmallBlindSeatField = "smallBlindSeat";
+    private const string BigBlindSeatField = "bigBlindSeat";
+    private const string ButtonSeatField = "buttonSeat";
 
     public override void Serialize(BsonSerializationContext context, BsonSerializationArgs args, Positions value)
     {
         context.Writer.WriteStartDocument();
-        context.Writer.WriteName(SmallBlindField);
-        context.Writer.WriteInt32(value.SmallBlind);
-        context.Writer.WriteName(BigBlindField);
-        context.Writer.WriteInt32(value.BigBlind);
-        context.Writer.WriteName(ButtonField);
-        context.Writer.WriteInt32(value.Button);
-        context.Writer.WriteName(MaxField);
-        context.Writer.WriteInt32(value.Max);
+        context.Writer.WriteName(SmallBlindSeatField);
+        context.Writer.WriteInt32(value.SmallBlindSeat);
+        context.Writer.WriteName(BigBlindSeatField);
+        context.Writer.WriteInt32(value.BigBlindSeat);
+        context.Writer.WriteName(ButtonSeatField);
+        context.Writer.WriteInt32(value.ButtonSeat);
         context.Writer.WriteEndDocument();
     }
 
     public override Positions Deserialize(BsonDeserializationContext context, BsonDeserializationArgs args)
     {
-        int smallBlind = default;
-        int bigBlind = default;
-        int button = default;
-        int max = default;
+        int smallBlindSeat = default;
+        int bigBlindSeat = default;
+        int buttonSeat = default;
 
         context.Reader.ReadStartDocument();
 
@@ -288,20 +291,16 @@ internal sealed class PositionsSerializer : SerializerBase<Positions>
 
             switch (name)
             {
-                case SmallBlindField:
-                    smallBlind = context.Reader.ReadInt32();
+                case SmallBlindSeatField:
+                    smallBlindSeat = context.Reader.ReadInt32();
                     break;
 
-                case BigBlindField:
-                    bigBlind = context.Reader.ReadInt32();
+                case BigBlindSeatField:
+                    bigBlindSeat = context.Reader.ReadInt32();
                     break;
 
-                case ButtonField:
-                    button = context.Reader.ReadInt32();
-                    break;
-
-                case MaxField:
-                    max = context.Reader.ReadInt32();
+                case ButtonSeatField:
+                    buttonSeat = context.Reader.ReadInt32();
                     break;
 
                 default:
@@ -314,10 +313,9 @@ internal sealed class PositionsSerializer : SerializerBase<Positions>
 
         return new Positions
         {
-            SmallBlind = smallBlind,
-            BigBlind = bigBlind,
-            Button = button,
-            Max = max
+            SmallBlindSeat = smallBlindSeat,
+            BigBlindSeat = bigBlindSeat,
+            ButtonSeat = buttonSeat
         };
     }
 }

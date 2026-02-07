@@ -1,18 +1,18 @@
 using Application.Command;
+using Application.Exception;
+using Application.Query;
 using Application.Test.Event;
 using Application.Test.Repository;
 using Application.Test.Service.Evaluator;
 using Application.Test.Service.Randomizer;
 using Application.Test.Storage;
-using Domain.Entity;
-using Domain.Event;
 
-namespace Application.Test.Command;
+namespace Application.Test.Query;
 
-public class SubmitPlayerActionTest
+public class GetHandDetailTest
 {
     [Fact]
-    public async Task HandleAsync_Valid_ShouldSubmitPlayerAction()
+    public async Task HandleAsync_Exists_ShouldReturn()
     {
         // Arrange
         var repository = new StubRepository();
@@ -21,35 +21,45 @@ public class SubmitPlayerActionTest
         var randomizer = new StubRandomizer();
         var evaluator = new StubEvaluator();
         var handUid = await StartHandAsync(repository, storage, eventDispatcher, randomizer, evaluator);
-        await eventDispatcher.ClearDispatchedEventsAsync(handUid);
 
-        var command = new SubmitPlayerActionCommand
-        {
-            Uid = handUid,
-            Nickname = "Charlie",
-            Type = "RaiseBy",
-            Amount = 25
-        };
-        var handler = new SubmitPlayerActionHandler(repository, storage, eventDispatcher, randomizer, evaluator);
+        var query = new GetHandDetailQuery { Uid = handUid };
+        var handler = new GetHandDetailHandler(storage);
 
         // Act
-        var response = await handler.HandleAsync(command);
+        var response = await handler.HandleAsync(query);
 
         // Assert
         Assert.Equal(handUid, response.Uid);
+        Assert.Equal("NoLimitHoldem", response.Rules.Game);
+        Assert.Equal(6, response.Rules.MaxSeat);
+        Assert.Equal(5, response.Rules.SmallBlind);
+        Assert.Equal(10, response.Rules.BigBlind);
+        Assert.Equal(1, response.Table.Positions.SmallBlindSeat);
+        Assert.Equal(2, response.Table.Positions.BigBlindSeat);
+        Assert.Equal(6, response.Table.Positions.ButtonSeat);
+        Assert.Equal(3, response.Table.Players.Count);
+        Assert.Equal(2, response.Pot.CurrentBets.Count);
+        Assert.Empty(response.Pot.CollectedBets);
+        Assert.Empty(response.Pot.Awards);
+    }
 
-        var hand = Hand.FromEvents(response.Uid, randomizer, evaluator, await repository.GetEventsAsync(response.Uid));
-        var state = hand.GetState();
-        Assert.Equal(3, state.Pot.CurrentBets.Count);
+    [Fact]
+    public async Task HandleAsync_NotExists_ShouldThrowException()
+    {
+        // Arrange
+        var storage = new StubStorage();
 
-        var detailView = await storage.GetDetailViewAsync(hand.Uid);
-        Assert.Equal(3, detailView.Pot.CurrentBets.Count);
-        Assert.Equal("Charlie", detailView.Pot.CurrentBets[2].Nickname);
-        Assert.Equal(25, detailView.Pot.CurrentBets[2].Amount);
+        var query = new GetHandDetailQuery { Uid = Guid.NewGuid() };
+        var handler = new GetHandDetailHandler(storage);
 
-        var events = await eventDispatcher.GetDispatchedEventsAsync(response.Uid);
-        Assert.Equal(2, events.Count);
-        Assert.IsType<PlayerActedEvent>(events[0]);
+        // Act
+        var exc = await Assert.ThrowsAsync<HandNotFoundException>(async () =>
+        {
+            await handler.HandleAsync(query);
+        });
+
+        // Assert
+        Assert.Equal("The hand is not found", exc.Message);
     }
 
     private async Task<Guid> StartHandAsync(
@@ -57,7 +67,8 @@ public class SubmitPlayerActionTest
         StubStorage storage,
         StubEventDispatcher eventDispatcher,
         StubRandomizer randomizer,
-        StubEvaluator evaluator)
+        StubEvaluator evaluator
+    )
     {
         var handler = new StartHandHandler(repository, storage, eventDispatcher, randomizer, evaluator);
         var command = new StartHandCommand

@@ -13,18 +13,18 @@ public class Table : IEnumerable<Player>
     public IEnumerable<Player> Players => _players.OfType<Player>();
     public int Count => _players.Count(x => x != null);
 
-    public Table(IEnumerable<Player> players, Positions positions)
+    public Table(IEnumerable<Player> players, Rules rules, Positions positions)
     {
-        _players = new Player?[positions.Max];
+        _players = new Player?[rules.MaxSeat];
         Positions = positions;
         BoardCards = new CardSet();
 
         var allPlayers = players.ToList();
         foreach (var player in allPlayers)
         {
-            if (player.Seat > positions.Max)
+            if (player.Seat > rules.MaxSeat)
             {
-                throw new InvalidHandConfigurationException($"The table supports seats till {positions.Max}");
+                throw new InvalidHandConfigurationException($"The table supports seats till {rules.MaxSeat}");
             }
             _players[player.Seat - 1] = player;
         }
@@ -46,17 +46,17 @@ public class Table : IEnumerable<Player>
             throw new InvalidHandConfigurationException("The table must contain at least 2 players");
         }
 
-        if (_players[positions.BigBlind - 1] == null)
+        if (_players[positions.BigBlindSeat - 1] == null)
         {
             throw new InvalidHandConfigurationException("The table must contain a player on the big blind");
         }
 
-        if (positions.SmallBlind == positions.BigBlind)
+        if (positions.SmallBlindSeat == positions.BigBlindSeat)
         {
             throw new InvalidHandConfigurationException("The table must contain different players on the big and small blinds");
         }
 
-        if (positions.Button == positions.BigBlind)
+        if (positions.ButtonSeat == positions.BigBlindSeat)
         {
             throw new InvalidHandConfigurationException("The table must contain different players on the big blind and button");
         }
@@ -77,17 +77,17 @@ public class Table : IEnumerable<Player>
 
     public Player? GetPlayerOnSmallBlind()
     {
-        return GetPlayerOnSeat(Positions.SmallBlind);
+        return GetPlayerOnSeat(Positions.SmallBlindSeat);
     }
 
     public Player? GetPlayerOnBigBlind()
     {
-        return GetPlayerOnSeat(Positions.BigBlind);
+        return GetPlayerOnSeat(Positions.BigBlindSeat);
     }
 
     public Player? GetPlayerOnButton()
     {
-        return GetPlayerOnSeat(Positions.Button);
+        return GetPlayerOnSeat(Positions.ButtonSeat);
     }
 
     private Player? GetPlayerOnSeat(Seat seat)

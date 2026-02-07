@@ -18,12 +18,12 @@ public class HandStartedEventHandler(
             TableUid = context.TableUid,
             TableType = context.TableType.ToString(),
             Game = @event.Rules.Game.ToString(),
+            MaxSeat = @event.Rules.MaxSeat,
             SmallBlind = @event.Rules.SmallBlind,
             BigBlind = @event.Rules.BigBlind,
-            MaxSeat = @event.Positions.Max,
-            SmallBlindSeat = @event.Positions.SmallBlind,
-            BigBlindSeat = @event.Positions.BigBlind,
-            ButtonSeat = @event.Positions.Button,
+            SmallBlindSeat = @event.Positions.SmallBlindSeat,
+            BigBlindSeat = @event.Positions.BigBlindSeat,
+            ButtonSeat = @event.Positions.ButtonSeat,
             Participants = @event.Participants.Select(SerializeParticipant).ToList()
         };
 

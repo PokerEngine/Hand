@@ -7,12 +7,14 @@ public class PotLimitOmahaFactory : IFactory
 {
     public virtual Table GetTable(
         IEnumerable<Participant> participants,
+        Rules rules,
         Positions positions
     )
     {
         var players = participants.Select(GetPlayer);
         return new Table(
             players: players,
+            rules: rules,
             positions: positions
         );
     }

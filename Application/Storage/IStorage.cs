@@ -22,6 +22,7 @@ public record DetailViewRules
     public required string Game { get; init; }
     public required int SmallBlind { get; init; }
     public required int BigBlind { get; init; }
+    public required int MaxSeat { get; init; }
 }
 
 public record DetailViewTable
@@ -36,7 +37,6 @@ public record DetailViewPositions
     public required int SmallBlindSeat { get; init; }
     public required int BigBlindSeat { get; init; }
     public required int ButtonSeat { get; init; }
-    public required int MaxSeat { get; init; }
 }
 
 public record DetailViewPlayer

@@ -2,56 +2,29 @@ using Application.Exception;
 using Application.Storage;
 using Domain.Entity;
 using Domain.ValueObject;
-using Infrastructure.Client.MongoDb;
-using Microsoft.Extensions.Options;
-using MongoDB.Bson.Serialization.Attributes;
-using MongoDB.Driver;
+using System.Collections.Concurrent;
 
-namespace Infrastructure.Storage;
+namespace Application.Test.Storage;
 
-public class MongoDbStorage : IStorage
+public class StubStorage : IStorage
 {
-    private const string DetailViewCollectionName = "views_detail";
-    private readonly IMongoCollection<DetailViewDocument> _detailViewCollection;
+    private readonly ConcurrentDictionary<HandUid, DetailView> _detailMapping = new();
 
-    public MongoDbStorage(MongoDbClient client, IOptions<MongoDbStorageOptions> options)
+    public Task<DetailView> GetDetailViewAsync(HandUid handUid)
     {
-        var db = client.Client.GetDatabase(options.Value.Database);
-
-        _detailViewCollection = db.GetCollection<DetailViewDocument>(DetailViewCollectionName);
-    }
-
-    public async Task<DetailView> GetDetailViewAsync(HandUid uid)
-    {
-        var document = await _detailViewCollection
-            .Find(x => x.Uid == (Guid)uid)
-            .FirstOrDefaultAsync();
-
-        if (document is null)
+        if (!_detailMapping.TryGetValue(handUid, out var view))
         {
             throw new HandNotFoundException("The hand is not found");
         }
 
-        return new DetailView
-        {
-            Uid = document.Uid,
-            Rules = document.Rules,
-            Table = document.Table,
-            Pot = document.Pot
-        };
+        return Task.FromResult(view);
     }
 
-    public async Task SaveViewAsync(Hand hand)
+    public Task SaveViewAsync(Hand hand)
     {
-        var options = new FindOneAndReplaceOptions<DetailViewDocument>
-        {
-            IsUpsert = true,
-            ReturnDocument = ReturnDocument.After
-        };
-
         var state = hand.GetState();
 
-        var document = new DetailViewDocument
+        var view = new DetailView
         {
             Uid = hand.Uid,
             Rules = new DetailViewRules
@@ -99,23 +72,7 @@ public class MongoDbStorage : IStorage
                 }).ToList()
             }
         };
-
-        await _detailViewCollection.FindOneAndReplaceAsync(x => x.Uid == (Guid)hand.Uid, document, options);
+        _detailMapping.AddOrUpdate(hand.Uid, view, (_, _) => view);
+        return Task.CompletedTask;
     }
-}
-
-public class MongoDbStorageOptions
-{
-    public const string SectionName = "MongoDbStorage";
-
-    public required string Database { get; init; }
-}
-
-public record DetailViewDocument
-{
-    [BsonId]
-    public required Guid Uid { get; init; }
-    public required DetailViewRules Rules { get; init; }
-    public required DetailViewTable Table { get; init; }
-    public required DetailViewPot Pot { get; init; }
 }

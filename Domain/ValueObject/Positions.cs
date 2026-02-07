@@ -2,8 +2,7 @@ namespace Domain.ValueObject;
 
 public record Positions
 {
-    public required Seat SmallBlind { get; init; }
-    public required Seat BigBlind { get; init; }
-    public required Seat Button { get; init; }
-    public required Seat Max { get; init; }
+    public required Seat SmallBlindSeat { get; init; }
+    public required Seat BigBlindSeat { get; init; }
+    public required Seat ButtonSeat { get; init; }
 }

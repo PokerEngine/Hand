@@ -3,6 +3,7 @@ using Application.Event;
 using Application.IntegrationEvent;
 using Application.Query;
 using Application.Repository;
+using Application.Storage;
 using Domain.Event;
 using Domain.Service.Evaluator;
 using Domain.Service.Randomizer;
@@ -15,6 +16,7 @@ using Infrastructure.Query;
 using Infrastructure.Repository;
 using Infrastructure.Service.Evaluator;
 using Infrastructure.Service.Randomizer;
+using Infrastructure.Storage;
 
 namespace Infrastructure;
 
@@ -48,13 +50,19 @@ public static class Bootstrapper
         );
         builder.Services.AddSingleton<IRepository, MongoDbRepository>();
 
+        // Register storage
+        builder.Services.Configure<MongoDbStorageOptions>(
+            builder.Configuration.GetSection(MongoDbStorageOptions.SectionName)
+        );
+        builder.Services.AddSingleton<IStorage, MongoDbStorage>();
+
         // Register commands
         RegisterCommandHandler<StartHandCommand, StartHandHandler, StartHandResponse>(builder.Services);
         RegisterCommandHandler<SubmitPlayerActionCommand, SubmitPlayerActionHandler, SubmitPlayerActionResponse>(builder.Services);
         builder.Services.AddScoped<ICommandDispatcher, CommandDispatcher>();
 
         // Register queries
-        RegisterQueryHandler<GetHandByUidQuery, GetHandByUidHandler, GetHandByUidResponse>(builder.Services);
+        RegisterQueryHandler<GetHandDetailQuery, GetHandDetailHandler, GetHandDetailResponse>(builder.Services);
         builder.Services.AddScoped<IQueryDispatcher, QueryDispatcher>();
 
         // Register domain events

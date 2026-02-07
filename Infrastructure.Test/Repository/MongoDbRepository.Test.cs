@@ -23,15 +23,15 @@ public class MongoDbRepositoryTest(MongoDbClientFixture fixture) : IClassFixture
             Rules = new()
             {
                 Game = Game.NoLimitHoldem,
+                MaxSeat = new Seat(6),
                 SmallBlind = new Chips(5),
                 BigBlind = new Chips(10)
             },
             Positions = new()
             {
-                SmallBlind = new Seat(1),
-                BigBlind = new Seat(2),
-                Button = new Seat(6),
-                Max = new Seat(6)
+                SmallBlindSeat = new Seat(1),
+                BigBlindSeat = new Seat(2),
+                ButtonSeat = new Seat(6)
             },
             Participants = [
                 new()
@@ -92,15 +92,15 @@ public class MongoDbRepositoryTest(MongoDbClientFixture fixture) : IClassFixture
             Rules = new()
             {
                 Game = Game.NoLimitHoldem,
+                MaxSeat = new Seat(6),
                 SmallBlind = new Chips(5),
                 BigBlind = new Chips(10)
             },
             Positions = new()
             {
-                SmallBlind = new Seat(1),
-                BigBlind = new Seat(2),
-                Button = new Seat(6),
-                Max = new Seat(6)
+                SmallBlindSeat = new Seat(1),
+                BigBlindSeat = new Seat(2),
+                ButtonSeat = new Seat(6)
             },
             Participants = [
                 new()

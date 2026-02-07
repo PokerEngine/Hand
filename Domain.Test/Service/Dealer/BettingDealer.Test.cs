@@ -21,12 +21,18 @@ public abstract class BaseBettingDealerTest
     {
         return new Table(
             players: players,
+            rules: new Rules
+            {
+                Game = Game.NoLimitHoldem,
+                MaxSeat = new Seat(6),
+                SmallBlind = new Chips(5),
+                BigBlind = new Chips(10)
+            },
             positions: new()
             {
-                SmallBlind = new Seat(smallBlindSeat),
-                BigBlind = new Seat(bigBlindSeat),
-                Button = new Seat(buttonSeat),
-                Max = new Seat(6)
+                SmallBlindSeat = new Seat(smallBlindSeat),
+                BigBlindSeat = new Seat(bigBlindSeat),
+                ButtonSeat = new Seat(buttonSeat)
             }
         );
     }
@@ -439,6 +445,7 @@ public class NoLimitBettingDealerTest : BaseBettingDealerTest
         return new Rules
         {
             Game = Game.NoLimitHoldem,
+            MaxSeat = new Seat(6),
             SmallBlind = new Chips(5),
             BigBlind = new Chips(10)
         };
@@ -578,6 +585,7 @@ public class PotLimitBettingDealerTest : BaseBettingDealerTest
         return new Rules
         {
             Game = Game.PotLimitOmaha,
+            MaxSeat = new Seat(6),
             SmallBlind = new Chips(5),
             BigBlind = new Chips(10)
         };

@@ -1,5 +1,6 @@
 using Application.Event;
 using Application.Repository;
+using Application.Storage;
 using Domain.Entity;
 using Domain.Service.Evaluator;
 using Domain.Service.Randomizer;
@@ -23,6 +24,7 @@ public record SubmitPlayerActionResponse : ICommandResponse
 
 public class SubmitPlayerActionHandler(
     IRepository repository,
+    IStorage storage,
     IEventDispatcher eventDispatcher,
     IRandomizer randomizer,
     IEvaluator evaluator
@@ -46,6 +48,7 @@ public class SubmitPlayerActionHandler(
 
         var events = hand.PullEvents();
         await repository.AddEventsAsync(hand.Uid, events);
+        await storage.SaveViewAsync(hand);
 
         var context = new EventContext
         {

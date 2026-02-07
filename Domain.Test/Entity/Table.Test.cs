@@ -24,12 +24,18 @@ public class TableTest
 
         var table = new Table(
             players: [playerBu, playerSb, playerBb],
+            rules: new Rules
+            {
+                Game = Game.NoLimitHoldem,
+                MaxSeat = new Seat(6),
+                SmallBlind = new Chips(5),
+                BigBlind = new Chips(10)
+            },
             positions: new()
             {
-                SmallBlind = playerSb.Seat,
-                BigBlind = playerBb.Seat,
-                Button = playerBu.Seat,
-                Max = new Seat(6)
+                SmallBlindSeat = playerSb.Seat,
+                BigBlindSeat = playerBb.Seat,
+                ButtonSeat = playerBu.Seat
             }
         );
 
@@ -52,12 +58,18 @@ public class TableTest
 
         var table = new Table(
             players: [playerSb, playerBb],
+            rules: new Rules
+            {
+                Game = Game.NoLimitHoldem,
+                MaxSeat = new Seat(6),
+                SmallBlind = new Chips(5),
+                BigBlind = new Chips(10)
+            },
             positions: new()
             {
-                SmallBlind = playerSb.Seat,
-                BigBlind = playerBb.Seat,
-                Button = playerSb.Seat,
-                Max = new Seat(6)
+                SmallBlindSeat = playerSb.Seat,
+                BigBlindSeat = playerBb.Seat,
+                ButtonSeat = playerSb.Seat
             }
         );
 
@@ -82,12 +94,18 @@ public class TableTest
         {
             new Table(
                 players: [playerA, playerB],
+                rules: new Rules
+                {
+                    Game = Game.NoLimitHoldem,
+                    MaxSeat = new Seat(6),
+                    SmallBlind = new Chips(5),
+                    BigBlind = new Chips(10)
+                },
                 positions: new()
                 {
-                    SmallBlind = new Seat(1),
-                    BigBlind = new Seat(2),
-                    Button = new Seat(1),
-                    Max = new Seat(6)
+                    SmallBlindSeat = new Seat(1),
+                    BigBlindSeat = new Seat(2),
+                    ButtonSeat = new Seat(1)
                 }
             );
         });
@@ -110,12 +128,18 @@ public class TableTest
         {
             new Table(
                 players: [playerA, playerB],
+                rules: new Rules
+                {
+                    Game = Game.NoLimitHoldem,
+                    MaxSeat = new Seat(6),
+                    SmallBlind = new Chips(5),
+                    BigBlind = new Chips(10)
+                },
                 positions: new()
                 {
-                    SmallBlind = new Seat(1),
-                    BigBlind = new Seat(2),
-                    Button = new Seat(1),
-                    Max = new Seat(6)
+                    SmallBlindSeat = new Seat(1),
+                    BigBlindSeat = new Seat(2),
+                    ButtonSeat = new Seat(1)
                 }
             );
         });
@@ -142,12 +166,18 @@ public class TableTest
         {
             new Table(
                 players: [playerSb, playerBb, playerWrong],
+                rules: new Rules
+                {
+                    Game = Game.NoLimitHoldem,
+                    MaxSeat = new Seat(6),
+                    SmallBlind = new Chips(5),
+                    BigBlind = new Chips(10)
+                },
                 positions: new()
                 {
-                    SmallBlind = new Seat(1),
-                    BigBlind = new Seat(2),
-                    Button = new Seat(1),
-                    Max = new Seat(6)
+                    SmallBlindSeat = new Seat(1),
+                    BigBlindSeat = new Seat(2),
+                    ButtonSeat = new Seat(1),
                 }
             );
         });
@@ -166,12 +196,18 @@ public class TableTest
         {
             new Table(
                 players: [playerBb],
+                rules: new Rules
+                {
+                    Game = Game.NoLimitHoldem,
+                    MaxSeat = new Seat(6),
+                    SmallBlind = new Chips(5),
+                    BigBlind = new Chips(10)
+                },
                 positions: new()
                 {
-                    SmallBlind = new Seat(1),
-                    BigBlind = new Seat(1),
-                    Button = new Seat(1),
-                    Max = new Seat(6)
+                    SmallBlindSeat = new Seat(1),
+                    BigBlindSeat = new Seat(1),
+                    ButtonSeat = new Seat(1)
                 }
             );
         });
@@ -192,12 +228,18 @@ public class TableTest
 
         var table = new Table(
             players: [playerBb, playerBu],
+            rules: new Rules
+            {
+                Game = Game.NoLimitHoldem,
+                MaxSeat = new Seat(6),
+                SmallBlind = new Chips(5),
+                BigBlind = new Chips(10)
+            },
             positions: new()
             {
-                SmallBlind = new Seat(1),
-                BigBlind = new Seat(2),
-                Button = new Seat(6),
-                Max = new Seat(6)
+                SmallBlindSeat = new Seat(1),
+                BigBlindSeat = new Seat(2),
+                ButtonSeat = new Seat(6)
             }
         );
 
@@ -221,12 +263,18 @@ public class TableTest
         {
             new Table(
                 players: [playerSb, playerBu],
+                rules: new Rules
+                {
+                    Game = Game.NoLimitHoldem,
+                    MaxSeat = new Seat(6),
+                    SmallBlind = new Chips(5),
+                    BigBlind = new Chips(10)
+                },
                 positions: new()
                 {
-                    SmallBlind = new Seat(1),
-                    BigBlind = new Seat(2),
-                    Button = new Seat(6),
-                    Max = new Seat(6)
+                    SmallBlindSeat = new Seat(1),
+                    BigBlindSeat = new Seat(2),
+                    ButtonSeat = new Seat(6)
                 }
             );
         });
@@ -247,12 +295,18 @@ public class TableTest
 
         var table = new Table(
             players: [playerSb, playerBb],
+            rules: new Rules
+            {
+                Game = Game.NoLimitHoldem,
+                MaxSeat = new Seat(6),
+                SmallBlind = new Chips(5),
+                BigBlind = new Chips(10)
+            },
             positions: new()
             {
-                SmallBlind = new Seat(1),
-                BigBlind = new Seat(2),
-                Button = new Seat(6),
-                Max = new Seat(6)
+                SmallBlindSeat = new Seat(1),
+                BigBlindSeat = new Seat(2),
+                ButtonSeat = new Seat(6)
             }
         );
 
@@ -276,12 +330,18 @@ public class TableTest
         {
             new Table(
                 players: [playerSb, playerBb],
+                rules: new Rules
+                {
+                    Game = Game.NoLimitHoldem,
+                    MaxSeat = new Seat(6),
+                    SmallBlind = new Chips(5),
+                    BigBlind = new Chips(10)
+                },
                 positions: new()
                 {
-                    SmallBlind = new Seat(1),
-                    BigBlind = new Seat(1),
-                    Button = new Seat(6),
-                    Max = new Seat(6)
+                    SmallBlindSeat = new Seat(1),
+                    BigBlindSeat = new Seat(1),
+                    ButtonSeat = new Seat(6)
                 }
             );
         });
@@ -304,12 +364,18 @@ public class TableTest
         {
             new Table(
                 players: [playerSb, playerBb],
+                rules: new Rules
+                {
+                    Game = Game.NoLimitHoldem,
+                    MaxSeat = new Seat(6),
+                    SmallBlind = new Chips(5),
+                    BigBlind = new Chips(10)
+                },
                 positions: new()
                 {
-                    SmallBlind = new Seat(1),
-                    BigBlind = new Seat(2),
-                    Button = new Seat(2),
-                    Max = new Seat(6)
+                    SmallBlindSeat = new Seat(1),
+                    BigBlindSeat = new Seat(2),
+                    ButtonSeat = new Seat(2)
                 }
             );
         });
@@ -550,12 +616,18 @@ public class TableTest
 
         var table = new Table(
             players: [playerSb, playerBb, playerBu],
+            rules: new Rules
+            {
+                Game = Game.NoLimitHoldem,
+                MaxSeat = new Seat(6),
+                SmallBlind = new Chips(5),
+                BigBlind = new Chips(10)
+            },
             positions: new()
             {
-                SmallBlind = new Seat(1),
-                BigBlind = new Seat(2),
-                Button = new Seat(3),
-                Max = new Seat(6)
+                SmallBlindSeat = new Seat(1),
+                BigBlindSeat = new Seat(2),
+                ButtonSeat = new Seat(3)
             }
         );
         table.TakeBoardCards(new CardSet([Card.AceOfSpades, Card.DeuceOfClubs, Card.AceOfClubs]));
@@ -573,12 +645,18 @@ public class TableTest
     {
         return new Table(
             players: players,
+            rules: new Rules
+            {
+                Game = Game.NoLimitHoldem,
+                MaxSeat = new Seat(maxSeat),
+                SmallBlind = new Chips(5),
+                BigBlind = new Chips(10)
+            },
             positions: new()
             {
-                SmallBlind = new Seat(smallBlindSeat),
-                BigBlind = new Seat(bigBlindSeat),
-                Button = new Seat(buttonSeat),
-                Max = new Seat(maxSeat)
+                SmallBlindSeat = new Seat(smallBlindSeat),
+                BigBlindSeat = new Seat(bigBlindSeat),
+                ButtonSeat = new Seat(buttonSeat)
             }
         );
     }

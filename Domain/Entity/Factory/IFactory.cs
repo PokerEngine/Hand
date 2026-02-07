@@ -7,6 +7,7 @@ public interface IFactory
 {
     Table GetTable(
         IEnumerable<Participant> participants,
+        Rules rules,
         Positions positions
     );
 

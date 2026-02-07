@@ -12,7 +12,7 @@ namespace Infrastructure.Test.Repository;
 public class MongoDbRepositoryTest(MongoDbClientFixture fixture) : IClassFixture<MongoDbClientFixture>
 {
     [Fact]
-    public async Task GetEventsAsync_WhenAdded_ShouldExtractEvents()
+    public async Task GetEventsAsync_WhenExists_ShouldReturn()
     {
         // Arrange
         var repository = CreateRepository();
@@ -81,7 +81,7 @@ public class MongoDbRepositoryTest(MongoDbClientFixture fixture) : IClassFixture
     }
 
     [Fact]
-    public async Task GetEventsAsync_WhenNotAdded_ShouldThrowException()
+    public async Task GetEventsAsync_WhenNotExists_ShouldThrowException()
     {
         // Arrange
         var repository = CreateRepository();

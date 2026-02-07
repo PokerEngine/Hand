@@ -65,7 +65,7 @@ public class Pot
 
     public bool HasCurrentBets()
     {
-        return !CurrentBets.TotalAmount.IsZero;
+        return !CurrentBets.IsEmpty;
     }
 
     public void CollectBets()

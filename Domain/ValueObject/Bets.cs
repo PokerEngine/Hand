@@ -20,6 +20,8 @@ public readonly struct Bets : IEnumerable<KeyValuePair<Nickname, Chips>>, IEquat
     public Chips TotalAmount =>
         _mapping.Values.Aggregate(Chips.Zero, (sum, x) => sum + x);
 
+    public bool IsEmpty => _mapping.IsEmpty;
+
     public static Bets operator +(Bets a, Bets b)
     {
         var result = a._mapping;
@@ -40,7 +42,7 @@ public readonly struct Bets : IEnumerable<KeyValuePair<Nickname, Chips>>, IEquat
         foreach (var (nickname, amount) in b._mapping)
         {
             var existing = result.TryGetValue(nickname, out var v) ? v : Chips.Zero;
-            result = result.SetItem(nickname, existing - amount);
+            result = existing == amount ? result.Remove(nickname) : result.SetItem(nickname, existing - amount);
         }
 
         return new Bets(result);

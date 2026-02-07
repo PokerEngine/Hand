@@ -6,6 +6,8 @@ using Application.Repository;
 using Domain.Event;
 using Domain.Service.Evaluator;
 using Domain.Service.Randomizer;
+using Infrastructure.Client.MongoDb;
+using Infrastructure.Client.RabbitMq;
 using Infrastructure.Command;
 using Infrastructure.Event;
 using Infrastructure.IntegrationEvent;
@@ -24,6 +26,16 @@ public static class Bootstrapper
 
         builder.Configuration.AddEnvironmentVariables();
         builder.Services.AddOpenApi();
+
+        // Register clients
+        builder.Services.Configure<MongoDbClientOptions>(
+            builder.Configuration.GetSection(MongoDbClientOptions.SectionName)
+        );
+        builder.Services.AddSingleton<MongoDbClient>();
+        builder.Services.Configure<RabbitMqClientOptions>(
+            builder.Configuration.GetSection(RabbitMqClientOptions.SectionName)
+        );
+        builder.Services.AddSingleton<RabbitMqClient>();
 
         // Register services
         builder.Services.AddSingleton<IRandomizer, BuiltInRandomizer>();
@@ -61,9 +73,6 @@ public static class Bootstrapper
         builder.Services.AddScoped<IEventDispatcher, EventDispatcher>();
 
         // Register integration events
-        builder.Services.Configure<RabbitMqConnectionOptions>(
-            builder.Configuration.GetSection(RabbitMqConnectionOptions.SectionName)
-        );
         builder.Services.Configure<RabbitMqIntegrationEventPublisherOptions>(
             builder.Configuration.GetSection(RabbitMqIntegrationEventPublisherOptions.SectionName)
         );

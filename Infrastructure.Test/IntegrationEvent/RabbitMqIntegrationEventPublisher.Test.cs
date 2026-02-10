@@ -40,7 +40,7 @@ public class RabbitMqIntegrationEventPublisherTest(
             TableType = "Cash",
             Name = "Test Published Integration Event",
             Number = 100500,
-            Participants = [
+            Players = [
                 new()
                 {
                     Nickname = "Nickname",
@@ -182,7 +182,7 @@ internal record TestPublishedIntegrationEvent : IIntegrationEvent
 
     public required string Name { get; init; }
     public required int Number { get; init; }
-    public required List<IntegrationEventParticipant> Participants { get; init; }
+    public required List<IntegrationEventParticipant> Players { get; init; }
 
     public virtual bool Equals(TestPublishedIntegrationEvent? other)
     {
@@ -199,7 +199,7 @@ internal record TestPublishedIntegrationEvent : IIntegrationEvent
                && TableType.Equals(other.TableType)
                && Name.Equals(other.Name)
                && Number.Equals(other.Number)
-               && Participants.SequenceEqual(other.Participants);
+               && Players.SequenceEqual(other.Players);
     }
 
     public override int GetHashCode()
@@ -217,9 +217,9 @@ internal record TestPublishedIntegrationEvent : IIntegrationEvent
         hash.Add(Name);
         hash.Add(Number);
 
-        foreach (var participant in Participants)
+        foreach (var player in Players)
         {
-            hash.Add(participant);
+            hash.Add(player);
         }
 
         return hash.ToHashCode();

@@ -24,7 +24,7 @@ public class HandStartedEventHandler(
             SmallBlindSeat = @event.Positions.SmallBlindSeat,
             BigBlindSeat = @event.Positions.BigBlindSeat,
             ButtonSeat = @event.Positions.ButtonSeat,
-            Participants = @event.Participants.Select(SerializeParticipant).ToList()
+            Players = @event.Players.Select(SerializeParticipant).ToList()
         };
 
         var routingKey = new IntegrationEventRoutingKey($"hand.{context.TableType.ToRoutingKey()}.hand-created");

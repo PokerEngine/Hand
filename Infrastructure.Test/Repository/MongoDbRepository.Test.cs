@@ -33,7 +33,7 @@ public class MongoDbRepositoryTest(MongoDbClientFixture fixture) : IClassFixture
                 BigBlindSeat = new Seat(2),
                 ButtonSeat = new Seat(6)
             },
-            Participants = [
+            Players = [
                 new()
                 {
                     Nickname = new Nickname("Alice"),
@@ -102,7 +102,7 @@ public class MongoDbRepositoryTest(MongoDbClientFixture fixture) : IClassFixture
                 BigBlindSeat = new Seat(2),
                 ButtonSeat = new Seat(6)
             },
-            Participants = [
+            Players = [
                 new()
                 {
                     Nickname = new Nickname("Alice"),
@@ -175,7 +175,7 @@ internal sealed record TestEvent : IEvent
 {
     public required Rules Rules { get; init; }
     public required Positions Positions { get; init; }
-    public required List<Participant> Participants { get; init; }
+    public required List<Participant> Players { get; init; }
     public required Nickname Nickname { get; init; }
     public required Seat Seat { get; init; }
     public required Chips Chips { get; init; }
@@ -190,7 +190,7 @@ internal sealed record TestEvent : IEvent
         return other is not null
                && Rules.Equals(other.Rules)
                && Positions.Equals(other.Positions)
-               && Participants.SequenceEqual(other.Participants)
+               && Players.SequenceEqual(other.Players)
                && Nickname.Equals(other.Nickname)
                && Seat.Equals(other.Seat)
                && Chips.Equals(other.Chips)
@@ -208,9 +208,9 @@ internal sealed record TestEvent : IEvent
         hash.Add(Rules);
         hash.Add(Positions);
 
-        foreach (var participant in Participants)
+        foreach (var player in Players)
         {
-            hash.Add(participant);
+            hash.Add(player);
         }
 
         hash.Add(Nickname);

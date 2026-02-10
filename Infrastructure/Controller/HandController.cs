@@ -37,7 +37,7 @@ public class HandController(
                     BigBlindSeat = request.Table.Positions.BigBlindSeat,
                     ButtonSeat = request.Table.Positions.ButtonSeat,
                 },
-                Participants = request.Table.Participants.Select(DeserializeParticipant).ToList()
+                Players = request.Table.Players.Select(DeserializePlayer).ToList()
             }
         };
         var response = await commandDispatcher.DispatchAsync<StartHandCommand, StartHandResponse>(command);
@@ -72,13 +72,13 @@ public class HandController(
         return Ok(response);
     }
 
-    private StartHandCommandParticipant DeserializeParticipant(StartHandRequestParticipant participant)
+    private StartHandCommandPlayer DeserializePlayer(StartHandRequestPlayer player)
     {
-        return new StartHandCommandParticipant
+        return new StartHandCommandPlayer
         {
-            Nickname = participant.Nickname,
-            Seat = participant.Seat,
-            Stack = participant.Stack
+            Nickname = player.Nickname,
+            Seat = player.Seat,
+            Stack = player.Stack
         };
     }
 }
@@ -102,7 +102,7 @@ public record StartHandRequestRules
 public record StartHandRequestTable
 {
     public required StartHandRequestPositions Positions { get; init; }
-    public required List<StartHandRequestParticipant> Participants { get; init; }
+    public required List<StartHandRequestPlayer> Players { get; init; }
 }
 
 public record StartHandRequestPositions
@@ -112,7 +112,7 @@ public record StartHandRequestPositions
     public required int ButtonSeat { get; init; }
 }
 
-public record StartHandRequestParticipant
+public record StartHandRequestPlayer
 {
     public required string Nickname { get; init; }
     public required int Seat { get; init; }

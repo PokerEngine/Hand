@@ -6,14 +6,13 @@ namespace Domain.Entity.Factory;
 public class PotLimitOmahaFactory : IFactory
 {
     public virtual Table GetTable(
-        IEnumerable<Participant> participants,
+        IEnumerable<Participant> players,
         Rules rules,
         Positions positions
     )
     {
-        var players = participants.Select(GetPlayer);
         return new Table(
-            players: players,
+            players: players.Select(GetPlayer),
             rules: rules,
             positions: positions
         );

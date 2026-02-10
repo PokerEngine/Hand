@@ -6,7 +6,7 @@ namespace Domain.Entity.Factory;
 public interface IFactory
 {
     Table GetTable(
-        IEnumerable<Participant> participants,
+        IEnumerable<Participant> players,
         Rules rules,
         Positions positions
     );

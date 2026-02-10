@@ -70,7 +70,7 @@ public class NoLimitHoldem6MaxHandTest
                 BigBlindSeat = new Seat(2),
                 ButtonSeat = new Seat(6),
             },
-            participants: [participantSb, participantBb, participantEp, participantMp, participantCo, participantBu],
+            players: [participantSb, participantBb, participantEp, participantMp, participantCo, participantBu],
             randomizer: _randomizer,
             evaluator: _evaluator
         );
@@ -94,13 +94,13 @@ public class NoLimitHoldem6MaxHandTest
         Assert.Equal(Game.NoLimitHoldem, @event.Rules.Game);
         Assert.Equal(new Chips(5), @event.Rules.SmallBlind);
         Assert.Equal(new Chips(10), @event.Rules.BigBlind);
-        Assert.Equal(6, @event.Participants.Count);
-        Assert.Equal(participantSb, @event.Participants[0]);
-        Assert.Equal(participantBb, @event.Participants[1]);
-        Assert.Equal(participantEp, @event.Participants[2]);
-        Assert.Equal(participantMp, @event.Participants[3]);
-        Assert.Equal(participantCo, @event.Participants[4]);
-        Assert.Equal(participantBu, @event.Participants[5]);
+        Assert.Equal(6, @event.Players.Count);
+        Assert.Equal(participantSb, @event.Players[0]);
+        Assert.Equal(participantBb, @event.Players[1]);
+        Assert.Equal(participantEp, @event.Players[2]);
+        Assert.Equal(participantMp, @event.Players[3]);
+        Assert.Equal(participantCo, @event.Players[4]);
+        Assert.Equal(participantBu, @event.Players[5]);
     }
 
     [Fact]
@@ -146,7 +146,7 @@ public class NoLimitHoldem6MaxHandTest
                     BigBlindSeat = new Seat(2),
                     ButtonSeat = new Seat(6),
                 },
-                Participants = [participantSb, participantBb, participantBu],
+                Players = [participantSb, participantBb, participantBu],
                 OccurredAt = new DateTime(2025, 1, 1)
             },
             new StageStartedEvent
@@ -461,7 +461,7 @@ public class NoLimitHoldem6MaxHandTest
         );
 
         var hand = CreateHand(
-            participants: [participantSb, participantBb, participantBu],
+            players: [participantSb, participantBb, participantBu],
             smallBlindSeat: 6,
             bigBlindSeat: 2,
             buttonSeat: 4
@@ -546,7 +546,7 @@ public class NoLimitHoldem6MaxHandTest
         );
 
         var hand = CreateHand(
-            participants: [participantSb, participantBb, participantBu],
+            players: [participantSb, participantBb, participantBu],
             smallBlindSeat: 6,
             bigBlindSeat: 2,
             buttonSeat: 4
@@ -693,7 +693,7 @@ public class NoLimitHoldem6MaxHandTest
         );
 
         var hand = CreateHand(
-            participants: [participantSb, participantBb, participantBu],
+            players: [participantSb, participantBb, participantBu],
             smallBlindSeat: 6,
             bigBlindSeat: 2,
             buttonSeat: 4
@@ -758,7 +758,7 @@ public class NoLimitHoldem6MaxHandTest
         );
 
         var hand = CreateHand(
-            participants: [participantSb, participantBb],
+            players: [participantSb, participantBb],
             smallBlindSeat: 2,
             bigBlindSeat: 1,
             buttonSeat: 2
@@ -929,7 +929,7 @@ public class NoLimitHoldem6MaxHandTest
     }
 
     private Hand CreateHand(
-        List<Participant> participants,
+        List<Participant> players,
         int maxSeat = 6,
         int smallBlindSeat = 1,
         int bigBlindSeat = 2,
@@ -955,7 +955,7 @@ public class NoLimitHoldem6MaxHandTest
                 BigBlindSeat = new Seat(bigBlindSeat),
                 ButtonSeat = new Seat(buttonSeat)
             },
-            participants: participants,
+            players: players,
             randomizer: _randomizer,
             evaluator: _evaluator
         );
@@ -1054,7 +1054,7 @@ public class NoLimitHoldem9MaxHandTest
                 BigBlindSeat = new Seat(2),
                 ButtonSeat = new Seat(9)
             },
-            participants: [participantSb, participantBb, participantUtg1, participantUtg2, participantUtg3, participantEp, participantMp, participantCo, participantBu],
+            players: [participantSb, participantBb, participantUtg1, participantUtg2, participantUtg3, participantEp, participantMp, participantCo, participantBu],
             randomizer: _randomizer,
             evaluator: _evaluator
         );
@@ -1076,16 +1076,16 @@ public class NoLimitHoldem9MaxHandTest
         Assert.Equal(Game.NoLimitHoldem, @event.Rules.Game);
         Assert.Equal(new Chips(5), @event.Rules.SmallBlind);
         Assert.Equal(new Chips(10), @event.Rules.BigBlind);
-        Assert.Equal(9, @event.Participants.Count);
-        Assert.Equal(participantSb, @event.Participants[0]);
-        Assert.Equal(participantBb, @event.Participants[1]);
-        Assert.Equal(participantUtg1, @event.Participants[2]);
-        Assert.Equal(participantUtg2, @event.Participants[3]);
-        Assert.Equal(participantUtg3, @event.Participants[4]);
-        Assert.Equal(participantEp, @event.Participants[5]);
-        Assert.Equal(participantMp, @event.Participants[6]);
-        Assert.Equal(participantCo, @event.Participants[7]);
-        Assert.Equal(participantBu, @event.Participants[8]);
+        Assert.Equal(9, @event.Players.Count);
+        Assert.Equal(participantSb, @event.Players[0]);
+        Assert.Equal(participantBb, @event.Players[1]);
+        Assert.Equal(participantUtg1, @event.Players[2]);
+        Assert.Equal(participantUtg2, @event.Players[3]);
+        Assert.Equal(participantUtg3, @event.Players[4]);
+        Assert.Equal(participantEp, @event.Players[5]);
+        Assert.Equal(participantMp, @event.Players[6]);
+        Assert.Equal(participantCo, @event.Players[7]);
+        Assert.Equal(participantBu, @event.Players[8]);
     }
 }
 
@@ -1153,7 +1153,7 @@ public class PotLimitOmaha6MaxHandTest
                 BigBlindSeat = new Seat(2),
                 ButtonSeat = new Seat(6)
             },
-            participants: [participantSb, participantBb, participantEp, participantMp, participantCo, participantBu],
+            players: [participantSb, participantBb, participantEp, participantMp, participantCo, participantBu],
             randomizer: _randomizer,
             evaluator: _evaluator
         );
@@ -1175,13 +1175,13 @@ public class PotLimitOmaha6MaxHandTest
         Assert.Equal(Game.PotLimitOmaha, @event.Rules.Game);
         Assert.Equal(new Chips(5), @event.Rules.SmallBlind);
         Assert.Equal(new Chips(10), @event.Rules.BigBlind);
-        Assert.Equal(6, @event.Participants.Count);
-        Assert.Equal(participantSb, @event.Participants[0]);
-        Assert.Equal(participantBb, @event.Participants[1]);
-        Assert.Equal(participantEp, @event.Participants[2]);
-        Assert.Equal(participantMp, @event.Participants[3]);
-        Assert.Equal(participantCo, @event.Participants[4]);
-        Assert.Equal(participantBu, @event.Participants[5]);
+        Assert.Equal(6, @event.Players.Count);
+        Assert.Equal(participantSb, @event.Players[0]);
+        Assert.Equal(participantBb, @event.Players[1]);
+        Assert.Equal(participantEp, @event.Players[2]);
+        Assert.Equal(participantMp, @event.Players[3]);
+        Assert.Equal(participantCo, @event.Players[4]);
+        Assert.Equal(participantBu, @event.Players[5]);
     }
 }
 
@@ -1267,7 +1267,7 @@ public class PotLimitOmaha9MaxHandTest
                 BigBlindSeat = new Seat(2),
                 ButtonSeat = new Seat(9)
             },
-            participants: [participantSb, participantBb, participantUtg1, participantUtg2, participantUtg3, participantEp, participantMp, participantCo, participantBu],
+            players: [participantSb, participantBb, participantUtg1, participantUtg2, participantUtg3, participantEp, participantMp, participantCo, participantBu],
             randomizer: _randomizer,
             evaluator: _evaluator
         );
@@ -1289,15 +1289,15 @@ public class PotLimitOmaha9MaxHandTest
         Assert.Equal(Game.PotLimitOmaha, @event.Rules.Game);
         Assert.Equal(new Chips(5), @event.Rules.SmallBlind);
         Assert.Equal(new Chips(10), @event.Rules.BigBlind);
-        Assert.Equal(9, @event.Participants.Count);
-        Assert.Equal(participantSb, @event.Participants[0]);
-        Assert.Equal(participantBb, @event.Participants[1]);
-        Assert.Equal(participantUtg1, @event.Participants[2]);
-        Assert.Equal(participantUtg2, @event.Participants[3]);
-        Assert.Equal(participantUtg3, @event.Participants[4]);
-        Assert.Equal(participantEp, @event.Participants[5]);
-        Assert.Equal(participantMp, @event.Participants[6]);
-        Assert.Equal(participantCo, @event.Participants[7]);
-        Assert.Equal(participantBu, @event.Participants[8]);
+        Assert.Equal(9, @event.Players.Count);
+        Assert.Equal(participantSb, @event.Players[0]);
+        Assert.Equal(participantBb, @event.Players[1]);
+        Assert.Equal(participantUtg1, @event.Players[2]);
+        Assert.Equal(participantUtg2, @event.Players[3]);
+        Assert.Equal(participantUtg3, @event.Players[4]);
+        Assert.Equal(participantEp, @event.Players[5]);
+        Assert.Equal(participantMp, @event.Players[6]);
+        Assert.Equal(participantCo, @event.Players[7]);
+        Assert.Equal(participantBu, @event.Players[8]);
     }
 }

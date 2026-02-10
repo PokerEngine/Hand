@@ -15,7 +15,7 @@ public sealed record HandStartedEvent : IEvent
     public required TableType TableType { get; init; }
     public required Rules Rules { get; init; }
     public required Positions Positions { get; init; }
-    public required List<Participant> Participants { get; init; }
+    public required List<Participant> Players { get; init; }
 
     public bool Equals(HandStartedEvent? other)
     {
@@ -25,7 +25,7 @@ public sealed record HandStartedEvent : IEvent
                && TableType.Equals(other.TableType)
                && Rules.Equals(other.Rules)
                && Positions.Equals(other.Positions)
-               && Participants.SequenceEqual(other.Participants);
+               && Players.SequenceEqual(other.Players);
     }
 
     public override int GetHashCode()
@@ -37,9 +37,9 @@ public sealed record HandStartedEvent : IEvent
         hash.Add(Rules);
         hash.Add(Positions);
 
-        foreach (var participant in Participants)
+        foreach (var player in Players)
         {
-            hash.Add(participant);
+            hash.Add(player);
         }
 
         hash.Add(OccurredAt);

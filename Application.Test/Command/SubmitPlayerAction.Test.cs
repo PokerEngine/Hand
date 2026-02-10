@@ -79,7 +79,7 @@ public class SubmitPlayerActionTest
                     BigBlindSeat = 2,
                     ButtonSeat = 6
                 },
-                Participants = [
+                Players = [
                     new()
                     {
                         Nickname = "Alice",

@@ -17,7 +17,7 @@ public record HandStartedIntegrationEvent : IIntegrationEvent
     public required int SmallBlindSeat { get; init; }
     public required int BigBlindSeat { get; init; }
     public required int ButtonSeat { get; init; }
-    public required List<IntegrationEventParticipant> Participants { get; init; }
+    public required List<IntegrationEventParticipant> Players { get; init; }
 }
 
 public record IntegrationEventParticipant

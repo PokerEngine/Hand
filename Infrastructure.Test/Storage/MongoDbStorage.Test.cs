@@ -121,7 +121,7 @@ public class MongoDbStorageTest(MongoDbClientFixture fixture) : IClassFixture<Mo
                 BigBlindSeat = 2,
                 ButtonSeat = 6
             },
-            participants: [
+            players: [
                 new Participant
                 {
                     Nickname = "Alice",

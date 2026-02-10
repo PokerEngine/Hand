@@ -20,7 +20,7 @@ Content-Type: application/json
             "bigBlindSeat": 4,
             "buttonSeat": 6
         },
-        "participants": [
+        "players": [
             {
                 "nickname": "alice",
                 "seat": 1,

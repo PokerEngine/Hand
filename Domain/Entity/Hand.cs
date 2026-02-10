@@ -60,7 +60,7 @@ public class Hand
         TableType tableType,
         Rules rules,
         Positions positions,
-        List<Participant> participants,
+        List<Participant> players,
         IRandomizer randomizer,
         IEvaluator evaluator
     )
@@ -72,7 +72,7 @@ public class Hand
             tableType: tableType,
             rules: rules,
             table: factory.GetTable(
-                participants: participants,
+                players: players,
                 rules: rules,
                 positions: positions
             ),
@@ -89,7 +89,7 @@ public class Hand
             TableType = tableType,
             Rules = rules,
             Positions = positions,
-            Participants = participants,
+            Players = players,
             OccurredAt = DateTime.Now
         };
         hand.AddEvent(@event);
@@ -117,7 +117,7 @@ public class Hand
             tableType: createdEvent.TableType,
             rules: createdEvent.Rules,
             table: factory.GetTable(
-                participants: createdEvent.Participants,
+                players: createdEvent.Players,
                 rules: createdEvent.Rules,
                 positions: createdEvent.Positions
             ),

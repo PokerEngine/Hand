@@ -27,7 +27,7 @@ public record StartHandCommandRules
 public record StartHandCommandTable
 {
     public required StartHandCommandPositions Positions { get; init; }
-    public required List<StartHandCommandParticipant> Participants { get; init; }
+    public required List<StartHandCommandPlayer> Players { get; init; }
 }
 
 public record StartHandCommandPositions
@@ -37,7 +37,7 @@ public record StartHandCommandPositions
     public required int ButtonSeat { get; init; }
 }
 
-public record StartHandCommandParticipant
+public record StartHandCommandPlayer
 {
     public required string Nickname { get; init; }
     public required int Seat { get; init; }
@@ -75,7 +75,7 @@ public class StartHandHandler(
             BigBlindSeat = command.Table.Positions.BigBlindSeat,
             ButtonSeat = command.Table.Positions.ButtonSeat
         };
-        var participants = command.Table.Participants.Select(DeserializeParticipant).ToList();
+        var players = command.Table.Players.Select(DeserializePlayer).ToList();
 
         var hand = Hand.FromScratch(
             uid: await repository.GetNextUidAsync(),
@@ -83,7 +83,7 @@ public class StartHandHandler(
             tableType: tableType,
             rules: rules,
             positions: positions,
-            participants: participants,
+            players: players,
             randomizer: randomizer,
             evaluator: evaluator
         );
@@ -111,13 +111,13 @@ public class StartHandHandler(
         };
     }
 
-    private Participant DeserializeParticipant(StartHandCommandParticipant participant)
+    private Participant DeserializePlayer(StartHandCommandPlayer player)
     {
         return new Participant
         {
-            Nickname = participant.Nickname,
-            Seat = participant.Seat,
-            Stack = participant.Stack
+            Nickname = player.Nickname,
+            Seat = player.Seat,
+            Stack = player.Stack
         };
     }
 }

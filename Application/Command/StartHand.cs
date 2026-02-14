@@ -1,6 +1,5 @@
-using Application.Event;
 using Application.Repository;
-using Application.Storage;
+using Application.UnitOfWork;
 using Domain.Entity;
 using Domain.Service.Evaluator;
 using Domain.Service.Randomizer;
@@ -51,8 +50,7 @@ public record StartHandResponse : ICommandResponse
 
 public class StartHandHandler(
     IRepository repository,
-    IStorage storage,
-    IEventDispatcher eventDispatcher,
+    IUnitOfWork unitOfWork,
     IRandomizer randomizer,
     IEvaluator evaluator
 ) : ICommandHandler<StartHandCommand, StartHandResponse>
@@ -89,21 +87,8 @@ public class StartHandHandler(
         );
         hand.Start();
 
-        var events = hand.PullEvents();
-        await repository.AddEventsAsync(hand.Uid, events);
-        await storage.SaveViewAsync(hand);
-
-        var context = new EventContext
-        {
-            HandUid = hand.Uid,
-            TableUid = hand.TableUid,
-            TableType = hand.TableType
-        };
-
-        foreach (var @event in events)
-        {
-            await eventDispatcher.DispatchAsync(@event, context);
-        }
+        unitOfWork.RegisterHand(hand);
+        await unitOfWork.CommitAsync();
 
         return new StartHandResponse
         {

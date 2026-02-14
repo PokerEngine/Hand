@@ -1,6 +1,5 @@
-using Application.Event;
 using Application.Repository;
-using Application.Storage;
+using Application.UnitOfWork;
 using Domain.Entity;
 using Domain.Service.Evaluator;
 using Domain.Service.Randomizer;
@@ -24,8 +23,7 @@ public record SubmitPlayerActionResponse : ICommandResponse
 
 public class SubmitPlayerActionHandler(
     IRepository repository,
-    IStorage storage,
-    IEventDispatcher eventDispatcher,
+    IUnitOfWork unitOfWork,
     IRandomizer randomizer,
     IEvaluator evaluator
 ) : ICommandHandler<SubmitPlayerActionCommand, SubmitPlayerActionResponse>
@@ -46,21 +44,8 @@ public class SubmitPlayerActionHandler(
 
         hand.SubmitPlayerAction(command.Nickname, action);
 
-        var events = hand.PullEvents();
-        await repository.AddEventsAsync(hand.Uid, events);
-        await storage.SaveViewAsync(hand);
-
-        var context = new EventContext
-        {
-            HandUid = hand.Uid,
-            TableUid = hand.TableUid,
-            TableType = hand.TableType
-        };
-
-        foreach (var @event in events)
-        {
-            await eventDispatcher.DispatchAsync(@event, context);
-        }
+        unitOfWork.RegisterHand(hand);
+        await unitOfWork.CommitAsync();
 
         return new SubmitPlayerActionResponse
         {

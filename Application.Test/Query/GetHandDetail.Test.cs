@@ -6,6 +6,7 @@ using Application.Test.Repository;
 using Application.Test.Service.Evaluator;
 using Application.Test.Service.Randomizer;
 using Application.Test.Storage;
+using Application.Test.UnitOfWork;
 
 namespace Application.Test.Query;
 
@@ -15,15 +16,13 @@ public class GetHandDetailTest
     public async Task HandleAsync_Exists_ShouldReturn()
     {
         // Arrange
-        var repository = new StubRepository();
-        var storage = new StubStorage();
-        var eventDispatcher = new StubEventDispatcher();
+        var unitOfWork = CreateUnitOfWork();
         var randomizer = new StubRandomizer();
         var evaluator = new StubEvaluator();
-        var handUid = await StartHandAsync(repository, storage, eventDispatcher, randomizer, evaluator);
+        var handUid = await StartHandAsync(unitOfWork, randomizer, evaluator);
 
         var query = new GetHandDetailQuery { Uid = handUid };
-        var handler = new GetHandDetailHandler(storage);
+        var handler = new GetHandDetailHandler(unitOfWork.Storage);
 
         // Act
         var response = await handler.HandleAsync(query);
@@ -63,14 +62,12 @@ public class GetHandDetailTest
     }
 
     private async Task<Guid> StartHandAsync(
-        StubRepository repository,
-        StubStorage storage,
-        StubEventDispatcher eventDispatcher,
+        StubUnitOfWork unitOfWork,
         StubRandomizer randomizer,
         StubEvaluator evaluator
     )
     {
-        var handler = new StartHandHandler(repository, storage, eventDispatcher, randomizer, evaluator);
+        var handler = new StartHandHandler(unitOfWork.Repository, unitOfWork, randomizer, evaluator);
         var command = new StartHandCommand
         {
             TableUid = Guid.NewGuid(),
@@ -113,6 +110,15 @@ public class GetHandDetailTest
             }
         };
         var response = await handler.HandleAsync(command);
+        await unitOfWork.EventDispatcher.ClearDispatchedEventsAsync(response.Uid);
         return response.Uid;
+    }
+
+    private StubUnitOfWork CreateUnitOfWork()
+    {
+        var repository = new StubRepository();
+        var storage = new StubStorage();
+        var eventDispatcher = new StubEventDispatcher();
+        return new StubUnitOfWork(repository, storage, eventDispatcher);
     }
 }

@@ -4,6 +4,7 @@ using Application.IntegrationEvent;
 using Application.Query;
 using Application.Repository;
 using Application.Storage;
+using Application.UnitOfWork;
 using Domain.Event;
 using Domain.Service.Evaluator;
 using Domain.Service.Randomizer;
@@ -55,6 +56,9 @@ public static class Bootstrapper
             builder.Configuration.GetSection(MongoDbStorageOptions.SectionName)
         );
         builder.Services.AddSingleton<IStorage, MongoDbStorage>();
+
+        // Register unit of work
+        builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 
         // Register commands
         RegisterCommandHandler<StartHandCommand, StartHandHandler, StartHandResponse>(builder.Services);

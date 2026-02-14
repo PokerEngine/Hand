@@ -4,6 +4,7 @@ using Application.Test.Repository;
 using Application.Test.Service.Evaluator;
 using Application.Test.Service.Randomizer;
 using Application.Test.Storage;
+using Application.Test.UnitOfWork;
 using Domain.Entity;
 using Domain.Event;
 using Domain.ValueObject;
@@ -16,9 +17,7 @@ public class StartHandTest
     public async Task HandleAsync_Valid_ShouldStartHand()
     {
         // Arrange
-        var repository = new StubRepository();
-        var storage = new StubStorage();
-        var eventDispatcher = new StubEventDispatcher();
+        var unitOfWork = CreateUnitOfWork();
         var randomizer = new StubRandomizer();
         var evaluator = new StubEvaluator();
         var command = new StartHandCommand
@@ -62,13 +61,18 @@ public class StartHandTest
                 ]
             }
         };
-        var handler = new StartHandHandler(repository, storage, eventDispatcher, randomizer, evaluator);
+        var handler = new StartHandHandler(unitOfWork.Repository, unitOfWork, randomizer, evaluator);
 
         // Act
         var response = await handler.HandleAsync(command);
 
         // Assert
-        var hand = Hand.FromEvents(response.Uid, randomizer, evaluator, await repository.GetEventsAsync(response.Uid));
+        var hand = Hand.FromEvents(
+            response.Uid,
+            randomizer,
+            evaluator,
+            await unitOfWork.Repository.GetEventsAsync(response.Uid)
+        );
         Assert.Equal(new HandUid(response.Uid), hand.Uid);
         var state = hand.GetState();
         Assert.Equal(Game.NoLimitHoldem, state.Rules.Game);
@@ -81,12 +85,20 @@ public class StartHandTest
         Assert.Equal(3, state.Table.Players.Count);
         Assert.Empty(state.Table.BoardCards);
 
-        var detailView = await storage.GetDetailViewAsync(hand.Uid);
+        var detailView = await unitOfWork.Storage.GetDetailViewAsync(hand.Uid);
         Assert.Equal((Guid)hand.Uid, detailView.Uid);
         Assert.Equal(2, detailView.Pot.CurrentBets.Count);
 
-        var events = await eventDispatcher.GetDispatchedEventsAsync(response.Uid);
+        var events = await unitOfWork.EventDispatcher.GetDispatchedEventsAsync(response.Uid);
         Assert.Equal(12, events.Count);
         Assert.IsType<HandStartedEvent>(events[0]);
+    }
+
+    private StubUnitOfWork CreateUnitOfWork()
+    {
+        var repository = new StubRepository();
+        var storage = new StubStorage();
+        var eventDispatcher = new StubEventDispatcher();
+        return new StubUnitOfWork(repository, storage, eventDispatcher);
     }
 }

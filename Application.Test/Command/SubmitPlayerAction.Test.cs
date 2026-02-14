@@ -4,6 +4,7 @@ using Application.Test.Repository;
 using Application.Test.Service.Evaluator;
 using Application.Test.Service.Randomizer;
 using Application.Test.Storage;
+using Application.Test.UnitOfWork;
 using Domain.Entity;
 using Domain.Event;
 
@@ -15,13 +16,10 @@ public class SubmitPlayerActionTest
     public async Task HandleAsync_Valid_ShouldSubmitPlayerAction()
     {
         // Arrange
-        var repository = new StubRepository();
-        var storage = new StubStorage();
-        var eventDispatcher = new StubEventDispatcher();
+        var unitOfWork = CreateUnitOfWork();
         var randomizer = new StubRandomizer();
         var evaluator = new StubEvaluator();
-        var handUid = await StartHandAsync(repository, storage, eventDispatcher, randomizer, evaluator);
-        await eventDispatcher.ClearDispatchedEventsAsync(handUid);
+        var handUid = await StartHandAsync(unitOfWork, randomizer, evaluator);
 
         var command = new SubmitPlayerActionCommand
         {
@@ -30,7 +28,7 @@ public class SubmitPlayerActionTest
             Type = "RaiseBy",
             Amount = 25
         };
-        var handler = new SubmitPlayerActionHandler(repository, storage, eventDispatcher, randomizer, evaluator);
+        var handler = new SubmitPlayerActionHandler(unitOfWork.Repository, unitOfWork, randomizer, evaluator);
 
         // Act
         var response = await handler.HandleAsync(command);
@@ -38,28 +36,32 @@ public class SubmitPlayerActionTest
         // Assert
         Assert.Equal(handUid, response.Uid);
 
-        var hand = Hand.FromEvents(response.Uid, randomizer, evaluator, await repository.GetEventsAsync(response.Uid));
+        var hand = Hand.FromEvents(
+            response.Uid,
+            randomizer,
+            evaluator,
+            await unitOfWork.Repository.GetEventsAsync(response.Uid)
+        );
         var state = hand.GetState();
         Assert.Equal(3, state.Pot.CurrentBets.Count);
 
-        var detailView = await storage.GetDetailViewAsync(hand.Uid);
+        var detailView = await unitOfWork.Storage.GetDetailViewAsync(hand.Uid);
         Assert.Equal(3, detailView.Pot.CurrentBets.Count);
         Assert.Equal("Charlie", detailView.Pot.CurrentBets[2].Nickname);
         Assert.Equal(25, detailView.Pot.CurrentBets[2].Amount);
 
-        var events = await eventDispatcher.GetDispatchedEventsAsync(response.Uid);
+        var events = await unitOfWork.EventDispatcher.GetDispatchedEventsAsync(response.Uid);
         Assert.Equal(2, events.Count);
         Assert.IsType<PlayerActedEvent>(events[0]);
     }
 
     private async Task<Guid> StartHandAsync(
-        StubRepository repository,
-        StubStorage storage,
-        StubEventDispatcher eventDispatcher,
+        StubUnitOfWork unitOfWork,
         StubRandomizer randomizer,
-        StubEvaluator evaluator)
+        StubEvaluator evaluator
+    )
     {
-        var handler = new StartHandHandler(repository, storage, eventDispatcher, randomizer, evaluator);
+        var handler = new StartHandHandler(unitOfWork.Repository, unitOfWork, randomizer, evaluator);
         var command = new StartHandCommand
         {
             TableUid = Guid.NewGuid(),
@@ -102,6 +104,15 @@ public class SubmitPlayerActionTest
             }
         };
         var response = await handler.HandleAsync(command);
+        await unitOfWork.EventDispatcher.ClearDispatchedEventsAsync(response.Uid);
         return response.Uid;
+    }
+
+    private StubUnitOfWork CreateUnitOfWork()
+    {
+        var repository = new StubRepository();
+        var storage = new StubStorage();
+        var eventDispatcher = new StubEventDispatcher();
+        return new StubUnitOfWork(repository, storage, eventDispatcher);
     }
 }

@@ -33,6 +33,8 @@ public class MongoDbStorageTest(MongoDbClientFixture fixture) : IClassFixture<Mo
 
         // Assert
         Assert.Equal(hand.Uid, (HandUid)view.Uid);
+        Assert.Equal(hand.TableUid, (TableUid)view.TableUid);
+        Assert.Equal("Cash", view.TableType);
         Assert.Equal("NoLimitHoldem", view.Rules.Game);
         Assert.Equal(6, view.Rules.MaxSeat);
         Assert.Equal(5, view.Rules.SmallBlind);

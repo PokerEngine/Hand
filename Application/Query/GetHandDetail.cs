@@ -10,6 +10,8 @@ public record GetHandDetailQuery : IQuery
 public record GetHandDetailResponse : IQueryResponse
 {
     public required Guid Uid { get; init; }
+    public required Guid TableUid { get; init; }
+    public required string TableType { get; init; }
     public required GetHandDetailResponseRules Rules { get; init; }
     public required GetHandDetailResponseTable Table { get; init; }
     public required GetHandDetailResponsePot Pot { get; init; }
@@ -77,6 +79,8 @@ public class GetHandDetailHandler(
         return new GetHandDetailResponse
         {
             Uid = view.Uid,
+            TableUid = view.TableUid,
+            TableType = view.TableType,
             Rules = new GetHandDetailResponseRules
             {
                 Game = view.Rules.Game,

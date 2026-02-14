@@ -35,6 +35,8 @@ public class MongoDbStorage : IStorage
         return new DetailView
         {
             Uid = document.Uid,
+            TableUid = document.TableUid,
+            TableType = document.TableType,
             Rules = document.Rules,
             Table = document.Table,
             Pot = document.Pot
@@ -54,6 +56,8 @@ public class MongoDbStorage : IStorage
         var document = new DetailViewDocument
         {
             Uid = hand.Uid,
+            TableUid = hand.TableUid,
+            TableType = hand.TableType.ToString(),
             Rules = new DetailViewRules
             {
                 Game = state.Rules.Game.ToString(),
@@ -115,6 +119,8 @@ public record DetailViewDocument
 {
     [BsonId]
     public required Guid Uid { get; init; }
+    public required Guid TableUid { get; init; }
+    public required string TableType { get; init; }
     public required DetailViewRules Rules { get; init; }
     public required DetailViewTable Table { get; init; }
     public required DetailViewPot Pot { get; init; }

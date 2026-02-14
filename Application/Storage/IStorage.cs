@@ -12,6 +12,8 @@ public interface IStorage
 public record DetailView
 {
     public required Guid Uid { get; init; }
+    public required Guid TableUid { get; init; }
+    public required string TableType { get; init; }
     public required DetailViewRules Rules { get; init; }
     public required DetailViewTable Table { get; init; }
     public required DetailViewPot Pot { get; init; }

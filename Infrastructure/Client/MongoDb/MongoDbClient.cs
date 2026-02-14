@@ -68,6 +68,15 @@ internal sealed class TableUidSerializer : SerializerBase<TableUid>
         => context.Reader.ReadGuid();
 }
 
+internal sealed class GameSerializer : SerializerBase<Game>
+{
+    public override void Serialize(BsonSerializationContext context, BsonSerializationArgs args, Game value)
+        => context.Writer.WriteString(value.ToString());
+
+    public override Game Deserialize(BsonDeserializationContext context, BsonDeserializationArgs args)
+        => Enum.Parse<Game>(context.Reader.ReadString(), ignoreCase: true);
+}
+
 internal sealed class NicknameSerializer : SerializerBase<Nickname>
 {
     public override void Serialize(BsonSerializationContext context, BsonSerializationArgs args, Nickname value)
@@ -118,8 +127,7 @@ internal sealed class SidePotSerializer : SerializerBase<SidePot>
         context.Writer.WriteStartArray();
         foreach (var nickname in value.Competitors)
         {
-            context.Writer.WriteString(nickname);
-            // BsonSerializer.Serialize(context.Writer, nickname);
+            BsonSerializer.Serialize(context.Writer, nickname);
         }
         context.Writer.WriteEndArray();
 
@@ -128,12 +136,13 @@ internal sealed class SidePotSerializer : SerializerBase<SidePot>
         foreach (var (nickname, amount) in value.Bets)
         {
             context.Writer.WriteName(nickname);
-            context.Writer.WriteInt32(amount);
+            BsonSerializer.Serialize(context.Writer, amount);
         }
         context.Writer.WriteEndDocument();
 
         context.Writer.WriteName(AnteField);
-        context.Writer.WriteInt32(value.Ante);
+        BsonSerializer.Serialize(context.Writer, value.Ante);
+
         context.Writer.WriteEndDocument();
     }
 
@@ -155,8 +164,7 @@ internal sealed class SidePotSerializer : SerializerBase<SidePot>
                     context.Reader.ReadStartArray();
                     while (context.Reader.ReadBsonType() != BsonType.EndOfDocument)
                     {
-                        var nickname = context.Reader.ReadString();
-                        competitors.Add(nickname);
+                        competitors.Add(BsonSerializer.Deserialize<Nickname>(context.Reader));
                     }
                     context.Reader.ReadEndArray();
                     break;
@@ -166,14 +174,14 @@ internal sealed class SidePotSerializer : SerializerBase<SidePot>
                     while (context.Reader.ReadBsonType() != BsonType.EndOfDocument)
                     {
                         var nickname = context.Reader.ReadName(Utf8NameDecoder.Instance);
-                        var amount = context.Reader.ReadInt32();
+                        var amount = BsonSerializer.Deserialize<Chips>(context.Reader);
                         bets = bets.Post(nickname, amount);
                     }
                     context.Reader.ReadEndDocument();
                     break;
 
                 case AnteField:
-                    ante = context.Reader.ReadInt32();
+                    ante = BsonSerializer.Deserialize<Chips>(context.Reader);
                     break;
 
                 default:
@@ -199,20 +207,22 @@ internal sealed class RulesSerializer : SerializerBase<Rules>
     {
         context.Writer.WriteStartDocument();
         context.Writer.WriteName(GameField);
-        context.Writer.WriteString(value.Game.ToString());
+        BsonSerializer.Serialize(context.Writer, value.Game);
+        context.Writer.WriteName(MaxSeatField);
+        BsonSerializer.Serialize(context.Writer, value.MaxSeat);
         context.Writer.WriteName(SmallBlindField);
-        context.Writer.WriteInt32(value.SmallBlind);
+        BsonSerializer.Serialize(context.Writer, value.SmallBlind);
         context.Writer.WriteName(BigBlindField);
-        context.Writer.WriteInt32(value.BigBlind);
+        BsonSerializer.Serialize(context.Writer, value.BigBlind);
         context.Writer.WriteEndDocument();
     }
 
     public override Rules Deserialize(BsonDeserializationContext context, BsonDeserializationArgs args)
     {
         Game game = default;
-        int maxSeat = default;
-        int smallBlind = default;
-        int bigBlind = default;
+        Seat maxSeat = default;
+        Chips smallBlind = default;
+        Chips bigBlind = default;
 
         context.Reader.ReadStartDocument();
 
@@ -223,22 +233,19 @@ internal sealed class RulesSerializer : SerializerBase<Rules>
             switch (name)
             {
                 case GameField:
-                    game = Enum.Parse<Game>(
-                        context.Reader.ReadString(),
-                        ignoreCase: true
-                    );
+                    game = BsonSerializer.Deserialize<Game>(context.Reader);
                     break;
 
                 case MaxSeatField:
-                    maxSeat = context.Reader.ReadInt32();
+                    maxSeat = BsonSerializer.Deserialize<Seat>(context.Reader);
                     break;
 
                 case SmallBlindField:
-                    smallBlind = context.Reader.ReadInt32();
+                    smallBlind = BsonSerializer.Deserialize<Chips>(context.Reader);
                     break;
 
                 case BigBlindField:
-                    bigBlind = context.Reader.ReadInt32();
+                    bigBlind = BsonSerializer.Deserialize<Chips>(context.Reader);
                     break;
 
                 default:
@@ -269,19 +276,19 @@ internal sealed class PositionsSerializer : SerializerBase<Positions>
     {
         context.Writer.WriteStartDocument();
         context.Writer.WriteName(SmallBlindSeatField);
-        context.Writer.WriteInt32(value.SmallBlindSeat);
+        BsonSerializer.Serialize(context.Writer, value.SmallBlindSeat);
         context.Writer.WriteName(BigBlindSeatField);
-        context.Writer.WriteInt32(value.BigBlindSeat);
+        BsonSerializer.Serialize(context.Writer, value.BigBlindSeat);
         context.Writer.WriteName(ButtonSeatField);
-        context.Writer.WriteInt32(value.ButtonSeat);
+        BsonSerializer.Serialize(context.Writer, value.ButtonSeat);
         context.Writer.WriteEndDocument();
     }
 
     public override Positions Deserialize(BsonDeserializationContext context, BsonDeserializationArgs args)
     {
-        int smallBlindSeat = default;
-        int bigBlindSeat = default;
-        int buttonSeat = default;
+        Seat smallBlindSeat = default;
+        Seat bigBlindSeat = default;
+        Seat buttonSeat = default;
 
         context.Reader.ReadStartDocument();
 
@@ -292,15 +299,15 @@ internal sealed class PositionsSerializer : SerializerBase<Positions>
             switch (name)
             {
                 case SmallBlindSeatField:
-                    smallBlindSeat = context.Reader.ReadInt32();
+                    smallBlindSeat = BsonSerializer.Deserialize<Seat>(context.Reader);
                     break;
 
                 case BigBlindSeatField:
-                    bigBlindSeat = context.Reader.ReadInt32();
+                    bigBlindSeat = BsonSerializer.Deserialize<Seat>(context.Reader);
                     break;
 
                 case ButtonSeatField:
-                    buttonSeat = context.Reader.ReadInt32();
+                    buttonSeat = BsonSerializer.Deserialize<Seat>(context.Reader);
                     break;
 
                 default:
@@ -331,7 +338,7 @@ internal sealed class PlayerActionSerializer : SerializerBase<PlayerAction>
         context.Writer.WriteName(TypeField);
         context.Writer.WriteString(value.Type.ToString());
         context.Writer.WriteName(AmountField);
-        context.Writer.WriteInt32(value.Amount);
+        BsonSerializer.Serialize(context.Writer, value.Amount);
         context.Writer.WriteEndDocument();
     }
 
@@ -353,7 +360,7 @@ internal sealed class PlayerActionSerializer : SerializerBase<PlayerAction>
                     break;
 
                 case AmountField:
-                    amount = context.Reader.ReadInt32();
+                    amount = BsonSerializer.Deserialize<Chips>(context.Reader);
                     break;
 
                 default:
@@ -426,11 +433,11 @@ internal sealed class ParticipantSerializer : SerializerBase<Participant>
     {
         context.Writer.WriteStartDocument();
         context.Writer.WriteName(NicknameField);
-        context.Writer.WriteString(value.Nickname);
+        BsonSerializer.Serialize(context.Writer, value.Nickname);
         context.Writer.WriteName(SeatField);
-        context.Writer.WriteInt32(value.Seat);
+        BsonSerializer.Serialize(context.Writer, value.Seat);
         context.Writer.WriteName(StackField);
-        context.Writer.WriteInt32(value.Stack);
+        BsonSerializer.Serialize(context.Writer, value.Stack);
         context.Writer.WriteEndDocument();
     }
 
@@ -449,15 +456,15 @@ internal sealed class ParticipantSerializer : SerializerBase<Participant>
             switch (name)
             {
                 case NicknameField:
-                    nickname = context.Reader.ReadString();
+                    nickname = BsonSerializer.Deserialize<Nickname>(context.Reader);
                     break;
 
                 case SeatField:
-                    seat = context.Reader.ReadInt32();
+                    seat = BsonSerializer.Deserialize<Seat>(context.Reader);
                     break;
 
                 case StackField:
-                    stack = context.Reader.ReadInt32();
+                    stack = BsonSerializer.Deserialize<Chips>(context.Reader);
                     break;
 
                 default:

@@ -10,6 +10,8 @@ namespace Domain.Service.Dealer;
 public class BoardCardsDealingDealer(int count) : IDealer
 {
     public IEnumerable<IEvent> Start(
+        HandUid uid,
+        TableContext tableContext,
         Rules rules,
         Table table,
         Pot pot,
@@ -20,17 +22,21 @@ public class BoardCardsDealingDealer(int count) : IDealer
     {
         var startEvent = new StageStartedEvent
         {
+            HandUid = uid,
+            TableContext = tableContext,
             OccurredAt = DateTime.UtcNow
         };
         yield return startEvent;
 
         if (HasEnoughPlayersForDealing(table))
         {
-            yield return DealBoardCards(table, deck, randomizer);
+            yield return DealBoardCards(uid, tableContext, table, deck, randomizer);
         }
 
         var finishEvent = new StageFinishedEvent
         {
+            HandUid = uid,
+            TableContext = tableContext,
             OccurredAt = DateTime.UtcNow
         };
         yield return finishEvent;
@@ -41,13 +47,15 @@ public class BoardCardsDealingDealer(int count) : IDealer
         return table.Count(x => !x.IsFolded) > 1;
     }
 
-    private BoardCardsDealtEvent DealBoardCards(Table table, BaseDeck deck, IRandomizer randomizer)
+    private BoardCardsDealtEvent DealBoardCards(HandUid uid, TableContext tableContext, Table table, BaseDeck deck, IRandomizer randomizer)
     {
         var cards = deck.ExtractRandomCards(count, randomizer);
         table.TakeBoardCards(cards);
 
         var @event = new BoardCardsDealtEvent
         {
+            HandUid = uid,
+            TableContext = tableContext,
             Cards = cards,
             OccurredAt = DateTime.UtcNow
         };
@@ -56,6 +64,7 @@ public class BoardCardsDealingDealer(int count) : IDealer
 
     public void Handle(
         IEvent @event,
+        HandUid uid,
         Rules rules,
         Table table,
         Pot pot,
@@ -81,6 +90,8 @@ public class BoardCardsDealingDealer(int count) : IDealer
     public IEnumerable<IEvent> SubmitPlayerAction(
         Nickname nickname,
         PlayerAction action,
+        HandUid uid,
+        TableContext tableContext,
         Rules rules,
         Table table,
         Pot pot,

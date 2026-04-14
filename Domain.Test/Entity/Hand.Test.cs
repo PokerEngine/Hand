@@ -55,8 +55,7 @@ public class NoLimitHoldem6MaxHandTest
 
         var hand = Hand.FromScratch(
             uid: handUid,
-            tableUid: tableUid,
-            tableType: TableType.Cash,
+            tableContext: new TableContext { TableUid = tableUid, TableType = TableType.Cash },
             rules: new()
             {
                 Game = Game.NoLimitHoldem,
@@ -76,8 +75,8 @@ public class NoLimitHoldem6MaxHandTest
         );
 
         Assert.Equal(handUid, hand.Uid);
-        Assert.Equal(tableUid, hand.TableUid);
-        Assert.Equal(TableType.Cash, hand.TableType);
+        Assert.Equal(tableUid, hand.TableContext.TableUid);
+        Assert.Equal(TableType.Cash, hand.TableContext.TableType);
         Assert.Equal(Game.NoLimitHoldem, hand.Rules.Game);
         Assert.Equal(new Seat(6), hand.Rules.MaxSeat);
         Assert.Equal(new Chips(5), hand.Rules.SmallBlind);
@@ -131,8 +130,8 @@ public class NoLimitHoldem6MaxHandTest
         {
             new HandStartedEvent
             {
-                TableUid = tableUid,
-                TableType = TableType.Cash,
+                HandUid = handUid,
+                TableContext = new TableContext { TableUid = tableUid, TableType = TableType.Cash },
                 Rules = new ()
                 {
                     Game = Game.NoLimitHoldem,
@@ -151,56 +150,78 @@ public class NoLimitHoldem6MaxHandTest
             },
             new StageStartedEvent
             {
+                HandUid = handUid,
+                TableContext = new TableContext { TableUid = tableUid, TableType = TableType.Cash },
                 OccurredAt = new DateTime(2025, 1, 1)
             },
             new SmallBlindPostedEvent
             {
+                HandUid = handUid,
+                TableContext = new TableContext { TableUid = tableUid, TableType = TableType.Cash },
                 Nickname = participantSb.Nickname,
                 Amount = new Chips(5),
                 OccurredAt = new DateTime(2025, 1, 1)
             },
             new BigBlindPostedEvent
             {
+                HandUid = handUid,
+                TableContext = new TableContext { TableUid = tableUid, TableType = TableType.Cash },
                 Nickname = participantBb.Nickname,
                 Amount = new Chips(10),
                 OccurredAt = new DateTime(2025, 1, 1)
             },
             new StageFinishedEvent
             {
+                HandUid = handUid,
+                TableContext = new TableContext { TableUid = tableUid, TableType = TableType.Cash },
                 OccurredAt = new DateTime(2025, 1, 1)
             },
             new StageStartedEvent
             {
+                HandUid = handUid,
+                TableContext = new TableContext { TableUid = tableUid, TableType = TableType.Cash },
                 OccurredAt = new DateTime(2025, 1, 1)
             },
             new HoleCardsDealtEvent
             {
+                HandUid = handUid,
+                TableContext = new TableContext { TableUid = tableUid, TableType = TableType.Cash },
                 Nickname = participantSb.Nickname,
                 Cards = new CardSet([Card.TreyOfClubs, Card.NineOfClubs]),
                 OccurredAt = new DateTime(2025, 1, 1)
             },
             new HoleCardsDealtEvent
             {
+                HandUid = handUid,
+                TableContext = new TableContext { TableUid = tableUid, TableType = TableType.Cash },
                 Nickname = participantBb.Nickname,
                 Cards = new CardSet([Card.QueenOfClubs, Card.TenOfDiamonds]),
                 OccurredAt = new DateTime(2025, 1, 1)
             },
             new HoleCardsDealtEvent
             {
+                HandUid = handUid,
+                TableContext = new TableContext { TableUid = tableUid, TableType = TableType.Cash },
                 Nickname = participantBu.Nickname,
                 Cards = new CardSet([Card.SevenOfSpades, Card.EightOfSpades]),
                 OccurredAt = new DateTime(2025, 1, 1)
             },
             new StageFinishedEvent
             {
+                HandUid = handUid,
+                TableContext = new TableContext { TableUid = tableUid, TableType = TableType.Cash },
                 OccurredAt = new DateTime(2025, 1, 1)
             },
             new StageStartedEvent
             {
+                HandUid = handUid,
+                TableContext = new TableContext { TableUid = tableUid, TableType = TableType.Cash },
                 OccurredAt = new DateTime(2025, 1, 1)
             },
             new PlayerActionRequestedEvent
             {
+                HandUid = handUid,
+                TableContext = new TableContext { TableUid = tableUid, TableType = TableType.Cash },
                 Nickname = participantBu.Nickname,
                 FoldIsAvailable = true,
                 CheckIsAvailable = false,
@@ -213,12 +234,16 @@ public class NoLimitHoldem6MaxHandTest
             },
             new PlayerActedEvent
             {
+                HandUid = handUid,
+                TableContext = new TableContext { TableUid = tableUid, TableType = TableType.Cash },
                 Nickname = participantBu.Nickname,
                 Action = new PlayerAction(PlayerActionType.RaiseBy, new Chips(25)),
                 OccurredAt = new DateTime(2025, 1, 1)
             },
             new PlayerActionRequestedEvent
             {
+                HandUid = handUid,
+                TableContext = new TableContext { TableUid = tableUid, TableType = TableType.Cash },
                 Nickname = participantSb.Nickname,
                 FoldIsAvailable = true,
                 CheckIsAvailable = false,
@@ -231,12 +256,16 @@ public class NoLimitHoldem6MaxHandTest
             },
             new PlayerActedEvent
             {
+                HandUid = handUid,
+                TableContext = new TableContext { TableUid = tableUid, TableType = TableType.Cash },
                 Nickname = participantSb.Nickname,
                 Action = new PlayerAction(PlayerActionType.Fold),
                 OccurredAt = new DateTime(2025, 1, 1)
             },
             new PlayerActionRequestedEvent
             {
+                HandUid = handUid,
+                TableContext = new TableContext { TableUid = tableUid, TableType = TableType.Cash },
                 Nickname = participantBb.Nickname,
                 FoldIsAvailable = true,
                 CheckIsAvailable = false,
@@ -249,37 +278,53 @@ public class NoLimitHoldem6MaxHandTest
             },
             new PlayerActedEvent
             {
+                HandUid = handUid,
+                TableContext = new TableContext { TableUid = tableUid, TableType = TableType.Cash },
                 Nickname = participantBb.Nickname,
                 Action = new PlayerAction(PlayerActionType.CallBy, new Chips(15)),
                 OccurredAt = new DateTime(2025, 1, 1)
             },
             new BetsCollectedEvent
             {
+                HandUid = handUid,
+                TableContext = new TableContext { TableUid = tableUid, TableType = TableType.Cash },
                 OccurredAt = new DateTime(2025, 1, 1)
             },
             new StageFinishedEvent
             {
+                HandUid = handUid,
+                TableContext = new TableContext { TableUid = tableUid, TableType = TableType.Cash },
                 OccurredAt = new DateTime(2025, 1, 1)
             },
             new StageStartedEvent
             {
+                HandUid = handUid,
+                TableContext = new TableContext { TableUid = tableUid, TableType = TableType.Cash },
                 OccurredAt = new DateTime(2025, 1, 1)
             },
             new BoardCardsDealtEvent
             {
+                HandUid = handUid,
+                TableContext = new TableContext { TableUid = tableUid, TableType = TableType.Cash },
                 Cards = new CardSet([Card.AceOfSpades, Card.SevenOfClubs, Card.DeuceOfDiamonds]),
                 OccurredAt = new DateTime(2025, 1, 1)
             },
             new StageFinishedEvent
             {
+                HandUid = handUid,
+                TableContext = new TableContext { TableUid = tableUid, TableType = TableType.Cash },
                 OccurredAt = new DateTime(2025, 1, 1)
             },
             new StageStartedEvent
             {
+                HandUid = handUid,
+                TableContext = new TableContext { TableUid = tableUid, TableType = TableType.Cash },
                 OccurredAt = new DateTime(2025, 1, 1)
             },
             new PlayerActionRequestedEvent
             {
+                HandUid = handUid,
+                TableContext = new TableContext { TableUid = tableUid, TableType = TableType.Cash },
                 Nickname = participantBb.Nickname,
                 FoldIsAvailable = false,
                 CheckIsAvailable = true,
@@ -292,12 +337,16 @@ public class NoLimitHoldem6MaxHandTest
             },
             new PlayerActedEvent
             {
+                HandUid = handUid,
+                TableContext = new TableContext { TableUid = tableUid, TableType = TableType.Cash },
                 Nickname = participantBb.Nickname,
                 Action = new PlayerAction(PlayerActionType.Check),
                 OccurredAt = new DateTime(2025, 1, 1)
             },
             new PlayerActionRequestedEvent
             {
+                HandUid = handUid,
+                TableContext = new TableContext { TableUid = tableUid, TableType = TableType.Cash },
                 Nickname = participantBu.Nickname,
                 FoldIsAvailable = false,
                 CheckIsAvailable = true,
@@ -310,12 +359,16 @@ public class NoLimitHoldem6MaxHandTest
             },
             new PlayerActedEvent
             {
+                HandUid = handUid,
+                TableContext = new TableContext { TableUid = tableUid, TableType = TableType.Cash },
                 Nickname = participantBu.Nickname,
                 Action = new PlayerAction(PlayerActionType.RaiseBy, new Chips(15)),
                 OccurredAt = new DateTime(2025, 1, 1)
             },
             new PlayerActionRequestedEvent
             {
+                HandUid = handUid,
+                TableContext = new TableContext { TableUid = tableUid, TableType = TableType.Cash },
                 Nickname = participantBb.Nickname,
                 FoldIsAvailable = true,
                 CheckIsAvailable = false,
@@ -328,63 +381,91 @@ public class NoLimitHoldem6MaxHandTest
             },
             new PlayerActedEvent
             {
+                HandUid = handUid,
+                TableContext = new TableContext { TableUid = tableUid, TableType = TableType.Cash },
                 Nickname = participantBb.Nickname,
                 Action = new PlayerAction(PlayerActionType.Fold),
                 OccurredAt = new DateTime(2025, 1, 1)
             },
             new BetRefundedEvent
             {
+                HandUid = handUid,
+                TableContext = new TableContext { TableUid = tableUid, TableType = TableType.Cash },
                 Nickname = participantBu.Nickname,
                 Amount = new Chips(15),
                 OccurredAt = new DateTime(2025, 1, 1)
             },
             new StageFinishedEvent
             {
+                HandUid = handUid,
+                TableContext = new TableContext { TableUid = tableUid, TableType = TableType.Cash },
                 OccurredAt = new DateTime(2025, 1, 1)
             },
             new StageStartedEvent
             {
+                HandUid = handUid,
+                TableContext = new TableContext { TableUid = tableUid, TableType = TableType.Cash },
                 OccurredAt = new DateTime(2025, 1, 1)
             },
             new StageFinishedEvent
             {
+                HandUid = handUid,
+                TableContext = new TableContext { TableUid = tableUid, TableType = TableType.Cash },
                 OccurredAt = new DateTime(2025, 1, 1)
             },
             new StageStartedEvent
             {
+                HandUid = handUid,
+                TableContext = new TableContext { TableUid = tableUid, TableType = TableType.Cash },
                 OccurredAt = new DateTime(2025, 1, 1)
             },
             new StageFinishedEvent
             {
+                HandUid = handUid,
+                TableContext = new TableContext { TableUid = tableUid, TableType = TableType.Cash },
                 OccurredAt = new DateTime(2025, 1, 1)
             },
             new StageStartedEvent
             {
+                HandUid = handUid,
+                TableContext = new TableContext { TableUid = tableUid, TableType = TableType.Cash },
                 OccurredAt = new DateTime(2025, 1, 1)
             },
             new StageFinishedEvent
             {
+                HandUid = handUid,
+                TableContext = new TableContext { TableUid = tableUid, TableType = TableType.Cash },
                 OccurredAt = new DateTime(2025, 1, 1)
             },
             new StageStartedEvent
             {
+                HandUid = handUid,
+                TableContext = new TableContext { TableUid = tableUid, TableType = TableType.Cash },
                 OccurredAt = new DateTime(2025, 1, 1)
             },
             new StageFinishedEvent
             {
+                HandUid = handUid,
+                TableContext = new TableContext { TableUid = tableUid, TableType = TableType.Cash },
                 OccurredAt = new DateTime(2025, 1, 1)
             },
             new StageStartedEvent
             {
+                HandUid = handUid,
+                TableContext = new TableContext { TableUid = tableUid, TableType = TableType.Cash },
                 OccurredAt = new DateTime(2025, 1, 1)
             },
             new HoleCardsMuckedEvent
             {
+                HandUid = handUid,
+                TableContext = new TableContext { TableUid = tableUid, TableType = TableType.Cash },
                 Nickname = participantBu.Nickname,
                 OccurredAt = new DateTime(2025, 1, 1)
             },
             new SidePotAwardedEvent
             {
+                HandUid = handUid,
+                TableContext = new TableContext { TableUid = tableUid, TableType = TableType.Cash },
                 Winners = [participantBu.Nickname],
                 SidePot = new SidePot(
                     [participantBu.Nickname],
@@ -398,10 +479,14 @@ public class NoLimitHoldem6MaxHandTest
             },
             new StageFinishedEvent
             {
+                HandUid = handUid,
+                TableContext = new TableContext { TableUid = tableUid, TableType = TableType.Cash },
                 OccurredAt = new DateTime(2025, 1, 1)
             },
             new HandFinishedEvent
             {
+                HandUid = handUid,
+                TableContext = new TableContext { TableUid = tableUid, TableType = TableType.Cash },
                 OccurredAt = new DateTime(2025, 1, 1)
             }
         };
@@ -414,7 +499,7 @@ public class NoLimitHoldem6MaxHandTest
         );
 
         Assert.Equal(handUid, hand.Uid);
-        Assert.Equal(tableUid, hand.TableUid);
+        Assert.Equal(tableUid, hand.TableContext.TableUid);
         Assert.Equal(Game.NoLimitHoldem, hand.Rules.Game);
         Assert.Equal(new Seat(6), hand.Rules.MaxSeat);
         Assert.Equal(new Chips(5), hand.Rules.SmallBlind);
@@ -940,8 +1025,7 @@ public class NoLimitHoldem6MaxHandTest
     {
         return Hand.FromScratch(
             uid: new HandUid(Guid.NewGuid()),
-            tableUid: new TableUid(Guid.NewGuid()),
-            tableType: TableType.Cash,
+            tableContext: new TableContext { TableUid = new TableUid(Guid.NewGuid()), TableType = TableType.Cash },
             rules: new()
             {
                 Game = Game.NoLimitHoldem,
@@ -1039,8 +1123,7 @@ public class NoLimitHoldem9MaxHandTest
 
         var hand = Hand.FromScratch(
             uid: handUid,
-            tableUid: tableUid,
-            tableType: TableType.Cash,
+            tableContext: new TableContext { TableUid = tableUid, TableType = TableType.Cash },
             rules: new()
             {
                 Game = Game.NoLimitHoldem,
@@ -1138,8 +1221,7 @@ public class PotLimitOmaha6MaxHandTest
 
         var hand = Hand.FromScratch(
             uid: handUid,
-            tableUid: tableUid,
-            tableType: TableType.Cash,
+            tableContext: new TableContext { TableUid = tableUid, TableType = TableType.Cash },
             rules: new()
             {
                 Game = Game.PotLimitOmaha,
@@ -1252,8 +1334,7 @@ public class PotLimitOmaha9MaxHandTest
 
         var hand = Hand.FromScratch(
             uid: handUid,
-            tableUid: tableUid,
-            tableType: TableType.Cash,
+            tableContext: new TableContext { TableUid = tableUid, TableType = TableType.Cash },
             rules: new()
             {
                 Game = Game.PotLimitOmaha,

@@ -50,7 +50,7 @@ public class SubmitPlayerActionTest
         Assert.Equal("Charlie", detailView.Pot.CurrentBets[2].Nickname);
         Assert.Equal(25, detailView.Pot.CurrentBets[2].Amount);
 
-        var events = await unitOfWork.EventDispatcher.GetDispatchedEventsAsync(response.Uid);
+        var events = unitOfWork.EventDispatcher.GetDispatchedEvents();
         Assert.Equal(2, events.Count);
         Assert.IsType<PlayerActedEvent>(events[0]);
     }
@@ -104,7 +104,7 @@ public class SubmitPlayerActionTest
             }
         };
         var response = await handler.HandleAsync(command);
-        await unitOfWork.EventDispatcher.ClearDispatchedEventsAsync(response.Uid);
+        unitOfWork.EventDispatcher.ClearDispatchedEvents();
         return response.Uid;
     }
 

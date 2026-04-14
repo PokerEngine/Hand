@@ -10,6 +10,8 @@ namespace Domain.Service.Dealer;
 public class SettlementDealer : IDealer
 {
     public IEnumerable<IEvent> Start(
+        HandUid uid,
+        TableContext tableContext,
         Rules rules,
         Table table,
         Pot pot,
@@ -20,6 +22,8 @@ public class SettlementDealer : IDealer
     {
         var startEvent = new StageStartedEvent
         {
+            HandUid = uid,
+            TableContext = tableContext,
             OccurredAt = DateTime.UtcNow
         };
         yield return startEvent;
@@ -27,15 +31,15 @@ public class SettlementDealer : IDealer
         IEnumerable<IEvent> events;
         if (!IsShowdownNeeded(table))
         {
-            events = WinWithoutShowdown(table, pot);
+            events = WinWithoutShowdown(uid, tableContext, table, pot);
         }
         else if (IsSomebodyAllIn(table))
         {
-            events = WinAtShowdownWithAllIn(table, pot, rules, evaluator);
+            events = WinAtShowdownWithAllIn(uid, tableContext, table, pot, rules, evaluator);
         }
         else
         {
-            events = WinAtShowdownWithoutAllIn(table, pot, rules, evaluator);
+            events = WinAtShowdownWithoutAllIn(uid, tableContext, table, pot, rules, evaluator);
         }
 
         foreach (var e in events)
@@ -45,6 +49,8 @@ public class SettlementDealer : IDealer
 
         var finishEvent = new StageFinishedEvent
         {
+            HandUid = uid,
+            TableContext = tableContext,
             OccurredAt = DateTime.UtcNow
         };
         yield return finishEvent;
@@ -52,6 +58,7 @@ public class SettlementDealer : IDealer
 
     public void Handle(
         IEvent @event,
+        HandUid uid,
         Rules rules,
         Table table,
         Pot pot,
@@ -81,6 +88,8 @@ public class SettlementDealer : IDealer
     public IEnumerable<IEvent> SubmitPlayerAction(
         Nickname nickname,
         PlayerAction action,
+        HandUid uid,
+        TableContext tableContext,
         Rules rules,
         Table table,
         Pot pot,
@@ -97,12 +106,14 @@ public class SettlementDealer : IDealer
         return table.Players.Count(IsAvailable) > 1;
     }
 
-    private IEnumerable<IEvent> WinWithoutShowdown(Table table, Pot pot)
+    private IEnumerable<IEvent> WinWithoutShowdown(HandUid uid, TableContext tableContext, Table table, Pot pot)
     {
         var player = table.Players.Where(IsAvailable).First();
 
         var muckEvent = new HoleCardsMuckedEvent
         {
+            HandUid = uid,
+            TableContext = tableContext,
             Nickname = player.Nickname,
             OccurredAt = DateTime.UtcNow
         };
@@ -113,6 +124,8 @@ public class SettlementDealer : IDealer
 
         var awardEvent = new SidePotAwardedEvent
         {
+            HandUid = uid,
+            TableContext = tableContext,
             SidePot = sidePot,
             Winners = sidePot.Competitors.ToHashSet(),
             OccurredAt = DateTime.UtcNow
@@ -120,7 +133,7 @@ public class SettlementDealer : IDealer
         yield return awardEvent;
     }
 
-    private IEnumerable<IEvent> WinAtShowdownWithAllIn(Table table, Pot pot, Rules rules, IEvaluator evaluator)
+    private IEnumerable<IEvent> WinAtShowdownWithAllIn(HandUid uid, TableContext tableContext, Table table, Pot pot, Rules rules, IEvaluator evaluator)
     {
         var startPlayer = table.GetPlayerNextToSeat(table.Positions.ButtonSeat, IsAvailable)!;
         var players = table.GetPlayersStartingFromSeat(startPlayer.Seat).Where(IsAvailable).ToList();
@@ -131,6 +144,8 @@ public class SettlementDealer : IDealer
         {
             var showEvent = new HoleCardsShownEvent
             {
+                HandUid = uid,
+                TableContext = tableContext,
                 Nickname = player.Nickname,
                 Cards = player.HoleCards,
                 Combo = comboMapping[player.Nickname],
@@ -166,6 +181,8 @@ public class SettlementDealer : IDealer
 
             var awardEvent = new SidePotAwardedEvent
             {
+                HandUid = uid,
+                TableContext = tableContext,
                 SidePot = sidePot,
                 Winners = winners,
                 OccurredAt = DateTime.UtcNow
@@ -174,7 +191,7 @@ public class SettlementDealer : IDealer
         }
     }
 
-    private IEnumerable<IEvent> WinAtShowdownWithoutAllIn(Table table, Pot pot, Rules rules, IEvaluator evaluator)
+    private IEnumerable<IEvent> WinAtShowdownWithoutAllIn(HandUid uid, TableContext tableContext, Table table, Pot pot, Rules rules, IEvaluator evaluator)
     {
         var startPlayer = GetStartPlayer(table, pot);
         var players = table.GetPlayersStartingFromSeat(startPlayer.Seat).Where(IsAvailable);
@@ -191,6 +208,8 @@ public class SettlementDealer : IDealer
             {
                 var muckEvent = new HoleCardsMuckedEvent
                 {
+                    HandUid = uid,
+                    TableContext = tableContext,
                     Nickname = player.Nickname,
                     OccurredAt = DateTime.UtcNow
                 };
@@ -202,6 +221,8 @@ public class SettlementDealer : IDealer
 
                 var showEvent = new HoleCardsShownEvent
                 {
+                    HandUid = uid,
+                    TableContext = tableContext,
                     Nickname = player.Nickname,
                     Cards = player.HoleCards,
                     Combo = combo,
@@ -217,6 +238,8 @@ public class SettlementDealer : IDealer
 
                 var showEvent = new HoleCardsShownEvent
                 {
+                    HandUid = uid,
+                    TableContext = tableContext,
                     Nickname = player.Nickname,
                     Cards = player.HoleCards,
                     Combo = combo,
@@ -231,6 +254,8 @@ public class SettlementDealer : IDealer
 
         var awardEvent = new SidePotAwardedEvent
         {
+            HandUid = uid,
+            TableContext = tableContext,
             SidePot = sidePot,
             Winners = sidePot.Competitors.ToHashSet(),
             OccurredAt = DateTime.UtcNow

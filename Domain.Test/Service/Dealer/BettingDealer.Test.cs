@@ -78,6 +78,8 @@ public class NoLimitBettingDealerTest : BaseBettingDealerTest
 
         // Act
         var events = dealer.Start(
+            uid: new HandUid(Guid.NewGuid()),
+            tableContext: new TableContext { TableUid = new TableUid(Guid.NewGuid()), TableType = TableType.Cash },
             rules: CreateRules(),
             table: table,
             pot: pot,
@@ -123,6 +125,8 @@ public class NoLimitBettingDealerTest : BaseBettingDealerTest
 
         // Act
         var events = dealer.Start(
+            uid: new HandUid(Guid.NewGuid()),
+            tableContext: new TableContext { TableUid = new TableUid(Guid.NewGuid()), TableType = TableType.Cash },
             rules: CreateRules(),
             table: table,
             pot: pot,
@@ -168,6 +172,8 @@ public class NoLimitBettingDealerTest : BaseBettingDealerTest
 
         // Act
         var events = dealer.Start(
+            uid: new HandUid(Guid.NewGuid()),
+            tableContext: new TableContext { TableUid = new TableUid(Guid.NewGuid()), TableType = TableType.Cash },
             rules: CreateRules(),
             table: table,
             pot: pot,
@@ -221,6 +227,8 @@ public class NoLimitBettingDealerTest : BaseBettingDealerTest
 
         // Act
         var events = dealer.Start(
+            uid: new HandUid(Guid.NewGuid()),
+            tableContext: new TableContext { TableUid = new TableUid(Guid.NewGuid()), TableType = TableType.Cash },
             rules: CreateRules(),
             table: table,
             pot: pot,
@@ -272,6 +280,8 @@ public class NoLimitBettingDealerTest : BaseBettingDealerTest
 
         // Act
         var events = dealer.Start(
+            uid: new HandUid(Guid.NewGuid()),
+            tableContext: new TableContext { TableUid = new TableUid(Guid.NewGuid()), TableType = TableType.Cash },
             rules: CreateRules(),
             table: table,
             pot: pot,
@@ -323,6 +333,8 @@ public class NoLimitBettingDealerTest : BaseBettingDealerTest
 
         // Act
         var events = dealer.Start(
+            uid: new HandUid(Guid.NewGuid()),
+            tableContext: new TableContext { TableUid = new TableUid(Guid.NewGuid()), TableType = TableType.Cash },
             rules: CreateRules(),
             table: table,
             pot: pot,
@@ -376,6 +388,8 @@ public class NoLimitBettingDealerTest : BaseBettingDealerTest
 
         // Act
         var events = dealer.Start(
+            uid: new HandUid(Guid.NewGuid()),
+            tableContext: new TableContext { TableUid = new TableUid(Guid.NewGuid()), TableType = TableType.Cash },
             rules: CreateRules(),
             table: table,
             pot: pot,
@@ -426,6 +440,8 @@ public class NoLimitBettingDealerTest : BaseBettingDealerTest
 
         // Act
         var events = dealer.Start(
+            uid: new HandUid(Guid.NewGuid()),
+            tableContext: new TableContext { TableUid = new TableUid(Guid.NewGuid()), TableType = TableType.Cash },
             rules: CreateRules(),
             table: table,
             pot: pot,
@@ -478,6 +494,8 @@ public class PotLimitBettingDealerTest : BaseBettingDealerTest
 
         // Act
         var events = dealer.Start(
+            uid: new HandUid(Guid.NewGuid()),
+            tableContext: new TableContext { TableUid = new TableUid(Guid.NewGuid()), TableType = TableType.Cash },
             rules: CreateRules(),
             table: table,
             pot: pot,
@@ -517,6 +535,8 @@ public class PotLimitBettingDealerTest : BaseBettingDealerTest
 
         // Act
         var events = dealer.Start(
+            uid: new HandUid(Guid.NewGuid()),
+            tableContext: new TableContext { TableUid = new TableUid(Guid.NewGuid()), TableType = TableType.Cash },
             rules: CreateRules(),
             table: table,
             pot: pot,
@@ -564,6 +584,8 @@ public class PotLimitBettingDealerTest : BaseBettingDealerTest
 
         // Act
         var events = dealer.Start(
+            uid: new HandUid(Guid.NewGuid()),
+            tableContext: new TableContext { TableUid = new TableUid(Guid.NewGuid()), TableType = TableType.Cash },
             rules: CreateRules(),
             table: table,
             pot: pot,

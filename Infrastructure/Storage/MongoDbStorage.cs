@@ -56,8 +56,8 @@ public class MongoDbStorage : IStorage
         var document = new DetailViewDocument
         {
             Uid = hand.Uid,
-            TableUid = hand.TableUid,
-            TableType = hand.TableType.ToString(),
+            TableUid = hand.TableContext.TableUid,
+            TableType = hand.TableContext.TableType.ToString(),
             Rules = new DetailViewRules
             {
                 Game = state.Rules.Game.ToString(),

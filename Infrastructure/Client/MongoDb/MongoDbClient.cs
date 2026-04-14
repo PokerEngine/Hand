@@ -37,6 +37,9 @@ internal static class MongoDbSerializerConfig
         BsonSerializer.TryRegisterSerializer(new GuidSerializer(GuidRepresentation.Standard));
         BsonSerializer.TryRegisterSerializer(new HandUidSerializer());
         BsonSerializer.TryRegisterSerializer(new TableUidSerializer());
+        BsonSerializer.TryRegisterSerializer(new TableContextSerializer());
+        BsonSerializer.TryRegisterSerializer(new GameSerializer());
+        BsonSerializer.TryRegisterSerializer(new TableTypeSerializer());
         BsonSerializer.TryRegisterSerializer(new NicknameSerializer());
         BsonSerializer.TryRegisterSerializer(new SeatSerializer());
         BsonSerializer.TryRegisterSerializer(new ChipsSerializer());
@@ -68,6 +71,58 @@ internal sealed class TableUidSerializer : SerializerBase<TableUid>
         => context.Reader.ReadGuid();
 }
 
+internal sealed class TableContextSerializer : SerializerBase<TableContext>
+{
+    private const string TableUidField = "tableUid";
+    private const string TableTypeField = "tableType";
+
+    public override void Serialize(BsonSerializationContext context, BsonSerializationArgs args, TableContext value)
+    {
+        context.Writer.WriteStartDocument();
+        context.Writer.WriteName(TableUidField);
+        BsonSerializer.Serialize(context.Writer, value.TableUid);
+        context.Writer.WriteName(TableTypeField);
+        context.Writer.WriteString(value.TableType.ToString());
+        context.Writer.WriteEndDocument();
+    }
+
+    public override TableContext Deserialize(BsonDeserializationContext context, BsonDeserializationArgs args)
+    {
+        TableUid tableUid = default;
+        TableType tableType = default;
+
+        context.Reader.ReadStartDocument();
+
+        while (context.Reader.ReadBsonType() != BsonType.EndOfDocument)
+        {
+            var name = context.Reader.ReadName(Utf8NameDecoder.Instance);
+
+            switch (name)
+            {
+                case TableUidField:
+                    tableUid = BsonSerializer.Deserialize<TableUid>(context.Reader);
+                    break;
+
+                case TableTypeField:
+                    tableType = BsonSerializer.Deserialize<TableType>(context.Reader);
+                    break;
+
+                default:
+                    context.Reader.SkipValue();
+                    break;
+            }
+        }
+
+        context.Reader.ReadEndDocument();
+
+        return new TableContext
+        {
+            TableUid = tableUid,
+            TableType = tableType
+        };
+    }
+}
+
 internal sealed class GameSerializer : SerializerBase<Game>
 {
     public override void Serialize(BsonSerializationContext context, BsonSerializationArgs args, Game value)
@@ -75,6 +130,15 @@ internal sealed class GameSerializer : SerializerBase<Game>
 
     public override Game Deserialize(BsonDeserializationContext context, BsonDeserializationArgs args)
         => Enum.Parse<Game>(context.Reader.ReadString(), ignoreCase: true);
+}
+
+internal sealed class TableTypeSerializer : SerializerBase<TableType>
+{
+    public override void Serialize(BsonSerializationContext context, BsonSerializationArgs args, TableType value)
+        => context.Writer.WriteString(value.ToString());
+
+    public override TableType Deserialize(BsonDeserializationContext context, BsonDeserializationArgs args)
+        => Enum.Parse<TableType>(context.Reader.ReadString(), ignoreCase: true);
 }
 
 internal sealed class NicknameSerializer : SerializerBase<Nickname>

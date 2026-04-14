@@ -10,6 +10,8 @@ namespace Domain.Service.Dealer;
 public abstract class BaseBettingDealer : IDealer
 {
     public IEnumerable<IEvent> Start(
+        HandUid uid,
+        TableContext tableContext,
         Rules rules,
         Table table,
         Pot pot,
@@ -20,20 +22,22 @@ public abstract class BaseBettingDealer : IDealer
     {
         var startEvent = new StageStartedEvent
         {
+            HandUid = uid,
+            TableContext = tableContext,
             OccurredAt = DateTime.UtcNow
         };
         yield return startEvent;
 
         if (!EnoughPlayers(table))
         {
-            foreach (var @event in Finish(table, pot))
+            foreach (var @event in Finish(uid, tableContext, table, pot))
             {
                 yield return @event;
             }
         }
         else
         {
-            foreach (var @event in RequestPlayerActionOrFinish(table, pot))
+            foreach (var @event in RequestPlayerActionOrFinish(uid, tableContext, table, pot))
             {
                 yield return @event;
             }
@@ -42,6 +46,7 @@ public abstract class BaseBettingDealer : IDealer
 
     public void Handle(
         IEvent @event,
+        HandUid uid,
         Rules rules,
         Table table,
         Pot pot,
@@ -77,6 +82,8 @@ public abstract class BaseBettingDealer : IDealer
     public IEnumerable<IEvent> SubmitPlayerAction(
         Nickname nickname,
         PlayerAction action,
+        HandUid uid,
+        TableContext tableContext,
         Rules rules,
         Table table,
         Pot pot,
@@ -97,13 +104,15 @@ public abstract class BaseBettingDealer : IDealer
 
         var @event = new PlayerActedEvent
         {
+            HandUid = uid,
+            TableContext = tableContext,
             Nickname = nickname,
             Action = action,
             OccurredAt = DateTime.UtcNow
         };
         yield return @event;
 
-        foreach (var e in RequestPlayerActionOrFinish(table, pot))
+        foreach (var e in RequestPlayerActionOrFinish(uid, tableContext, table, pot))
         {
             yield return e;
         }
@@ -202,27 +211,27 @@ public abstract class BaseBettingDealer : IDealer
         return !player.IsFolded && !player.IsAllIn;
     }
 
-    private IEnumerable<IEvent> RequestPlayerActionOrFinish(Table table, Pot pot)
+    private IEnumerable<IEvent> RequestPlayerActionOrFinish(HandUid uid, TableContext tableContext, Table table, Pot pot)
     {
         var previousPlayer = GetPreviousPlayer(table, pot);
         var nextPlayer = previousPlayer is null ? GetStartPlayer(table) : GetNextPlayer(table, previousPlayer);
 
         if (!EnoughPlayers(table) || nextPlayer is null || !PlayerActionIsExpected(nextPlayer, pot))
         {
-            foreach (var @event in Finish(table, pot))
+            foreach (var @event in Finish(uid, tableContext, table, pot))
             {
                 yield return @event;
             }
         }
         else
         {
-            yield return RequestPlayerAction(nextPlayer, pot);
+            yield return RequestPlayerAction(uid, tableContext, nextPlayer, pot);
         }
     }
 
-    private IEnumerable<IEvent> Finish(Table table, Pot pot)
+    private IEnumerable<IEvent> Finish(HandUid uid, TableContext tableContext, Table table, Pot pot)
     {
-        var refundEvent = RefundBet(table, pot);
+        var refundEvent = RefundBet(uid, tableContext, table, pot);
         if (refundEvent is not null)
         {
             yield return refundEvent;
@@ -234,6 +243,8 @@ public abstract class BaseBettingDealer : IDealer
 
             yield return new BetsCollectedEvent
             {
+                HandUid = uid,
+                TableContext = tableContext,
                 OccurredAt = DateTime.UtcNow
             };
         }
@@ -242,11 +253,13 @@ public abstract class BaseBettingDealer : IDealer
 
         yield return new StageFinishedEvent
         {
+            HandUid = uid,
+            TableContext = tableContext,
             OccurredAt = DateTime.UtcNow
         };
     }
 
-    private BetRefundedEvent? RefundBet(Table table, Pot pot)
+    private BetRefundedEvent? RefundBet(HandUid uid, TableContext tableContext, Table table, Pot pot)
     {
         var (nn, amount) = pot.CalculateRefund();
         if (nn is null)
@@ -261,13 +274,15 @@ public abstract class BaseBettingDealer : IDealer
 
         return new BetRefundedEvent
         {
+            HandUid = uid,
+            TableContext = tableContext,
             Nickname = nickname,
             Amount = amount,
             OccurredAt = DateTime.UtcNow
         };
     }
 
-    private PlayerActionRequestedEvent RequestPlayerAction(Player player, Pot pot)
+    private PlayerActionRequestedEvent RequestPlayerAction(HandUid uid, TableContext tableContext, Player player, Pot pot)
     {
         var (checkIsAvailable, _) = CheckIsValid(player, pot);
 
@@ -280,6 +295,8 @@ public abstract class BaseBettingDealer : IDealer
 
         var @event = new PlayerActionRequestedEvent
         {
+            HandUid = uid,
+            TableContext = tableContext,
             Nickname = player.Nickname,
             FoldIsAvailable = true,
             CheckIsAvailable = checkIsAvailable,

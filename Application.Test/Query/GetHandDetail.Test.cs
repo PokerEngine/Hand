@@ -110,7 +110,7 @@ public class GetHandDetailTest
             }
         };
         var response = await handler.HandleAsync(command);
-        await unitOfWork.EventDispatcher.ClearDispatchedEventsAsync(response.Uid);
+        unitOfWork.EventDispatcher.ClearDispatchedEvents();
         return response.Uid;
     }
 

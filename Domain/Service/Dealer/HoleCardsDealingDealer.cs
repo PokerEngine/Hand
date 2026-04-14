@@ -10,6 +10,8 @@ namespace Domain.Service.Dealer;
 public class HoleCardsDealingDealer(int count) : IDealer
 {
     public IEnumerable<IEvent> Start(
+        HandUid uid,
+        TableContext tableContext,
         Rules rules,
         Table table,
         Pot pot,
@@ -20,6 +22,8 @@ public class HoleCardsDealingDealer(int count) : IDealer
     {
         var startEvent = new StageStartedEvent
         {
+            HandUid = uid,
+            TableContext = tableContext,
             OccurredAt = DateTime.UtcNow
         };
         yield return startEvent;
@@ -29,12 +33,14 @@ public class HoleCardsDealingDealer(int count) : IDealer
         {
             foreach (var player in players)
             {
-                yield return DealHoleCards(player, deck, randomizer);
+                yield return DealHoleCards(uid, tableContext, player, deck, randomizer);
             }
         }
 
         var finishEvent = new StageFinishedEvent
         {
+            HandUid = uid,
+            TableContext = tableContext,
             OccurredAt = DateTime.UtcNow
         };
         yield return finishEvent;
@@ -51,13 +57,15 @@ public class HoleCardsDealingDealer(int count) : IDealer
         return players.Count > 1;
     }
 
-    private HoleCardsDealtEvent DealHoleCards(Player player, BaseDeck deck, IRandomizer randomizer)
+    private HoleCardsDealtEvent DealHoleCards(HandUid uid, TableContext tableContext, Player player, BaseDeck deck, IRandomizer randomizer)
     {
         var cards = deck.ExtractRandomCards(count, randomizer);
         player.TakeHoleCards(cards);
 
         var @event = new HoleCardsDealtEvent
         {
+            HandUid = uid,
+            TableContext = tableContext,
             Nickname = player.Nickname,
             Cards = cards,
             OccurredAt = DateTime.UtcNow
@@ -67,6 +75,7 @@ public class HoleCardsDealingDealer(int count) : IDealer
 
     public void Handle(
         IEvent @event,
+        HandUid uid,
         Rules rules,
         Table table,
         Pot pot,
@@ -92,6 +101,8 @@ public class HoleCardsDealingDealer(int count) : IDealer
     public IEnumerable<IEvent> SubmitPlayerAction(
         Nickname nickname,
         PlayerAction action,
+        HandUid uid,
+        TableContext tableContext,
         Rules rules,
         Table table,
         Pot pot,

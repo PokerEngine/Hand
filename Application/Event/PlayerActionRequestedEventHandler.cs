@@ -7,15 +7,15 @@ public class PlayerActionRequestedEventHandler(
     IIntegrationEventPublisher integrationEventPublisher
 ) : IEventHandler<PlayerActionRequestedEvent>
 {
-    public async Task HandleAsync(PlayerActionRequestedEvent @event, EventContext context)
+    public async Task HandleAsync(PlayerActionRequestedEvent @event)
     {
         var integrationEvent = new PlayerActionRequestedIntegrationEvent
         {
             Uid = Guid.NewGuid(),
             OccurredAt = @event.OccurredAt,
-            HandUid = context.HandUid,
-            TableUid = context.TableUid,
-            TableType = context.TableType.ToString(),
+            HandUid = @event.HandUid,
+            TableUid = @event.TableContext.TableUid,
+            TableType = @event.TableContext.TableType.ToString(),
             Nickname = @event.Nickname,
             FoldIsAvailable = @event.FoldIsAvailable,
             CheckIsAvailable = @event.CheckIsAvailable,
@@ -26,7 +26,7 @@ public class PlayerActionRequestedEventHandler(
             MaxRaiseByAmount = @event.MaxRaiseByAmount
         };
 
-        var routingKey = new IntegrationEventRoutingKey($"hand.{context.TableType.ToRoutingKey()}.player-action-requested");
+        var routingKey = new IntegrationEventRoutingKey($"hand.{@event.TableContext.TableType.ToRoutingKey()}.player-action-requested");
         await integrationEventPublisher.PublishAsync(integrationEvent, routingKey);
     }
 }

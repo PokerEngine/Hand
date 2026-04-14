@@ -12,8 +12,7 @@ namespace Domain.Entity;
 public class Hand
 {
     public readonly HandUid Uid;
-    public readonly TableUid TableUid;
-    public readonly TableType TableType;
+    public readonly TableContext TableContext;
     public readonly Rules Rules;
     public readonly Table Table;
     public readonly Pot Pot;
@@ -29,8 +28,7 @@ public class Hand
 
     private Hand(
         HandUid uid,
-        TableUid tableUid,
-        TableType tableType,
+        TableContext tableContext,
         Rules rules,
         Table table,
         Pot pot,
@@ -41,8 +39,7 @@ public class Hand
     )
     {
         Uid = uid;
-        TableUid = tableUid;
-        TableType = tableType;
+        TableContext = tableContext;
         Rules = rules;
         Table = table;
         Pot = pot;
@@ -56,8 +53,7 @@ public class Hand
 
     public static Hand FromScratch(
         HandUid uid,
-        TableUid tableUid,
-        TableType tableType,
+        TableContext tableContext,
         Rules rules,
         Positions positions,
         List<Participant> players,
@@ -68,8 +64,7 @@ public class Hand
         var factory = FactoryRegistry.GetFactory(rules.Game);
         var hand = new Hand(
             uid: uid,
-            tableUid: tableUid,
-            tableType: tableType,
+            tableContext: tableContext,
             rules: rules,
             table: factory.GetTable(
                 players: players,
@@ -85,8 +80,8 @@ public class Hand
 
         var @event = new HandStartedEvent
         {
-            TableUid = tableUid,
-            TableType = tableType,
+            HandUid = uid,
+            TableContext = tableContext,
             Rules = rules,
             Positions = positions,
             Players = players,
@@ -113,8 +108,7 @@ public class Hand
         var factory = FactoryRegistry.GetFactory(createdEvent.Rules.Game);
         var hand = new Hand(
             uid: uid,
-            tableUid: createdEvent.TableUid,
-            tableType: createdEvent.TableType,
+            tableContext: createdEvent.TableContext,
             rules: createdEvent.Rules,
             table: factory.GetTable(
                 players: createdEvent.Players,
@@ -137,6 +131,7 @@ public class Hand
                 default:
                     hand.Dealer.Handle(
                         @event: @event,
+                        uid: hand.Uid,
                         rules: hand.Rules,
                         table: hand.Table,
                         pot: hand.Pot,
@@ -172,6 +167,8 @@ public class Hand
         var events = Dealer.SubmitPlayerAction(
             nickname: nickname,
             action: action,
+            uid: Uid,
+            tableContext: TableContext,
             rules: Rules,
             table: Table,
             pot: Pot,
@@ -197,6 +194,8 @@ public class Hand
         {
             var @event = new HandFinishedEvent
             {
+                HandUid = Uid,
+                TableContext = TableContext,
                 OccurredAt = DateTime.UtcNow
             };
             AddEvent(@event);
@@ -211,6 +210,8 @@ public class Hand
     private void StartDealer()
     {
         var events = Dealer.Start(
+            uid: Uid,
+            tableContext: TableContext,
             rules: Rules,
             table: Table,
             pot: Pot,

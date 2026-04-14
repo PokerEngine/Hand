@@ -36,16 +36,9 @@ public class UnitOfWork(
                 await storage.SaveViewAsync(hand);
             }
 
-            var context = new EventContext
-            {
-                HandUid = hand.Uid,
-                TableUid = hand.TableUid,
-                TableType = hand.TableType
-            };
-
             foreach (var @event in events)
             {
-                await eventDispatcher.DispatchAsync(@event, context);
+                await eventDispatcher.DispatchAsync(@event);
             }
         }
 

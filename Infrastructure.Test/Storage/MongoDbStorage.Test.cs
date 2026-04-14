@@ -33,7 +33,7 @@ public class MongoDbStorageTest(MongoDbClientFixture fixture) : IClassFixture<Mo
 
         // Assert
         Assert.Equal(hand.Uid, (HandUid)view.Uid);
-        Assert.Equal(hand.TableUid, (TableUid)view.TableUid);
+        Assert.Equal(hand.TableContext.TableUid, (TableUid)view.TableUid);
         Assert.Equal("Cash", view.TableType);
         Assert.Equal("NoLimitHoldem", view.Rules.Game);
         Assert.Equal(6, view.Rules.MaxSeat);
@@ -108,8 +108,7 @@ public class MongoDbStorageTest(MongoDbClientFixture fixture) : IClassFixture<Mo
     {
         return Hand.FromScratch(
             uid: new HandUid(Guid.NewGuid()),
-            tableUid: new TableUid(Guid.NewGuid()),
-            tableType: TableType.Cash,
+            tableContext: new TableContext { TableUid = new TableUid(Guid.NewGuid()), TableType = TableType.Cash },
             rules: new Rules
             {
                 Game = game,

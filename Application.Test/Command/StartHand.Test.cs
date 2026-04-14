@@ -89,7 +89,7 @@ public class StartHandTest
         Assert.Equal((Guid)hand.Uid, detailView.Uid);
         Assert.Equal(2, detailView.Pot.CurrentBets.Count);
 
-        var events = await unitOfWork.EventDispatcher.GetDispatchedEventsAsync(response.Uid);
+        var events = unitOfWork.EventDispatcher.GetDispatchedEvents();
         Assert.Equal(12, events.Count);
         Assert.IsType<HandStartedEvent>(events[0]);
     }

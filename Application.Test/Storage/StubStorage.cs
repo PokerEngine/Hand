@@ -27,8 +27,8 @@ public class StubStorage : IStorage
         var view = new DetailView
         {
             Uid = hand.Uid,
-            TableUid = hand.TableUid,
-            TableType = hand.TableType.ToString(),
+            TableUid = hand.TableContext.TableUid,
+            TableType = hand.TableContext.TableType.ToString(),
             Rules = new DetailViewRules
             {
                 Game = state.Rules.Game.ToString(),

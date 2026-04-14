@@ -77,8 +77,11 @@ public class StartHandHandler(
 
         var hand = Hand.FromScratch(
             uid: await repository.GetNextUidAsync(),
-            tableUid: command.TableUid,
-            tableType: tableType,
+            tableContext: new TableContext
+            {
+                TableUid = command.TableUid,
+                TableType = tableType
+            },
             rules: rules,
             positions: positions,
             players: players,

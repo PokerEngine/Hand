@@ -5,14 +5,16 @@ namespace Domain.Event;
 public interface IEvent
 {
     DateTime OccurredAt { init; get; }
+    // HandUid HandUid { get; }
+    // TableContext TableContext { get; }
 }
 
 public sealed record HandStartedEvent : IEvent
 {
     public required DateTime OccurredAt { get; init; }
 
-    public required TableUid TableUid { get; init; }
-    public required TableType TableType { get; init; }
+    public required HandUid HandUid { get; init; }
+    public required TableContext TableContext { get; init; }
     public required Rules Rules { get; init; }
     public required Positions Positions { get; init; }
     public required List<Participant> Players { get; init; }
@@ -21,8 +23,8 @@ public sealed record HandStartedEvent : IEvent
     {
         return other is not null
                && OccurredAt.Equals(other.OccurredAt)
-               && TableUid.Equals(other.TableUid)
-               && TableType.Equals(other.TableType)
+               && HandUid.Equals(other.HandUid)
+               && TableContext.Equals(other.TableContext)
                && Rules.Equals(other.Rules)
                && Positions.Equals(other.Positions)
                && Players.SequenceEqual(other.Players);
@@ -32,8 +34,8 @@ public sealed record HandStartedEvent : IEvent
     {
         var hash = new HashCode();
 
-        hash.Add(TableUid);
-        hash.Add(TableType);
+        hash.Add(HandUid);
+        hash.Add(TableContext);
         hash.Add(Rules);
         hash.Add(Positions);
 
@@ -51,22 +53,33 @@ public sealed record HandStartedEvent : IEvent
 public sealed record HandFinishedEvent : IEvent
 {
     public required DateTime OccurredAt { get; init; }
+
+    public required HandUid HandUid { get; init; }
+    public required TableContext TableContext { get; init; }
 }
 
 public sealed record StageStartedEvent : IEvent
 {
     public required DateTime OccurredAt { get; init; }
+
+    public required HandUid HandUid { get; init; }
+    public required TableContext TableContext { get; init; }
 }
 
 public sealed record StageFinishedEvent : IEvent
 {
     public required DateTime OccurredAt { get; init; }
+
+    public required HandUid HandUid { get; init; }
+    public required TableContext TableContext { get; init; }
 }
 
 public sealed record SmallBlindPostedEvent : IEvent
 {
     public required DateTime OccurredAt { get; init; }
 
+    public required HandUid HandUid { get; init; }
+    public required TableContext TableContext { get; init; }
     public required Nickname Nickname { get; init; }
     public required Chips Amount { get; init; }
 }
@@ -75,6 +88,8 @@ public sealed record BigBlindPostedEvent : IEvent
 {
     public required DateTime OccurredAt { get; init; }
 
+    public required HandUid HandUid { get; init; }
+    public required TableContext TableContext { get; init; }
     public required Nickname Nickname { get; init; }
     public required Chips Amount { get; init; }
 }
@@ -83,6 +98,8 @@ public sealed record HoleCardsDealtEvent : IEvent
 {
     public required DateTime OccurredAt { get; init; }
 
+    public required HandUid HandUid { get; init; }
+    public required TableContext TableContext { get; init; }
     public required Nickname Nickname { get; init; }
     public required CardSet Cards { get; init; }
 }
@@ -91,6 +108,8 @@ public sealed record BoardCardsDealtEvent : IEvent
 {
     public required DateTime OccurredAt { get; init; }
 
+    public required HandUid HandUid { get; init; }
+    public required TableContext TableContext { get; init; }
     public required CardSet Cards { get; init; }
 }
 
@@ -98,6 +117,8 @@ public sealed record PlayerActionRequestedEvent : IEvent
 {
     public required DateTime OccurredAt { get; init; }
 
+    public required HandUid HandUid { get; init; }
+    public required TableContext TableContext { get; init; }
     public required Nickname Nickname { get; init; }
     public required bool FoldIsAvailable { get; init; }
     public required bool CheckIsAvailable { get; init; }
@@ -112,6 +133,8 @@ public sealed record PlayerActedEvent : IEvent
 {
     public required DateTime OccurredAt { get; init; }
 
+    public required HandUid HandUid { get; init; }
+    public required TableContext TableContext { get; init; }
     public required Nickname Nickname { get; init; }
     public required PlayerAction Action { get; init; }
 }
@@ -120,6 +143,8 @@ public sealed record BetRefundedEvent : IEvent
 {
     public required DateTime OccurredAt { get; init; }
 
+    public required HandUid HandUid { get; init; }
+    public required TableContext TableContext { get; init; }
     public required Nickname Nickname { get; init; }
     public required Chips Amount { get; init; }
 }
@@ -127,13 +152,18 @@ public sealed record BetRefundedEvent : IEvent
 public sealed record BetsCollectedEvent : IEvent
 {
     public required DateTime OccurredAt { get; init; }
+
+    public required HandUid HandUid { get; init; }
+    public required TableContext TableContext { get; init; }
 }
 
 public sealed record SidePotAwardedEvent : IEvent
 {
     public required DateTime OccurredAt { get; init; }
 
-    public required HashSet<Nickname> Winners { get; init; } // In case of splitting the pot
+    public required HandUid HandUid { get; init; }
+    public required TableContext TableContext { get; init; }
+    public required HashSet<Nickname> Winners { get; init; }
     public required SidePot SidePot { get; init; }
 }
 
@@ -141,6 +171,8 @@ public sealed record HoleCardsMuckedEvent : IEvent
 {
     public required DateTime OccurredAt { get; init; }
 
+    public required HandUid HandUid { get; init; }
+    public required TableContext TableContext { get; init; }
     public required Nickname Nickname { get; init; }
 }
 
@@ -148,6 +180,8 @@ public sealed record HoleCardsShownEvent : IEvent
 {
     public required DateTime OccurredAt { get; init; }
 
+    public required HandUid HandUid { get; init; }
+    public required TableContext TableContext { get; init; }
     public required Nickname Nickname { get; init; }
     public required CardSet Cards { get; init; }
     public required Combo Combo { get; init; }

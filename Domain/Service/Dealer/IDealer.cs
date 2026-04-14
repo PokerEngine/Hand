@@ -9,6 +9,8 @@ namespace Domain.Service.Dealer;
 public interface IDealer
 {
     IEnumerable<IEvent> Start(
+        HandUid uid,
+        TableContext tableContext,
         Rules rules,
         Table table,
         Pot pot,
@@ -19,6 +21,7 @@ public interface IDealer
 
     void Handle(
         IEvent @event,
+        HandUid uid,
         Rules rules,
         Table table,
         Pot pot,
@@ -30,6 +33,8 @@ public interface IDealer
     IEnumerable<IEvent> SubmitPlayerAction(
         Nickname nickname,
         PlayerAction action,
+        HandUid uid,
+        TableContext tableContext,
         Rules rules,
         Table table,
         Pot pot,

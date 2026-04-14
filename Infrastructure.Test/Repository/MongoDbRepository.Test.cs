@@ -20,6 +20,12 @@ public class MongoDbRepositoryTest(MongoDbClientFixture fixture) : IClassFixture
         var handUid = new HandUid(Guid.NewGuid());
         var @event = new TestEvent
         {
+            HandUid = handUid,
+            TableContext = new TableContext
+            {
+                TableUid = new TableUid(Guid.NewGuid()),
+                TableType = TableType.Cash
+            },
             Rules = new()
             {
                 Game = Game.NoLimitHoldem,
@@ -89,6 +95,8 @@ public class MongoDbRepositoryTest(MongoDbClientFixture fixture) : IClassFixture
         var handUid = new HandUid(Guid.NewGuid());
         var @event = new TestEvent
         {
+            HandUid = handUid,
+            TableContext = new TableContext { TableUid = new TableUid(Guid.NewGuid()), TableType = TableType.Cash },
             Rules = new()
             {
                 Game = Game.NoLimitHoldem,
@@ -173,6 +181,8 @@ public class MongoDbRepositoryTest(MongoDbClientFixture fixture) : IClassFixture
 
 internal sealed record TestEvent : IEvent
 {
+    public required HandUid HandUid { get; init; }
+    public required TableContext TableContext { get; init; }
     public required Rules Rules { get; init; }
     public required Positions Positions { get; init; }
     public required List<Participant> Players { get; init; }
@@ -188,6 +198,8 @@ internal sealed record TestEvent : IEvent
     public bool Equals(TestEvent? other)
     {
         return other is not null
+               && HandUid.Equals(other.HandUid)
+               && TableContext.Equals(other.TableContext)
                && Rules.Equals(other.Rules)
                && Positions.Equals(other.Positions)
                && Players.SequenceEqual(other.Players)
@@ -205,6 +217,8 @@ internal sealed record TestEvent : IEvent
     {
         var hash = new HashCode();
 
+        hash.Add(HandUid);
+        hash.Add(TableContext);
         hash.Add(Rules);
         hash.Add(Positions);
 

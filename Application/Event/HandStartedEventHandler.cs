@@ -8,15 +8,15 @@ public class HandStartedEventHandler(
     IIntegrationEventPublisher integrationEventPublisher
 ) : IEventHandler<HandStartedEvent>
 {
-    public async Task HandleAsync(HandStartedEvent @event, EventContext context)
+    public async Task HandleAsync(HandStartedEvent @event)
     {
         var integrationEvent = new HandStartedIntegrationEvent
         {
             Uid = Guid.NewGuid(),
             OccurredAt = @event.OccurredAt,
-            HandUid = context.HandUid,
-            TableUid = context.TableUid,
-            TableType = context.TableType.ToString(),
+            HandUid = @event.HandUid,
+            TableUid = @event.TableContext.TableUid,
+            TableType = @event.TableContext.TableType.ToString(),
             Game = @event.Rules.Game.ToString(),
             MaxSeat = @event.Rules.MaxSeat,
             SmallBlind = @event.Rules.SmallBlind,
@@ -27,7 +27,7 @@ public class HandStartedEventHandler(
             Players = @event.Players.Select(SerializeParticipant).ToList()
         };
 
-        var routingKey = new IntegrationEventRoutingKey($"hand.{context.TableType.ToRoutingKey()}.hand-created");
+        var routingKey = new IntegrationEventRoutingKey($"hand.{@event.TableContext.TableType.ToRoutingKey()}.hand-created");
         await integrationEventPublisher.PublishAsync(integrationEvent, routingKey);
     }
 

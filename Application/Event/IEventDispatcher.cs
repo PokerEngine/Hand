@@ -4,5 +4,5 @@ namespace Application.Event;
 
 public interface IEventDispatcher
 {
-    Task DispatchAsync(IEvent @event, EventContext context);
+    Task DispatchAsync(IEvent @event);
 }

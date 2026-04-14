@@ -10,6 +10,8 @@ namespace Domain.Service.Dealer;
 public class BlindPostingDealer : IDealer
 {
     public IEnumerable<IEvent> Start(
+        HandUid uid,
+        TableContext tableContext,
         Rules rules,
         Table table,
         Pot pot,
@@ -20,17 +22,19 @@ public class BlindPostingDealer : IDealer
     {
         var startEvent = new StageStartedEvent
         {
+            HandUid = uid,
+            TableContext = tableContext,
             OccurredAt = DateTime.UtcNow
         };
         yield return startEvent;
 
-        var smallBlindPostedEvent = PostSmallBlind(rules, table, pot);
+        var smallBlindPostedEvent = PostSmallBlind(uid, tableContext, rules, table, pot);
         if (smallBlindPostedEvent is not null)
         {
             yield return smallBlindPostedEvent;
         }
 
-        var bigBlindPostedEvent = PostBigBlind(rules, table, pot);
+        var bigBlindPostedEvent = PostBigBlind(uid, tableContext, rules, table, pot);
         if (bigBlindPostedEvent is not null)
         {
             yield return bigBlindPostedEvent;
@@ -38,12 +42,14 @@ public class BlindPostingDealer : IDealer
 
         var finishEvent = new StageFinishedEvent
         {
+            HandUid = uid,
+            TableContext = tableContext,
             OccurredAt = DateTime.UtcNow
         };
         yield return finishEvent;
     }
 
-    private SmallBlindPostedEvent? PostSmallBlind(Rules rules, Table table, Pot pot)
+    private SmallBlindPostedEvent? PostSmallBlind(HandUid uid, TableContext tableContext, Rules rules, Table table, Pot pot)
     {
         var player = table.GetPlayerOnSmallBlind();
         if (player is null)
@@ -57,6 +63,8 @@ public class BlindPostingDealer : IDealer
 
         var @event = new SmallBlindPostedEvent
         {
+            HandUid = uid,
+            TableContext = tableContext,
             Nickname = player.Nickname,
             Amount = amount,
             OccurredAt = DateTime.UtcNow
@@ -64,7 +72,7 @@ public class BlindPostingDealer : IDealer
         return @event;
     }
 
-    private BigBlindPostedEvent? PostBigBlind(Rules rules, Table table, Pot pot)
+    private BigBlindPostedEvent? PostBigBlind(HandUid uid, TableContext tableContext, Rules rules, Table table, Pot pot)
     {
         var player = table.GetPlayerOnBigBlind();
         if (player is null)
@@ -78,6 +86,8 @@ public class BlindPostingDealer : IDealer
 
         var @event = new BigBlindPostedEvent
         {
+            HandUid = uid,
+            TableContext = tableContext,
             Nickname = player.Nickname,
             Amount = amount,
             OccurredAt = DateTime.UtcNow
@@ -87,6 +97,7 @@ public class BlindPostingDealer : IDealer
 
     public void Handle(
         IEvent @event,
+        HandUid uid,
         Rules rules,
         Table table,
         Pot pot,
@@ -117,6 +128,8 @@ public class BlindPostingDealer : IDealer
     public IEnumerable<IEvent> SubmitPlayerAction(
         Nickname nickname,
         PlayerAction action,
+        HandUid uid,
+        TableContext tableContext,
         Rules rules,
         Table table,
         Pot pot,

@@ -2,6 +2,7 @@ using Application.Event;
 using Application.Repository;
 using Application.Storage;
 using Domain.Entity;
+using Domain.Event;
 
 namespace Application.UnitOfWork;
 
@@ -11,37 +12,28 @@ public class UnitOfWork(
     IEventDispatcher eventDispatcher
 ) : IUnitOfWork
 {
-    private readonly HashSet<Hand> _hands = [];
+    private readonly List<Func<Task>> _commits = [];
 
-    public void RegisterHand(Hand hand)
+    public void RegisterHand(Hand hand) =>
+        _commits.Add(() => CommitAsync(
+            hand,
+            events => repository.AddEventsAsync(hand.Uid, events)
+        ));
+
+    public async Task CommitAsync()
     {
-        _hands.Add(hand);
+        foreach (var commit in _commits)
+            await commit();
+        _commits.Clear();
     }
 
-    public async Task CommitAsync(bool updateViews = true)
+    private async Task CommitAsync(Hand hand, Func<List<IEvent>, Task> persist)
     {
-        foreach (var hand in _hands)
-        {
-            var events = hand.PullEvents();
-
-            if (events.Count == 0)
-            {
-                continue;
-            }
-
-            await repository.AddEventsAsync(hand.Uid, events);
-
-            if (updateViews)
-            {
-                await storage.SaveViewAsync(hand);
-            }
-
-            foreach (var @event in events)
-            {
-                await eventDispatcher.DispatchAsync(@event);
-            }
-        }
-
-        _hands.Clear();
+        var events = hand.PullEvents();
+        if (events.Count == 0) return;
+        await persist(events);
+        await storage.SaveViewAsync(hand);
+        foreach (var @event in events)
+            await eventDispatcher.DispatchAsync(@event);
     }
 }

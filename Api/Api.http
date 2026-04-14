@@ -1,7 +1,7 @@
-@Infrastructure_HostAddress = http://0.0.0.0:5260
+@Api_HostAddress = http://0.0.0.0:5260
 
 ### Start a new hand
-POST {{Infrastructure_HostAddress}}/api/hand
+POST {{Api_HostAddress}}/api/hand
 Accept: application/json
 Content-Type: application/json
 
@@ -44,7 +44,7 @@ Content-Type: application/json
 %}
 
 ### Submit a player action
-POST {{Infrastructure_HostAddress}}/api/hand/{{handUid}}/submit-action/charlie
+POST {{Api_HostAddress}}/api/hand/{{handUid}}/submit-action/charlie
 Accept: application/json
 Content-Type: application/json
 
@@ -54,7 +54,7 @@ Content-Type: application/json
 }
 
 ### Get the hand
-GET {{Infrastructure_HostAddress}}/api/hand/{{handUid}}
+GET {{Api_HostAddress}}/api/hand/{{handUid}}
 Accept: application/json
 
 ###

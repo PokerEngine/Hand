@@ -2,7 +2,7 @@ using Application.Command;
 using Application.Query;
 using Microsoft.AspNetCore.Mvc;
 
-namespace Infrastructure.Controller;
+namespace Api.Controller;
 
 [ApiController]
 [Route("api/hand")]

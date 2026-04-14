@@ -17,4 +17,4 @@ RUN set -x && \
 
 WORKDIR /usr/local/hand
 
-CMD ["dotnet", "watch", "--project", "Infrastructure", "run"]
+CMD ["dotnet", "watch", "--project", "Api", "run"]

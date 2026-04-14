@@ -20,7 +20,7 @@ public class SettlementDealer : IDealer
     {
         var startEvent = new StageStartedEvent
         {
-            OccurredAt = DateTime.Now
+            OccurredAt = DateTime.UtcNow
         };
         yield return startEvent;
 
@@ -45,7 +45,7 @@ public class SettlementDealer : IDealer
 
         var finishEvent = new StageFinishedEvent
         {
-            OccurredAt = DateTime.Now
+            OccurredAt = DateTime.UtcNow
         };
         yield return finishEvent;
     }
@@ -104,7 +104,7 @@ public class SettlementDealer : IDealer
         var muckEvent = new HoleCardsMuckedEvent
         {
             Nickname = player.Nickname,
-            OccurredAt = DateTime.Now
+            OccurredAt = DateTime.UtcNow
         };
         yield return muckEvent;
 
@@ -115,7 +115,7 @@ public class SettlementDealer : IDealer
         {
             SidePot = sidePot,
             Winners = sidePot.Competitors.ToHashSet(),
-            OccurredAt = DateTime.Now
+            OccurredAt = DateTime.UtcNow
         };
         yield return awardEvent;
     }
@@ -134,7 +134,7 @@ public class SettlementDealer : IDealer
                 Nickname = player.Nickname,
                 Cards = player.HoleCards,
                 Combo = comboMapping[player.Nickname],
-                OccurredAt = DateTime.Now
+                OccurredAt = DateTime.UtcNow
             };
             yield return showEvent;
         }
@@ -168,7 +168,7 @@ public class SettlementDealer : IDealer
             {
                 SidePot = sidePot,
                 Winners = winners,
-                OccurredAt = DateTime.Now
+                OccurredAt = DateTime.UtcNow
             };
             yield return awardEvent;
         }
@@ -192,7 +192,7 @@ public class SettlementDealer : IDealer
                 var muckEvent = new HoleCardsMuckedEvent
                 {
                     Nickname = player.Nickname,
-                    OccurredAt = DateTime.Now
+                    OccurredAt = DateTime.UtcNow
                 };
                 yield return muckEvent;
             }
@@ -205,7 +205,7 @@ public class SettlementDealer : IDealer
                     Nickname = player.Nickname,
                     Cards = player.HoleCards,
                     Combo = combo,
-                    OccurredAt = DateTime.Now
+                    OccurredAt = DateTime.UtcNow
                 };
                 yield return showEvent;
             }
@@ -220,7 +220,7 @@ public class SettlementDealer : IDealer
                     Nickname = player.Nickname,
                     Cards = player.HoleCards,
                     Combo = combo,
-                    OccurredAt = DateTime.Now
+                    OccurredAt = DateTime.UtcNow
                 };
                 yield return showEvent;
             }
@@ -233,7 +233,7 @@ public class SettlementDealer : IDealer
         {
             SidePot = sidePot,
             Winners = sidePot.Competitors.ToHashSet(),
-            OccurredAt = DateTime.Now
+            OccurredAt = DateTime.UtcNow
         };
         yield return awardEvent;
     }

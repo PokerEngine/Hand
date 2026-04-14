@@ -20,7 +20,7 @@ public class BlindPostingDealer : IDealer
     {
         var startEvent = new StageStartedEvent
         {
-            OccurredAt = DateTime.Now
+            OccurredAt = DateTime.UtcNow
         };
         yield return startEvent;
 
@@ -38,7 +38,7 @@ public class BlindPostingDealer : IDealer
 
         var finishEvent = new StageFinishedEvent
         {
-            OccurredAt = DateTime.Now
+            OccurredAt = DateTime.UtcNow
         };
         yield return finishEvent;
     }
@@ -59,7 +59,7 @@ public class BlindPostingDealer : IDealer
         {
             Nickname = player.Nickname,
             Amount = amount,
-            OccurredAt = DateTime.Now
+            OccurredAt = DateTime.UtcNow
         };
         return @event;
     }
@@ -80,7 +80,7 @@ public class BlindPostingDealer : IDealer
         {
             Nickname = player.Nickname,
             Amount = amount,
-            OccurredAt = DateTime.Now
+            OccurredAt = DateTime.UtcNow
         };
         return @event;
     }

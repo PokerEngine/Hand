@@ -20,7 +20,7 @@ public class HoleCardsDealingDealer(int count) : IDealer
     {
         var startEvent = new StageStartedEvent
         {
-            OccurredAt = DateTime.Now
+            OccurredAt = DateTime.UtcNow
         };
         yield return startEvent;
 
@@ -35,7 +35,7 @@ public class HoleCardsDealingDealer(int count) : IDealer
 
         var finishEvent = new StageFinishedEvent
         {
-            OccurredAt = DateTime.Now
+            OccurredAt = DateTime.UtcNow
         };
         yield return finishEvent;
     }
@@ -60,7 +60,7 @@ public class HoleCardsDealingDealer(int count) : IDealer
         {
             Nickname = player.Nickname,
             Cards = cards,
-            OccurredAt = DateTime.Now
+            OccurredAt = DateTime.UtcNow
         };
         return @event;
     }

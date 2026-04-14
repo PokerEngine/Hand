@@ -90,7 +90,7 @@ public class Hand
             Rules = rules,
             Positions = positions,
             Players = players,
-            OccurredAt = DateTime.Now
+            OccurredAt = DateTime.UtcNow
         };
         hand.AddEvent(@event);
 
@@ -128,12 +128,10 @@ public class Hand
             dealers: factory.GetDealers(createdEvent.Rules)
         );
 
-        foreach (var @event in events)
+        foreach (var @event in events[1..])
         {
             switch (@event)
             {
-                case HandStartedEvent:
-                    break;
                 case HandFinishedEvent:
                     break;
                 default:
@@ -199,7 +197,7 @@ public class Hand
         {
             var @event = new HandFinishedEvent
             {
-                OccurredAt = DateTime.Now
+                OccurredAt = DateTime.UtcNow
             };
             AddEvent(@event);
         }

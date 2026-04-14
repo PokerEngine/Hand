@@ -149,8 +149,6 @@ public class Program
             app.UseHttpsRedirection();
         }
 
-        app.UseWebSockets();
-
         app.MapOpenApi();
         app.MapControllers();
 

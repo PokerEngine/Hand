@@ -20,7 +20,7 @@ public abstract class BaseBettingDealer : IDealer
     {
         var startEvent = new StageStartedEvent
         {
-            OccurredAt = DateTime.Now
+            OccurredAt = DateTime.UtcNow
         };
         yield return startEvent;
 
@@ -99,7 +99,7 @@ public abstract class BaseBettingDealer : IDealer
         {
             Nickname = nickname,
             Action = action,
-            OccurredAt = DateTime.Now
+            OccurredAt = DateTime.UtcNow
         };
         yield return @event;
 
@@ -234,7 +234,7 @@ public abstract class BaseBettingDealer : IDealer
 
             yield return new BetsCollectedEvent
             {
-                OccurredAt = DateTime.Now
+                OccurredAt = DateTime.UtcNow
             };
         }
 
@@ -242,7 +242,7 @@ public abstract class BaseBettingDealer : IDealer
 
         yield return new StageFinishedEvent
         {
-            OccurredAt = DateTime.Now
+            OccurredAt = DateTime.UtcNow
         };
     }
 
@@ -263,7 +263,7 @@ public abstract class BaseBettingDealer : IDealer
         {
             Nickname = nickname,
             Amount = amount,
-            OccurredAt = DateTime.Now
+            OccurredAt = DateTime.UtcNow
         };
     }
 
@@ -288,7 +288,7 @@ public abstract class BaseBettingDealer : IDealer
             RaiseIsAvailable = raiseIsAvailable,
             MinRaiseByAmount = minRaiseByAmount,
             MaxRaiseByAmount = maxRaiseByAmount,
-            OccurredAt = DateTime.Now
+            OccurredAt = DateTime.UtcNow
         };
         return @event;
     }

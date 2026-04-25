@@ -22,7 +22,7 @@ public record SubmitPlayerActionResponse : ICommandResponse
 }
 
 public class SubmitPlayerActionHandler(
-    IRepository repository,
+    IHandRepository handRepository,
     IUnitOfWork unitOfWork,
     IRandomizer randomizer,
     IEvaluator evaluator
@@ -39,7 +39,7 @@ public class SubmitPlayerActionHandler(
             uid: command.Uid,
             randomizer: randomizer,
             evaluator: evaluator,
-            events: await repository.GetEventsAsync(command.Uid)
+            events: await handRepository.GetEventsAsync(command.Uid)
         );
 
         hand.SubmitPlayerAction(command.Nickname, action);

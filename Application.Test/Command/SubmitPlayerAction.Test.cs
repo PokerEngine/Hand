@@ -28,7 +28,7 @@ public class SubmitPlayerActionTest
             Type = "RaiseBy",
             Amount = 25
         };
-        var handler = new SubmitPlayerActionHandler(unitOfWork.Repository, unitOfWork, randomizer, evaluator);
+        var handler = new SubmitPlayerActionHandler(unitOfWork.HandRepository, unitOfWork, randomizer, evaluator);
 
         // Act
         var response = await handler.HandleAsync(command);
@@ -40,12 +40,12 @@ public class SubmitPlayerActionTest
             response.Uid,
             randomizer,
             evaluator,
-            await unitOfWork.Repository.GetEventsAsync(response.Uid)
+            await unitOfWork.HandRepository.GetEventsAsync(response.Uid)
         );
         var state = hand.GetState();
         Assert.Equal(3, state.Pot.CurrentBets.Count);
 
-        var detailView = await unitOfWork.Storage.GetDetailViewAsync(hand.Uid);
+        var detailView = await unitOfWork.HandStorage.GetDetailViewAsync(hand.Uid);
         Assert.Equal(3, detailView.Pot.CurrentBets.Count);
         Assert.Equal("Charlie", detailView.Pot.CurrentBets[2].Nickname);
         Assert.Equal(25, detailView.Pot.CurrentBets[2].Amount);
@@ -61,7 +61,7 @@ public class SubmitPlayerActionTest
         StubEvaluator evaluator
     )
     {
-        var handler = new StartHandHandler(unitOfWork.Repository, unitOfWork, randomizer, evaluator);
+        var handler = new StartHandHandler(unitOfWork.HandRepository, unitOfWork, randomizer, evaluator);
         var command = new StartHandCommand
         {
             TableUid = Guid.NewGuid(),
@@ -110,8 +110,8 @@ public class SubmitPlayerActionTest
 
     private StubUnitOfWork CreateUnitOfWork()
     {
-        var repository = new StubRepository();
-        var storage = new StubStorage();
+        var repository = new StubHandRepository();
+        var storage = new StubHandStorage();
         var eventDispatcher = new StubEventDispatcher();
         return new StubUnitOfWork(repository, storage, eventDispatcher);
     }

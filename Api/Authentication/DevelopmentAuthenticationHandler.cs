@@ -14,6 +14,8 @@ public class DevelopmentAuthenticationHandler(
     UrlEncoder encoder
 ) : AuthenticationHandler<AuthenticationSchemeOptions>(options, logger, encoder)
 {
+    public const string SchemeName = "Bearer";
+
     protected override Task<AuthenticateResult> HandleAuthenticateAsync()
     {
         if (!Request.Headers.TryGetValue("Authorization", out var header))

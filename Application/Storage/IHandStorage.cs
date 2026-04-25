@@ -3,7 +3,7 @@ using Domain.ValueObject;
 
 namespace Application.Storage;
 
-public interface IStorage
+public interface IHandStorage
 {
     Task<DetailView> GetDetailViewAsync(HandUid tableUid);
     Task SaveViewAsync(Hand hand);

@@ -7,8 +7,8 @@ using Domain.Event;
 namespace Application.UnitOfWork;
 
 public class UnitOfWork(
-    IRepository repository,
-    IStorage storage,
+    IHandRepository handRepository,
+    IHandStorage handStorage,
     IEventDispatcher eventDispatcher
 ) : IUnitOfWork
 {
@@ -17,7 +17,7 @@ public class UnitOfWork(
     public void RegisterHand(Hand hand) =>
         _commits.Add(() => CommitAsync(
             hand,
-            events => repository.AddEventsAsync(hand.Uid, events)
+            events => handRepository.AddEventsAsync(hand.Uid, events)
         ));
 
     public async Task CommitAsync()
@@ -32,7 +32,7 @@ public class UnitOfWork(
         var events = hand.PullEvents();
         if (events.Count == 0) return;
         await persist(events);
-        await storage.SaveViewAsync(hand);
+        await handStorage.SaveViewAsync(hand);
         foreach (var @event in events)
             await eventDispatcher.DispatchAsync(@event);
     }

@@ -61,7 +61,7 @@ public class StartHandTest
                 ]
             }
         };
-        var handler = new StartHandHandler(unitOfWork.Repository, unitOfWork, randomizer, evaluator);
+        var handler = new StartHandHandler(unitOfWork.HandRepository, unitOfWork, randomizer, evaluator);
 
         // Act
         var response = await handler.HandleAsync(command);
@@ -71,7 +71,7 @@ public class StartHandTest
             response.Uid,
             randomizer,
             evaluator,
-            await unitOfWork.Repository.GetEventsAsync(response.Uid)
+            await unitOfWork.HandRepository.GetEventsAsync(response.Uid)
         );
         Assert.Equal(new HandUid(response.Uid), hand.Uid);
         var state = hand.GetState();
@@ -85,7 +85,7 @@ public class StartHandTest
         Assert.Equal(3, state.Table.Players.Count);
         Assert.Empty(state.Table.BoardCards);
 
-        var detailView = await unitOfWork.Storage.GetDetailViewAsync(hand.Uid);
+        var detailView = await unitOfWork.HandStorage.GetDetailViewAsync(hand.Uid);
         Assert.Equal((Guid)hand.Uid, detailView.Uid);
         Assert.Equal(2, detailView.Pot.CurrentBets.Count);
 
@@ -96,8 +96,8 @@ public class StartHandTest
 
     private StubUnitOfWork CreateUnitOfWork()
     {
-        var repository = new StubRepository();
-        var storage = new StubStorage();
+        var repository = new StubHandRepository();
+        var storage = new StubHandStorage();
         var eventDispatcher = new StubEventDispatcher();
         return new StubUnitOfWork(repository, storage, eventDispatcher);
     }

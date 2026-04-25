@@ -31,48 +31,55 @@ public static class Bootstrapper
         var builder = WebApplication.CreateBuilder(args);
 
         builder.Configuration.AddEnvironmentVariables();
-        builder.Services.AddOpenApi();
 
-        // Register clients
-        builder.Services.Configure<MongoDbClientOptions>(
-            builder.Configuration.GetSection(MongoDbClientOptions.SectionName)
-        );
-        builder.Services.AddSingleton<MongoDbClient>();
-        builder.Services.Configure<RabbitMqClientOptions>(
-            builder.Configuration.GetSection(RabbitMqClientOptions.SectionName)
-        );
-        builder.Services.AddSingleton<RabbitMqClient>();
+        AddDomainServices(builder);
+        AddPersistence(builder);
+        AddDomainEvents(builder);
+        AddIntegrationEvents(builder);
+        AddCommands(builder);
+        AddQueries(builder);
+        AddAuthentication(builder);
+        AddControllers(builder);
 
-        // Register services
+        return builder;
+    }
+
+    private static void AddDomainServices(WebApplicationBuilder builder)
+    {
         builder.Services.AddSingleton<IRandomizer, BuiltInRandomizer>();
+
         builder.Services.Configure<PokerStoveEvaluatorOptions>(builder.Configuration.GetSection(PokerStoveEvaluatorOptions.SectionName));
         builder.Services.AddSingleton<IEvaluator, PokerStoveEvaluator>();
+    }
 
-        // Register repository
-        builder.Services.Configure<MongoDbRepositoryOptions>(
-            builder.Configuration.GetSection(MongoDbRepositoryOptions.SectionName)
-        );
-        builder.Services.AddSingleton<IRepository, MongoDbRepository>();
+    private static void AddPersistence(WebApplicationBuilder builder)
+    {
+        if (builder.Environment.IsDevelopment())
+        {
+            builder.Services.AddSingleton<IHandRepository, InMemoryHandRepository>();
+            builder.Services.AddSingleton<IHandStorage, InMemoryHandStorage>();
+        }
+        else
+        {
+            builder.Services.Configure<MongoDbClientOptions>(
+                builder.Configuration.GetSection(MongoDbClientOptions.SectionName)
+            );
+            builder.Services.AddSingleton<MongoDbClient>();
 
-        // Register storage
-        builder.Services.Configure<MongoDbStorageOptions>(
-            builder.Configuration.GetSection(MongoDbStorageOptions.SectionName)
-        );
-        builder.Services.AddSingleton<IStorage, MongoDbStorage>();
+            builder.Services.Configure<MongoDbRepositoryOptions>(
+                builder.Configuration.GetSection(MongoDbRepositoryOptions.SectionName)
+            );
+            builder.Services.AddSingleton<IHandRepository, MongoDbHandRepository>();
 
-        // Register unit of work
-        builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
+            builder.Services.Configure<MongoDbStorageOptions>(
+                builder.Configuration.GetSection(MongoDbStorageOptions.SectionName)
+            );
+            builder.Services.AddSingleton<IHandStorage, MongoDbHandStorage>();
+        }
+    }
 
-        // Register commands
-        RegisterCommandHandler<StartHandCommand, StartHandHandler, StartHandResponse>(builder.Services);
-        RegisterCommandHandler<SubmitPlayerActionCommand, SubmitPlayerActionHandler, SubmitPlayerActionResponse>(builder.Services);
-        builder.Services.AddScoped<ICommandDispatcher, CommandDispatcher>();
-
-        // Register queries
-        RegisterQueryHandler<GetHandDetailQuery, GetHandDetailHandler, GetHandDetailResponse>(builder.Services);
-        builder.Services.AddScoped<IQueryDispatcher, QueryDispatcher>();
-
-        // Register domain events
+    private static void AddDomainEvents(WebApplicationBuilder builder)
+    {
         RegisterEventHandler<HandStartedEvent, HandStartedEventHandler>(builder.Services);
         RegisterEventHandler<HandFinishedEvent, HandFinishedEventHandler>(builder.Services);
         RegisterEventHandler<SmallBlindPostedEvent, SmallBlindPostedEventHandler>(builder.Services);
@@ -85,42 +92,74 @@ public static class Bootstrapper
         RegisterEventHandler<SidePotAwardedEvent, SidePotAwardedEventHandler>(builder.Services);
         RegisterEventHandler<HoleCardsShownEvent, HoleCardsShownEventHandler>(builder.Services);
         RegisterEventHandler<HoleCardsMuckedEvent, HoleCardsMuckedEventHandler>(builder.Services);
+
         builder.Services.AddScoped<IEventDispatcher, EventDispatcher>();
+    }
 
-        // Register integration events
-        builder.Services.Configure<RabbitMqIntegrationEventPublisherOptions>(
-            builder.Configuration.GetSection(RabbitMqIntegrationEventPublisherOptions.SectionName)
-        );
-        builder.Services.AddScoped<IIntegrationEventPublisher, RabbitMqIntegrationEventPublisher>();
-
-        // Register authentication/authorization
-        builder.Services.AddHttpContextAccessor();
-        builder.Services.AddScoped<ICurrentUserProvider, HttpContextCurrentUserProvider>();
-
-        var authentication = builder.Services
-            .AddAuthentication(JwtAuthenticationHandler.SchemeName);
-
+    private static void AddIntegrationEvents(WebApplicationBuilder builder)
+    {
         if (builder.Environment.IsDevelopment())
         {
-            authentication.AddScheme<AuthenticationSchemeOptions, DevelopmentAuthenticationHandler>(JwtAuthenticationHandler.SchemeName, null);
+            builder.Services.AddSingleton<IIntegrationEventPublisher, InMemoryIntegrationEventPublisher>();
         }
         else
         {
+            builder.Services.Configure<RabbitMqClientOptions>(
+                builder.Configuration.GetSection(RabbitMqClientOptions.SectionName)
+            );
+            builder.Services.AddSingleton<RabbitMqClient>();
+
+            builder.Services.Configure<RabbitMqIntegrationEventPublisherOptions>(
+                builder.Configuration.GetSection(RabbitMqIntegrationEventPublisherOptions.SectionName)
+            );
+            builder.Services.AddSingleton<IIntegrationEventPublisher, RabbitMqIntegrationEventPublisher>();
+        }
+    }
+
+    private static void AddCommands(WebApplicationBuilder builder)
+    {
+        builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
+
+        RegisterCommandHandler<StartHandCommand, StartHandHandler, StartHandResponse>(builder.Services);
+        RegisterCommandHandler<SubmitPlayerActionCommand, SubmitPlayerActionHandler, SubmitPlayerActionResponse>(builder.Services);
+        builder.Services.AddScoped<ICommandDispatcher, CommandDispatcher>();
+    }
+
+    private static void AddQueries(WebApplicationBuilder builder)
+    {
+        RegisterQueryHandler<GetHandDetailQuery, GetHandDetailHandler, GetHandDetailResponse>(builder.Services);
+        builder.Services.AddScoped<IQueryDispatcher, QueryDispatcher>();
+    }
+
+    private static void AddControllers(WebApplicationBuilder builder)
+    {
+        builder.Services.AddControllers();
+        builder.Services.AddOpenApi();
+    }
+
+    private static void AddAuthentication(WebApplicationBuilder builder)
+    {
+        builder.Services.AddHttpContextAccessor();
+        builder.Services.AddScoped<ICurrentUserProvider, HttpContextCurrentUserProvider>();
+
+        if (builder.Environment.IsDevelopment())
+        {
+            var authentication = builder.Services.AddAuthentication(DevelopmentAuthenticationHandler.SchemeName);
+            authentication.AddScheme<AuthenticationSchemeOptions, DevelopmentAuthenticationHandler>(DevelopmentAuthenticationHandler.SchemeName, null);
+        }
+        else
+        {
+            var authentication = builder.Services.AddAuthentication(JwtAuthenticationHandler.SchemeName);
             builder.Services.Configure<JwtAuthenticationOptions>(
                 builder.Configuration.GetSection(JwtAuthenticationOptions.SectionName)
             );
             authentication.AddScheme<AuthenticationSchemeOptions, JwtAuthenticationHandler>(JwtAuthenticationHandler.SchemeName, null);
         }
+
         builder.Services.AddAuthorization(options =>
         {
             options.AddPolicy("HasNickname", p => p.RequireClaim("nickname"));
         });
-
-        // Register endpoints
-        builder.Services.AddControllers();
-        builder.Services.AddEndpointsApiExplorer();
-
-        return builder;
     }
 
     private static void RegisterCommandHandler<TCommand, THandler, TResponse>(IServiceCollection services)
@@ -176,8 +215,8 @@ public class Program
         app.UseAuthentication();
         app.UseAuthorization();
 
-        app.MapOpenApi();
         app.MapControllers();
+        app.MapOpenApi();
 
         return app;
     }

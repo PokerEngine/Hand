@@ -5,12 +5,12 @@ using Application.Test.Storage;
 namespace Application.Test.UnitOfWork;
 
 public class StubUnitOfWork(
-    StubRepository repository,
-    StubStorage storage,
+    StubHandRepository handRepository,
+    StubHandStorage handStorage,
     StubEventDispatcher eventDispatcher
-) : Application.UnitOfWork.UnitOfWork(repository, storage, eventDispatcher)
+) : Application.UnitOfWork.UnitOfWork(handRepository, handStorage, eventDispatcher)
 {
-    public readonly StubRepository Repository = repository;
-    public readonly StubStorage Storage = storage;
+    public readonly StubHandRepository HandRepository = handRepository;
+    public readonly StubHandStorage HandStorage = handStorage;
     public readonly StubEventDispatcher EventDispatcher = eventDispatcher;
 }

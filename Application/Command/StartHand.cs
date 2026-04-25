@@ -49,7 +49,7 @@ public record StartHandResponse : ICommandResponse
 }
 
 public class StartHandHandler(
-    IRepository repository,
+    IHandRepository handRepository,
     IUnitOfWork unitOfWork,
     IRandomizer randomizer,
     IEvaluator evaluator
@@ -76,7 +76,7 @@ public class StartHandHandler(
         var players = command.Table.Players.Select(DeserializePlayer).ToList();
 
         var hand = Hand.FromScratch(
-            uid: await repository.GetNextUidAsync(),
+            uid: await handRepository.GetNextUidAsync(),
             tableContext: new TableContext
             {
                 TableUid = command.TableUid,

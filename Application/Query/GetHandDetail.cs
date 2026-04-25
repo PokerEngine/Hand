@@ -69,12 +69,12 @@ public record GetHandDetailResponseAward
 }
 
 public class GetHandDetailHandler(
-    IStorage storage
+    IHandStorage handStorage
 ) : IQueryHandler<GetHandDetailQuery, GetHandDetailResponse>
 {
     public async Task<GetHandDetailResponse> HandleAsync(GetHandDetailQuery query)
     {
-        var view = await storage.GetDetailViewAsync(query.Uid);
+        var view = await handStorage.GetDetailViewAsync(query.Uid);
 
         return new GetHandDetailResponse
         {

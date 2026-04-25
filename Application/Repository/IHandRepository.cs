@@ -3,7 +3,7 @@ using Domain.ValueObject;
 
 namespace Application.Repository;
 
-public interface IRepository
+public interface IHandRepository
 {
     Task<HandUid> GetNextUidAsync();
     Task<List<IEvent>> GetEventsAsync(HandUid handUid);

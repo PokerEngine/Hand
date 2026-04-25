@@ -22,7 +22,7 @@ public class GetHandDetailTest
         var handUid = await StartHandAsync(unitOfWork, randomizer, evaluator);
 
         var query = new GetHandDetailQuery { Uid = handUid };
-        var handler = new GetHandDetailHandler(unitOfWork.Storage);
+        var handler = new GetHandDetailHandler(unitOfWork.HandStorage);
 
         // Act
         var response = await handler.HandleAsync(query);
@@ -46,7 +46,7 @@ public class GetHandDetailTest
     public async Task HandleAsync_NotExists_ShouldThrowException()
     {
         // Arrange
-        var storage = new StubStorage();
+        var storage = new StubHandStorage();
 
         var query = new GetHandDetailQuery { Uid = Guid.NewGuid() };
         var handler = new GetHandDetailHandler(storage);
@@ -67,7 +67,7 @@ public class GetHandDetailTest
         StubEvaluator evaluator
     )
     {
-        var handler = new StartHandHandler(unitOfWork.Repository, unitOfWork, randomizer, evaluator);
+        var handler = new StartHandHandler(unitOfWork.HandRepository, unitOfWork, randomizer, evaluator);
         var command = new StartHandCommand
         {
             TableUid = Guid.NewGuid(),
@@ -116,8 +116,8 @@ public class GetHandDetailTest
 
     private StubUnitOfWork CreateUnitOfWork()
     {
-        var repository = new StubRepository();
-        var storage = new StubStorage();
+        var repository = new StubHandRepository();
+        var storage = new StubHandStorage();
         var eventDispatcher = new StubEventDispatcher();
         return new StubUnitOfWork(repository, storage, eventDispatcher);
     }

@@ -26,12 +26,12 @@ Content-Type: application/json
         "players": [
             {
                 "nickname": "alice",
-                "seat": 1,
+                "seat": 2,
                 "stack": 1000
             },
             {
                 "nickname": "bobby",
-                "seat": 2,
+                "seat": 4,
                 "stack": 900
             },
             {
@@ -54,7 +54,7 @@ Authorization: {{Charlie}}
 
 {
     "Type": "RaiseBy",
-    "Amount": 20
+    "Amount": 25
 }
 
 ### Get the hand

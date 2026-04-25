@@ -11,7 +11,7 @@ using Microsoft.Extensions.Options;
 namespace Infrastructure.Test.Storage;
 
 [Trait("Category", "Integration")]
-public class MongoDbStorageTest(MongoDbClientFixture fixture) : IClassFixture<MongoDbClientFixture>
+public class MongoDbHandStorageTest(MongoDbClientFixture fixture) : IClassFixture<MongoDbClientFixture>
 {
     [Fact]
     public async Task GetDetailViewAsync_WhenExists_ShouldReturn()
@@ -84,11 +84,11 @@ public class MongoDbStorageTest(MongoDbClientFixture fixture) : IClassFixture<Mo
         Assert.Equal("The hand is not found", exc.Message);
     }
 
-    private IStorage CreateStorage()
+    private IHandStorage CreateStorage()
     {
         var client = fixture.CreateClient();
         var options = CreateOptions();
-        return new MongoDbStorage(client, options);
+        return new MongoDbHandStorage(client, options);
     }
 
     private IOptions<MongoDbStorageOptions> CreateOptions()

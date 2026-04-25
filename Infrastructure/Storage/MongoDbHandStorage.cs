@@ -2,29 +2,58 @@ using Application.Exception;
 using Application.Storage;
 using Domain.Entity;
 using Domain.ValueObject;
-using System.Collections.Concurrent;
+using Infrastructure.Client.MongoDb;
+using Microsoft.Extensions.Options;
+using MongoDB.Bson.Serialization.Attributes;
+using MongoDB.Driver;
 
-namespace Application.Test.Storage;
+namespace Infrastructure.Storage;
 
-public class StubStorage : IStorage
+public class MongoDbHandStorage : IHandStorage
 {
-    private readonly ConcurrentDictionary<HandUid, DetailView> _detailMapping = new();
+    private const string DetailViewCollectionName = "views_detail";
+    private readonly IMongoCollection<DetailViewDocument> _detailViewCollection;
 
-    public Task<DetailView> GetDetailViewAsync(HandUid handUid)
+    public MongoDbHandStorage(MongoDbClient client, IOptions<MongoDbStorageOptions> options)
     {
-        if (!_detailMapping.TryGetValue(handUid, out var view))
+        var db = client.Client.GetDatabase(options.Value.Database);
+
+        _detailViewCollection = db.GetCollection<DetailViewDocument>(DetailViewCollectionName);
+    }
+
+    public async Task<DetailView> GetDetailViewAsync(HandUid uid)
+    {
+        var document = await _detailViewCollection
+            .Find(x => x.Uid == (Guid)uid)
+            .FirstOrDefaultAsync();
+
+        if (document is null)
         {
             throw new HandNotFoundException("The hand is not found");
         }
 
-        return Task.FromResult(view);
+        return new DetailView
+        {
+            Uid = document.Uid,
+            TableUid = document.TableUid,
+            TableType = document.TableType,
+            Rules = document.Rules,
+            Table = document.Table,
+            Pot = document.Pot
+        };
     }
 
-    public Task SaveViewAsync(Hand hand)
+    public async Task SaveViewAsync(Hand hand)
     {
+        var options = new FindOneAndReplaceOptions<DetailViewDocument>
+        {
+            IsUpsert = true,
+            ReturnDocument = ReturnDocument.After
+        };
+
         var state = hand.GetState();
 
-        var view = new DetailView
+        var document = new DetailViewDocument
         {
             Uid = hand.Uid,
             TableUid = hand.TableContext.TableUid,
@@ -74,7 +103,25 @@ public class StubStorage : IStorage
                 }).ToList()
             }
         };
-        _detailMapping.AddOrUpdate(hand.Uid, view, (_, _) => view);
-        return Task.CompletedTask;
+
+        await _detailViewCollection.FindOneAndReplaceAsync(x => x.Uid == (Guid)hand.Uid, document, options);
     }
+}
+
+public class MongoDbStorageOptions
+{
+    public const string SectionName = "MongoDbHandStorage";
+
+    public required string Database { get; init; }
+}
+
+public record DetailViewDocument
+{
+    [BsonId]
+    public required Guid Uid { get; init; }
+    public required Guid TableUid { get; init; }
+    public required string TableType { get; init; }
+    public required DetailViewRules Rules { get; init; }
+    public required DetailViewTable Table { get; init; }
+    public required DetailViewPot Pot { get; init; }
 }

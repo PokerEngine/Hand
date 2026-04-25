@@ -1,4 +1,5 @@
-using Api.Controller;
+using Api.Authentication;
+using Application.Authentication;
 using Application.Command;
 using Application.Event;
 using Application.IntegrationEvent;
@@ -19,6 +20,7 @@ using Infrastructure.Repository;
 using Infrastructure.Service.Evaluator;
 using Infrastructure.Service.Randomizer;
 using Infrastructure.Storage;
+using Microsoft.AspNetCore.Authentication;
 
 namespace Api;
 
@@ -91,6 +93,30 @@ public static class Bootstrapper
         );
         builder.Services.AddScoped<IIntegrationEventPublisher, RabbitMqIntegrationEventPublisher>();
 
+        // Register authentication/authorization
+        builder.Services.AddHttpContextAccessor();
+        builder.Services.AddScoped<ICurrentUserProvider, HttpContextCurrentUserProvider>();
+
+        var authentication = builder.Services
+            .AddAuthentication(JwtAuthenticationHandler.SchemeName);
+
+        if (builder.Environment.IsDevelopment())
+        {
+            authentication.AddScheme<AuthenticationSchemeOptions, DevelopmentAuthenticationHandler>(JwtAuthenticationHandler.SchemeName, null);
+        }
+        else
+        {
+            builder.Services.Configure<JwtAuthenticationOptions>(
+                builder.Configuration.GetSection(JwtAuthenticationOptions.SectionName)
+            );
+            authentication.AddScheme<AuthenticationSchemeOptions, JwtAuthenticationHandler>(JwtAuthenticationHandler.SchemeName, null);
+        }
+        builder.Services.AddAuthorization(options =>
+        {
+            options.AddPolicy("HasNickname", p => p.RequireClaim("nickname"));
+        });
+
+        // Register endpoints
         builder.Services.AddControllers();
         builder.Services.AddEndpointsApiExplorer();
 
@@ -146,6 +172,9 @@ public class Program
         {
             app.UseHttpsRedirection();
         }
+
+        app.UseAuthentication();
+        app.UseAuthorization();
 
         app.MapOpenApi();
         app.MapControllers();

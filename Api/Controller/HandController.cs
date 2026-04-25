@@ -1,5 +1,7 @@
+using Application.Authentication;
 using Application.Command;
 using Application.Query;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Api.Controller;
@@ -9,7 +11,8 @@ namespace Api.Controller;
 [Produces("application/json")]
 public class HandController(
     ICommandDispatcher commandDispatcher,
-    IQueryDispatcher queryDispatcher
+    IQueryDispatcher queryDispatcher,
+    ICurrentUserProvider currentUserProvider
 ) : ControllerBase
 {
     [HttpPost]
@@ -44,16 +47,18 @@ public class HandController(
         return CreatedAtAction(nameof(GetHandDetail), new { uid = response.Uid }, response);
     }
 
-    [HttpPost("{uid:guid}/submit-action/{nickname}")]
+    [HttpPost("{uid:guid}/submit-action")]
+    [Authorize(Policy = "HasNickname")]
     [ProducesResponseType(typeof(SubmitPlayerActionResponse), StatusCodes.Status201Created)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status409Conflict)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-    public async Task<IActionResult> SubmitPlayerAction(Guid uid, string nickname, [FromBody] SubmitPlayerActionRequest request)
+    public async Task<IActionResult> SubmitPlayerAction(Guid uid, [FromBody] SubmitPlayerActionRequest request)
     {
         var command = new SubmitPlayerActionCommand
         {
             Uid = uid,
-            Nickname = nickname,
+            Nickname = currentUserProvider.GetCurrentUser().Nickname,
             Type = request.Type,
             Amount = request.Amount
         };

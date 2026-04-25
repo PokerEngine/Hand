@@ -1,4 +1,7 @@
 @Api_HostAddress = http://0.0.0.0:5260
+@Alice = alice
+@Bobby = bobby
+@Charlie = charlie
 
 ### Start a new hand
 POST {{Api_HostAddress}}/api/hand
@@ -44,9 +47,10 @@ Content-Type: application/json
 %}
 
 ### Submit a player action
-POST {{Api_HostAddress}}/api/hand/{{handUid}}/submit-action/charlie
+POST {{Api_HostAddress}}/api/hand/{{handUid}}/submit-action
 Accept: application/json
 Content-Type: application/json
+Authorization: {{Charlie}}
 
 {
     "Type": "RaiseBy",

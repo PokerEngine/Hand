@@ -11,7 +11,7 @@ public class InMemoryIntegrationEventPublisher(ILogger<InMemoryIntegrationEventP
     )
     {
         logger.LogInformation(
-            "Fake publishing {IntegrationEvent} to {RoutingKey}",
+            "In-memory publishing {IntegrationEvent} to {RoutingKey}",
             integrationEvent,
             routingKey
         );
